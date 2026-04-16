@@ -62,6 +62,24 @@ def compile_smarty(file:str) -> None:
                         raise Exception(f"print need 'A' registrer, not '{function_arg[0]}'")
                     
                     code_compile += "20 EF FF "
+                
+                elif function_arg[0][0] == "'":
+                    if function_arg[0][2] == "'":
+                        char = function_arg[0][1]
+
+                        if char.islower():
+                            raise Exception("char canno't be lower.")
+                        
+                        code_ascii = ord(char)
+
+                        code_hex = hex(code_ascii)[2:]
+                        code_hex = code_hex.upper()
+
+                        code_compile += "A9 " + str(code_hex) + " 20 EF FF "
+
+
+                    else:
+                        raise Exception("char value need 1 char.")
             
 
 
