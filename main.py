@@ -1,4 +1,5 @@
 from sys import argv
+from pathlib import Path
 
 def compile_smarty(file:str) -> None:
     """Start the compile from file."""
@@ -45,6 +46,8 @@ def compile_smarty(file:str) -> None:
         line_conter += 1
     
     print(code_compile)
+    
+    Path(argv[1] + ".asm").write_text(code_compile, encoding="UTF-8")
 
 if len(argv) == 1:
     raise Exception("Error : no source was givent")
