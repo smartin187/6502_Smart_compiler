@@ -70,9 +70,16 @@ def compile_smarty(file:str) -> None:
             code_compile += "A9" if r == "A" else "A2" if r == "X" else "A0"
 
             if len(read_line) != 2:
-                raise SmartError(f"smart sintaxe error:\nline {line_conter}")
+                raise SmartError(f"Smart syntaxe error:\nline {line_conter}")
         
-            code_compile += " " + read_line[1] + " "
+            if len(read_line[1]) == 2:
+                code_compile += " " + read_line[1] + " "
+            
+            elif read_line[1][0] == "'":
+                code_compile += " " + get_char(read_line[1]) + " "
+            
+            else:
+                raise SmartError(f"Smart value error:\nline {line_conter}")
 
         else:
             line = line.replace(" ", "")
