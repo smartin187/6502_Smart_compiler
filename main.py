@@ -3,6 +3,14 @@ from pathlib import Path
 
 START_ADRESSE = "0400: "
 
+class SmartError(Exception):
+    """The error for Smart (syntaxe error)."""
+    def __init__(self, message):
+        print("Error :")
+        self.syntaxerror = message
+
+
+
 def compile_smarty(file:str) -> None:
     """Start the compile from file."""
 
@@ -43,7 +51,7 @@ def compile_smarty(file:str) -> None:
             code_compile += "A9" if r == "A" else "A2" if r == "X" else "A0"
 
             if len(read_line) != 2:
-                raise Exception(f"smart sintaxe error:\nline {line_conter}")
+                raise SmartError(f"smart sintaxe error:\nline {line_conter}")
         
             code_compile += " " + read_line[1] + " "
 
@@ -55,11 +63,11 @@ def compile_smarty(file:str) -> None:
 
             if function_name == "print":
                 if len(function_arg) != 1:
-                    raise Exception("print function take 1 arg")
+                    raise SmartError("print function take 1 arg")
                 
                 if function_arg[0] in ACUMULATOR_REGISTER:
                     if function_arg[0] != "A":
-                        raise Exception(f"print need 'A' registrer, not '{function_arg[0]}'")
+                        raise SmartError(f"print need 'A' registrer, not '{function_arg[0]}'")
                     
                     code_compile += "20 EF FF "
                 
@@ -68,7 +76,7 @@ def compile_smarty(file:str) -> None:
                         char = function_arg[0][1]
 
                         if char.islower():
-                            raise Exception("char canno't be lower.")
+                            raise SmartError("char canno't be lower.")
                         
                         code_ascii = ord(char)
 
@@ -79,7 +87,7 @@ def compile_smarty(file:str) -> None:
 
 
                     else:
-                        raise Exception("char value need 1 char.")
+                        raise SmartError("char value need 1 char.")
             
 
 
@@ -92,7 +100,8 @@ def compile_smarty(file:str) -> None:
 if len(argv) == 1:
     raise Exception("Error : no source was givent")
 
-
-compile_smarty(argv[1])
-
+try:
+    compile_smarty(argv[1])
+except SmartError as se:
+    print(se.syntaxerror)
     
