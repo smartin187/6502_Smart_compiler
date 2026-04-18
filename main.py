@@ -1,5 +1,6 @@
 from sys import argv
 from pathlib import Path
+import os
 
 START_ADRESSE = "0400: "
 
@@ -97,7 +98,7 @@ def compile_smarty(file:str) -> None:
     
     print(code_compile)
     
-    Path(argv[1] + ".asm").write_text(code_compile, encoding="UTF-8")
+    Path(os.path.splitext(argv[1])[0] + ".asm").write_text(code_compile, encoding="UTF-8")
 
 if len(argv) == 1:
     raise Exception("Error : no source was givent")
