@@ -14,6 +14,22 @@ class SmartError(Exception):
 
 def compile_smarty(file:str) -> None:
     """Start the compile from file."""
+    def get_char(char_type:str) -> str:
+        """Return the char value of Smart."""
+        if char_type[2] == "'":
+            char = char_type[1]
+
+            if char.islower():
+                raise SmartError("char canno't be lower.")
+            
+            code_ascii = ord(char)
+
+            code_hex = hex(code_ascii)[2:]
+            code_hex = code_hex.upper()
+            return code_hex
+
+        else:
+            raise SmartError("char value need 1 char.")
 
     # -----------
 
@@ -31,6 +47,8 @@ def compile_smarty(file:str) -> None:
     sma = open(file, "r", encoding="UTF-8")
 
     code = sma.read()
+
+    sma.close()
 
     code = code.replace("\n", "")
     
@@ -73,28 +91,15 @@ def compile_smarty(file:str) -> None:
                     code_compile += "20 EF FF "
                 
                 elif function_arg[0][0] == "'":
-                    if function_arg[0][2] == "'":
-                        char = function_arg[0][1]
-
-                        if char.islower():
-                            raise SmartError("char canno't be lower.")
-                        
-                        code_ascii = ord(char)
-
-                        code_hex = hex(code_ascii)[2:]
-                        code_hex = code_hex.upper()
-
-                        code_compile += "A9 " + str(code_hex) + " 20 EF FF "
-
-
-                    else:
-                        raise SmartError("char value need 1 char.")
+                    code_compile += "A9 " + str(get_char(function_arg[0])) + " 20 EF FF "
             
             else:
                 raise SmartError(f"Function '{function_name}' not exist.")
 
 
         line_conter += 1
+    
+    code_compile += "00"
     
     print(code_compile)
     
