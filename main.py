@@ -99,6 +99,16 @@ def compile_smarty(file:str) -> None:
                 
                 elif function_arg[0][0] == "'":
                     code_compile += "A9 " + str(get_char(function_arg[0])) + " 20 EF FF "
+                
+                elif function_arg[0][0] == "\"":
+                    smart_str = function_arg[0]
+
+                    if smart_str[-1] != "\"":
+                        raise SmartError(f"str value was not closed.")
+                    
+                    for char in smart_str[1:-1]:
+                        code_compile += "A9 " + get_char(f"'{char}'") + " 20 EF FF "
+
             
             else:
                 raise SmartError(f"Function '{function_name}' not exist.")
