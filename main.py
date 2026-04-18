@@ -35,8 +35,6 @@ def compile_smarty(file:str) -> None:
 
     ACUMULATOR_REGISTER = "AXY"
 
-    FUNCTION_SMA = ("print")
-
     # -----------
 
     line_conter = 0
