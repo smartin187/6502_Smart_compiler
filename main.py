@@ -109,6 +109,11 @@ def compile_smarty(file:str) -> None:
                     for char in smart_str[1:-1]:
                         code_compile += "A9 " + get_char(f"'{char}'") + " 20 EF FF "
 
+            elif function_name == "quit":
+                if function_arg != [""]:
+                    raise SmartError(f"Function 'quit' not take arg.")
+                
+                code_compile += "00 "
             
             else:
                 raise SmartError(f"Function '{function_name}' not exist.")
