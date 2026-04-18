@@ -89,6 +89,8 @@ def compile_smarty(file:str) -> None:
                     else:
                         raise SmartError("char value need 1 char.")
             
+            else:
+                raise SmartError(f"Function '{function_name}' not exist.")
 
 
         line_conter += 1
@@ -104,4 +106,6 @@ try:
     compile_smarty(argv[1])
 except SmartError as se:
     print(se.syntaxerror)
-    
+
+except:
+    print("Error during build")
