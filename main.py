@@ -44,13 +44,19 @@ def compile_smarty(file:str) -> None:
 
     sma = open(file, "r", encoding="UTF-8")
 
-    code = sma.read()
+    code_start = sma.read()
 
     sma.close()
 
-    code = code.replace("\n", "")
+    code_line = code_start.split("\n")
+
+    code = ""
+
+    for line in code_line:
+        code += line.split("//")[0] + "\n"
     
-    code = code.split(";")
+
+    code = code.replace("\n", "").replace(" ", "").split(";")
 
     for line in code:
         if line == "":
