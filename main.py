@@ -1,8 +1,10 @@
 from sys import argv
 from pathlib import Path
 import os
+import traceback
 
 START_ADRESSE = "0400: "
+CODE_ADRESSE = 1024
 
 class SmartError(Exception):
     """The error for Smart (syntaxe error)."""
@@ -40,6 +42,10 @@ def compile_smarty(file:str) -> None:
     line_conter = 0
 
     code_compile = START_ADRESSE
+
+    go_to = {}
+
+    adress_conter = 0
 
 
     sma = open(file, "r", encoding="UTF-8")
@@ -85,6 +91,24 @@ def compile_smarty(file:str) -> None:
             else:
                 raise SmartError(f"Smart value error:\nline {line_conter}")
 
+            adress_conter += 2
+
+        elif line[0] == "#":
+            name = line[1:]
+
+            if (" " in name or "\n" in name) or (name in ACUMULATOR_REGISTER):
+                raise SmartError(f"Invalid name for goto : '{name}'")
+
+            hex_adress = hex(CODE_ADRESSE + adress_conter)[2:]
+
+            
+            hex_adress = "0" * (4-len(hex_adress)) + hex_adress
+
+
+            go_to[name] = hex_adress
+
+            print("go_to", go_to)
+
         else:
             line = line.replace(" ", "")
 
@@ -100,9 +124,13 @@ def compile_smarty(file:str) -> None:
                         raise SmartError(f"print need 'A' registrer, not '{function_arg[0]}'")
                     
                     code_compile += "20 EF FF "
+
+                    adress_conter += 3
                 
                 elif function_arg[0][0] == "'":
                     code_compile += "A9 " + str(get_char(function_arg[0])) + " 20 EF FF "
+
+                    adress_conter += 5
                 
                 elif function_arg[0][0] == "\"":
                     smart_str = function_arg[0]
@@ -113,11 +141,28 @@ def compile_smarty(file:str) -> None:
                     for char in smart_str[1:-1]:
                         code_compile += "A9 " + get_char(f"'{char}'") + " 20 EF FF "
 
+                        adress_conter += 5
+
             elif function_name == "quit":
                 if function_arg != [""]:
                     raise SmartError(f"Function 'quit' not take arg.")
                 
                 code_compile += "00 "
+            
+            elif function_name == "goto":
+                if len(function_arg) != 1:
+                    raise SmartError("Function 'goto' take 1 arg.")
+                
+                name = function_arg[0]
+
+                try:
+                    adress = go_to[name]
+                
+                except KeyError:
+                    raise SmartError(f"'{name}' is not defined for goto !")
+
+                code_compile += f"4C {adress[2:]} {adress[:2]} "
+
             
             else:
                 raise SmartError(f"Function '{function_name}' not exist.")
@@ -141,3 +186,4 @@ except SmartError as se:
 
 except:
     print("Error during build")
+    print(traceback.format_exc())
