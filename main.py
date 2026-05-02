@@ -51,10 +51,10 @@ def compile_smarty(file:str) -> None:
         """Return the value for set one A."""
         if len(value) == 2:
             control_hex(value)
-            return " " + value + " "
+            return " A9 " + value + " "
         
         elif value[0] == "'":
-            return " " + get_char(value) + " "
+            return " A9 " + get_char(value) + " "
     
         elif value[0] == "\"":
             raise SmartError(f"Smart forbiden value: '{value}'")
@@ -110,14 +110,14 @@ def compile_smarty(file:str) -> None:
             
 
             r = read_line[0]
-            code_compile += "A9" if r == "A" else "A2" if r == "X" else "A0"
+            #code_compile += "A9" if r == "A" else "A2" if r == "X" else "A0"
 
             if len(read_line) != 2:
                 raise SmartError(f"Smart syntaxe error:\nline {line_conter}")
         
 
             
-            code_compile += set_one_A_value(read_line[1])
+            code_compile += set_one_A_value(read_line[1])[1:] if r == "A" else "A2" + set_one_A_value(read_line[1])[3:] if r == "X" else "A0" + set_one_A_value(read_line[1])[3:]
 
             #adress_conter += 2
 
@@ -148,7 +148,7 @@ def compile_smarty(file:str) -> None:
                 smart_var[var_name] = adress_var
                 adress_var += 1
             
-            value_RAM = set_one_A_value(value)
+            value_RAM = set_one_A_value(value)[3:]
             
             adress_RAM = hex(smart_var[var_name])[2:]
 
@@ -200,12 +200,12 @@ def compile_smarty(file:str) -> None:
                         raise SmartError(f"str value was not closed.")
                     
                     for char in smart_str[1:-1]:
-                        code_compile += "A9" + set_one_A_value(f"'{char}'") + "20 EF FF "
+                        code_compile += set_one_A_value(f"'{char}'") + "20 EF FF "
 
                         adress_conter += 5
                 
                 else:
-                    code_compile += "A9" + set_one_A_value(function_arg[0])
+                    code_compile += set_one_A_value(function_arg[0])
                     code_compile += "20 EF FF "
                     adress_conter += 3
 
