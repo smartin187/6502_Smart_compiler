@@ -11,7 +11,7 @@ class SmartError(Exception):
 
 
 
-def compile_smarty(file:str, argv:list | tuple, START_ADRESSE, CODE_ADRESSE) -> None:
+def compile_smarty(file:str, argv:list | tuple, START_ADRESSE, CODE_ADRESSE, make_file=True) -> None:
     """Start the compile from file."""
     def get_char(char_type:str) -> str:
         """Return the char value of Smart."""
@@ -273,8 +273,9 @@ def compile_smarty(file:str, argv:list | tuple, START_ADRESSE, CODE_ADRESSE) -> 
     
     code_compile += "00"
     
-    print(code_compile)
-    
-    Path(os.path.splitext(argv[1])[0] + ".asm").write_text(code_compile, encoding="UTF-8")
+    if make_file:
+        print(code_compile)
+        
+        Path(os.path.splitext(argv[1])[0] + ".asm").write_text(code_compile, encoding="UTF-8")
 
     return code_compile

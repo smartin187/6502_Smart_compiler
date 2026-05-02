@@ -1,9 +1,16 @@
-code = input()
 
+from sys import argv
 import tkinter as tk
-from tkinter import scrolledtext
+from tkinter import scrolledtext, messagebox
 
 from threading import Thread
+
+from smart_compiller import compile_smarty
+
+if len(argv) != 2:
+    messagebox.showerror("Error", "Bad arg, need file name.")
+
+code = compile_smarty(file=argv[1], argv=[], START_ADRESSE="0400: ", CODE_ADRESSE=1024, make_file=False)
 
 window_emulator = tk.Tk()
 window_emulator.title("Smart emulator")
@@ -61,8 +68,6 @@ def run_smart() -> None:
         
         elif run == "00":
             break
-
-        print(run)
 
        
     
