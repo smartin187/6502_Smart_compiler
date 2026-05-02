@@ -46,6 +46,22 @@ def compile_smarty(file:str) -> None:
         """If good_hex return False, raise SmartError."""
         if not good_hex(code):
             raise SmartError(f"Bad hex value '{code}'")
+    
+    def set_one_A_value(value:str) -> str:
+        """Return the value for set one A."""
+        if len(value) == 2:
+            control_hex(value)
+            return " " + value + " "
+        
+        elif value[0] == "'":
+            return " " + get_char(value) + " "
+    
+        elif value[0] == "\"":
+            raise SmartError(f"Smart forbiden value: '{value}'")
+
+        
+        else:
+            raise SmartError(f"Smart value error:\nline {line_conter}")
 
     # -----------
 
@@ -99,17 +115,11 @@ def compile_smarty(file:str) -> None:
             if len(read_line) != 2:
                 raise SmartError(f"Smart syntaxe error:\nline {line_conter}")
         
-            if len(read_line[1]) == 2:
-                control_hex(read_line[1])
-                code_compile += " " + read_line[1] + " "
-            
-            elif read_line[1][0] == "'":
-                code_compile += " " + get_char(read_line[1]) + " "
-            
-            else:
-                raise SmartError(f"Smart value error:\nline {line_conter}")
 
-            adress_conter += 2
+            
+            code_compile += set_one_A_value(read_line[1])
+
+            #adress_conter += 2
 
         elif line[0] == "#":
             name = line[1:]
@@ -169,11 +179,20 @@ def compile_smarty(file:str) -> None:
 
                     adress_conter += 3
                 
-                elif function_arg[0][0] == "'":
+                    """elif function_arg[0][0] == "'":
                     code_compile += "A9 " + str(get_char(function_arg[0])) + " 20 EF FF "
 
                     adress_conter += 5
                 
+                
+
+                else:
+                    control_hex(function_arg[0])
+
+                    code_compile += "A9 " + function_arg[0] + " 20 EF FF "
+
+                    adress_conter += 5"""
+
                 elif function_arg[0][0] == "\"":
                     smart_str = function_arg[0]
 
@@ -181,16 +200,14 @@ def compile_smarty(file:str) -> None:
                         raise SmartError(f"str value was not closed.")
                     
                     for char in smart_str[1:-1]:
-                        code_compile += "A9 " + get_char(f"'{char}'") + " 20 EF FF "
+                        code_compile += "A9" + set_one_A_value(f"'{char}'") + "20 EF FF "
 
                         adress_conter += 5
-
+                
                 else:
-                    control_hex(function_arg[0])
-
-                    code_compile += "A9 " + function_arg[0] + " 20 EF FF "
-
-                    adress_conter += 5
+                    code_compile += "A9" + set_one_A_value(function_arg[0])
+                    code_compile += "20 EF FF "
+                    adress_conter += 3
 
 
 
