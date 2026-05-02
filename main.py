@@ -81,6 +81,17 @@ def compile_smarty(file:str) -> None:
 
         adress_RAM = adress_RAM[2:] + " " + adress_RAM[:2]
         return adress_RAM
+    
+    def good_variable_name(name:str) -> bool:
+        """Return True if the name of variable is good, False else.
+        An variable name can have :
+        - Any letter (A-Z, a-z). Special letter (éèëù...) are accepted.
+        - Any number 0-9
+        - underscore _"""
+        for char in name:
+            if not (char.isalpha() or char.isdigit() or char == "_"):
+                return False
+        return True
 
     # -----------
 
@@ -159,6 +170,9 @@ def compile_smarty(file:str) -> None:
             line = line.replace(" ", "")[1:]
 
             var_name, value = line.split("=")
+
+            if not good_variable_name(var_name):
+                raise SmartError(f"Bad variable name : '{var_name}'")
 
             if var_name not in smart_var: # make new variable
                 if len(smart_var) >= 256:
