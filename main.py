@@ -148,7 +148,7 @@ def compile_smarty(file:str) -> None:
                 smart_var[var_name] = adress_var
                 adress_var += 1
             
-            control_hex(value)
+            value_RAM = set_one_A_value(value)
             
             adress_RAM = hex(smart_var[var_name])[2:]
 
@@ -156,7 +156,7 @@ def compile_smarty(file:str) -> None:
 
             adress_RAM = adress_RAM[2:] + " " + adress_RAM[:2]
             
-            code_compile += f"A9 {value} 8D {adress_RAM} "
+            code_compile += f"A9{value_RAM}8D {adress_RAM} "
 
             adress_conter += 5
 
