@@ -33,11 +33,16 @@ def compile_smarty(file:str) -> None:
         else:
             raise SmartError("char value need 1 char.")
 
+
+
     # -----------
 
     ACUMULATOR_REGISTER = "AXY"
 
     # -----------
+
+    smart_var = {}
+    adress_var = 0x300
 
     line_conter = 0
 
@@ -107,9 +112,32 @@ def compile_smarty(file:str) -> None:
 
             go_to[name] = hex_adress
 
-            print("go_to", go_to)
+        
+        elif line.startswith("."):      # variable
+            
+            line = line.replace(" ", "")[1:]
 
-        else:
+            var_name, value = line.split("=")
+
+            if var_name not in smart_var: # make new variable
+                if len(smart_var) >= 256:
+                    raise SmartError("Memory error : maximum variable are 256.")
+                smart_var[var_name] = adress_var
+                adress_var += 1
+            
+            
+            adress_RAM = hex(smart_var[var_name])[2:]
+
+            adress_RAM = "0" * (4 - len(adress_RAM)) + adress_RAM
+
+            adress_RAM = adress_RAM[2:] + " " + adress_RAM[:2]
+            
+            code_compile += f"A9 {value} 8D {adress_RAM} "
+
+            adress_conter += 5
+
+        else:     # function
+
             line = line.replace(" ", "")
 
             function_name, function_arg = line.split(":")
