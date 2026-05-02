@@ -49,15 +49,20 @@ def compile_smarty(file:str) -> None:
     
     def set_one_A_value(value:str) -> str:
         """Return the value for set one A."""
-        if len(value) == 2:
-            control_hex(value)
-            return " A9 " + value + " "
-        
-        elif value[0] == "'":
-            return " A9 " + get_char(value) + " "
-    
-        elif value[0] == "\"":
-            raise SmartError(f"Smart forbiden value: '{value}'")
+        if "+" in value:    # addition
+            try:
+                compute = value.split("+")
+                
+                value_1 = compute[0]
+
+                value_2 = "".join(compute[1:])
+
+                asm = f"{set_one_A_value(value_1)}18 69{set_one_A_value(value_1)[3:]}"
+
+                return asm
+
+            except:
+                raise SmartError(f"Error with math '+' : '{value}'")
 
         elif value[0] == ".":
             variable = value[1:]
@@ -68,6 +73,17 @@ def compile_smarty(file:str) -> None:
             
             return f" AD {adress_for_RAM(smart_var[variable])} "
         
+        elif len(value) == 2:
+            control_hex(value)
+            return " A9 " + value + " "
+        
+        elif value[0] == "'":
+            return " A9 " + get_char(value) + " "
+    
+        elif value[0] == "\"":
+            raise SmartError(f"Smart forbiden value: '{value}'")
+
+    
         else:
             raise SmartError(f"Smart value error:\nline {line_conter}")
 
