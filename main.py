@@ -57,7 +57,7 @@ def compile_smarty(file:str) -> None:
 
                 value_2 = "".join(compute[1:])
 
-                asm = f"{set_one_A_value(value_1)}18 69 {set_one_A_value(value_1)[3:]}"
+                asm = f"{set_one_A_value(value_1)}18 69 {set_one_A_value(value_2)[3:]}"
 
                 return asm
 
