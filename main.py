@@ -186,7 +186,13 @@ def compile_smarty(file:str) -> None:
                         adress_conter += 5
 
                 else:
-                    raise SmartError(f"Unknow value '{function_arg[0]}'")
+                    control_hex(function_arg[0])
+
+                    code_compile += "A9 " + function_arg[0] + " 20 EF FF "
+
+                    adress_conter += 5
+
+
 
             elif function_name == "quit":
                 if function_arg != [""]:
