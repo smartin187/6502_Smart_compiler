@@ -33,7 +33,19 @@ def compile_smarty(file:str) -> None:
         else:
             raise SmartError("char value need 1 char.")
 
-
+    def good_hex(code:str) -> bool:
+        """Return True if the hex value is good, False else."""
+        try:
+            int(code, base=16)
+        except:
+            return False
+        else:
+            return True if len(code) == 2 else False
+        
+    def control_hex(code:str) -> None:
+        """If good_hex return False, raise SmartError."""
+        if not good_hex(code):
+            raise SmartError(f"Bad hex value '{code}'")
 
     # -----------
 
@@ -88,6 +100,7 @@ def compile_smarty(file:str) -> None:
                 raise SmartError(f"Smart syntaxe error:\nline {line_conter}")
         
             if len(read_line[1]) == 2:
+                control_hex(read_line[1])
                 code_compile += " " + read_line[1] + " "
             
             elif read_line[1][0] == "'":
@@ -125,6 +138,7 @@ def compile_smarty(file:str) -> None:
                 smart_var[var_name] = adress_var
                 adress_var += 1
             
+            control_hex(value)
             
             adress_RAM = hex(smart_var[var_name])[2:]
 
@@ -170,6 +184,9 @@ def compile_smarty(file:str) -> None:
                         code_compile += "A9 " + get_char(f"'{char}'") + " 20 EF FF "
 
                         adress_conter += 5
+
+                else:
+                    raise SmartError(f"Unknow value '{function_arg[0]}'")
 
             elif function_name == "quit":
                 if function_arg != [""]:
