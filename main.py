@@ -129,7 +129,6 @@ def compile_smarty(file:str) -> None:
             
 
             r = read_line[0]
-            #code_compile += "A9" if r == "A" else "A2" if r == "X" else "A0"
 
             if len(read_line) != 2:
                 raise SmartError(f"Smart syntaxe error:\nline {line_conter}")
@@ -194,19 +193,6 @@ def compile_smarty(file:str) -> None:
 
                     adress_conter += 3
                 
-                    """elif function_arg[0][0] == "'":
-                    code_compile += "A9 " + str(get_char(function_arg[0])) + " 20 EF FF "
-
-                    adress_conter += 5
-                
-                
-
-                else:
-                    control_hex(function_arg[0])
-
-                    code_compile += "A9 " + function_arg[0] + " 20 EF FF "
-
-                    adress_conter += 5"""
 
                 elif function_arg[0][0] == "\"":
                     smart_str = function_arg[0]
