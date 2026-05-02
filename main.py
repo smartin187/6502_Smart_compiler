@@ -59,9 +59,28 @@ def compile_smarty(file:str) -> None:
         elif value[0] == "\"":
             raise SmartError(f"Smart forbiden value: '{value}'")
 
+        elif value[0] == ".":
+            variable = value[1:]
+
+            if variable not in smart_var:
+                raise SmartError(f"Name error : name '{value}' is not defined.")
+            
+            
+            return f" AD {adress_for_RAM(smart_var[variable])} "
         
         else:
             raise SmartError(f"Smart value error:\nline {line_conter}")
+
+    def adress_for_RAM(adress:int) -> str:
+        """Return the RAM adress one hex.
+        Exemple :
+        768 -> 00 03"""
+        adress_RAM = hex(adress)[2:]
+
+        adress_RAM = "0" * (4 - len(adress_RAM)) + adress_RAM
+
+        adress_RAM = adress_RAM[2:] + " " + adress_RAM[:2]
+        return adress_RAM
 
     # -----------
 
@@ -150,13 +169,9 @@ def compile_smarty(file:str) -> None:
             
             value_RAM = set_one_A_value(value)[3:]
             
-            adress_RAM = hex(smart_var[var_name])[2:]
-
-            adress_RAM = "0" * (4 - len(adress_RAM)) + adress_RAM
-
-            adress_RAM = adress_RAM[2:] + " " + adress_RAM[:2]
             
-            code_compile += f"A9{value_RAM}8D {adress_RAM} "
+            
+            code_compile += f"A9{value_RAM}8D {adress_for_RAM(smart_var[var_name])} "
 
             adress_conter += 5
 
@@ -205,7 +220,7 @@ def compile_smarty(file:str) -> None:
                         adress_conter += 5
                 
                 else:
-                    code_compile += set_one_A_value(function_arg[0])
+                    code_compile += set_one_A_value(function_arg[0])[1:]
                     code_compile += "20 EF FF "
                     adress_conter += 3
 
