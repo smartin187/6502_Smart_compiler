@@ -57,7 +57,7 @@ def compile_smarty(file:str) -> None:
 
                 value_2 = "".join(compute[1:])
 
-                asm = f"{set_one_A_value(value_1)}18 69{set_one_A_value(value_1)[3:]}"
+                asm = f"{set_one_A_value(value_1)}18 69 {set_one_A_value(value_1)[3:]}"
 
                 return asm
 
@@ -71,14 +71,14 @@ def compile_smarty(file:str) -> None:
                 raise SmartError(f"Name error : name '{value}' is not defined.")
             
             
-            return f" AD {adress_for_RAM(smart_var[variable])} "
+            return f"AD {adress_for_RAM(smart_var[variable])} "
         
         elif len(value) == 2:
             control_hex(value)
-            return " A9 " + value + " "
+            return "A9 " + value + " "
         
         elif value[0] == "'":
-            return " A9 " + get_char(value) + " "
+            return "A9 " + get_char(value) + " "
     
         elif value[0] == "\"":
             raise SmartError(f"Smart forbiden value: '{value}'")
@@ -162,7 +162,7 @@ def compile_smarty(file:str) -> None:
         
 
             
-            code_compile += set_one_A_value(read_line[1])[1:] if r == "A" else "A2" + set_one_A_value(read_line[1])[3:] if r == "X" else "A0" + set_one_A_value(read_line[1])[3:]
+            code_compile += set_one_A_value(read_line[1]) if r == "A" else "A2" + set_one_A_value(read_line[1])[2:] if r == "X" else "A0" + set_one_A_value(read_line[1])[2:]
 
             #adress_conter += 2
 
@@ -196,11 +196,9 @@ def compile_smarty(file:str) -> None:
                 smart_var[var_name] = adress_var
                 adress_var += 1
             
-            value_RAM = set_one_A_value(value)[3:]
-            
-            
-            
-            code_compile += f"A9{value_RAM}8D {adress_for_RAM(smart_var[var_name])} "
+            value_RAM = set_one_A_value(value)
+                        
+            code_compile += f"{value_RAM}8D {adress_for_RAM(smart_var[var_name])} "
 
             adress_conter += 5
 
@@ -236,7 +234,7 @@ def compile_smarty(file:str) -> None:
                         adress_conter += 5
                 
                 else:
-                    code_compile += set_one_A_value(function_arg[0])[1:]
+                    code_compile += set_one_A_value(function_arg[0])
                     code_compile += "20 EF FF "
                     adress_conter += 3
 
