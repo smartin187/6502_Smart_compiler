@@ -1,2 +1,4 @@
 *.sma
 *.asm
+
+__pycache__/
