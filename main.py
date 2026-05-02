@@ -47,21 +47,26 @@ def compile_smarty(file:str) -> None:
         if not good_hex(code):
             raise SmartError(f"Bad hex value '{code}'")
     
-    def set_one_A_value(value:str) -> str:
+    def set_one_A_value(value:str, one_addition:bool=False) -> str:
         """Return the value for set one A."""
         if "+" in value:    # addition
             try:
-                compute = value.split("+")
+                value_1, value_2 = value.split("+", 1)
+
+                print("value_2", value_2)
                 
-                value_1 = compute[0]
+                hex_value_2 = set_one_A_value(value_2, one_addition=True)
 
-                value_2 = "".join(compute[1:])
+                if hex_value_2.startswith("6D "):
+                    asm = f"{set_one_A_value(value_1)}18 {hex_value_2}"
 
-                asm = f"{set_one_A_value(value_1)}18 69 {set_one_A_value(value_2)[3:]}"
+                else:
+                    asm = f"{set_one_A_value(value_1)}18 69 {hex_value_2[3:]}"
 
                 return asm
 
             except:
+                print(traceback.format_exc())
                 raise SmartError(f"Error with math '+' : '{value}'")
 
         elif value[0] == ".":
@@ -70,8 +75,10 @@ def compile_smarty(file:str) -> None:
             if variable not in smart_var:
                 raise SmartError(f"Name error : name '{value}' is not defined.")
             
-            
-            return f"AD {adress_for_RAM(smart_var[variable])} "
+            if not one_addition:
+                return f"AD {adress_for_RAM(smart_var[variable])} "
+            else:
+                return f"6D {adress_for_RAM(smart_var[variable])} "
         
         elif len(value) == 2:
             control_hex(value)
