@@ -24,12 +24,15 @@ def run_smart() -> None:
 
     code = code.split(" ")
 
+    START = int(code[0][:-1], base=16)
+
     run_step = 1
 
     ACCUMULATOR = {"A":"00", "X":"00", "Y":"00"}
 
     RAM = {"0" + hex(i)[2:]:"00" for i in range(0x300, 0x400 + 1)}
 
+    
 
     while run_step < len(code):
         run = code[run_step]
@@ -69,7 +72,11 @@ def run_smart() -> None:
         elif run == "00":
             break
 
-       
+        elif run == "4C":   # goto
+            goto = code[run_step + 2] + code[run_step + 1]
+
+            run_step = int(goto, base=16) - START + 1
+
     
     monitor.insert(tk.END, "\n\nEnd of run")
    
