@@ -19,6 +19,11 @@ window_emulator.title("Smart emulator")
 monitor = scrolledtext.ScrolledText(window_emulator, height=10, width=20, bg="#000000", fg="#0099FF")
 monitor.pack()
 
+def disable_edit(event:tk.Event) -> str:
+    return "break"
+
+monitor.bind("<Key>", disable_edit)
+
 frame_option = tk.Frame(window_emulator)
 frame_option.pack()
 
