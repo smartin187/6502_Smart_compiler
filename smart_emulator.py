@@ -32,19 +32,27 @@ def print_on_text(text:str) -> None:
     monitor.insert(tk.END, text)
     monitor.see(tk.END)
 
+
 def see_RAM() -> None:
     """Open a window for see the ram."""
     def update_RAM() -> None:
-        """Update the text for RAM"""
-        RAM_info.delete(0.0, tk.END)
-        RAM_info.insert(0.0, str(RAM))
+        """Update the text for RAM"""        
+        RAM_info.delete(0, tk.END)
+
+        new_ram = (f"{adress}       {RAM[adress]}" for adress in RAM)
+
+        RAM_info.insert(0, "Adress    Value")
+
+        for adress in new_ram:
+            RAM_info.insert(tk.END, adress)
+
 
         window_RAM.after(100, update_RAM)
 
     window_RAM = tk.Toplevel(window_emulator)
     window_RAM.title("RAM")
 
-    RAM_info = tk.Text(window_RAM)
+    RAM_info = tk.Listbox(window_RAM)
     RAM_info.pack()
 
     update_RAM()
