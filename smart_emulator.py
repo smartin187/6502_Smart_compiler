@@ -2,6 +2,7 @@
 from sys import argv
 import tkinter as tk
 from tkinter import scrolledtext, messagebox
+from time import sleep
 
 from threading import Thread
 
@@ -20,6 +21,11 @@ monitor.pack()
 
 frame_option = tk.Frame(window_emulator)
 frame_option.pack()
+
+def print_on_text(text:str) -> None:
+    """Insert on the scolledtext the text."""
+    monitor.insert(tk.END, text)
+    monitor.see(tk.END)
 
 def see_RAM() -> None:
     """Open a window for see the ram."""
@@ -41,6 +47,32 @@ def see_RAM() -> None:
 
 button_RAM = tk.Button(frame_option, text="See RAM", command=see_RAM)
 button_RAM.grid(column=0, row=0)
+
+normal_speed = True
+
+def emulator_setting() -> None:
+    """Open a window for the setting of emulator"""
+    def close_setting() -> None:
+        """Destroy the window and set setting."""
+        global normal_speed
+        normal_speed = var_speed.get()
+        
+        window_setting.destroy()
+
+    window_setting = tk.Toplevel(window_emulator)
+    window_setting.title("Emulator settings")
+
+    var_speed = tk.BooleanVar(window_setting, value=normal_speed)
+
+    chek_speed = tk.Checkbutton(window_setting, text="Run with a speed of 1Mhz\n(speed of MOS 8502)", variable=var_speed)
+    chek_speed.pack()
+
+    button_validate = tk.Button(window_setting, text="Validate", command=close_setting)
+    button_validate.pack()
+
+
+button_setting = tk.Button(frame_option, text="Setting", command=emulator_setting)
+button_setting.grid(column=1, row=0)
 
 RAM = {}
 
@@ -91,7 +123,7 @@ def run_smart() -> None:
             code[run_step]
 
             if code[run_step] == "EF" and code[run_step + 1] == "FF":
-                monitor.insert(tk.END, chr(int(accumulator["A"], base=16)))
+                print_on_text(chr(int(accumulator["A"], base=16)))
 
                 run_step += 2
         
@@ -142,8 +174,11 @@ def run_smart() -> None:
         else:
             messagebox.showerror("Error", f"Unknow assembly : {run}, at {run_step} step.")
             break
+
+        if normal_speed:
+            sleep(0.01)
     
-    monitor.insert(tk.END, "\n\nEnd of run")
+    print_on_text(tk.END, "\n\nEnd of run")
    
 
 
