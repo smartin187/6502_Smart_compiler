@@ -16,8 +16,11 @@ code = compile_smarty(file=argv[1], argv=[], START_ADRESSE="0400: ", CODE_ADRESS
 window_emulator = tk.Tk()
 window_emulator.title("Smart emulator")
 
-monitor = scrolledtext.ScrolledText(window_emulator, height=24, width=39, bg="#000000", fg="#0099FF")
+tk.Text()
+
+monitor = scrolledtext.ScrolledText(window_emulator, height=24, width=39, bg="#000000", fg="#0099FF", insertwidth=10, insertbackground="#B1B1B1", insertofftime=0)
 monitor.pack()
+monitor.focus_force()
 
 def disable_edit(event:tk.Event) -> str:
     return "break"
