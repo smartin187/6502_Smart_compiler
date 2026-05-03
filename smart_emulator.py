@@ -16,7 +16,7 @@ code = compile_smarty(file=argv[1], argv=[], START_ADRESSE="0400: ", CODE_ADRESS
 window_emulator = tk.Tk()
 window_emulator.title("Smart emulator")
 
-monitor = scrolledtext.ScrolledText(window_emulator, height=10, width=20, bg="#000000", fg="#0099FF")
+monitor = scrolledtext.ScrolledText(window_emulator, height=24, width=39, bg="#000000", fg="#0099FF")
 monitor.pack()
 
 def disable_edit(event:tk.Event) -> str:
@@ -27,7 +27,7 @@ monitor.bind("<Key>", disable_edit)
 frame_option = tk.Frame(window_emulator)
 frame_option.pack()
 
-ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKMNOPQRSTUVWXYZ[\\]^_\n"
+ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n "
 
 def print_on_text(text:str, sys_message:bool=False) -> None:
     """Insert on the scolledtext the text."""
@@ -232,7 +232,7 @@ def run_smart() -> None:
             break
 
         if normal_speed:
-            sleep(0.01)
+            sleep(0.0025)
     
     print_on_text("\n\nEnd of run")
    
