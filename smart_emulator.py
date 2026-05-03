@@ -27,8 +27,15 @@ monitor.bind("<Key>", disable_edit)
 frame_option = tk.Frame(window_emulator)
 frame_option.pack()
 
-def print_on_text(text:str) -> None:
+ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKMNOPQRSTUVWXYZ[\\]^_\n"
+
+def print_on_text(text:str, sys_message:bool=False) -> None:
     """Insert on the scolledtext the text."""
+    if not sys_message:
+        text = text.upper()
+        if text not in ALLOW_CHAR:      # forbiden char
+            return
+
     monitor.insert(tk.END, text)
     monitor.see(tk.END)
 
@@ -122,6 +129,8 @@ button_setting.grid(column=1, row=0)
 RAM = {}
 accumulator = {}
 carry_flag = False
+
+
 
 def run_smart() -> None:
     """Run smart code."""
