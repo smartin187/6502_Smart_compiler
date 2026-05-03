@@ -45,6 +45,8 @@ def see_memory() -> None:
     def update_memory() -> None:
         """Update the listbox for memory"""
         # RAM
+        pos_listbox = RAM_info.yview()[0]
+
         RAM_info.delete(0, tk.END)
 
         new_ram = (f"{adress}       {RAM[adress]}" for adress in RAM)
@@ -53,6 +55,8 @@ def see_memory() -> None:
 
         for adress in new_ram:
             RAM_info.insert(tk.END, adress)
+        
+        RAM_info.yview_moveto(pos_listbox)
         
         # accumulator
 
