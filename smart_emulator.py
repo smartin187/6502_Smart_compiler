@@ -33,10 +33,11 @@ def print_on_text(text:str) -> None:
     monitor.see(tk.END)
 
 
-def see_RAM() -> None:
-    """Open a window for see the ram."""
-    def update_RAM() -> None:
-        """Update the text for RAM"""        
+def see_memory() -> None:
+    """Open a window for see the memory (RAM, accumulator, carry_flag)."""
+    def update_memory() -> None:
+        """Update the listbox for memory"""
+        # RAM
         RAM_info.delete(0, tk.END)
 
         new_ram = (f"{adress}       {RAM[adress]}" for adress in RAM)
@@ -45,20 +46,51 @@ def see_RAM() -> None:
 
         for adress in new_ram:
             RAM_info.insert(tk.END, adress)
+        
+        # accumulator
 
+        accumulator_info.delete(0, tk.END)
+        
+        for ac in ("ACCUMULATOR    Value", f"A     {accumulator["A"]}", f"X     {accumulator["X"]}", f"Y     {accumulator["Y"]}"):
+            accumulator_info.insert(tk.END, ac)
 
-        window_RAM.after(100, update_RAM)
+        # carry flag
 
-    window_RAM = tk.Toplevel(window_emulator)
-    window_RAM.title("RAM")
+        text_carry_str.set(f"Carry Flag : {int(carry_flag)}")
 
-    RAM_info = tk.Listbox(window_RAM)
+        window_memory.after(100, update_memory)
+
+    window_memory = tk.Toplevel(window_emulator)
+    window_memory.title("Memory")
+
+    frame_RAM = tk.LabelFrame(window_memory, text="RAM")
+
+    RAM_info = tk.Listbox(frame_RAM)
     RAM_info.pack()
 
-    update_RAM()
+    frame_RAM.grid(column=0, row=0)
+
+    frame_accumulator = tk.LabelFrame(window_memory, text="Accumulator (register)")
+
+    accumulator_info = tk.Listbox(frame_accumulator)
+    accumulator_info.pack()
+
+    frame_accumulator.grid(column=1, row=0)
+
+    carry_frame = tk.LabelFrame(window_memory, text="Carry Flag")
+
+    text_carry_str = tk.StringVar(carry_frame)
+
+    text_carry = tk.Label(carry_frame, textvariable=text_carry_str)
+    text_carry.pack()
+
+    carry_frame.grid(column=0, row=1)
 
 
-button_RAM = tk.Button(frame_option, text="See RAM", command=see_RAM)
+    update_memory()
+
+
+button_RAM = tk.Button(frame_option, text="See memory", command=see_memory)
 button_RAM.grid(column=0, row=0)
 
 normal_speed = True
@@ -88,10 +120,12 @@ button_setting = tk.Button(frame_option, text="Setting", command=emulator_settin
 button_setting.grid(column=1, row=0)
 
 RAM = {}
+accumulator = {}
+carry_flag = False
 
 def run_smart() -> None:
     """Run smart code."""
-    global code, RAM
+    global code, RAM, accumulator, carry_flag
 
     code = code.split(" ")
 
@@ -191,7 +225,7 @@ def run_smart() -> None:
         if normal_speed:
             sleep(0.01)
     
-    print_on_text(tk.END, "\n\nEnd of run")
+    print_on_text("\n\nEnd of run")
    
 
 
