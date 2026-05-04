@@ -117,19 +117,21 @@ You can also use a `char`; in that case, the character's ASCII code is added:
 
 #### Functions
 
-Smart provides several built-in functions.
+Smart provides several built-in functions. You can build your own function.
 
 The call syntax is: `functionname: argument;`.
 
 Some functions do not take any arguments, but you still need to include the colon `:`.
 
-##### `print`
+##### Smart built-in functions
+
+###### `print`
 
 This function prints a character to the screen.
 
 The value can be a `char`. It can also be a `hex` (in which case the ASCII code is used), and you can also use a `str`.
 
-###### Example
+**Example**
 
 ```Smart
 print: 41;  // using hex, 0x41=65 (ASCII code for A)
@@ -141,7 +143,7 @@ print: .my_variable; // B
 print: 42 + 01;  // C
 ```
 
-##### `goto`
+###### `goto`
 
 This function jumps to a [label](#labels-anchors).
 
@@ -153,7 +155,7 @@ Pass the label name as the argument.
 
 This feature is mainly used to create loops.
 
-###### Example
+**Example**
 
 ```Smart
 #loop;
@@ -163,11 +165,27 @@ print: "INFINITE_LOOP!";
 goto: loop;
 ```
 
-##### `quit`
+###### `quit`
 
 This function exits the program.
 
 It does not take any arguments.
+
+##### Build your own function
+
+You can build your own function.
+
+The syntaxe is:
+```Smart
+void name_of_function{;
+    // function code
+}
+```
+
+For use your function:
+```Smart
+name_of_function:;
+```
 
 ## Compile Smart code
 
