@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+
+"""
+A Smart emulator.
+Run Smart code one a emulator.
+"""
+
 
 from sys import argv
 import tkinter as tk

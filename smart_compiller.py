@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+
+"""
+The compiller for smart.
+
+Fonction: compile_smarty for start the compile of a smart code.
+"""
+
 import traceback
 from pathlib import Path
 import os

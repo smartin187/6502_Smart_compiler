@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+"""
+Main module of Smart compiller.
+"""
+
 from sys import argv
 from pathlib import Path
 import os
