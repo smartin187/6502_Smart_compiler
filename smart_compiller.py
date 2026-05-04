@@ -365,7 +365,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
         
         logging.info("Build end.")
 
-        logging.info(f"Memory info: virtual smart memory: 256bytes, used by programme: {len(smart_var)}bytes, using {len(smart_var) / 256 * 100}% of smart virtual memory.")
+        logging.info(f"Memory info: virtual smart memory: 256bytes, used by programme: {len(smart_var)}bytes, using {len(smart_var) / 256 * 100}% of smart virtual memory. Programme size: used {adress_conter} bytes from {hex(CODE_ADRESSE)}")
 
 
     return code_compile
