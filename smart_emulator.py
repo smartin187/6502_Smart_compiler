@@ -8,8 +8,10 @@ Run Smart code one a emulator.
 
 from sys import argv
 import tkinter as tk
-from tkinter import scrolledtext, messagebox
+from tkinter import scrolledtext, messagebox, filedialog
 from time import sleep
+from pathlib import Path
+import json
 
 from threading import Thread
 
@@ -17,13 +19,14 @@ from smart_compiller import compile_smarty
 
 if len(argv) != 2:
     messagebox.showerror("Error", "Bad arg, need file name.")
+    quit()
 
 code = compile_smarty(file=argv[1], argv=[], START_ADRESSE="0400: ", CODE_ADRESSE=1024, make_file=False)
 
+asm_code = code
+
 window_emulator = tk.Tk()
 window_emulator.title("Smart emulator")
-
-tk.Text()
 
 monitor = scrolledtext.ScrolledText(window_emulator, height=24, width=39, bg="#000000", fg="#0099FF", insertwidth=10, insertbackground="#B1B1B1", insertofftime=0)
 monitor.pack()
@@ -250,7 +253,40 @@ def run_smart() -> None:
     
     print_on_text("\n\nEnd of run")
    
+menu_window = tk.Menu(window_emulator)
+window_emulator.config(menu=menu_window)
 
+menu_save = tk.Menu(menu_window, tearoff=0)
+menu_window.add_cascade(label="Save...", menu=menu_save)
+
+def save_monitor() -> None:
+    """Save the text of monitor in a *.txt file."""
+    file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt")])
+
+    if file_path:
+        Path(file_path).write_text(monitor.get("1.0", tk.END), encoding="utf-8")
+
+menu_save.add_command(label="Save monitor (as *.txt)", command=save_monitor)
+
+def export_memory() -> None:
+    """Export RAM, accumulator and carry flag in a *.json file."""
+    file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("Json files", "*.json")])
+
+    if file_path:
+        data = {"RAM": RAM, "accumulator": accumulator, "carry_flag": carry_flag}
+
+        Path(file_path).write_text(json.dumps(data, indent=4), encoding="utf-8")
+
+menu_save.add_command(label="Save memory (as *.json)", command=export_memory)
+
+def save_asm() -> None:
+    """Save the assembly code in a *.asm file."""
+    file_path = filedialog.asksaveasfilename(defaultextension=".asm", filetypes=[("Assembly files", "*.asm")])
+
+    if file_path:
+        Path(file_path).write_text(asm_code, encoding="utf-8")
+
+menu_save.add_command(label="Save assembly (as *.asm)", command=save_asm)
 
 thread_run = Thread(target=run_smart, daemon=True)
 thread_run.start()
