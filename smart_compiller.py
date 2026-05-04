@@ -247,7 +247,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             if not good_variable_name(func_name):
                 raise SmartError(f"Invalid name for {func_name}")
 
-            
+            logging.debug(f"Building function '{func_name}'")
 
             
             # get the code of function:
@@ -268,6 +268,8 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             function_smart[func_name] = compile_smarty(make_file=False, function_mode=(True, func_code))
 
             jump_line = funciton_line - line_conter - 1
+
+            logging.debug(f"'{func_name}' has been created.")
             
 
         else:     # function
