@@ -156,7 +156,10 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
     code = ""
 
     for line in code_line:
-        code += line.split("//")[0] + "\n"
+        line_tmp = line.split("//")[0] + "\n"
+        code += line_tmp.lstrip(" ")
+
+        
     
 
     code = code.replace("\n", "").split(";")#.replace(" ", "").split(";")
