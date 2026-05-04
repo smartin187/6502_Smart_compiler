@@ -24,7 +24,7 @@ class SmartError(Exception):
 
 
 
-def compile_smarty(file:str, argv:list | tuple, START_ADRESSE, CODE_ADRESSE, make_file=True) -> None:
+def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: ", CODE_ADRESSE:int=0x400, make_file:bool=True, function_mode:tuple[bool, str]=(False, "")) -> None:
     """Start the compile from file."""
     def get_char(char_type:str) -> str:
         """Return the char value of Smart."""
@@ -135,20 +135,23 @@ def compile_smarty(file:str, argv:list | tuple, START_ADRESSE, CODE_ADRESSE, mak
 
     line_conter = 0
 
-    code_compile = START_ADRESSE
+    code_compile = START_ADRESSE if not function_mode[0] else ""
 
     go_to = {}
+    function_smart = {}
 
     adress_conter = 0
 
+    if function_mode[0]:
+        code_line = function_mode[1].split("\n")
+    else:
+        sma = open(file, "r", encoding="UTF-8")
 
-    sma = open(file, "r", encoding="UTF-8")
+        code_start = sma.read()
 
-    code_start = sma.read()
+        sma.close()
 
-    sma.close()
-
-    code_line = code_start.split("\n")
+        code_line = code_start.split("\n")
 
     code = ""
 
@@ -156,11 +159,18 @@ def compile_smarty(file:str, argv:list | tuple, START_ADRESSE, CODE_ADRESSE, mak
         code += line.split("//")[0] + "\n"
     
 
-    code = code.replace("\n", "").replace(" ", "").split(";")
+    code = code.replace("\n", "").split(";")#.replace(" ", "").split(";")
 
     logging.info("Buiilding asm")
 
+    jump_line = 0
+
     for line in code:
+
+        if jump_line:
+            jump_line -= 1
+            continue
+
         if line == "":
             line_conter += 1
             logging.warning("Empty line detected.")
@@ -222,6 +232,40 @@ def compile_smarty(file:str, argv:list | tuple, START_ADRESSE, CODE_ADRESSE, mak
             adress_conter += 5
 
             logging.info(f"Build asm command: using RAM for variable '{var_name}'")
+        
+        elif line.startswith("void "):      # make fonction
+            func_name = line.split(" ")[1]
+
+            if func_name[-1] != "{":
+                raise SmartError("On function " + func_name + ", expected '{'")
+
+            func_name = func_name[:-1]
+
+            if not good_variable_name(func_name):
+                raise SmartError(f"Invalid name for {func_name}")
+
+            
+
+            
+            # get the code of function:
+
+            funciton_line = line_conter + 1
+
+            func_code = ""
+
+            while True:
+                if code[funciton_line].startswith("}"):
+                    code[funciton_line] = code[funciton_line][1:]
+                    break
+
+                else:
+                    func_code += code[funciton_line] + ";"
+                    funciton_line += 1
+            
+            function_smart[func_name] = compile_smarty(make_file=False, function_mode=(True, func_code))
+
+            jump_line = funciton_line - line_conter - 1
+            
 
         else:     # function
 
@@ -287,26 +331,36 @@ def compile_smarty(file:str, argv:list | tuple, START_ADRESSE, CODE_ADRESSE, mak
 
                 logging.info("Build smart fonction as asm command: goto")
 
+            elif function_name in function_smart:
+                func_code_tmp = function_smart[function_name]
+
+                code_compile += func_code_tmp# + " "
+
+                adress_conter += func_code_tmp.count(" ")
+
             
             else:
                 raise SmartError(f"Function '{function_name}' not exist.")
 
-
         line_conter += 1
     
-    code_compile += "00"
+    if not function_mode[0]:
+        code_compile += "00"
 
-    logging.info("Build completed!")
-    
-    if make_file:
-        print(f"\n\n{code_compile}\n\n")
+    if not function_mode[0]:
+
+        logging.info("Build completed!")
         
-        Path(os.path.splitext(argv[1])[0] + ".asm").write_text(code_compile, encoding="UTF-8")
+        if make_file:
+            print(f"\n\n{code_compile}\n\n")
+            
+            Path(os.path.splitext(argv[1])[0] + ".asm").write_text(code_compile, encoding="UTF-8")
 
-        logging.info(f"asm file saved as {os.path.splitext(argv[1])[0]}.asm")
-    
-    logging.info("Build end.")
+            logging.info(f"asm file saved as {os.path.splitext(argv[1])[0]}.asm")
+        
+        logging.info("Build end.")
 
-    logging.info(f"Memory info: virtual smart memory: 256bytes, used by programme: {len(smart_var)}bytes, using {len(smart_var) / 256 * 100}% of smart virtual memory.")
+        logging.info(f"Memory info: virtual smart memory: 256bytes, used by programme: {len(smart_var)}bytes, using {len(smart_var) / 256 * 100}% of smart virtual memory.")
+
 
     return code_compile
