@@ -295,7 +295,7 @@ def compile_smarty(file:str, argv:list | tuple, START_ADRESSE, CODE_ADRESSE, mak
         
         Path(os.path.splitext(argv[1])[0] + ".asm").write_text(code_compile, encoding="UTF-8")
 
-        logging.info(f"asm file saved as {os.path.splitext(argv[1])[0] + ".asm"}")
+        logging.info(f"asm file saved as {os.path.splitext(argv[1])[0]}.asm")
     
     logging.info("Build end.")
 

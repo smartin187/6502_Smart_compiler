@@ -65,7 +65,7 @@ def see_memory() -> None:
 
         accumulator_info.delete(0, tk.END)
         
-        for ac in ("ACCUMULATOR    Value", f"A     {accumulator["A"]}", f"X     {accumulator["X"]}", f"Y     {accumulator["Y"]}"):
+        for ac in ("ACCUMULATOR    Value", f"A     " + accumulator["A"], f"X     " + accumulator["X"], f"Y     " + accumulator["Y"]):
             accumulator_info.insert(tk.END, ac)
 
         # carry flag
