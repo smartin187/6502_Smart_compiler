@@ -80,7 +80,7 @@ def see_memory() -> None:
 
         # carry flag
 
-        text_carry_str.set(f"Carry Flag : {int(carry_flag)}")
+        text_carry_str.set(f"Carry Flag : {carry_flag}")
 
         window_memory.after(100, update_memory)
 
@@ -145,7 +145,7 @@ button_setting.grid(column=1, row=0)
 
 RAM = {}
 accumulator = {}
-carry_flag = False
+carry_flag = 0
 
 
 
@@ -163,7 +163,7 @@ def run_smart() -> None:
 
     RAM = {"0" + hex(i)[2:]:"00" for i in range(0x300, 0x400 + 1)}
 
-    carry_flag = False
+    carry_flag = 0
 
     while run_step < len(code):
         run = code[run_step]
@@ -209,7 +209,7 @@ def run_smart() -> None:
             run_step = int(goto, base=16) - START + 1
         
         elif run == "18":
-            carry_flag = False
+            carry_flag = 0
 
             run_step += 1
         
@@ -219,7 +219,7 @@ def run_smart() -> None:
             new_A = int(accumulator["A"], base=16) + int(add, base=16)
 
             if new_A >= 256:
-                carry_flag = True
+                carry_flag = 1
 
                 new_A -= 256
 
@@ -236,7 +236,7 @@ def run_smart() -> None:
             new_A = int(accumulator["A"], base=16) + int(add, base=16)
 
             if new_A >= 256:
-                carry_flag = True
+                carry_flag = 1
 
                 new_A -= 256
 
