@@ -355,13 +355,11 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                 
                 name = function_arg[0]
 
-
-                
                 goto_tmp = f"!smart_tmp:goto|{name}"
 
                 go_to_replace.append(goto_tmp)
 
-                code_compile += "4C " + goto_tmp #"
+                code_compile += "4C " + goto_tmp
 
                 adress_conter += 3
 
@@ -382,8 +380,6 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
     
     # set the goto:
 
-    print(code_compile)
-
     for goto in go_to_replace:
         goto_name = goto.split("|")[1]
 
@@ -394,8 +390,6 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             raise SmartError(f"'{name}' is not defined for goto !", line_conter)
 
         code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
-    
-    print(code_compile)
     
     if not function_mode[0]:
         code_compile += "00"
