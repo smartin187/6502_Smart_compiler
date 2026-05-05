@@ -21,7 +21,7 @@ if len(argv) == 1:
 try:
     compile_smarty(argv[1], argv, START_ADRESSE, CODE_ADRESSE)
 except SmartError as se:
-    print(se.syntaxerror)
+    quit()
 
 except:
     print("Error during build")

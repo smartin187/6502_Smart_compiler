@@ -15,24 +15,51 @@ logging.basicConfig(format='SmartCompiller %(levelname)s: %(message)s', level=lo
 
 logging.info("Starting compiller...")
 
+
 class SmartError(Exception):
     """The error for Smart (syntaxe error)."""
-    def __init__(self, message):
-        logging.error("Error during build:")
-        print("Error :")
+    def __init__(self, message:str, nb_instruction:int=0):
+        logging.error("\033[31mError during build:")
+
+        nbline, line_error = line_of_instruction(nb_instruction)
+
+        print(f"~~~~~~~~~~\nAt {nbline} line:\n{line_error}\n~~~~~~~~~~\nError :\n{message}\n\033[0m")
+
         self.syntaxerror = message
 
+        
 
+code_line = None
+
+line_of_instruction = None
 
 def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: ", CODE_ADRESSE:int=0x400, make_file:bool=True, function_mode:tuple[bool, str]=(False, "")) -> None:
     """Start the compile from file."""
+    global line_of_instruction, code_line
+
+    def line_of_instruction(nb_instruction:int) -> tuple[int, str]:
+        """Return the number of line and the line of the instruction."""
+        nb = 0
+        line_counter = 0
+
+        for line in code_line:
+
+            nb += line.count(";")
+
+            line_counter += 1
+
+            if nb_instruction + 1 <= nb:
+                return (line_counter + 1, code_line[line_counter-1])
+
+
+
     def get_char(char_type:str) -> str:
         """Return the char value of Smart."""
         if char_type[2] == "'":
             char = char_type[1]
 
             if char.islower():
-                raise SmartError("char canno't be lower.")
+                raise SmartError("char canno't be lower.", nb_instruction=line_conter)
             
             code_ascii = ord(char)
 
@@ -41,7 +68,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             return code_hex
 
         else:
-            raise SmartError("char value need 1 char.")
+            raise SmartError("char value need 1 char.", line_conter)
 
     def good_hex(code:str) -> bool:
         """Return True if the hex value is good, False else."""
@@ -55,7 +82,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
     def control_hex(code:str) -> None:
         """If good_hex return False, raise SmartError."""
         if not good_hex(code):
-            raise SmartError(f"Bad hex value '{code}'")
+            raise SmartError(f"Bad hex value '{code}'", line_conter)
     
     def set_one_A_value(value:str, one_addition:bool=False) -> str:
         """Return the value for set one A."""
@@ -75,13 +102,13 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
             except:
                 print(traceback.format_exc())
-                raise SmartError(f"Error with math '+' : '{value}'")
+                raise SmartError(f"Error with math '+' : '{value}'", line_conter)
 
         elif value[0] == ".":
             variable = value[1:]
 
             if variable not in smart_var:
-                raise SmartError(f"Name error : name '{value}' is not defined.")
+                raise SmartError(f"Name error : name '{value}' is not defined.", line_conter)
             
             if not one_addition:
                 return f"AD {adress_for_RAM(smart_var[variable])} "
@@ -96,11 +123,11 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             return "A9 " + get_char(value) + " "
     
         elif value[0] == "\"":
-            raise SmartError(f"Smart forbiden value: '{value}'")
+            raise SmartError(f"Smart forbiden value: '{value}'", line_conter)
 
     
         else:
-            raise SmartError(f"Smart value error:\nline {line_conter}")
+            raise SmartError(f"Smart value error: {value}", line_conter)
 
     def adress_for_RAM(adress:int) -> str:
         """Return the RAM adress one hex.
@@ -188,7 +215,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             r = read_line[0]
 
             if len(read_line) != 2:
-                raise SmartError(f"Smart syntaxe error:\nline {line_conter}")
+                raise SmartError(f"Smart syntaxe error:\nline {line_conter}", line_conter)
         
 
             
@@ -200,7 +227,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             name = line[1:]
 
             if (" " in name or "\n" in name) or (name in ACUMULATOR_REGISTER):
-                raise SmartError(f"Invalid name for goto : '{name}'")
+                raise SmartError(f"Invalid name for goto : '{name}'", line_conter)
 
             hex_adress = hex(CODE_ADRESSE + adress_conter)[2:]
 
@@ -220,11 +247,11 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             var_name, value = line.split("=")
 
             if not good_variable_name(var_name):
-                raise SmartError(f"Bad variable name : '{var_name}'")
+                raise SmartError(f"Bad variable name : '{var_name}'", line_conter)
 
             if var_name not in smart_var: # make new variable
                 if len(smart_var) >= 256:
-                    raise SmartError("Memory error : maximum variable are 256.")
+                    raise SmartError("Memory error : maximum variable are 256.", line_conter)
                 smart_var[var_name] = adress_var
                 adress_var += 1
             
@@ -240,12 +267,12 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             func_name = line.split(" ")[1]
 
             if func_name[-1] != "{":
-                raise SmartError("On function " + func_name + ", expected '{'")
+                raise SmartError("On function " + func_name + ", expected '{'", line_conter)
 
             func_name = func_name[:-1]
 
             if not good_variable_name(func_name):
-                raise SmartError(f"Invalid name for {func_name}")
+                raise SmartError(f"Invalid name for {func_name}", line_conter)
 
             logging.debug(f"Building function '{func_name}'")
 
@@ -281,11 +308,11 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
             if function_name == "print":
                 if len(function_arg) != 1:
-                    raise SmartError("print function take 1 arg")
+                    raise SmartError("print function take 1 arg", line_conter)
                 
                 if function_arg[0] in ACUMULATOR_REGISTER:
                     if function_arg[0] != "A":
-                        raise SmartError(f"print need 'A' registrer, not '{function_arg[0]}'")
+                        raise SmartError(f"print need 'A' registrer, not '{function_arg[0]}'", line_conter)
                     
                     code_compile += "20 EF FF "
 
@@ -296,7 +323,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                     smart_str = function_arg[0]
 
                     if smart_str[-1] != "\"":
-                        raise SmartError("str value was not closed.")
+                        raise SmartError("str value was not closed.", line_conter)
                     
                     for char in smart_str[1:-1]:
                         code_compile += set_one_A_value(f"'{char}'") + "20 EF FF "
@@ -314,7 +341,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
             elif function_name == "quit":
                 if function_arg != [""]:
-                    raise SmartError("Function 'quit' not take arg.")
+                    raise SmartError("Function 'quit' not take arg.", line_conter)
                 
                 code_compile += "00 "
 
@@ -322,7 +349,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             
             elif function_name == "goto":
                 if len(function_arg) != 1:
-                    raise SmartError("Function 'goto' take 1 arg.")
+                    raise SmartError("Function 'goto' take 1 arg.", line_conter)
                 
                 name = function_arg[0]
 
@@ -330,7 +357,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                     adress = go_to[name]
                 
                 except KeyError:
-                    raise SmartError(f"'{name}' is not defined for goto !")
+                    raise SmartError(f"'{name}' is not defined for goto !", line_conter)
 
                 code_compile += f"4C {adress[2:]} {adress[:2]} "
 
@@ -345,7 +372,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
             
             else:
-                raise SmartError(f"Function '{function_name}' not exist.")
+                raise SmartError(f"Function '{function_name}' not exist.", line_conter)
 
         line_conter += 1
     
