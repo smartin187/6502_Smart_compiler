@@ -167,6 +167,8 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
     go_to = {}
     function_smart = {}
 
+    go_to_replace = []
+
     adress_conter = 0
 
     if function_mode[0]:
@@ -353,13 +355,15 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                 
                 name = function_arg[0]
 
-                try:
-                    adress = go_to[name]
-                
-                except KeyError:
-                    raise SmartError(f"'{name}' is not defined for goto !", line_conter)
 
-                code_compile += f"4C {adress[2:]} {adress[:2]} "
+                
+                goto_tmp = f"!smart_tmp:goto|{name}"
+
+                go_to_replace.append(goto_tmp)
+
+                code_compile += "4C " + goto_tmp #"
+
+                adress_conter += 3
 
                 logging.info("Build smart fonction as asm command: goto")
 
@@ -375,6 +379,23 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                 raise SmartError(f"Function '{function_name}' not exist.", line_conter)
 
         line_conter += 1
+    
+    # set the goto:
+
+    print(code_compile)
+
+    for goto in go_to_replace:
+        goto_name = goto.split("|")[1]
+
+        try:
+            adress = go_to[goto_name]
+                
+        except KeyError:
+            raise SmartError(f"'{name}' is not defined for goto !", line_conter)
+
+        code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
+    
+    print(code_compile)
     
     if not function_mode[0]:
         code_compile += "00"
