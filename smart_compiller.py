@@ -331,7 +331,14 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                     if smart_str[-1] != "\"":
                         raise SmartError("str value was not closed.", line_conter)
                     
-                    for char in smart_str[1:-1]:
+                    value_str = smart_str[1:-1]
+
+                    if len(value_str) == 0:
+                        logging.warning("str value is empty!")
+                    elif len(value_str) == 1:
+                        logging.warning("str value have a len of 1. Please use a char value.")
+
+                    for char in value_str:
                         code_compile += set_one_A_value(f"'{char}'") + "20 EF FF "
 
                         adress_conter += 5
