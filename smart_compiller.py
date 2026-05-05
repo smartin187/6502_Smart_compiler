@@ -26,6 +26,7 @@ class SmartError(Exception):
         print(f"~~~~~~~~~~\nAt {nbline} line:\n{line_error}\n~~~~~~~~~~\nError :\n{message}\n\033[0m")
 
         self.syntaxerror = message
+        self.nbline = nbline
 
         
 
@@ -99,6 +100,9 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                     asm = f"{set_one_A_value(value_1)}18 69 {hex_value_2[3:]}"
 
                 return asm
+
+            except SmartError as se:
+                raise SmartError(str(se), se.nbline)
 
             except:
                 print(traceback.format_exc())
