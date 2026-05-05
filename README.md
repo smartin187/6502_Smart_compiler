@@ -149,8 +149,6 @@ This function jumps to a [label](#labels-anchors).
 
 First define a label, then use this function to jump back to it.
 
-**Warning**: you cannot jump to a label that appears later in the code; you can only jump to a label located before the `goto`.
-
 Pass the label name as the argument.
 
 This feature is mainly used to create loops.
