@@ -21,7 +21,10 @@ if len(argv) != 2:
     messagebox.showerror("Error", "Bad arg, need file name.")
     quit()
 
-code = compile_smarty(file=argv[1], argv=[], START_ADRESSE="0400: ", CODE_ADRESSE=1024, make_file=False)
+if argv[1] == "--asm-entry":
+    code = input("Enter the assembly code : ")#.split(" ")
+else:
+    code = compile_smarty(file=argv[1], argv=[], START_ADRESSE="0400: ", CODE_ADRESSE=1024, make_file=False)
 
 asm_code = code
 
@@ -117,6 +120,36 @@ def see_memory() -> None:
 button_RAM = tk.Button(frame_option, text="See memory", command=see_memory)
 button_RAM.grid(column=0, row=0)
 
+def window_code() -> None:
+    """Open a window for see the code and see the step."""
+    def update_code() -> None:
+        """Update the listbox for code"""
+        pos_listbox = list_code.yview()[0]
+
+        list_code.delete(0, tk.END)
+
+        adress_conter = 0
+
+        for i in code[1:-1]:
+            list_code.insert(tk.END, f"{hex(0x400 + adress_conter)}    {i}")
+            adress_conter += 1
+        
+        list_code.yview_moveto(pos_listbox)
+
+        list_code.itemconfig(run_step - 1, {'bg':'#0099FF', 'fg':'#000000'})
+
+        window_code.after(100, update_code)
+
+    window_code = tk.Toplevel(window_emulator)
+    window_code.title("See code")
+
+    list_code = tk.Listbox(window_code, width=50)
+    list_code.pack()
+    update_code()
+
+button_code = tk.Button(frame_option, text="See code", command=window_code)
+button_code.grid(column=1, row=0)
+
 normal_speed = True
 
 def emulator_setting() -> None:
@@ -141,17 +174,17 @@ def emulator_setting() -> None:
 
 
 button_setting = tk.Button(frame_option, text="Setting", command=emulator_setting)
-button_setting.grid(column=1, row=0)
+button_setting.grid(column=2, row=0)
 
 RAM = {}
 accumulator = {}
 carry_flag = 0
-
+run_step = 0
 
 
 def run_smart() -> None:
     """Run smart code."""
-    global code, RAM, accumulator, carry_flag
+    global code, RAM, accumulator, carry_flag, run_step
 
     code = code.split(" ")
 
@@ -181,7 +214,12 @@ def run_smart() -> None:
             run_step += 2
         
         elif run == "8D":
-            RAM[code[run_step + 2] + code[run_step + 1]] = accumulator["A"]
+            adress = code[run_step + 2] + code[run_step + 1]
+
+            if 0x300 <= int(adress, base=16) >= 0x400:    # write one the programme
+                code[int(adress, base=16) - START + 1] = accumulator["A"]
+            else:
+                RAM[code[run_step + 2] + code[run_step + 1]] = accumulator["A"]
 
             run_step += 3
 
@@ -250,6 +288,8 @@ def run_smart() -> None:
 
         if normal_speed:
             sleep(0.0025)
+        
+        print(code)
     
     print_on_text("\n\nEnd of run")
    
