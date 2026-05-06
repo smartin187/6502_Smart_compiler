@@ -150,7 +150,7 @@ def window_code() -> None:
 button_code = tk.Button(frame_option, text="See code", command=window_code)
 button_code.grid(column=1, row=0)
 
-normal_speed = True
+normal_speed = "1Mhz"
 
 def emulator_setting() -> None:
     """Open a window for the setting of emulator"""
@@ -164,10 +164,16 @@ def emulator_setting() -> None:
     window_setting = tk.Toplevel(window_emulator)
     window_setting.title("Emulator settings")
 
-    var_speed = tk.BooleanVar(window_setting, value=normal_speed)
+    var_speed = tk.StringVar(window_setting, value=normal_speed)
 
-    chek_speed = tk.Checkbutton(window_setting, text="Run with a speed of 1Mhz\n(speed of MOS 8502)", variable=var_speed)
-    chek_speed.pack()
+    radio_speed_mos = tk.Radiobutton(window_setting, text="Run with a speed of 1Mhz\n(speed of MOS 8502)", variable=var_speed, value="1Mhz")
+    radio_speed_mos.pack()
+
+    radio_debug = tk.Radiobutton(window_setting, text="Run for debug", variable=var_speed, value="Debug")
+    radio_debug.pack()
+
+    radio_normal = tk.Radiobutton(window_setting, text="Run with max speed", variable=var_speed, value="Normal")
+    radio_normal.pack()
 
     button_validate = tk.Button(window_setting, text="Validate", command=close_setting)
     button_validate.pack()
@@ -286,8 +292,10 @@ def run_smart() -> None:
             messagebox.showerror("Error", f"Unknow assembly : {run}, at {run_step} step.")
             break
 
-        if normal_speed:
+        if normal_speed == "1Mhz":
             sleep(0.0025)
+        elif normal_speed == "Debug":
+            sleep(1.0)
         
         print(code)
     
