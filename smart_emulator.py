@@ -194,6 +194,9 @@ def run_smart() -> None:
 
     code = code.split(" ")
 
+    while code[-1] == "":
+        del code[-1]
+
     START = int(code[0][:-1], base=16)
 
     run_step = 1
@@ -223,7 +226,11 @@ def run_smart() -> None:
             adress = code[run_step + 2] + code[run_step + 1]
 
             if 0x300 <= int(adress, base=16) >= 0x400:    # write one the programme
-                code[int(adress, base=16) - START + 1] = accumulator["A"]
+                try:
+                    code[int(adress, base=16) - START + 1] = accumulator["A"]
+                except:
+                    messagebox.showerror("Error", "Write on unknow adress.", detail="Detail: {}".format(hex(0x400 + int(adress, base=16) - START + 1)).upper())
+                    break
             else:
                 RAM[code[run_step + 2] + code[run_step + 1]] = accumulator["A"]
 
@@ -295,9 +302,8 @@ def run_smart() -> None:
         if normal_speed == "1Mhz":
             sleep(0.0025)
         elif normal_speed == "Debug":
-            sleep(1.0)
+            sleep(1.5)
         
-        print(code)
     
     print_on_text("\n\nEnd of run")
    
