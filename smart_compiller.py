@@ -307,10 +307,13 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             
 
         else:     # function
+            
+            if ":" not in line:
+                raise SmartError("Smart invalid syntaxe", line_conter)
 
             line = line.replace(" ", "")
 
-            function_name, function_arg = line.split(":")
+            function_name, function_arg = line.split(":", 1)
             function_arg = function_arg.split(",")
 
             if function_name == "print":
