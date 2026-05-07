@@ -11,7 +11,7 @@ from pathlib import Path
 import os
 import logging
 
-logging.basicConfig(format='SmartCompiller %(levelname)s: %(message)s', level=logging.INFO)
+logging.basicConfig(format="SmartCompiller %(levelname)s: %(message)s", level=logging.INFO)
 
 logging.info("Starting compiller...")
 
@@ -172,6 +172,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
     function_smart = {}
 
     go_to_replace = []
+    function_replace = []
 
     adress_conter = 0
 
@@ -379,9 +380,17 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             elif function_name in function_smart:
                 func_code_tmp = function_smart[function_name]
 
-                code_compile += func_code_tmp# + " "
+                # use a goto
 
-                adress_conter += func_code_tmp.count(" ")
+                adress_conter += 13
+
+                text_code = f"!smart_call_func|{function_name}|{adress_conter}"
+
+                function_replace.append(text_code)
+
+                code_compile += text_code
+
+                #adress_conter += func_code_tmp.count(" ")
 
             
             else:
@@ -389,6 +398,51 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
         line_conter += 1
     
+    if not function_mode[0]:
+        code_compile += "00 "
+    else:
+        code_compile += "4C 00 00 "
+    
+    # set the function:
+
+    function_adress = {}
+
+    for function in function_smart:
+        function_adress[function] = adress_conter
+
+        code_func = function_smart[function]
+        
+        code_compile += code_func
+
+        adress_conter += code_func.count(" ")
+
+    # call function
+
+    for function in function_replace:
+        function_name_tmp, r_adress = function.split("|")[1:]
+
+        adress_func = CODE_ADRESSE + function_adress[function_name_tmp] + 1
+
+        hex_adress_function = hex(adress_func)[2:].upper()
+
+        hex_adress_function = "0" * (4 - len(hex_adress_function)) + hex_adress_function
+
+        hex_adress_function = f"{hex_adress_function[2:]} {hex_adress_function[:2]}"
+
+        return_aress = hex(adress_func + function_smart[function_name_tmp].count(" ") - 1)[2:].upper()
+        return_aress = "0" * (4 - len(return_aress)) + return_aress
+
+
+        return_aress_2 = hex(adress_func + function_smart[function_name_tmp].count(" ") - 2)[2:].upper()
+        return_aress_2 = "0" * (4 - len(return_aress_2)) + return_aress_2
+
+        r_adress = hex(int(r_adress) + CODE_ADRESSE)[2:].upper()
+        r_adress = "0" * (4 - len(r_adress)) + r_adress
+
+
+        #code_compile = code_compile.replace(function, f"A9 {r_adress[:2]} 8D {return_aress[2:]} {return_aress[:2]} A9 {r_adress[2:]} 8D {return_aress_2[:2]} {return_aress_2[2:]} 4C {hex_adress_function} ")
+        code_compile = code_compile.replace(function, f"A9 {r_adress[:2]} 8D {return_aress[2:]} {return_aress[:2]} A9 {r_adress[2:]} 8D {return_aress_2[2:]} {return_aress_2[:2]} 4C {hex_adress_function} ")
+
     # set the goto:
 
     for goto in go_to_replace:
@@ -402,8 +456,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
         code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
     
-    if not function_mode[0]:
-        code_compile += "00"
+
 
     if not function_mode[0]:
 
