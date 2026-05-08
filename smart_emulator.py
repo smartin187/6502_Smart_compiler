@@ -110,6 +110,9 @@ def see_memory() -> None:
         """Update the listbox for memory"""
         # RAM
         pos_listbox = RAM_info.yview()[0]
+        
+        selection = RAM_info.curselection()
+        selected_index = selection[0] if selection else None
 
         RAM_info.delete(0, tk.END)
 
@@ -121,13 +124,22 @@ def see_memory() -> None:
             RAM_info.insert(tk.END, adress)
         
         RAM_info.yview_moveto(pos_listbox)
+
+        if selected_index is not None:
+            RAM_info.selection_set(selected_index)
         
         # accumulator
+
+        selection_acc = accumulator_info.curselection()
+        selected_index_acc = selection_acc[0] if selection_acc else None
 
         accumulator_info.delete(0, tk.END)
         
         for ac in ("ACCUMULATOR    Value", f"A     " + accumulator["A"], f"X     " + accumulator["X"], f"Y     " + accumulator["Y"]):
             accumulator_info.insert(tk.END, ac)
+        
+        if selected_index_acc is not None:
+            accumulator_info.selection_set(selected_index_acc)
 
         # carry flag
 
@@ -138,19 +150,85 @@ def see_memory() -> None:
     window_memory = tk.Toplevel(window_emulator)
     window_memory.title("Memory")
 
+    text_info = tk.Label(window_memory, text="Information about memory.\nYou can edit memory with double click on the value.\nCarful: editing memory can cause errors.")
+    text_info.grid(column=0, row=0, columnspan=3)
+
     frame_RAM = tk.LabelFrame(window_memory, text="RAM")
+
+    def edit_ram(event:tk.Event) -> None:
+        """Open a window for edit the RAM value."""
+        def validate() -> None:
+            """Edit RAM with the new value."""
+            new_value = entry_value.get()
+
+            if len(new_value) != 2 or not all(c in "0123456789abcdefABCDEF" for c in new_value):
+                messagebox.showerror("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
+                return
+            
+            RAM["0" + hex(adress)[2:].upper()] = new_value.upper()
+
+            window.destroy()
+
+        adress = RAM_info.curselection()[0] - 1 + 0x300
+        window = tk.Toplevel(window_memory)
+        window.title("Edit RAM")
+
+
+        text_info = tk.Label(window, text=f"Enter the new value for the RAM.\nCarful: editing memory can cause errors.\nAdress : {hex(adress)}")
+        text_info.pack()
+
+        entry_value = tk.Entry(window, width=5)
+        entry_value.pack()
+
+        button_validate = tk.Button(window, text="Validate", command=validate)
+        button_validate.pack()
+
+    def edit_accumulator(event:tk.Event) -> None:
+        """Open a window for edit the accumulator value."""
+        def validate() -> None:
+            """Edit accumulator with the new value."""
+            new_value = entry_value.get()
+
+            if len(new_value) != 2 or not all(c in "0123456789abcdefABCDEF" for c in new_value):
+                messagebox.showerror("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
+                return
+            
+            acc_index = accumulator_info.curselection()[0] - 1
+            acc_keys = ["A", "X", "Y"]
+            
+            accumulator[acc_keys[acc_index]] = new_value.upper()
+
+            window.destroy()
+
+        acc_index = accumulator_info.curselection()[0] - 1
+        acc_keys = ["A", "X", "Y"]
+        acc_name = acc_keys[acc_index]
+        
+        window = tk.Toplevel(window_memory)
+        window.title("Edit Accumulator")
+
+        text_info = tk.Label(window, text=f"Enter the new value for the {acc_name} accumulator.\nCarful: editing memory can cause errors.")
+        text_info.pack()
+
+        entry_value = tk.Entry(window, width=5)
+        entry_value.pack()
+
+        button_validate = tk.Button(window, text="Validate", command=validate)
+        button_validate.pack()
 
     RAM_info = tk.Listbox(frame_RAM)
     RAM_info.pack()
+    RAM_info.bind("<Double-Button-1>", edit_ram)
 
-    frame_RAM.grid(column=0, row=0)
+    frame_RAM.grid(column=0, row=1)
 
     frame_accumulator = tk.LabelFrame(window_memory, text="Accumulator (register)")
 
     accumulator_info = tk.Listbox(frame_accumulator)
     accumulator_info.pack()
+    accumulator_info.bind("<Double-Button-1>", edit_accumulator)
 
-    frame_accumulator.grid(column=1, row=0)
+    frame_accumulator.grid(column=1, row=1)
 
     carry_frame = tk.LabelFrame(window_memory, text="Carry Flag")
 
@@ -159,7 +237,7 @@ def see_memory() -> None:
     text_carry = tk.Label(carry_frame, textvariable=text_carry_str)
     text_carry.pack()
 
-    carry_frame.grid(column=0, row=1)
+    carry_frame.grid(column=0, row=2)
 
 
     update_memory()
