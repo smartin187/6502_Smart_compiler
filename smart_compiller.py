@@ -87,51 +87,60 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
     
     def set_one_A_value(value:str, one_addition:bool=False) -> str:
         """Return the value for set one A."""
-        if "+" in value:    # addition
-            try:
-                value_1, value_2 = value.split("+", 1)
-              
-                hex_value_2 = set_one_A_value(value_2, one_addition=True)
+        nonlocal adress_conter
+        def eval_value() -> str:
+            """Return asm value"""
+            if "+" in value:    # addition
+                try:
+                    value_1, value_2 = value.split("+", 1)
+                
+                    hex_value_2 = set_one_A_value(value_2, one_addition=True)
 
-                if hex_value_2.startswith("6D "):
-                    asm = f"{set_one_A_value(value_1)}18 {hex_value_2}"
+                    if hex_value_2.startswith("6D "):
+                        asm = f"{set_one_A_value(value_1)}18 {hex_value_2}"
 
+                    else:
+                        asm = f"{set_one_A_value(value_1)}18 69 {hex_value_2[3:]}"
+
+                    return asm
+
+                except SmartError as se:
+                    raise SmartError(str(se), se.nbline)
+
+                except:
+                    print(traceback.format_exc())
+                    raise SmartError(f"Error with math '+' : '{value}'", line_conter)
+
+            elif value[0] == ".":
+                variable = value[1:]
+
+                if variable not in smart_var:
+                    raise SmartError(f"Name error : name '{value}' is not defined.", line_conter)
+                
+                if not one_addition:
+                    return f"AD {adress_for_RAM(smart_var[variable])} "
                 else:
-                    asm = f"{set_one_A_value(value_1)}18 69 {hex_value_2[3:]}"
-
-                return asm
-
-            except SmartError as se:
-                raise SmartError(str(se), se.nbline)
-
-            except:
-                print(traceback.format_exc())
-                raise SmartError(f"Error with math '+' : '{value}'", line_conter)
-
-        elif value[0] == ".":
-            variable = value[1:]
-
-            if variable not in smart_var:
-                raise SmartError(f"Name error : name '{value}' is not defined.", line_conter)
+                    return f"6D {adress_for_RAM(smart_var[variable])} "
             
-            if not one_addition:
-                return f"AD {adress_for_RAM(smart_var[variable])} "
-            else:
-                return f"6D {adress_for_RAM(smart_var[variable])} "
+            elif len(value) == 2:
+                control_hex(value)
+                return "A9 " + value + " "
+            
+            elif value[0] == "'":
+                return "A9 " + get_char(value) + " "
         
-        elif len(value) == 2:
-            control_hex(value)
-            return "A9 " + value + " "
-        
-        elif value[0] == "'":
-            return "A9 " + get_char(value) + " "
-    
-        elif value[0] == "\"":
-            raise SmartError(f"Smart forbiden value: '{value}'", line_conter)
+            elif value[0] == "\"":
+                raise SmartError(f"Smart forbiden value: '{value}'", line_conter)
 
-    
-        else:
-            raise SmartError(f"Smart value error: {value}", line_conter)
+        
+            else:
+                raise SmartError(f"Smart value error: {value}", line_conter)
+        
+        asm_v = eval_value()
+
+        adress_conter += asm_v.count(" ")
+
+        return asm_v
 
     def adress_for_RAM(adress:int) -> str:
         """Return the RAM adress one hex.
@@ -228,6 +237,8 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             
             code_compile += set_one_A_value(read_line[1]) if r == "A" else "A2" + set_one_A_value(read_line[1])[2:] if r == "X" else "A0" + set_one_A_value(read_line[1])[2:]
 
+            adress_conter -= 1 if r != "A" else 0
+            
             logging.info("Build asm command: set on accumulator value")
 
         elif line[0] == "#":
@@ -350,7 +361,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                 else:
                     code_compile += set_one_A_value(function_arg[0])
                     code_compile += "20 EF FF "
-                    adress_conter += 3
+                    adress_conter += 3 #5
                 
                 logging.info("Build smart fonction as asm command: print")
 
