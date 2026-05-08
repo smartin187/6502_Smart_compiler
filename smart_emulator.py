@@ -296,6 +296,42 @@ def window_code() -> None:
     button_pause = tk.Button(frame_setting, textvariable=str_var_pause, command=pause_code)
     button_pause.grid(column=0, row=0)
 
+    frame_goto = tk.LabelFrame(frame_setting, text="Go to")
+    frame_goto.grid(column=1, row=0)
+
+    text_goto = tk.Label(frame_goto, text="Enter the adress to go (hexadecimal):")
+    text_goto.pack()
+
+    frame_entry = tk.Frame(frame_goto)
+    frame_entry.pack()
+
+    entry_goto = tk.Entry(frame_entry, width=10)
+    entry_goto.grid(column=0, row=0)
+
+    def goto_adress() -> None:
+        """Go to the step of the code with the adress in entry_goto."""
+        global run_step
+
+        if end_run:
+            messagebox.showerror("Error", "The code is already run. You can't go to an adress.")
+            return
+
+        try:
+            adress = int(entry_goto.get(), base=16)
+        except ValueError:
+            messagebox.showerror("Error", "Invalid hexadecimal value. Please enter a valid hexadecimal number.")
+            return
+        
+        if 0x400 <= adress < 0x400 + len(code) - 1:
+            run_step = adress - 0x400 + 1
+        else:
+            messagebox.showerror("Error", f"Invalid adress. Please enter a hexadecimal value between {hex(0x400)} and {hex(0x400 + len(code) - 1)}.")
+        
+        
+
+    button_goto = tk.Button(frame_entry, text="Go", command=goto_adress)
+    button_goto.grid(column=1, row=0)
+
 button_code = tk.Button(frame_option, text="See code", command=window_code)
 button_code.grid(column=1, row=0)
 
@@ -335,11 +371,12 @@ RAM = {}
 accumulator = {}
 carry_flag = 0
 run_step = 0
+end_run = False
 
 
 def run_smart() -> None:
     """Run smart code."""
-    global code, RAM, accumulator, carry_flag, run_step
+    global code, RAM, accumulator, carry_flag, run_step, end_run
 
     code = code.split(" ")
 
@@ -459,9 +496,10 @@ def run_smart() -> None:
             sleep(0.0025)
         elif normal_speed == "Debug":
             sleep(1.5)
-        
     
-    print_on_text("\n\nEnd of run")
+    end_run = True
+
+    print_on_text("\n\nEnd of run", True)
    
 menu_window = tk.Menu(window_emulator)
 window_emulator.config(menu=menu_window)
