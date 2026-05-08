@@ -12,19 +12,67 @@ from tkinter import scrolledtext, messagebox, filedialog
 from time import sleep
 from pathlib import Path
 import json
+import os
 
 from threading import Thread
 
 from smart_compiller import compile_smarty
 
-if len(argv) != 2:
-    messagebox.showerror("Error", "Bad arg, need file name.")
-    quit()
+open_from_asm = False
 
-if argv[1] == "--asm-entry":
-    code = input("Enter the assembly code : ")#.split(" ")
+if len(argv) != 2:
+    file_name = ""
+    code = ""
+    def open_smart() -> None:
+        """Use filedialoge for open a file."""
+        global file_name, code, open_from_asm
+
+        path = filedialog.askopenfilename(defaultextension="sma", filetypes=[("Smart source code", "*.sma"), ("Assembly", "*.asm")])
+
+
+        if path:
+            file_type = os.path.splitext(path)[1]
+
+            if file_type == ".sma":
+                file_name = path
+            elif file_type == ".asm":
+                asm_f = open(path, mode="r", encoding="UTF-8")
+
+                code = asm_f.read()
+
+                asm_f.close()
+
+                open_from_asm = True
+
+
+            else:
+                messagebox.showerror("Error", f"Unknow file type {file_type}.")
+            
+            window_start.destroy()
+
+    window_start = tk.Tk()
+    window_start.title("Smart emulator")
+
+    text_info = tk.Label(window_start, text="Open a Smart code source (*.sma) or open a Assembly (*.asm).\nCarful: with assembly, the emulator can have error...")
+    text_info.pack()
+
+    button_open = tk.Button(window_start, text="Open *.sma of *.asm", command=open_smart)
+    button_open.pack()
+
+    window_start.protocol("WM_DELETE_WINDOW", quit)
+    window_start.mainloop()
+    
+
 else:
-    code = compile_smarty(file=argv[1], argv=[], START_ADRESSE="0400: ", CODE_ADRESSE=1024, make_file=False)
+    file_name = argv[1]
+
+if file_name == "--asm-entry":
+    code = input("Enter the assembly code : ")#.split(" ")
+
+elif open_from_asm:pass
+
+else:
+    code = compile_smarty(file=file_name, argv=[], START_ADRESSE="0400: ", CODE_ADRESSE=1024, make_file=False)
 
 asm_code = code
 
