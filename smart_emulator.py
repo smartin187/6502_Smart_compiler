@@ -130,13 +130,15 @@ def window_code() -> None:
 
         adress_conter = 0
 
-        for i in code[1:-1]:
-            list_code.insert(tk.END, f"{hex(0x400 + adress_conter)}    {i}")
+        list_code.insert(0, "Adress    Code")
+
+        for i in code[1:]:
+            list_code.insert(tk.END, f"{hex(0x400 + adress_conter)}      {i}")
             adress_conter += 1
         
         list_code.yview_moveto(pos_listbox)
 
-        list_code.itemconfig(run_step - 1, {'bg':'#0099FF', 'fg':'#000000'})
+        list_code.itemconfig(run_step, {'bg':'#0099FF', 'fg':'#000000'})
 
         window_code.after(100, update_code)
 
@@ -144,7 +146,7 @@ def window_code() -> None:
     window_code.title("See code")
 
     list_code = tk.Listbox(window_code, width=50)
-    list_code.pack()
+    list_code.pack(expand=True, fill=tk.BOTH)
     update_code()
 
 button_code = tk.Button(frame_option, text="See code", command=window_code)
@@ -250,6 +252,10 @@ def run_smart() -> None:
                 print_on_text(chr(int(accumulator["A"], base=16)))
 
                 run_step += 2
+            
+            else:
+                messagebox.showerror("Error", "Unknow adress for call.")
+                break
         
         elif run == "00":
             break
