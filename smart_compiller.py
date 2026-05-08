@@ -85,7 +85,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
         if not good_hex(code):
             raise SmartError(f"Bad hex value '{code}'", line_conter)
     
-    def set_one_A_value(value:str, one_addition:bool=False) -> str:
+    def set_one_A_value(value:str, one_addition:bool=False, recursiv_value:bool=False) -> str:
         """Return the value for set one A."""
         nonlocal adress_conter
         def eval_value() -> str:
@@ -94,13 +94,13 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                 try:
                     value_1, value_2 = value.split("+", 1)
                 
-                    hex_value_2 = set_one_A_value(value_2, one_addition=True)
+                    hex_value_2 = set_one_A_value(value_2, one_addition=True, recursiv_value=True)
 
                     if hex_value_2.startswith("6D "):
-                        asm = f"{set_one_A_value(value_1)}18 {hex_value_2}"
+                        asm = f"{set_one_A_value(value_1, recursiv_value=True)}18 {hex_value_2}"
 
                     else:
-                        asm = f"{set_one_A_value(value_1)}18 69 {hex_value_2[3:]}"
+                        asm = f"{set_one_A_value(value_1, recursiv_value=True)}18 69 {hex_value_2[3:]}"
 
                     return asm
 
@@ -138,7 +138,8 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
         
         asm_v = eval_value()
 
-        adress_conter += asm_v.count(" ")
+        if not recursiv_value:
+            adress_conter += asm_v.count(" ")
 
         return asm_v
 
@@ -277,7 +278,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                         
             code_compile += f"{value_RAM}8D {adress_for_RAM(smart_var[var_name])} "
 
-            adress_conter += 5
+            adress_conter += 3
 
             logging.info(f"Build asm command: using RAM for variable '{var_name}'")
         
