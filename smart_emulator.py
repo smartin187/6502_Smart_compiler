@@ -246,6 +246,8 @@ def see_memory() -> None:
 button_RAM = tk.Button(frame_option, text="See memory", command=see_memory)
 button_RAM.grid(column=0, row=0)
 
+one_pause = False
+
 def window_code() -> None:
     """Open a window for see the code and see the step."""
     def update_code() -> None:
@@ -274,6 +276,25 @@ def window_code() -> None:
     list_code = tk.Listbox(window_code, width=50)
     list_code.pack(expand=True, fill=tk.BOTH)
     update_code()
+
+    frame_setting = tk.Frame(window_code)
+    frame_setting.pack()
+
+    str_var_pause = tk.StringVar(frame_setting, value="Pause")
+
+    def pause_code() -> None:
+        """If the code is not in pause, set the pause, else, remove the pause."""
+        global one_pause
+
+        if one_pause:
+            str_var_pause.set("Pause")
+        else:
+            str_var_pause.set("Play")
+
+        one_pause = not one_pause
+
+    button_pause = tk.Button(frame_setting, textvariable=str_var_pause, command=pause_code)
+    button_pause.grid(column=0, row=0)
 
 button_code = tk.Button(frame_option, text="See code", command=window_code)
 button_code.grid(column=1, row=0)
@@ -337,6 +358,9 @@ def run_smart() -> None:
 
     while run_step < len(code):
         run = code[run_step]
+
+        if one_pause:
+            continue
 
         if run == "A9":     # A
             accumulator["A"] = code[run_step + 1]
