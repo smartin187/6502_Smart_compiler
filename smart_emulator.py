@@ -253,6 +253,8 @@ def window_code() -> None:
     def update_code() -> None:
         """Update the listbox for code"""
         pos_listbox = list_code.yview()[0]
+        selection = list_code.curselection()
+        selected_index = selection[0] if selection else None
 
         list_code.delete(0, tk.END)
 
@@ -266,15 +268,64 @@ def window_code() -> None:
         
         list_code.yview_moveto(pos_listbox)
 
-        list_code.itemconfig(run_step, {'bg':'#0099FF', 'fg':'#000000'})
+        if 0 <= run_step < list_code.size():
+            list_code.itemconfig(run_step, {'bg':'#0099FF', 'fg':'#000000'})
+
+        if selected_index is not None:
+            list_code.selection_set(selected_index)
 
         window_code.after(100, update_code)
 
     window_code = tk.Toplevel(window_emulator)
     window_code.title("See code")
 
+    text_info = tk.Label(window_code, text="See code\nDouble click on a line for edit the code.\nCarful: editing code can cause errors.")
+    text_info.pack()
+
     list_code = tk.Listbox(window_code, width=50)
     list_code.pack(expand=True, fill=tk.BOTH)
+
+    def edit_code(event:tk.Event) -> None:
+        """Open a window for edit the code."""
+        def validate() -> None:
+            """Edit code with the new value."""
+            new_value = entry_value.get()
+
+            if len(new_value) != 2 or not all(c in "0123456789abcdefABCDEF" for c in new_value):
+                messagebox.showerror("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
+                return
+            
+            code_index = list_code.curselection()[0] - 1
+
+            if code_index < 0:
+                messagebox.showerror("Error", "You can't edit this line.")
+                return
+            
+            code[code_index + 1] = new_value.upper()
+
+            window.destroy()
+
+        code_index = list_code.curselection()[0] - 1
+
+        if code_index < 0:
+            messagebox.showerror("Error", "You can't edit this line.")
+            return
+        
+        window = tk.Toplevel(window_code)
+        window.title("Edit code")
+
+        text_info = tk.Label(window, text=f"Enter the new value for the code.\nCarful: editing code can cause errors.\nAdress : {hex(0x400 + code_index)}")
+        text_info.pack()
+
+        entry_value = tk.Entry(window, width=5)
+        entry_value.pack()
+        
+
+        button_validate = tk.Button(window, text="Validate", command=validate)
+        button_validate.pack()
+    
+    list_code.bind("<Double-Button-1>", edit_code)
+
     update_code()
 
     frame_setting = tk.Frame(window_code)
