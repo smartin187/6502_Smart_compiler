@@ -18,6 +18,13 @@ from threading import Thread
 
 from smart_compiller import compile_smarty
 
+if "--debug" in argv:
+    normal_speed = "Debug"
+    argv.remove("--debug")
+else:
+    normal_speed = "1Mhz"
+
+
 open_from_asm = False
 
 if len(argv) != 2:
@@ -82,6 +89,8 @@ window_emulator.title("Smart emulator")
 monitor = scrolledtext.ScrolledText(window_emulator, height=24, width=39, bg="#000000", fg="#0099FF", insertwidth=10, insertbackground="#B1B1B1", insertofftime=0)
 monitor.pack()
 monitor.focus_force()
+monitor.tag_configure("error", foreground="#FF0000")
+monitor.tag_configure("sys_message", foreground="#00FF00")
 
 def disable_edit(event:tk.Event) -> str:
     return "break"
@@ -93,14 +102,20 @@ frame_option.pack()
 
 ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n "
 
-def print_on_text(text:str, sys_message:bool=False) -> None:
-    """Insert on the scolledtext the text."""
+def print_on_text(text:str, sys_message:bool=False, error:bool=False) -> None:
+    """Insert on the scolledtext the text.
+    If error = True, use tag for set the text one red."""
     if not sys_message:
         text = text.upper()
         if text not in ALLOW_CHAR:      # forbiden char
             return
 
-    monitor.insert(tk.END, text)
+    if error:
+        monitor.insert(tk.END, text, "error")
+    elif sys_message:
+        monitor.insert(tk.END, text, "sys_message")
+    else:
+        monitor.insert(tk.END, text)
     monitor.see(tk.END)
 
 
@@ -386,7 +401,6 @@ def window_code() -> None:
 button_code = tk.Button(frame_option, text="See code", command=window_code)
 button_code.grid(column=1, row=0)
 
-normal_speed = "1Mhz"
 
 def emulator_setting() -> None:
     """Open a window for the setting of emulator"""
@@ -444,6 +458,8 @@ def run_smart() -> None:
 
     carry_flag = 0
 
+    run_fail = False
+
     while run_step < len(code):
         run = code[run_step]
 
@@ -470,6 +486,7 @@ def run_smart() -> None:
                     code[int(adress, base=16) - START + 1] = accumulator["A"]
                 except:
                     messagebox.showerror("Error", "Write on unknow adress.", detail="Detail: {}".format(hex(0x400 + int(adress, base=16) - START + 1)).upper())
+                    run_fail = True
                     break
             else:
                 RAM[code[run_step + 2] + code[run_step + 1]] = accumulator["A"]
@@ -493,6 +510,7 @@ def run_smart() -> None:
             
             else:
                 messagebox.showerror("Error", "Unknow adress for call.")
+                run_fail = True
                 break
         
         elif run == "00":
@@ -541,6 +559,7 @@ def run_smart() -> None:
         
         else:
             messagebox.showerror("Error", f"Unknow assembly : {run}, at {run_step} step.")
+            run_fail = True
             break
 
         if normal_speed == "1Mhz":
@@ -551,6 +570,9 @@ def run_smart() -> None:
     end_run = True
 
     print_on_text("\n\nEnd of run", True)
+
+    if run_fail:
+        print_on_text("\nError occurred during run...", True, True)
    
 menu_window = tk.Menu(window_emulator)
 window_emulator.config(menu=menu_window)
