@@ -180,6 +180,8 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
     go_to = {}
     function_smart = {}
+    list_function_name = []
+    source_code_function = {}
 
     go_to_replace = []
     function_replace = []
@@ -311,9 +313,13 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                     func_code += code[funciton_line] + ";"
                     funciton_line += 1
             
-            function_smart[func_name] = compile_smarty(make_file=False, function_mode=(True, func_code), CODE_ADRESSE=0x400 + adress_conter)
+            #function_smart[func_name] = compile_smarty(make_file=False, function_mode=(True, func_code), CODE_ADRESSE=0x400 + adress_conter)
+
+            source_code_function[func_name] = func_code
 
             jump_line = funciton_line - line_conter - 1
+
+            list_function_name.append(func_name)
 
             logging.debug(f"'{func_name}' has been created.")
             
@@ -392,8 +398,8 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
                 logging.info("Build smart fonction as asm command: goto")
 
-            elif function_name in function_smart:
-                func_code_tmp = function_smart[function_name]
+            elif function_name in list_function_name:
+                #func_code_tmp = function_smart[function_name]
 
                 # use a goto
 
@@ -415,9 +421,19 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
     
     if not function_mode[0]:
         code_compile += "00 "
+        #adress_conter += 1
     else:
         code_compile += "4C 00 00 "
     
+
+    # compile function:
+
+    for function in source_code_function:
+
+        code = source_code_function[function]
+
+        function_smart[function] = compile_smarty(make_file=False, function_mode=(True, code), CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1)
+
     # set the function:
 
     function_adress = {}
