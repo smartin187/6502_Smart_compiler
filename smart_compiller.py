@@ -218,6 +218,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
         if jump_line:
             jump_line -= 1
+            line_conter += 1
             continue
 
         if line == "":
