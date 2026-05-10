@@ -157,11 +157,11 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
     def good_variable_name(name:str) -> bool:
         """Return True if the name of variable is good, False else.
         An variable name can have :
-        - Any letter (A-Z, a-z). Special letter (éèëù...) are accepted.
+        - Any letter lower (a-z). Special letter (éèëù...) are accepted.
         - Any number 0-9
         - underscore _"""
         for char in name:
-            if not (char.isalpha() or char.isdigit() or char == "_"):
+            if (not (char.isalpha() or char.isdigit() or char == "_")) or char.isupper():
                 return False
         return True
 
