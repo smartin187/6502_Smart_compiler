@@ -2,3 +2,9 @@
 *.asm
 
 __pycache__/
+
+# pyinstaller build
+*.spec
+
+dist/
+build/
