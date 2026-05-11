@@ -305,17 +305,19 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
             func_code = ""
 
-            while True:
-                if code[funciton_line].startswith("}"):
-                    code[funciton_line] = code[funciton_line][1:]
-                    break
+            try:
+                while True:
+                    if code[funciton_line].startswith("}"):
+                        code[funciton_line] = code[funciton_line][1:]
+                        break
 
-                else:
-                    func_code += code[funciton_line] + ";"
-                    funciton_line += 1
+                    else:
+                        func_code += code[funciton_line] + ";"
+                        funciton_line += 1
             
-            #function_smart[func_name] = compile_smarty(make_file=False, function_mode=(True, func_code), CODE_ADRESSE=0x400 + adress_conter)
-
+            except IndexError:
+                raise SmartError("On function '" + func_name + "', brackets '{' was never closed.", line_conter)
+           
             source_code_function[func_name] = func_code
 
             jump_line = funciton_line - line_conter - 1
