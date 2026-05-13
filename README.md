@@ -34,11 +34,20 @@ There are currently two value types: a hexadecimal value and a char (a single ch
 
 This value is a 1-byte hexadecimal number, ranging from `00` to `FF`.
 
+**You need to set `0x` before:
+- `0x00`
+- `0x41`
+
+##### `int` value
+
+This value is beetween 0 and 255.
+
+
 ##### `char` value
 
 This value is a 1-byte character. Here is the list of allowed characters:
 
-`!"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`
+`!"#$%'()*,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`
 
 The character must be wrapped in single quotes.
 
@@ -65,7 +74,7 @@ The three available accumulators are A, X, and Y.
 
 To assign a value, use the syntax `RegisterName = Value`:
 ```Smart
-A = 00;  // put the hex value into A
+A = 0x00;  // put the hex value into A
 A = 'B'; // put the character B into A
 ```
 
@@ -129,18 +138,18 @@ Some functions do not take any arguments, but you still need to include the colo
 
 This function prints a character to the screen.
 
-The value can be a `char`. It can also be a `hex` (in which case the ASCII code is used), and you can also use a `str`.
+The value can be a `char`. It can also be a `hex` or `int` (in which case the ASCII code is used), and you can also use a `str`.
 
 **Example**
 
 ```Smart
-print: 41;  // using hex, 0x41=65 (ASCII code for A)
+print: 0x41;  // using hex, 0x41=65 (ASCII code for A)
 print: '1'; // using a char
 print: "HELLO WORLD";   // using a str
 
-.my_variable = 42;
+.my_variable = 0x42;
 print: .my_variable; // B
-print: 42 + 01;  // C
+print: 0x42 + 1;  // C
 ```
 
 ###### `goto`

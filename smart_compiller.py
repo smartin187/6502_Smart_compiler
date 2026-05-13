@@ -122,10 +122,37 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                 else:
                     return f"6D {adress_for_RAM(smart_var[variable])} "
             
-            elif len(value) == 2:
+                """elif len(value) == 2:
                 control_hex(value)
                 return "A9 " + value + " "
+                """
             
+
+            elif value.startswith("0x"):
+                hex_value = value[2:]
+
+                control_hex(hex_value)
+
+
+                return "A9 " + hex_value + " "
+            
+            
+            elif value[0] in "0123456789":
+                if len(value) > 3:
+                    raise SmartError(f"Invalid value: {value}", line_conter)
+                
+                try:
+                    value_int = int(value)
+                except:
+                    raise SmartError(f"Invalid int value: {value}")
+
+                if value_int > 255:
+                    raise SmartError(f"Invalid value: {value_int}, max int value is 255")
+                
+                value_hex = hex(value_int)[2:].upper()
+
+                return "A9 " + value_hex + " "
+
             elif value[0] == "'":
                 return "A9 " + get_char(value) + " "
         
