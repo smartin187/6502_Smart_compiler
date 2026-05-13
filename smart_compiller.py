@@ -122,11 +122,6 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                 else:
                     return f"6D {adress_for_RAM(smart_var[variable])} "
             
-                """elif len(value) == 2:
-                control_hex(value)
-                return "A9 " + value + " "
-                """
-            
 
             elif value.startswith("0x"):
                 hex_value = value[2:]
@@ -231,11 +226,9 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
     for line in code_line:
         line_tmp = line.split("//")[0] + "\n"
         code += line_tmp.lstrip(" ")
-
-        
     
 
-    code = code.replace("\n", "").split(";")#.replace(" ", "").split(";")
+    code = code.replace("\n", "").split(";")
 
     logging.info("Buiilding asm")
 
