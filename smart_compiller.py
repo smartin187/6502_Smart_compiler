@@ -305,7 +305,10 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
             logging.info(f"Build asm command: using RAM for variable '{var_name}'")
         
-        elif line.startswith("void "):      # make fonction
+        elif line.replace(" ", "").startswith("void"):      # make fonction
+            if function_mode[0]:
+                raise SmartError(f"Error with function: impossible to create new function on function.")
+
             func_name = line.split(" ")[1]
 
             if func_name[-1] != "{":
@@ -325,19 +328,40 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
             func_code = ""
 
+            number_open = 1
+
             try:
                 while True:
-                    if code[funciton_line].startswith("}"):
-                        code[funciton_line] = code[funciton_line][1:]
+                    code_line_func = code[funciton_line]
+                    close_pos = None
+
+                    for i, ch in enumerate(code_line_func):
+                        if ch == "{":
+                            number_open += 1
+                        elif ch == "}":
+                            number_open -= 1
+                            if number_open == 0:
+                                close_pos = i
+                                break
+
+                    if close_pos is not None:
+                        inside = code_line_func[:close_pos]
+                        if inside.replace(" ", "") != "":
+                            func_code += inside + ";"
+
+                        code[funciton_line] = code_line_func[close_pos + 1:]
                         break
 
-                    else:
-                        func_code += code[funciton_line] + ";"
-                        funciton_line += 1
-            
+                    func_code += code_line_func + ";"
+                    funciton_line += 1
+        
+
+
             except IndexError:
                 raise SmartError("On function '" + func_name + "', brackets '{' was never closed.", line_conter)
-           
+
+            print(func_code)
+
             source_code_function[func_name] = func_code
 
             jump_line = funciton_line - line_conter - 1
