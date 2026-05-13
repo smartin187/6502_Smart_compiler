@@ -248,7 +248,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             line_conter += 1
             continue
 
-        if line == "":
+        if line == "" or line.replace(" ", "") == "":
             line_conter += 1
             logging.warning("Empty line detected.")
             continue
@@ -355,7 +355,6 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             
 
         else:     # function
-            
             if ":" not in line:
                 raise SmartError("Smart invalid syntaxe", line_conter)
 
