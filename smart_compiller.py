@@ -417,7 +417,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                 else:
                     code_compile += set_one_A_value(function_arg[0])
                     code_compile += "20 EF FF "
-                    adress_conter += 3 #5
+                    adress_conter += 3
                 
                 logging.info("Build smart fonction as asm command: print")
 
@@ -448,7 +448,6 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                 logging.info("Build smart fonction as asm command: goto")
 
             elif function_name in list_function_name:
-                #func_code_tmp = function_smart[function_name]
 
                 # use a goto
 
@@ -460,8 +459,6 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
                 code_compile += text_code
 
-                #adress_conter += func_code_tmp.count(" ")
-
             
             else:
                 raise SmartError(f"Function '{function_name}' not exist.", line_conter)
@@ -470,7 +467,6 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
     
     if not function_mode[0]:
         code_compile += "00 "
-        #adress_conter += 1
     else:
         code_compile += "4C 00 00 "
     
@@ -502,7 +498,6 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
         # call function
         for i in range(2):
             for function in function_replace:
-                #function_name_tmp, r_adress = function.split("|")[1:]
 
                 parts = function.split("|")
                 if len(parts) == 3:
@@ -532,8 +527,6 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                 r_adress = hex(caller_base + r_offset)[2:].upper()
                 r_adress = "0" * (4 - len(r_adress)) + r_adress
 
-
-                #code_compile = code_compile.replace(function, f"A9 {r_adress[:2]} 8D {return_aress[2:]} {return_aress[:2]} A9 {r_adress[2:]} 8D {return_aress_2[:2]} {return_aress_2[2:]} 4C {hex_adress_function} ")
                 code_compile = code_compile.replace(function, f"A9 {r_adress[:2]} 8D {return_aress[2:]} {return_aress[:2]} A9 {r_adress[2:]} 8D {return_aress_2[2:]} {return_aress_2[:2]} 4C {hex_adress_function} ")
 
     # set the goto:
