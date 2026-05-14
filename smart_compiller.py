@@ -34,7 +34,7 @@ code_line = None
 
 line_of_instruction = None
 
-def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: ", CODE_ADRESSE:int=0x400, make_file:bool=True, function_mode:tuple[bool, str]=(False, "")) -> None:
+def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: ", CODE_ADRESSE:int=0x400, make_file:bool=True, function_mode:tuple[bool, str, list[str], list[str]]=(False, "", [], [])) -> None:
     """Start the compile from file."""
     global line_of_instruction, code_line
 
@@ -202,13 +202,16 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
     go_to = {}
     function_smart = {}
-    list_function_name = []
+    list_function_name = function_mode[2] if function_mode[0] else []
     source_code_function = {}
 
     go_to_replace = []
-    function_replace = []
+    function_replace = function_mode[3] if function_mode[0] else []
 
     adress_conter = 0
+
+    CALLER_MAIN = "__MAIN__"
+    caller_ctx = function_mode[4] if (function_mode[0] and len(function_mode) >= 5) else CALLER_MAIN
 
     if function_mode[0]:
         code_line = function_mode[1].split("\n")
@@ -451,7 +454,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
                 adress_conter += 13
 
-                text_code = f"!smart_call_func|{function_name}|{adress_conter}"
+                text_code = f"!smart_call_func|{function_name}|{caller_ctx}|{adress_conter}"
 
                 function_replace.append(text_code)
 
@@ -474,51 +477,64 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
     # compile function:
 
-    for function in source_code_function:
+    print(code_compile)
 
-        code = source_code_function[function]
+    if not function_mode[0]:
+        for function in source_code_function:
 
-        function_smart[function] = compile_smarty(make_file=False, function_mode=(True, code), CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1)
+            code = source_code_function[function]
 
-    # set the function:
+            function_smart[function] = compile_smarty(make_file=False, function_mode=(True, code, list_function_name, function_replace, function), CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1)
 
-    function_adress = {}
+        # set the function:
 
-    for function in function_smart:
-        function_adress[function] = adress_conter
+        function_adress = {}
 
-        code_func = function_smart[function]
-        
-        code_compile += code_func
+        for function in function_smart:
+            function_adress[function] = adress_conter
 
-        adress_conter += code_func.count(" ")
+            code_func = function_smart[function]
+            
+            code_compile += code_func
 
-    # call function
+            adress_conter += code_func.count(" ") + 13 * code_func.count("!smart_call_func|")
 
-    for function in function_replace:
-        function_name_tmp, r_adress = function.split("|")[1:]
+        # call function
+        for i in range(2):
+            for function in function_replace:
+                #function_name_tmp, r_adress = function.split("|")[1:]
 
-        adress_func = CODE_ADRESSE + function_adress[function_name_tmp] + 1
+                parts = function.split("|")
+                if len(parts) == 3:
+                    function_name_tmp = parts[1]
+                    caller_ctx_tmp = CALLER_MAIN
+                    r_offset = int(parts[2])
+                else:
+                    function_name_tmp = parts[1]
+                    caller_ctx_tmp = parts[2]
+                    r_offset = int(parts[3])
 
-        hex_adress_function = hex(adress_func)[2:].upper()
+                adress_func = CODE_ADRESSE + function_adress[function_name_tmp] + 1
 
-        hex_adress_function = "0" * (4 - len(hex_adress_function)) + hex_adress_function
+                hex_adress_function = hex(adress_func)[2:].upper()
+                hex_adress_function = "0" * (4 - len(hex_adress_function)) + hex_adress_function
+                hex_adress_function = f"{hex_adress_function[2:]} {hex_adress_function[:2]}"
 
-        hex_adress_function = f"{hex_adress_function[2:]} {hex_adress_function[:2]}"
+                func_len = function_smart[function_name_tmp].count(" ") + 13 * function_smart[function_name_tmp].count("!smart_call_func|")
 
-        return_aress = hex(adress_func + function_smart[function_name_tmp].count(" ") - 1)[2:].upper()
-        return_aress = "0" * (4 - len(return_aress)) + return_aress
+                return_aress = hex(adress_func + func_len - 1)[2:].upper()
+                return_aress = "0" * (4 - len(return_aress)) + return_aress
+
+                return_aress_2 = hex(adress_func + func_len - 2)[2:].upper()
+                return_aress_2 = "0" * (4 - len(return_aress_2)) + return_aress_2
+
+                caller_base = CODE_ADRESSE if caller_ctx_tmp == CALLER_MAIN else CODE_ADRESSE + function_adress[caller_ctx_tmp] + 1
+                r_adress = hex(caller_base + r_offset)[2:].upper()
+                r_adress = "0" * (4 - len(r_adress)) + r_adress
 
 
-        return_aress_2 = hex(adress_func + function_smart[function_name_tmp].count(" ") - 2)[2:].upper()
-        return_aress_2 = "0" * (4 - len(return_aress_2)) + return_aress_2
-
-        r_adress = hex(int(r_adress) + CODE_ADRESSE)[2:].upper()
-        r_adress = "0" * (4 - len(r_adress)) + r_adress
-
-
-        #code_compile = code_compile.replace(function, f"A9 {r_adress[:2]} 8D {return_aress[2:]} {return_aress[:2]} A9 {r_adress[2:]} 8D {return_aress_2[:2]} {return_aress_2[2:]} 4C {hex_adress_function} ")
-        code_compile = code_compile.replace(function, f"A9 {r_adress[:2]} 8D {return_aress[2:]} {return_aress[:2]} A9 {r_adress[2:]} 8D {return_aress_2[2:]} {return_aress_2[:2]} 4C {hex_adress_function} ")
+                #code_compile = code_compile.replace(function, f"A9 {r_adress[:2]} 8D {return_aress[2:]} {return_aress[:2]} A9 {r_adress[2:]} 8D {return_aress_2[:2]} {return_aress_2[2:]} 4C {hex_adress_function} ")
+                code_compile = code_compile.replace(function, f"A9 {r_adress[:2]} 8D {return_aress[2:]} {return_aress[:2]} A9 {r_adress[2:]} 8D {return_aress_2[2:]} {return_aress_2[:2]} 4C {hex_adress_function} ")
 
     # set the goto:
 
