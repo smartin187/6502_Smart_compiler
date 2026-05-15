@@ -34,7 +34,7 @@ code_line = None
 
 line_of_instruction = None
 
-def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: ", CODE_ADRESSE:int=0x400, make_file:bool=True, function_mode:tuple[bool, str, list[str], list[str]]=(False, "", [], [])) -> None:
+def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: ", CODE_ADRESSE:int=0x400, make_file:bool=True, function_mode:tuple[bool, str, list[str], list[str]]=(False, "", [], [], "", {})) -> None:
     """Start the compile from file."""
     global line_of_instruction, code_line
 
@@ -193,8 +193,8 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
     # -----------
 
-    smart_var = {}
-    adress_var = 0x300
+    smart_var = {} if not function_mode[0] else function_mode[5]
+    adress_var = 0x300 + len(smart_var)
 
     line_conter = 0
 
@@ -473,14 +473,12 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
     # compile function:
 
-    print(code_compile)
-
     if not function_mode[0]:
         for function in source_code_function:
 
             code = source_code_function[function]
 
-            function_smart[function] = compile_smarty(make_file=False, function_mode=(True, code, list_function_name, function_replace, function), CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1)
+            function_smart[function] = compile_smarty(make_file=False, function_mode=(True, code, list_function_name, function_replace, function, smart_var), CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1)
 
         # set the function:
 
