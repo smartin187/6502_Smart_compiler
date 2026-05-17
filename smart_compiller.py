@@ -389,6 +389,9 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             function_name, function_arg = line.split(":", 1)
             function_arg = function_arg.split(",")
 
+            if not good_variable_name(function_name):
+                raise SmartError(f"Sintaxe error: '{function_name}'", line_conter)
+
             if function_name == "print":
                 if len(function_arg) != 1:
                     raise SmartError("print function take 1 arg", line_conter)
