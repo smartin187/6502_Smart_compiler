@@ -6,7 +6,6 @@ The compiller for smart.
 Fonction: compile_smarty for start the compile of a smart code.
 """
 
-import traceback
 from pathlib import Path
 import os
 import logging
@@ -117,7 +116,6 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                     raise SmartError(str(se), se.nbline)
 
                 except:
-                    print(traceback.format_exc())
                     raise SmartError(f"Error with math '+' : '{value}'", line_conter)
 
             elif value[0] == ".":
@@ -211,9 +209,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
     go_to = {}
 
-    #function_smart = {}
     function_name_usr:dict[SmartFunction] = function_mode[2] if function_mode[0] else {}
-    #source_code_function = {}
 
     go_to_replace = []
     function_replace = function_mode[3] if function_mode[0] else []
@@ -373,9 +369,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
             except IndexError:
                 raise SmartError("On function '" + func_name + "', brackets '{' was never closed.", line_conter)
 
-            print(func_code)
 
-            #source_code_function[func_name] = func_code
             function_name_usr[func_name] = SmartFunction(func_name)
             function_name_usr[func_name].source_code_function = func_code
 
@@ -488,20 +482,15 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
     if not function_mode[0]:
         for function in function_name_usr:
 
-            #code = source_code_function[function]
             code = function_name_usr[function].source_code_function
 
-            #function_smart[function] = compile_smarty(make_file=False, function_mode=(True, code, function_name_usr, function_replace, function, smart_var), CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1)
             function_name_usr[function].code_compile_f = compile_smarty(make_file=False, function_mode=(True, code, function_name_usr, function_replace, function, smart_var), CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1)
 
 
 
         # set the function:
 
-        #function_adress = {}
-
         for f in function_name_usr:
-            #function = function_name_usr[f].code_compile_f
 
             function_name_usr[f].function_adress = adress_conter
 
@@ -515,7 +504,6 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
         for i in range(2):
             for f in function_replace:
                 function = f
-                #print(function)
 
                 parts = function.split("|")
                 if len(parts) == 3:
@@ -533,7 +521,6 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                 hex_adress_function = "0" * (4 - len(hex_adress_function)) + hex_adress_function
                 hex_adress_function = f"{hex_adress_function[2:]} {hex_adress_function[:2]}"
 
-                #func_len = function_smart[function_name_tmp].count(" ") + 13 * function_smart[function_name_tmp].count("!smart_call_func|")
                 func_len = function_name_usr[function_name_tmp].code_compile_f.count(" ") + 13 * function_name_usr[function_name_tmp].code_compile_f.count("!smart_call_func|")
 
                 return_aress = hex(adress_func + func_len - 1)[2:].upper()
