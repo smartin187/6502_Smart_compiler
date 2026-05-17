@@ -35,6 +35,7 @@ class SmartFunction:
         self.name = name
         self.source_code_function = ""
         self.code_compile_f = ""
+        self.function_adress = 0
         
     
 
@@ -497,12 +498,12 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
         # set the function:
 
-        function_adress = {}
+        #function_adress = {}
 
         for f in function_name_usr:
             #function = function_name_usr[f].code_compile_f
 
-            function_adress[f] = adress_conter
+            function_name_usr[f].function_adress = adress_conter
 
             code_func = function_name_usr[f].code_compile_f
             
@@ -526,7 +527,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                     caller_ctx_tmp = parts[2]
                     r_offset = int(parts[3])
 
-                adress_func = CODE_ADRESSE + function_adress[function_name_tmp] + 1
+                adress_func = CODE_ADRESSE + function_name_usr[function_name_tmp].function_adress + 1
 
                 hex_adress_function = hex(adress_func)[2:].upper()
                 hex_adress_function = "0" * (4 - len(hex_adress_function)) + hex_adress_function
@@ -541,7 +542,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
                 return_aress_2 = hex(adress_func + func_len - 2)[2:].upper()
                 return_aress_2 = "0" * (4 - len(return_aress_2)) + return_aress_2
 
-                caller_base = CODE_ADRESSE if caller_ctx_tmp == CALLER_MAIN else CODE_ADRESSE + function_adress[caller_ctx_tmp] + 1
+                caller_base = CODE_ADRESSE if caller_ctx_tmp == CALLER_MAIN else CODE_ADRESSE + function_name_usr[caller_ctx_tmp].function_adress + 1
                 r_adress = hex(caller_base + r_offset)[2:].upper()
                 r_adress = "0" * (4 - len(r_adress)) + r_adress
 
