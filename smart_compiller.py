@@ -209,7 +209,7 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
     go_to = {}
 
-    function_name_usr:dict[SmartFunction] = function_mode[2] if function_mode[0] else {}
+    function_name_usr: dict[str, SmartFunction] = function_mode[2] if function_mode[0] else {}
 
     go_to_replace = []
     function_replace = function_mode[3] if function_mode[0] else []
