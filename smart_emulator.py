@@ -79,7 +79,7 @@ if file_name == "--asm-entry":
 elif open_from_asm:pass
 
 else:
-    code = compile_smarty(file=file_name, argv=[], START_ADRESSE="0400: ", CODE_ADRESSE=1024, make_file=False)
+    code = compile_smarty(file=file_name, argv=[], CODE_ADRESSE=1024, make_file=False)
 
 asm_code = code
 

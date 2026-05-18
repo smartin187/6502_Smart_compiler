@@ -42,10 +42,15 @@ code_line = None
 
 line_of_instruction = None
 
-def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: ", CODE_ADRESSE:int=0x400, make_file:bool=True, function_mode:tuple[bool, str, list[str], list[str]]=(False, "", [], [], "", {})) -> None:
+def compile_smarty(
+        file:str="",
+        argv:list | tuple=[],
+        CODE_ADRESSE:int=0x400,
+        make_file:bool=True,
+        function_mode:tuple[bool, str, list[str], list[str]]=(False, "", [], [], "", {})
+    ) -> None:
     """Start the compile from file."""
     global line_of_instruction, code_line
-
     def line_of_instruction(nb_instruction:int) -> tuple[int, str]:
         """Return the number of line and the line of the instruction."""
         nb = 0
@@ -205,7 +210,9 @@ def compile_smarty(file:str="", argv:list | tuple=[], START_ADRESSE:str="0400: "
 
     line_conter = 0
 
-    code_compile = START_ADRESSE if not function_mode[0] else ""
+    adress_str = hex(CODE_ADRESSE)[2:].upper() + ": "
+
+    code_compile = "0" * (6 - len(adress_str)) + adress_str if not function_mode[0] else ""
 
     go_to = {}
 
