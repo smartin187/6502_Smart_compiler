@@ -214,7 +214,9 @@ def compile_smarty(
                 if value_int > 255:
                     raise SmartError(f"Invalid value: {value_int}, max int value is 255")
                 
-                value_hex = hex(value_int)[2:].upper()
+                value_int_to_hex = hex(value_int)[2:].upper()
+
+                value_hex = ("0" if len(value_int_to_hex) == 1 else "") + value_int_to_hex
 
                 return "A9 " + value_hex + " "
 
