@@ -48,7 +48,7 @@ def split_code(
         sep:str | tuple[str, ...]=(" ",),
         string:tuple=("'", '"'),
         max_split:int=0
-    ) -> tuple[str, ...]:
+    ) -> list[str]:
     """Split a code, but ignore sep if it is in a str or char Smart Value.
     arg max for set the max split. If max=0, no limit of split."""
 
@@ -95,7 +95,7 @@ def split_code(
     if new_element != []:
         split.append("".join(new_element))
     
-    return tuple(split)
+    return split
 
 
 def compile_smarty(
