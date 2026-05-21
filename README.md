@@ -172,6 +172,17 @@ print: "INFINITE_LOOP!";
 goto: loop;
 ```
 
+###### `asm_entry`
+
+Use this functtion for enter assembly code for MOS 6502.
+
+**Warning:** if you use the [Smart Emulator](#interpret-smart-code-emulator), `asm_entry` can cause errors...
+
+Exemple:
+```Smart
+asm_entry: "A9 41 20 EF FF";    // display A on monitor
+```
+
 ###### `quit`
 
 This function exits the program.

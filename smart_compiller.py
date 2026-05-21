@@ -20,6 +20,7 @@ class SmartError(Exception):
     def __init__(self, message:str, nb_instruction:int=0):
         logging.error("\033[31mError during build:")
 
+
         nbline, line_error = line_of_instruction(nb_instruction)
 
         print(f"~~~~~~~~~~\nAt {nbline} line:\n{line_error}\n~~~~~~~~~~\nError :\n{message}\n\033[0m")
@@ -64,6 +65,8 @@ def compile_smarty(
 
             if nb_instruction + 1 <= nb:
                 return (line_counter + 1, code_line[line_counter-1])
+        
+        return (line_counter +1, code_line[line_counter-1])
 
 
 
@@ -176,6 +179,15 @@ def compile_smarty(
             adress_conter += asm_v.count(" ")
 
         return asm_v
+    
+    def good_asm(asm:str) -> bool:
+        """Return True if assembly is good.
+        Assembly is good if char is in A-F 0-9"""
+        for char in asm:
+            if char not in "ABCDEF0123456789":
+                return False
+        return True
+
 
     def adress_for_RAM(adress:int) -> str:
         """Return the RAM adress one hex.
@@ -462,6 +474,31 @@ def compile_smarty(
                 adress_conter += 3
 
                 logging.info("Build smart fonction as asm command: goto")
+            
+            elif function_name == "asm_entry":
+                if len(function_arg) != 1:
+                    raise SmartError("Function asm_entry take 1 arg.", line_conter)
+                
+                asm = function_arg[0]
+
+                if not (asm.startswith('"') and asm.endswith('"')):
+                    raise SmartError(f"str value escepted, not '{asm}'")
+                
+                asm = asm[1:-1].strip(" ").replace(" ", "")
+
+                if len(asm) == 0:
+                    logging.warning(f"Empty assembly entry, at line {line_conter}")
+                
+
+                if ((len(asm) % 2) != 0) or (not good_asm(asm)):
+                    raise SmartError(f"Invalid assembly entry, bad bytes was given.", line_conter)
+                
+                code_tmp = " ".join(asm[i:i+2] for i in range(0, len(asm), 2)) + " "
+
+                code_compile += code_tmp
+
+                adress_conter += code_tmp.count(" ")
+
 
             elif function_name in function_name_usr:
 
