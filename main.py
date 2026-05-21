@@ -5,12 +5,9 @@ Main module of Smart compiller.
 """
 
 from sys import argv
-from pathlib import Path
-import os
 import traceback
 from smart_compiller import SmartError, compile_smarty
 
-#START_ADRESSE = "0400: "
 CODE_ADRESSE = 1024
 
 
@@ -20,7 +17,7 @@ if len(argv) == 1:
 
 try:
     compile_smarty(argv[1], argv, CODE_ADRESSE)
-except SmartError as se:
+except SmartError:
     quit()
 
 except:
