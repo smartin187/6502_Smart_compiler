@@ -43,6 +43,61 @@ code_line = None
 
 line_of_instruction = None
 
+def split_code(
+        code:str,
+        sep:str | tuple[str, ...]=(" ",),
+        string:tuple=("'", '"'),
+        max_split:int=0
+    ) -> tuple[str, ...]:
+    """Split a code, but ignore sep if it is in a str or char Smart Value.
+    arg max for set the max split. If max=0, no limit of split."""
+
+    if code == "":
+        return ()
+    
+    on_str = False
+    open_str = ""
+
+    if isinstance(sep, str):
+        sep = (sep,)
+
+    split = []
+
+    new_element = []
+
+    nb_split = 0
+
+    for char in code:
+        if not on_str:
+            if char in string:
+                on_str = True
+                open_str = char
+
+            if char in sep:
+                if max_split:
+                    if nb_split == max_split:
+                        new_element.append(char)
+                        continue
+                    else:
+                        nb_split += 1
+                split.append("".join(new_element))
+                del new_element[:]
+
+            else:
+                new_element.append(char)
+        
+        else:
+            if char == open_str:
+                on_str = False
+            
+            new_element.append(char)
+    
+    if new_element != []:
+        split.append("".join(new_element))
+    
+    return tuple(split)
+
+
 def compile_smarty(
         file:str="",
         argv:list | tuple=[],
@@ -108,7 +163,7 @@ def compile_smarty(
             """Return asm value"""
             if "+" in value:    # addition
                 try:
-                    value_1, value_2 = value.split("+", 1)
+                    value_1, value_2 = split_code(value, "+", max_split=1)
                 
                     hex_value_2 = set_one_A_value(value_2, one_addition=True, recursiv_value=True)
 
@@ -253,10 +308,12 @@ def compile_smarty(
 
     for line in code_line:
         line_tmp = line.split("//")[0] + "\n"
+        #line_tmp = split_code(line, "//", max_split=1)[0] + "\n"
         code += line_tmp.lstrip(" ")
     
 
-    code = code.replace("\n", "").split(";")
+    #code = code.replace("\n", "").split(";")
+    code = split_code(code.replace("\n", ""), ";")
 
     logging.info("Buiilding asm")
 
@@ -277,7 +334,7 @@ def compile_smarty(
 
         if line[0] in ACUMULATOR_REGISTER:
             line = line.replace(" ", "")
-            read_line = line.split("=")
+            read_line = line.split("=", 1)
             
 
             r = read_line[0]
@@ -314,7 +371,7 @@ def compile_smarty(
             
             line = line.replace(" ", "")[1:]
 
-            var_name, value = line.split("=")
+            var_name, value = line.split("=", 1)
 
             if not good_variable_name(var_name):
                 raise SmartError(f"Bad variable name : '{var_name}'", line_conter)
@@ -406,7 +463,8 @@ def compile_smarty(
             line = line.replace(" ", "")
 
             function_name, function_arg = line.split(":", 1)
-            function_arg = function_arg.split(",")
+            #function_arg = function_arg.split(",")
+            function_arg = split_code(function_arg, ",")
 
             if not good_variable_name(function_name):
                 raise SmartError(f"Sintaxe error: '{function_name}'", line_conter)
