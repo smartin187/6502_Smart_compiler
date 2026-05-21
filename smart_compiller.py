@@ -156,12 +156,18 @@ def compile_smarty(
         if not good_hex(code):
             raise SmartError(f"Bad hex value '{code}'", line_conter)
     
-    def set_one_A_value(value:str, one_addition:bool=False, recursiv_value:bool=False) -> str:
+    def set_one_A_value(value:str, one_addition:bool=False, recursiv_value:bool=False, forbiden_math:bool=False) -> str:
         """Return the value for set one A."""
+        def control_math() -> None:
+            """If forbiden_math is True, raise SmartError if there is a math in value."""
+            if forbiden_math:
+                raise SmartError(f"Math is forbiden for this value: '{value}'", line_conter)
+
         nonlocal adress_conter
         def eval_value() -> str:
             """Return asm value"""
             if "+" in value:    # addition
+                control_math()
                 try:
                     value_1, value_2 = split_code(value, "+", max_split=1)
                 
@@ -344,9 +350,12 @@ def compile_smarty(
             if len(read_line) != 2:
                 raise SmartError(f"Smart syntaxe error:\nline {line_conter}", line_conter)
         
-
-            
-            code_compile += set_one_A_value(read_line[1]) if r == "A" else "A2" + set_one_A_value(read_line[1])[2:] if r == "X" else "A0" + set_one_A_value(read_line[1])[2:]
+            if r == "A":
+                value_accumulator = set_one_A_value(read_line[1])
+            else:
+                value_accumulator = set_one_A_value(read_line[1], forbiden_math=True)
+          
+            code_compile += value_accumulator if r == "A" else "A2" + value_accumulator[2:] if r == "X" else "A0" + value_accumulator[2:]
 
             adress_conter -= 1 if r != "A" else 0
             
