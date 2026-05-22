@@ -12,6 +12,25 @@ import logging
 
 logging.basicConfig(format="SmartCompiller %(levelname)s: %(message)s", level=logging.INFO)
 
+class ColoredFormatter(logging.Formatter):
+    COLORS = {
+        'DEBUG': '\033[36m',
+        'INFO': '\033[32m',
+        'WARNING': '\033[33m',
+        'ERROR': '\033[31m',
+        'CRITICAL': '\033[31m',
+    }
+    RESET = '\033[0m'
+
+    def format(self, record):
+        log_color = self.COLORS.get(record.levelname, self.RESET)
+        record.levelname = f"{log_color}{record.levelname}{self.RESET}"
+        return super().format(record)
+
+for handler in logging.root.handlers:
+    handler.setFormatter(ColoredFormatter('SmartCompiller %(levelname)s: %(message)s'))
+
+
 logging.info("Starting compiller...")
 
 
