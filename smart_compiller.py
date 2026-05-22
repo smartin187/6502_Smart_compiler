@@ -401,6 +401,9 @@ def compile_smarty(
 
     jump_line = 0
 
+    if code_start.replace(" ", "").replace("\n", "").replace("\t", "") == "":
+        logging.warning("Smart file is empty!")
+
     for line in code:
 
         if jump_line:
