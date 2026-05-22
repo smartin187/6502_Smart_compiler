@@ -575,7 +575,7 @@ def compile_smarty(
                     for char in value_str:
                         code_compile += set_one_A_value(f"'{char}'") + "20 EF FF "
 
-                        adress_conter += 5
+                        adress_conter += 3
                 
                 else:
                     code_compile += set_one_A_value(function_arg[0])
@@ -666,7 +666,7 @@ def compile_smarty(
     if need_input and not function_mode[0]:
         input_adress = adress_conter + CODE_ADRESSE + 1
 
-        hex_input_adress = hex(input_adress)[2:]
+        hex_input_adress = hex(input_adress)[2:].upper()
         hex_input_adress = "0" * (4 - len(hex_input_adress)) + hex_input_adress
 
         code_compile += SmartBuiltIn.input_code
