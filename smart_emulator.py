@@ -161,9 +161,22 @@ def see_memory() -> None:
         if selected_index_acc is not None:
             accumulator_info.selection_set(selected_index_acc)
 
-        # carry flag
+        # flags
+        pos_listbox_flags = flags_info.yview()[0]
+        
+        selection_flags = flags_info.curselection()
+        selected_index_flags = selection_flags[0] if selection_flags else None
 
-        text_carry_str.set(f"Carry Flag : {carry_flag}")
+        flags_info.delete(0, tk.END)
+        
+        flags_info.insert(0, "Flag    Value")
+        for flag_name, flag_value in flags.items():
+            flags_info.insert(tk.END, f"{flag_name} = {flag_value}")
+        
+        flags_info.yview_moveto(pos_listbox_flags)
+
+        if selected_index_flags is not None:
+            flags_info.selection_set(selected_index_flags)
 
         window_memory.after(100, update_memory)
 
@@ -258,14 +271,50 @@ def see_memory() -> None:
 
     frame_accumulator.grid(column=1, row=1)
 
-    carry_frame = tk.LabelFrame(window_memory, text="Carry Flag")
+    frame_flags = tk.LabelFrame(window_memory, text="Flags (6502)")
 
-    text_carry_str = tk.StringVar(carry_frame)
+    def edit_flag(event:tk.Event) -> None:
+        """Open a window for edit the flag value."""
+        def validate() -> None:
+            """Edit flag with the new value."""
+            new_value = entry_value.get()
 
-    text_carry = tk.Label(carry_frame, textvariable=text_carry_str)
-    text_carry.pack()
+            if new_value not in ["0", "1"]:
+                messagebox.showerror("Error", "Invalid value. Please enter 0 or 1.")
+                return
+            
+            flag_index = flags_info.curselection()[0] - 1
+            flag_keys = list(flags.keys())
+            
+            flags[flag_keys[flag_index]] = int(new_value)
 
-    carry_frame.grid(column=0, row=2)
+            window.destroy()
+
+        flag_index = flags_info.curselection()[0] - 1
+        flag_keys = list(flags.keys())
+        flag_name = flag_keys[flag_index]
+        
+        window = tk.Toplevel(window_memory)
+        window.title("Edit Flag")
+
+        text_info = tk.Label(window, text=f"Enter the new value for the {flag_name} flag.\nValue must be 0 or 1.")
+        text_info.pack()
+
+        entry_value = tk.Entry(window, width=5)
+        entry_value.pack()
+
+        button_validate = tk.Button(window, text="Validate", command=validate)
+        button_validate.pack()
+
+    scrollbar_flags = tk.Scrollbar(frame_flags)
+    scrollbar_flags.pack(side=tk.RIGHT, fill=tk.Y)
+
+    flags_info = tk.Listbox(frame_flags, yscrollcommand=scrollbar_flags.set)
+    flags_info.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    scrollbar_flags.config(command=flags_info.yview)
+    flags_info.bind("<Double-Button-1>", edit_flag)
+
+    frame_flags.grid(column=0, row=2)
 
 
     update_memory()
@@ -436,7 +485,7 @@ def emulator_setting() -> None:
 
     var_speed = tk.StringVar(window_setting, value=normal_speed)
 
-    radio_speed_mos = tk.Radiobutton(window_setting, text="Run with a speed of 1Mhz\n(speed of MOS 8502)", variable=var_speed, value="1Mhz")
+    radio_speed_mos = tk.Radiobutton(window_setting, text="Run with a speed of 1Mhz\n(speed of MOS 6502)", variable=var_speed, value="1Mhz")
     radio_speed_mos.pack()
 
     radio_debug = tk.Radiobutton(window_setting, text="Run for debug", variable=var_speed, value="Debug")
@@ -454,7 +503,15 @@ button_setting.grid(column=2, row=0)
 
 RAM = {}
 accumulator = {}
-carry_flag = 0
+flags = {
+    "C": 0,  # Carry
+    "Z": 0,  # Zero
+    "I": 0,  # Interrupt disable
+    "D": 0,  # Decimal mode
+    "B": 0,  # Break
+    "V": 0,  # Overflow
+    "N": 0   # Negative
+}
 run_step = 0
 end_run = False
 
@@ -477,7 +534,7 @@ monitor.bind("<KeyPress>", pressed_key)
 
 def run_smart() -> None:
     """Run smart code."""
-    global code, RAM, accumulator, carry_flag, run_step, end_run
+    global code, RAM, accumulator, flags, run_step, end_run
 
     code = code.split(" ")
 
@@ -494,7 +551,15 @@ def run_smart() -> None:
     RAM["D010"] = "00"
     RAM["D011"] = "00"
 
-    carry_flag = 0
+    """flags = {
+        "C": 0,  # Carry flag
+        "Z": 0,  # Zero flag
+        "I": 0,  # Interrupt disable flag
+        "D": 0,  # Decimal mode flag
+        "B": 0,  # Break flag
+        "V": 0,  # Overflow flag
+        "N": 0   # Negative flag
+    }"""
 
     run_fail = False
 
@@ -585,21 +650,27 @@ def run_smart() -> None:
             run_step = int(goto, base=16) - START + 1
         
         elif run == "18":
-            carry_flag = 0
+            flags["C"] = 0
 
             run_step += 1
         
-        elif run == "69":       # add to A
+        elif run == "69":
             add = code[run_step + 1]
 
             new_A = int(accumulator["A"], base=16) + int(add, base=16)
 
             if new_A >= 256:
-                carry_flag = 1
-
+                flags["C"] = 1
+                flags["V"] = 1  # Set Overflow flag
                 new_A -= 256
+            else:
+                flags["C"] = 0
 
-            accumulator["A"] = hex(new_A)[2:]
+            # Set Zero and Negative flags
+            flags["Z"] = 1 if new_A == 0 else 0
+            flags["N"] = 1 if new_A & 0x80 else 0
+
+            accumulator["A"] = hex(new_A)[2:].upper().zfill(2)
 
             run_step += 2
 
@@ -614,11 +685,17 @@ def run_smart() -> None:
             new_A = int(accumulator["A"], base=16) + int(add, base=16)
 
             if new_A >= 256:
-                carry_flag = 1
-
+                flags["C"] = 1
+                flags["V"] = 1  # Set Overflow flag
                 new_A -= 256
+            else:
+                flags["C"] = 0
 
-            accumulator["A"] = hex(new_A)[2:]
+
+            flags["Z"] = 1 if new_A == 0 else 0
+            flags["N"] = 1 if new_A & 0x80 else 0
+
+            accumulator["A"] = hex(new_A)[2:].upper().zfill(2)
 
             run_step += 3
         
@@ -659,7 +736,7 @@ def export_memory() -> None:
     file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("Json files", "*.json")])
 
     if file_path:
-        data = {"RAM": RAM, "accumulator": accumulator, "carry_flag": carry_flag}
+        data = {"RAM": RAM, "accumulator": accumulator, "carry_flag": flags["C"]}
 
         Path(file_path).write_text(json.dumps(data, indent=4), encoding="utf-8")
 
