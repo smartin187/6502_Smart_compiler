@@ -538,8 +538,8 @@ def run_smart() -> None:
 
     code = code.split(" ")
 
-    while code[-1] == "":
-        del code[-1]
+
+    code = [x for x in code if x != ""]
 
     START = int(code[0][:-1], base=16)
 
