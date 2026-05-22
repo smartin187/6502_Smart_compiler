@@ -460,6 +460,8 @@ def run_smart() -> None:
 
     run_fail = False
 
+    return_ardess = 0
+
     while run_step < len(code):
         run = code[run_step]
 
@@ -509,12 +511,21 @@ def run_smart() -> None:
                 run_step += 2
             
             else:
-                messagebox.showerror("Error", "Unknow adress for call.")
-                run_fail = True
-                break
+                return_ardess = run_step + 2
+
+                run_step = int(code[run_step + 1] + code[run_step], base=16) - START + 1
+
+                """if not(0 >= run_step <= len(code)):
+
+                    messagebox.showerror("Error", "Unknow adress for call.")
+                    run_fail = True
+                    break"""
         
         elif run == "00":
             break
+
+        elif run == "60":
+            run_step = return_ardess
 
         elif run == "4C":   # goto
             goto = code[run_step + 2] + code[run_step + 1]
