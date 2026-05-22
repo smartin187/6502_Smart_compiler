@@ -157,6 +157,17 @@ print: .my_variable; // B
 print: 0x42 + 1;  // C
 ```
 
+###### `input`
+
+This function is a return-function. This function return a char value of pressed key.
+
+Example:
+```Smart
+.key = input:;
+
+print: .key
+```
+
 ###### `goto`
 
 This function jumps to a [label](#labels-anchors).
