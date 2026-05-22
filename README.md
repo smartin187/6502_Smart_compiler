@@ -132,6 +132,11 @@ The call syntax is: `functionname: argument;`.
 
 Some functions do not take any arguments, but you still need to include the colon `:`.
 
+They are return-function and function. If the function is a return-function, you can do:
+```Smart
+.variable = function_name:;
+```
+
 ##### Smart built-in functions
 
 ###### `print`
@@ -203,6 +208,14 @@ void name_of_function{;
 For use your function:
 ```Smart
 name_of_function:;
+```
+
+If your function is a return-function, you need the line:
+```Smart
+void returnfonction{;
+    // code of function
+    return 1;
+}
 ```
 
 ## Compile Smart code

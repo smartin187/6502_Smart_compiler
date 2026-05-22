@@ -36,6 +36,7 @@ class SmartFunction:
         self.source_code_function = ""
         self.code_compile_f = ""
         self.function_adress = 0
+        self.return_value = False
         
     
 
@@ -103,7 +104,13 @@ def compile_smarty(
         argv:list | tuple=[],
         CODE_ADRESSE:int=0x400,
         make_file:bool=True,
-        function_mode:tuple[bool, str, list[str], list[str]]=(False, "", [], [], "", {})
+        function_mode:tuple[
+            bool,
+            str,
+            list[str],
+            list[str],
+            SmartFunction
+        ]=(False, "", [], [], "", {}, None)
     ) -> None:
     """Start the compile from file."""
     global line_of_instruction, code_line
@@ -166,6 +173,7 @@ def compile_smarty(
         nonlocal adress_conter
         def eval_value() -> str:
             """Return asm value"""
+            nonlocal adress_conter, code_compile
             if "+" in value:    # addition
                 control_math()
                 try:
@@ -232,6 +240,24 @@ def compile_smarty(
             elif value[0] == "\"":
                 raise SmartError(f"Smart forbiden value: '{value}'", line_conter)
 
+            elif ":" in value:  # call function for set on A
+
+                func_name_value, func_arg_value = value.split(":", 1)
+
+                if func_name_value in function_name_usr:
+                    """if not function_name_usr[func_name_value].return_value:
+                        raise SmartError(f"Function '{func_name_value}' is not a return-function.", line_conter)"""
+
+                else:
+                    raise SmartError(f"Function '{func_name_value}' not exist.", line_conter)
+
+                adress_conter += 13
+
+                text_code = f"!smart_call_func|{func_name_value}|{caller_ctx}|{adress_conter}"
+
+                function_replace.append(text_code)
+
+                return text_code
         
             else:
                 raise SmartError(f"Smart value error: {value}", line_conter)
@@ -465,7 +491,22 @@ def compile_smarty(
             
 
             logging.debug(f"'{func_name}' has been created.")
+        
+        elif line.replace(" ", "").startswith("return"):        # return value
             
+            if not function_mode[0]:
+                raise SmartError("Smart syntaxe error: 'return' key word can't be used outside function.", line_conter)
+            
+            try:
+                value_return = line.strip().split(" ", 1)[1].replace(" ", "")
+            except:
+                raise SmartError(f"Smart syntaxe error: '{line}'", line_conter)
+
+            code_compile += set_one_A_value(value_return)
+            
+            function_mode[6].return_value = True
+
+
 
         else:     # function
             if ":" not in line:
@@ -600,7 +641,9 @@ def compile_smarty(
 
             code = function_name_usr[function].source_code_function
 
-            function_name_usr[function].code_compile_f = compile_smarty(make_file=False, function_mode=(True, code, function_name_usr, function_replace, function, smart_var), CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1)
+            smart_func = function_name_usr[function]
+
+            function_name_usr[function].code_compile_f = compile_smarty(make_file=False, function_mode=(True, code, function_name_usr, function_replace, function, smart_var, smart_func), CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1)
 
 
 
