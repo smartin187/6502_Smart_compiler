@@ -97,6 +97,11 @@ def disable_edit(event:tk.Event) -> str:
 
 monitor.bind("<Key>", disable_edit)
 
+var_info_run = tk.StringVar(window_emulator)
+
+text_info_run = tk.Label(window_emulator, textvariable=var_info_run)
+text_info_run.pack()
+
 frame_option = tk.Frame(window_emulator)
 frame_option.pack()
 
@@ -438,6 +443,22 @@ carry_flag = 0
 run_step = 0
 end_run = False
 
+def pressed_key(event:tk.Event) -> str:
+    """When a key are pressed, set ad D010 and D011 adress the key."""
+    char = event.char.upper()
+    
+    if char not in ALLOW_CHAR:
+        return "break"
+    try:
+        RAM["D010"] = hex(ord(char))[2:].upper()
+        RAM["D011"] = "01"
+    except:
+        pass
+    return "break"
+
+window_emulator.bind("<KeyPress>", pressed_key)
+monitor.bind("<KeyPress>", pressed_key)
+
 
 def run_smart() -> None:
     """Run smart code."""
@@ -455,6 +476,8 @@ def run_smart() -> None:
     accumulator = {"A":"00", "X":"00", "Y":"00"}
 
     RAM = {"0" + hex(i)[2:]:"00" for i in range(0x300, 0x400 + 1)}
+    RAM["D010"] = "00"
+    RAM["D011"] = "00"
 
     carry_flag = 0
 
@@ -467,8 +490,22 @@ def run_smart() -> None:
 
         if one_pause:
             continue
+        
+        if " ".join(code[run_step:run_step + 7]) == "10 FB AD 10 D0 29 7F":     # special code:
+            var_info_run.set("The programme is waiting for a key...")
+            while RAM["D011"] == "00":
+                sleep(0.1)        # wait for a key
+            
+            var_info_run.set("")
+            
+            RAM["D011"] = "00"
+            accumulator["A"] = RAM["D010"]
 
-        if run == "A9":     # A
+            run_step += 7
+
+        # normal instruction:
+
+        elif run == "A9":     # A
             accumulator["A"] = code[run_step + 1]
             run_step += 2
         
@@ -550,7 +587,9 @@ def run_smart() -> None:
             accumulator["A"] = hex(new_A)[2:]
 
             run_step += 2
-        
+
+
+
         elif run == "6D":
             RAM_adress = code[run_step + 2] + code[run_step + 1]
             
