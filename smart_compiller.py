@@ -10,6 +10,8 @@ from pathlib import Path
 import os
 import logging
 
+os.system('color')
+
 logging.basicConfig(format="SmartCompiller %(levelname)s: %(message)s", level=logging.INFO)
 
 class ColoredFormatter(logging.Formatter):
@@ -37,7 +39,7 @@ logging.info("Starting compiller...")
 class SmartError(Exception):
     """The error for Smart (syntaxe error)."""
     def __init__(self, message:str, nb_instruction:int=0):
-        logging.error("\033[31mError during build:")
+        logging.critical("\033[31mError during build:")
 
 
         nbline, line_error = line_of_instruction(nb_instruction)
@@ -56,6 +58,8 @@ class SmartFunction:
         self.code_compile_f = ""
         self.function_adress = 0
         self.return_value = False
+
+        self.called_function = False    # if False at the end of build, the function was never called
 
 code_line = None
 
@@ -752,6 +756,13 @@ def compile_smarty(
                 r_adress = "0" * (4 - len(r_adress)) + r_adress
 
                 code_compile = code_compile.replace(function, f"A9 {r_adress[:2]} 8D {return_aress[2:]} {return_aress[:2]} A9 {r_adress[2:]} 8D {return_aress_2[2:]} {return_aress_2[:2]} 4C {hex_adress_function} ")
+
+                function_name_usr[function_name_tmp].called_function = True
+
+    if not function_mode[0]:
+        for name, f in function_name_usr.items():
+            if not f.called_function:
+                logging.warning(f"Function '{name}' was never called.")
 
     # set the goto:
 
