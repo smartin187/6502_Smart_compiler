@@ -236,16 +236,24 @@ def see_memory() -> None:
         button_validate = tk.Button(window, text="Validate", command=validate)
         button_validate.pack()
 
-    RAM_info = tk.Listbox(frame_RAM)
-    RAM_info.pack()
+    scrollbar_RAM = tk.Scrollbar(frame_RAM)
+    scrollbar_RAM.pack(side=tk.RIGHT, fill=tk.Y)
+
+    RAM_info = tk.Listbox(frame_RAM, yscrollcommand=scrollbar_RAM.set)
+    RAM_info.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    scrollbar_RAM.config(command=RAM_info.yview)
     RAM_info.bind("<Double-Button-1>", edit_ram)
 
     frame_RAM.grid(column=0, row=1)
 
     frame_accumulator = tk.LabelFrame(window_memory, text="Accumulator (register)")
 
-    accumulator_info = tk.Listbox(frame_accumulator)
-    accumulator_info.pack()
+    scrollbar_acc = tk.Scrollbar(frame_accumulator)
+    scrollbar_acc.pack(side=tk.RIGHT, fill=tk.Y)
+
+    accumulator_info = tk.Listbox(frame_accumulator, yscrollcommand=scrollbar_acc.set)
+    accumulator_info.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    scrollbar_acc.config(command=accumulator_info.yview)
     accumulator_info.bind("<Double-Button-1>", edit_accumulator)
 
     frame_accumulator.grid(column=1, row=1)
@@ -302,8 +310,15 @@ def window_code() -> None:
     text_info = tk.Label(window_code, text="See code\nDouble click on a line for edit the code.\nCarful: editing code can cause errors.")
     text_info.pack()
 
-    list_code = tk.Listbox(window_code, width=50)
-    list_code.pack(expand=True, fill=tk.BOTH)
+    frame_code = tk.Frame(window_code)
+    frame_code.pack(expand=True, fill=tk.BOTH)
+
+    scrollbar_code = tk.Scrollbar(frame_code)
+    scrollbar_code.pack(side=tk.RIGHT, fill=tk.Y)
+
+    list_code = tk.Listbox(frame_code, width=50, yscrollcommand=scrollbar_code.set)
+    list_code.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+    scrollbar_code.config(command=list_code.yview)
 
     def edit_code(event:tk.Event) -> None:
         """Open a window for edit the code."""
