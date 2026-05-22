@@ -37,12 +37,12 @@ class SmartFunction:
         self.code_compile_f = ""
         self.function_adress = 0
         self.return_value = False
-        
-    
 
 code_line = None
 
 line_of_instruction = None
+
+need_input = False
 
 def split_code(
         code:str,
@@ -114,6 +114,25 @@ def compile_smarty(
     ) -> None:
     """Start the compile from file."""
     global line_of_instruction, code_line
+
+    class SmartBuiltIn:
+        """Set the built in function of Smart.
+        Warning: some function are not in this class because it is assembly function (print, goto...)"""
+        
+        input_code = "AD 11 D0 10 FB AD 10 D0 29 7F 60 "
+        def smartInput() -> None:
+            """Add an input function."""
+            global need_input
+            nonlocal code_compile, adress_conter
+            need_input = True
+
+            code_compile += "20 !  smart_input"     # set 2 space on placeholder for counting adress
+
+            adress_conter += 3
+        
+        
+
+
     def line_of_instruction(nb_instruction:int) -> tuple[int, str]:
         """Return the number of line and the line of the instruction."""
         nb = 0
@@ -244,18 +263,24 @@ def compile_smarty(
 
                 func_name_value, func_arg_value = value.split(":", 1)
 
-                if func_name_value in function_name_usr:
-                    """if not function_name_usr[func_name_value].return_value:
-                        raise SmartError(f"Function '{func_name_value}' is not a return-function.", line_conter)"""
-
+                if func_name_value == "input":
+                    SmartBuiltIn.smartInput()
+                    return ""
+                
                 else:
-                    raise SmartError(f"Function '{func_name_value}' not exist.", line_conter)
 
-                adress_conter += 13
+                    if func_name_value in function_name_usr:
+                        """if not function_name_usr[func_name_value].return_value:
+                            raise SmartError(f"Function '{func_name_value}' is not a return-function.", line_conter)"""
 
-                text_code = f"!smart_call_func|{func_name_value}|{caller_ctx}|{adress_conter}"
+                    else:
+                        raise SmartError(f"Function '{func_name_value}' not exist.", line_conter)
 
-                function_replace.append(text_code)
+                    adress_conter += 13
+
+                    text_code = f"!smart_call_func|{func_name_value}|{caller_ctx}|{adress_conter}"
+
+                    function_replace.append(text_code)
 
                 return text_code
         
@@ -608,6 +633,11 @@ def compile_smarty(
                 code_compile += code_tmp
 
                 adress_conter += code_tmp.count(" ")
+            
+            elif function_name == "input":
+                logging.warning("'input' function is a return-function, but was used as a function.")
+
+                SmartBuiltIn.smartInput()
 
 
             elif function_name in function_name_usr:
@@ -633,6 +663,16 @@ def compile_smarty(
     else:
         code_compile += "4C 00 00 "
     
+    if need_input and not function_mode[0]:
+        input_adress = adress_conter + CODE_ADRESSE + 1
+
+        hex_input_adress = hex(input_adress)[2:]
+        hex_input_adress = "0" * (4 - len(hex_input_adress)) + hex_input_adress
+
+        code_compile += SmartBuiltIn.input_code
+        adress_conter += SmartBuiltIn.input_code.count(" ")
+
+        code_compile = code_compile.replace("!  smart_input", f"{hex_input_adress[2:]} {hex_input_adress[:2]} ")
 
     # compile function:
 
