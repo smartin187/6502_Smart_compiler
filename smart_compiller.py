@@ -377,6 +377,7 @@ def compile_smarty(
 
     if function_mode[0]:
         code_line = function_mode[1].split("\n")
+        code_start = function_mode[1]
     else:
         sma = open(file, "r", encoding="UTF-8")
 
