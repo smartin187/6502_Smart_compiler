@@ -248,6 +248,11 @@ def compile_smarty(
                 else:
                     return f"6D {adress_for_RAM(smart_var[variable])} "
             
+            elif value.startswith("True"):
+                return "A9 01 "
+
+            elif value.startswith("False"):
+                return "A9 00 "
 
             elif value.startswith("0x"):
                 hex_value = value[2:]
