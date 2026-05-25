@@ -122,6 +122,92 @@ def split_code(
     return split
 
 
+def replace_code(
+        code: str,
+        old: str,
+        new: str,
+        string: tuple = ("'", '"'),
+        max_replace: int = -1
+    ) -> str:
+    """Replace a substring in code, but ignore if it is in a str or char Smart Value.
+    arg count for set the max replacements. If count=-1, no limit of replacements."""
+
+    if code == "" or old == "":
+        return code
+    
+    on_str = False
+    open_str = ""
+    result = []
+    i = 0
+    replacements = 0
+    
+    while i < len(code):
+        char = code[i]
+        
+        if not on_str:
+            if char in string:
+                on_str = True
+                open_str = char
+                result.append(char)
+                i += 1
+            elif code[i:i+len(old)] == old:
+                if max_replace == -1 or replacements < max_replace:
+                    result.append(new)
+                    i += len(old)
+                    replacements += 1
+                else:
+                    result.append(char)
+                    i += 1
+            else:
+                result.append(char)
+                i += 1
+        else:
+            if char == open_str:
+                on_str = False
+            
+            result.append(char)
+            i += 1
+    
+    return "".join(result)
+
+
+def in_code(
+        substring: str,
+        code: str,
+        string: tuple = ("'", '"')
+    ) -> bool:
+    """Check if substring is in code, but ignore if it is in a str or char Smart Value.
+    Similar to 'substring in code', but with string awareness.
+    Returns True if substring is found outside strings, False otherwise."""
+
+    if code == "" or substring == "":
+        return False
+    
+    on_str = False
+    open_str = ""
+    i = 0
+    
+    while i < len(code):
+        char = code[i]
+        
+        if not on_str:
+            if char in string:
+                on_str = True
+                open_str = char
+                i += 1
+            elif code[i:i+len(substring)] == substring:
+                return True
+            else:
+                i += 1
+        else:
+            if char == open_str:
+                on_str = False
+            
+            i += 1
+    
+    return False
+
+
 def compile_smarty(
         file:str="",
         argv:list | tuple=[],
@@ -216,7 +302,7 @@ def compile_smarty(
         def eval_value() -> str:
             """Return asm value"""
             nonlocal adress_conter, code_compile
-            if "+" in value:    # addition
+            if in_code("+", value):    # addition
                 control_math()
                 try:
                     value_1, value_2 = split_code(value, "+", max_split=1)
@@ -287,7 +373,7 @@ def compile_smarty(
             elif value[0] == "\"":
                 raise SmartError(f"Smart forbiden value: '{value}'", line_conter)
 
-            elif ":" in value:  # call function for set on A
+            elif in_code(":", value):  # call function for set on A
 
                 func_name_value, func_arg_value = value.split(":", 1)
 
@@ -424,7 +510,7 @@ def compile_smarty(
 
 
         if line[0] in ACUMULATOR_REGISTER:
-            line = line.replace(" ", "")
+            line = replace_code(line, " ", "")
             read_line = line.split("=", 1)
             
 
@@ -463,7 +549,7 @@ def compile_smarty(
         
         elif line.startswith("."):      # variable
             
-            line = line.replace(" ", "")[1:]
+            line = replace_code(line, " ", "")[1:]
 
             var_name, value = line.split("=", 1)
 
@@ -555,7 +641,7 @@ def compile_smarty(
                 raise SmartError("Smart syntaxe error: 'return' key word can't be used outside function.", line_conter)
             
             try:
-                value_return = line.strip().split(" ", 1)[1].replace(" ", "")
+                value_return = replace_code(line.strip().split(" ", 1)[1], " ", "")
             except:
                 raise SmartError(f"Smart syntaxe error: '{line}'", line_conter)
 
@@ -566,10 +652,10 @@ def compile_smarty(
 
 
         else:     # function
-            if ":" not in line:
+            if not in_code(":", line):
                 raise SmartError("Smart invalid syntaxe", line_conter)
 
-            line = line.replace(" ", "")
+            line = replace_code(line, " ", "")
 
             function_name, function_arg = line.split(":", 1)
             #function_arg = function_arg.split(",")
