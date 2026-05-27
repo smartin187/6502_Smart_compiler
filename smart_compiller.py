@@ -316,7 +316,7 @@ def compile_smarty(
                 
                     hex_value_2 = set_one_A_value(value_2, one_addition=True, recursiv_value=True)
 
-                    if hex_value_2.startswith("6D ") or hex_value_2.startswith("!smart_call_func|"):
+                    if hex_value_2.startswith("6D ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
                         asm = f"{hex_value_1}18 {hex_value_2}"
 
                     else:
@@ -401,7 +401,13 @@ def compile_smarty(
             elif value[0] == "\"":
                 raise SmartError(f"Smart forbiden value: '{value}'", line_conter)
 
-            elif in_code(":", value):  # call function for set on A
+            elif in_code(":", value):
+
+                # save A to 0x02E7 if the function is a return-function
+                #text_code = "8D E7 02 "
+                saver_A = "8D E7 02 "
+
+                counter_adress_value += 3
 
                 func_name_value, func_arg_value = value.split(":", 1)
 
@@ -431,9 +437,9 @@ def compile_smarty(
                     counter_adress_value += 3
 
                     if not one_addition:
-                        return text_code + "AD E8 02 "
+                        return saver_A + text_code + "AD E8 02 "
                     else:
-                        return text_code + "6D E8 02 "
+                        return saver_A + text_code + "6D E8 02 "
 
 
                     
@@ -630,8 +636,7 @@ def compile_smarty(
                 raise SmartError(f"Invalid name for {func_name}", line_conter)
 
             logging.debug(f"Building function '{func_name}'")
-
-            
+           
             # get the code of function:
 
             funciton_line = line_conter + 1
@@ -690,9 +695,6 @@ def compile_smarty(
             except:
                 raise SmartError(f"Smart syntaxe error: '{line}'", line_conter)
 
-            # need to save A at RAM (if the value is used on math)
-            code_compile += "8D E7 02 "
-            adress_conter += 3
 
             code_compile += set_one_A_value(value_return)
             
