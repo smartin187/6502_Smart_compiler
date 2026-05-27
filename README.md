@@ -270,3 +270,13 @@ In the interpreter window, click `see memory` to view memory in real time.
 ### Speeding up program execution
 
 On a Smarty Kit, execution speed is slow. With the interpreter, you can increase the speed: click `setting`, then uncheck `run with speed of 1Mhz`. Execution will become much faster.
+
+
+## Information about memory
+
+Smart use RAM.
+- `0x0300` to `0x0400`: variables
+- `0x02E7` to `0x02FF`: Smart system:
+>`0x02E7`: save of A (for return-function)<br>`0x02E8`: value of return-function
+
+
