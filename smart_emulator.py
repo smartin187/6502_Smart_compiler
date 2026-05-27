@@ -547,7 +547,7 @@ def run_smart() -> None:
 
     accumulator = {"A":"00", "X":"00", "Y":"00"}
 
-    RAM = {"0" + hex(i)[2:]:"00" for i in range(0x300, 0x400 + 1)}
+    RAM = {"0" + hex(i)[2:].upper():"00" for i in range(0x02E7, 0x400 + 1)}
     RAM["D010"] = "00"
     RAM["D011"] = "00"
 
@@ -569,6 +569,7 @@ def run_smart() -> None:
         run = code[run_step]
 
         if one_pause:
+            sleep(0.1)
             continue
         
         if " ".join(code[run_step:run_step + 7]) == "10 FB AD 10 D0 29 7F":     # special code:

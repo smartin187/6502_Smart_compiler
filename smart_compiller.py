@@ -207,6 +207,7 @@ def in_code(
     
     return False
 
+counter_adress_value = 0        # the relative adress used by set_one_A_value. Be carful with this value.
 
 def compile_smarty(
         file:str="",
@@ -297,23 +298,31 @@ def compile_smarty(
             """If forbiden_math is True, raise SmartError if there is a math in value."""
             if forbiden_math:
                 raise SmartError(f"Math is forbiden for this value: '{value}'", line_conter)
-
+        global counter_adress_value
         nonlocal adress_conter
+
         def eval_value() -> str:
             """Return asm value"""
+            global counter_adress_value
             nonlocal adress_conter, code_compile
             if in_code("+", value):    # addition
                 control_math()
                 try:
                     value_1, value_2 = split_code(value, "+", max_split=1)
+
+                    hex_value_1 = set_one_A_value(value_1, recursiv_value=True)
+
+                    counter_adress_value += 1       # add for the OP code 18
                 
                     hex_value_2 = set_one_A_value(value_2, one_addition=True, recursiv_value=True)
 
-                    if hex_value_2.startswith("6D "):
-                        asm = f"{set_one_A_value(value_1, recursiv_value=True)}18 {hex_value_2}"
+                    if hex_value_2.startswith("6D ") or hex_value_2.startswith("!smart_call_func|"):
+                        asm = f"{hex_value_1}18 {hex_value_2}"
 
                     else:
-                        asm = f"{set_one_A_value(value_1, recursiv_value=True)}18 69 {hex_value_2[3:]}"
+                        asm = f"{hex_value_1}18 69 {hex_value_2[3:]}"
+                        
+                        
 
                     return asm
 
@@ -322,6 +331,16 @@ def compile_smarty(
 
                 except:
                     raise SmartError(f"Error with math '+' : '{value}'", line_conter)
+                
+                """elif in_code("==", value):
+                try:
+                    value_1, value_2 = value.split("==", 1)
+
+                    hex_value_1 = set_one_A_value(value_1)
+
+
+                except SmartError as se:
+                    raise SmartError(str(se), se.nbline)"""
 
             elif value[0] == ".":
                 variable = value[1:]
@@ -329,21 +348,27 @@ def compile_smarty(
                 if variable not in smart_var:
                     raise SmartError(f"Name error : name '{value}' is not defined.", line_conter)
                 
+                counter_adress_value += 3
+                
                 if not one_addition:
                     return f"AD {adress_for_RAM(smart_var[variable])} "
                 else:
                     return f"6D {adress_for_RAM(smart_var[variable])} "
             
             elif value.startswith("True"):
+                counter_adress_value += 2
                 return "A9 01 "
 
             elif value.startswith("False"):
+                counter_adress_value += 2
                 return "A9 00 "
 
             elif value.startswith("0x"):
                 hex_value = value[2:]
 
                 control_hex(hex_value)
+
+                counter_adress_value += 2
 
 
                 return "A9 " + hex_value + " "
@@ -365,9 +390,12 @@ def compile_smarty(
 
                 value_hex = ("0" if len(value_int_to_hex) == 1 else "") + value_int_to_hex
 
+                counter_adress_value += 2
+
                 return "A9 " + value_hex + " "
 
             elif value[0] == "'":
+                counter_adress_value += 2
                 return "A9 " + get_char(value) + " "
         
             elif value[0] == "\"":
@@ -379,6 +407,7 @@ def compile_smarty(
 
                 if func_name_value == "input":
                     SmartBuiltIn.smartInput()
+                    counter_adress_value += 3
                     return ""
                 
                 else:
@@ -392,15 +421,31 @@ def compile_smarty(
 
                     adress_conter += 13
 
-                    text_code = f"!smart_call_func|{func_name_value}|{caller_ctx}|{adress_conter}"
+                    print("counter_adress_value", counter_adress_value)
 
+                    text_code = f"!smart_call_func|{func_name_value}|{caller_ctx}|{adress_conter + counter_adress_value}"
+
+                    
                     function_replace.append(text_code)
 
-                return text_code
+                    counter_adress_value += 3
+
+                    if not one_addition:
+                        return text_code + "AD E8 02 "
+                    else:
+                        return text_code + "6D E8 02 "
+
+
+                    
+
+                #return text_code
         
             else:
                 raise SmartError(f"Smart value error: {value}", line_conter)
         
+        if not recursiv_value:
+            counter_adress_value = 0
+
         asm_v = eval_value()
 
         if not recursiv_value:
@@ -645,9 +690,21 @@ def compile_smarty(
             except:
                 raise SmartError(f"Smart syntaxe error: '{line}'", line_conter)
 
+            # need to save A at RAM (if the value is used on math)
+            code_compile += "8D E7 02 "
+            adress_conter += 3
+
             code_compile += set_one_A_value(value_return)
             
             function_mode[6].return_value = True
+
+            # save new A at RAM
+            code_compile += "8D E8 02 "
+            adress_conter += 3
+
+            # reuse the old value for A
+            code_compile += "AD E7 02 "
+            adress_conter += 3
 
 
 
@@ -756,7 +813,6 @@ def compile_smarty(
                 logging.warning("'input' function is a return-function, but was used as a function.")
 
                 SmartBuiltIn.smartInput()
-
 
             elif function_name in function_name_usr:
 
