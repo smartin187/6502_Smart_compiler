@@ -404,7 +404,6 @@ def compile_smarty(
             elif in_code(":", value):
 
                 # save A to 0x02E7 if the function is a return-function
-                #text_code = "8D E7 02 "
                 saver_A = "8D E7 02 "
 
                 counter_adress_value += 3
@@ -427,8 +426,6 @@ def compile_smarty(
 
                     adress_conter += 13
 
-                    print("counter_adress_value", counter_adress_value)
-
                     text_code = f"!smart_call_func|{func_name_value}|{caller_ctx}|{adress_conter + counter_adress_value}"
 
                     
@@ -440,12 +437,7 @@ def compile_smarty(
                         return saver_A + text_code + "AD E8 02 "
                     else:
                         return saver_A + text_code + "6D E8 02 "
-
-
-                    
-
-                #return text_code
-        
+      
             else:
                 raise SmartError(f"Smart value error: {value}", line_conter)
         
@@ -533,11 +525,8 @@ def compile_smarty(
 
     for line in code_line:
         line_tmp = line.split("//")[0] + "\n"
-        #line_tmp = split_code(line, "//", max_split=1)[0] + "\n"
         code += line_tmp.lstrip(" ")
     
-
-    #code = code.replace("\n", "").split(";")
     code = split_code(code.replace("\n", ""), ";")
 
     logging.info("Buiilding asm")
@@ -717,7 +706,7 @@ def compile_smarty(
             line = replace_code(line, " ", "")
 
             function_name, function_arg = line.split(":", 1)
-            #function_arg = function_arg.split(",")
+
             function_arg = split_code(function_arg, ",")
 
             if not good_variable_name(function_name):
@@ -877,8 +866,7 @@ def compile_smarty(
 
         # call function
         for i in range(2):
-            for f in function_replace:
-                function = f
+            for function in function_replace:
 
                 parts = function.split("|")
                 if len(parts) == 3:
