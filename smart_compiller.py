@@ -75,6 +75,14 @@ def split_code(
     ) -> list[str]:
     """Split a code, but ignore sep if it is in a str or char Smart Value.
     arg max for set the max split. If max=0, no limit of split."""
+    def char_is_sep(i:int) -> bool | str:
+        """Return the sep if char is in sep, False else."""
+        for s in sep:
+            if code[i:i+len(s)] == s:
+                return s
+        return False
+
+
 
     if code == "":
         return ()
@@ -91,13 +99,23 @@ def split_code(
 
     nb_split = 0
 
-    for char in code:
+    wait_char = 0
+
+    for i, char in enumerate(code):
+        if wait_char:
+            wait_char -= 1
+            continue
+
         if not on_str:
             if char in string:
                 on_str = True
                 open_str = char
 
-            if char in sep:
+            char_is_sep_result = char_is_sep(i)
+
+            if char_is_sep_result:
+                wait_char = len(char_is_sep_result) - 1
+
                 if max_split:
                     if nb_split == max_split:
                         new_element.append(char)
