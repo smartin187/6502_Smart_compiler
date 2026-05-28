@@ -361,7 +361,7 @@ def compile_smarty(
                     if hex_value_2.startswith("6D ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
                         
                         
-                        asm = f"{hex_value_1}CD {hex_value_2}"
+                        asm = f"{hex_value_1}CD {hex_value_2[3:]}"
 
                     else:
                         asm = f"{hex_value_1}C9 {hex_value_2[3:]}"

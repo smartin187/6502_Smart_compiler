@@ -684,8 +684,8 @@ def run_smart() -> None:
 
             run_step += 2
 
-        elif run == "C9":       # compare A
-            value = code[run_step + 1]
+        elif run == "C9" or run == "CD":       # compare A
+            value = code[run_step + 1] if run == "C9" else RAM[code[run_step + 2] + code[run_step + 1]]
 
             result = int(accumulator["A"], base=16) - int(value, base=16)
 
@@ -693,7 +693,7 @@ def run_smart() -> None:
             flags["Z"] = 1 if result == 0 else 0
             flags["N"] = 1 if result & 0x80 else 0
 
-            run_step += 2
+            run_step += 2 if run == "C9" else 3
 
         elif run == "D0":       # BNE
             offset = int(code[run_step + 1], base=16)
