@@ -531,6 +531,10 @@ def pressed_key(event:tk.Event) -> str:
 window_emulator.bind("<KeyPress>", pressed_key)
 monitor.bind("<KeyPress>", pressed_key)
 
+def set_flag_for_LD(byte_hex: str) -> None:
+    v = int(byte_hex, 16) & 0xFF
+    flags["Z"] = 1 if v == 0 else 0
+    flags["N"] = 1 if (v & 0x80) else 0
 
 def run_smart() -> None:
     """Run smart code."""
@@ -589,14 +593,17 @@ def run_smart() -> None:
         elif run == "A9":     # A
             accumulator["A"] = code[run_step + 1]
             run_step += 2
+            set_flag_for_LD(accumulator["A"])
         
         elif run == "A2":
             accumulator["X"] = code[run_step + 1]
             run_step += 2
+            set_flag_for_LD(accumulator["X"])
         
         elif run == "A0":
             accumulator["Y"] = code[run_step + 1]
             run_step += 2
+            set_flag_for_LD(accumulator["Y"])
         
         elif run == "8D":
             adress = code[run_step + 2] + code[run_step + 1]
@@ -615,6 +622,8 @@ def run_smart() -> None:
 
         elif run == "AD":
             accumulator["A"] = RAM[code[run_step + 2] + code[run_step + 1]]
+
+            set_flag_for_LD(accumulator["A"])
 
             run_step += 3
         
@@ -675,7 +684,24 @@ def run_smart() -> None:
 
             run_step += 2
 
+        elif run == "C9":       # compare A
+            value = code[run_step + 1]
 
+            result = int(accumulator["A"], base=16) - int(value, base=16)
+
+            flags["C"] = 1 if result >= 0 else 0
+            flags["Z"] = 1 if result == 0 else 0
+            flags["N"] = 1 if result & 0x80 else 0
+
+            run_step += 2
+
+        elif run == "D0":       # BNE
+            offset = int(code[run_step + 1], base=16)
+
+            if flags["Z"] == 0:
+                run_step += 2 + offset
+            else:
+                run_step += 2
 
         elif run == "6D":
             RAM_adress = code[run_step + 2] + code[run_step + 1]
