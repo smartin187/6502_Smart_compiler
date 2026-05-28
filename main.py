@@ -7,6 +7,7 @@ Main module of Smart compiller.
 from sys import argv
 import traceback
 from smart_compiller import SmartError, compile_smarty
+import logging
 
 CODE_ADRESSE = 1024
 
@@ -20,6 +21,9 @@ try:
 except SmartError:
     quit()
 
+except KeyboardInterrupt:
+    logging.critical("User keyboard interrupt")
+
 except:
-    print("Error during build")
+    logging.critical("Error during build")
     print(traceback.format_exc())
