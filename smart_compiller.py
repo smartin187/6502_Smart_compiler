@@ -350,15 +350,32 @@ def compile_smarty(
                 except:
                     raise SmartError(f"Error with math '+' : '{value}'", line_conter)
                 
-                """elif in_code("==", value):
+            elif in_code("==", value):
                 try:
-                    value_1, value_2 = value.split("==", 1)
+                    value_1, value_2 = split_code(value, "==", max_split=1)
 
-                    hex_value_1 = set_one_A_value(value_1)
+                    hex_value_1 = set_one_A_value(value_1, one_addition=True, recursiv_value=True)
+
+                    hex_value_2 = set_one_A_value(value_2, one_addition=True, recursiv_value=True)
+
+                    if hex_value_2.startswith("6D ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
+                        
+                        
+                        asm = f"{hex_value_1}CD {hex_value_2}"
+
+                    else:
+                        asm = f"{hex_value_1}C9 {hex_value_2[3:]}"
+                        counter_adress_value -= 1
+
+                    asm += "D0 04 A9 01 D0 02 A9 00 "
+
+                    counter_adress_value += 9
+                    
+                    return asm
 
 
                 except SmartError as se:
-                    raise SmartError(str(se), se.nbline)"""
+                    raise SmartError(str(se), se.nbline)
 
             elif value[0] == ".":
                 variable = value[1:]
