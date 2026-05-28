@@ -1,5 +1,7 @@
 *.sma
 *.asm
+*.bin
+*.hex
 
 __pycache__/
 

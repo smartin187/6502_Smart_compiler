@@ -238,7 +238,8 @@ def compile_smarty(
             list[str],
             list[str],
             SmartFunction
-        ]=(False, "", [], [], "", {}, None)
+        ]=(False, "", [], [], "", {}, None),
+        bin_outpout_file:bool=False
     ) -> None:
     """Start the compile from file."""
     global line_of_instruction, code_line
@@ -956,15 +957,28 @@ def compile_smarty(
 
 
     if not function_mode[0]:
+        if bin_outpout_file:
+            code_bin = "".join(chr(int(byte, base=16)) for byte in code_compile.split(" ")[1:-1])   # code_bin can have error with UTF-8, used for print only
+            
+            hex_bytes = [b for b in code_compile.split(" ")[1:-1] if b]     # used for file
+            data = bytes(int(b, 16) for b in hex_bytes)
+            
+        else:
+            code_bin = code_compile
 
         logging.info("Build completed!")
         
         if make_file:
-            print(f"\n\n{code_compile}\n\n")
+            print(f"\n\n{code_bin}\n\n")
             
-            Path(os.path.splitext(argv[1])[0] + ".asm").write_text(code_compile, encoding="UTF-8")
+            if bin_outpout_file:
+                Path(os.path.splitext(argv[1])[0] + ".bin").write_bytes(data)
+                logging.info(f"bin file saved as {os.path.splitext(argv[1])[0]}.bin")
 
-            logging.info(f"asm file saved as {os.path.splitext(argv[1])[0]}.asm")
+            else:
+                Path(os.path.splitext(argv[1])[0] + ".hex").write_text(code_bin, encoding="UTF-8")
+
+                logging.info(f"hex file saved as {os.path.splitext(argv[1])[0]}.hex")
         
         logging.info("Build end.")
 

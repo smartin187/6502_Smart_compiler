@@ -11,13 +11,19 @@ import logging
 
 CODE_ADRESSE = 1024
 
+if "--bin" in argv: # make a binary file
+    argv.remove("--bin")
 
+    bin_file = True
+
+else:
+    bin_file = False
 
 if len(argv) == 1:
     raise Exception("Error : no source was givent")
 
 try:
-    compile_smarty(argv[1], argv, CODE_ADRESSE)
+    compile_smarty(argv[1], argv, CODE_ADRESSE, bin_outpout_file=bin_file)
 except SmartError:
     quit()
 
