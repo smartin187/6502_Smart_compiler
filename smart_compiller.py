@@ -76,6 +76,52 @@ line_of_instruction = None
 
 need_input = False
 
+def get_bloc(line_conter:int, code:str, error_message:str="") -> str:
+    """Return the content of bloc {}
+    
+    error_message is the text for info about error."""
+    # get the code of function:
+
+    funciton_line = line_conter + 1
+
+    func_code = ""
+
+    number_open = 1
+
+    try:
+        while True:
+            code_line_func = code[funciton_line]
+            close_pos = None
+
+            for i, ch in enumerate(code_line_func):
+                if ch == "{":
+                    number_open += 1
+                elif ch == "}":
+                    number_open -= 1
+                    if number_open == 0:
+                        close_pos = i
+                        break
+
+            if close_pos is not None:
+                inside = code_line_func[:close_pos]
+                if inside.replace(" ", "") != "":
+                    func_code += inside + ";"
+
+                code[funciton_line] = code_line_func[close_pos + 1:]
+                break
+
+            func_code += code_line_func + ";"
+            funciton_line += 1
+
+
+
+    except IndexError:
+        raise SmartError(error_message + "', brackets '{' was never closed.", line_conter)
+    
+    return func_code, funciton_line
+
+
+
 def split_code(
         code:str,
         sep:str | tuple[str, ...]=(" ",),
@@ -717,44 +763,7 @@ def compile_smarty(
 
             logging.debug(f"Building function '{func_name}'")
            
-            # get the code of function:
-
-            funciton_line = line_conter + 1
-
-            func_code = ""
-
-            number_open = 1
-
-            try:
-                while True:
-                    code_line_func = code[funciton_line]
-                    close_pos = None
-
-                    for i, ch in enumerate(code_line_func):
-                        if ch == "{":
-                            number_open += 1
-                        elif ch == "}":
-                            number_open -= 1
-                            if number_open == 0:
-                                close_pos = i
-                                break
-
-                    if close_pos is not None:
-                        inside = code_line_func[:close_pos]
-                        if inside.replace(" ", "") != "":
-                            func_code += inside + ";"
-
-                        code[funciton_line] = code_line_func[close_pos + 1:]
-                        break
-
-                    func_code += code_line_func + ";"
-                    funciton_line += 1
-        
-
-
-            except IndexError:
-                raise SmartError("On function '" + func_name + "', brackets '{' was never closed.", line_conter)
-
+            func_code, funciton_line = get_bloc(line_conter, code, error_message="On function '" + func_name)
 
             function_name_usr[func_name] = SmartFunction(func_name)
             function_name_usr[func_name].source_code_function = func_code
