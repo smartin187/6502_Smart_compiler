@@ -35,6 +35,7 @@ for handler in logging.root.handlers:
 
 logging.info("Starting compiller...")
 
+ESCAPE_CHAR = {"\\r":"\r", "\\\"":"\""}        # the escape characters for str and char (\r...)
 
 class SmartError(Exception):
     """The error for Smart (syntaxe error)."""
@@ -278,6 +279,48 @@ def compile_smarty(
         
         return (line_counter +1, code_line[line_counter-1])
 
+    def get_str(string:str) -> str:
+        """Return the str value. Add the escape char."""
+
+        string = string.strip()
+
+        if not string.startswith('"'):  # error if function was called in other value to str
+            raise SmartError(f"Value '{string}' is not a str value.", line_conter)
+        
+
+        str_value = ""
+        escape_char = False
+        end = False
+
+        for char in string[1:]:
+            if end: # a char is after the " for close
+                raise SmartError(f"Invalid syntaxe after str value: '{string}'", line_conter)
+            
+            if char == '"' and not escape_char:
+                end = True
+                continue
+                
+            str_value += char
+
+            if char == "\\":
+                escape_char = True
+            
+            else:
+                escape_char = False
+
+        # replace char:
+        for char in ESCAPE_CHAR:
+            replace = ESCAPE_CHAR[char]
+
+            str_value = str_value.replace(char, replace)
+
+
+        if len(str_value) == 0:
+            logging.warning("str value is empty!")
+        elif len(str_value) == 1:
+            logging.warning("str value have a len of 1. Please use a char value.")
+
+        return str_value
 
 
     def get_char(char_type:str) -> str:
@@ -764,15 +807,14 @@ def compile_smarty(
                 elif function_arg[0][0] == "\"":
                     smart_str = function_arg[0]
 
-                    if smart_str[-1] != "\"":
+                    """if smart_str[-1] != "\"":
                         raise SmartError("str value was not closed.", line_conter)
                     
-                    value_str = smart_str[1:-1]
+                    value_str = smart_str[1:-1]"""
 
-                    if len(value_str) == 0:
-                        logging.warning("str value is empty!")
-                    elif len(value_str) == 1:
-                        logging.warning("str value have a len of 1. Please use a char value.")
+                    value_str = get_str(smart_str)
+
+
 
                     for char in value_str:
                         code_compile += set_one_A_value(f"'{char}'") + "20 EF FF "
@@ -818,19 +860,16 @@ def compile_smarty(
                 
                 asm = function_arg[0]
 
-                if not (asm.startswith('"') and asm.endswith('"')):
-                    raise SmartError(f"str value escepted, not '{asm}'")
-                
-                asm = asm[1:-1].strip(" ").replace(" ", "")
+                asm_str = get_str(asm).strip(" ").replace(" ", "")
 
-                if len(asm) == 0:
+                if len(asm_str) == 0:
                     logging.warning(f"Empty assembly entry, at line {line_conter}")
                 
 
-                if ((len(asm) % 2) != 0) or (not good_asm(asm)):
+                if ((len(asm_str) % 2) != 0) or (not good_asm(asm_str)):
                     raise SmartError(f"Invalid assembly entry, bad bytes was given.", line_conter)
                 
-                code_tmp = " ".join(asm[i:i+2] for i in range(0, len(asm), 2)) + " "
+                code_tmp = " ".join(asm_str[i:i+2] for i in range(0, len(asm_str), 2)) + " "
 
                 code_compile += code_tmp
 

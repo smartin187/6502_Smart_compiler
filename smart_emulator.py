@@ -105,11 +105,13 @@ text_info_run.pack()
 frame_option = tk.Frame(window_emulator)
 frame_option.pack()
 
-ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n "
+ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n\r "
 
 def print_on_text(text:str, sys_message:bool=False, error:bool=False) -> None:
     """Insert on the scolledtext the text.
     If error = True, use tag for set the text one red."""
+    text = text.replace("\r", "\n")
+
     if not sys_message:
         text = text.upper()
         if text not in ALLOW_CHAR:      # forbiden char
