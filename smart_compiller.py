@@ -45,7 +45,7 @@ class CompileError(Exception):
 
         self.error = message
 
-class SmartError(Exception):
+class SmartError(CompileError):
     """The error for Smart (syntaxe error)."""
     def __init__(self, message:str, nb_instruction:int=0):
         logging.critical("\033[31mError during build:")
