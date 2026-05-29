@@ -114,9 +114,8 @@ def get_bloc(line_conter:int, code:str, error_message:str="") -> str:
             funciton_line += 1
 
 
-
     except IndexError:
-        raise SmartError(error_message + "', brackets '{' was never closed.", line_conter)
+        raise SmartError(error_message + ", brackets '{' was never closed.", line_conter)
     
     return func_code, funciton_line
 
@@ -763,7 +762,7 @@ def compile_smarty(
 
             logging.debug(f"Building function '{func_name}'")
            
-            func_code, funciton_line = get_bloc(line_conter, code, error_message="On function '" + func_name)
+            func_code, funciton_line = get_bloc(line_conter, code, error_message="On function '" + func_name + "'")
 
             function_name_usr[func_name] = SmartFunction(func_name)
             function_name_usr[func_name].source_code_function = func_code
