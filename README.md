@@ -47,7 +47,7 @@ This value is beetween 0 and 255.
 
 This value is a 1-byte character. Here is the list of allowed characters:
 
-`!"#$%'()*,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`
+`!"#$%'()*,+-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`
 
 The character must be wrapped in single quotes.
 
@@ -63,6 +63,13 @@ This value cannot be stored in a variable or in a register because it requires m
 It starts and ends with double quotes. There is no length limit.
 
 Allowed characters are the same as for [`char`](#char-value).
+
+###### Escape caracters
+
+One `str`, you have escape caracters.
+
+- `\r`: carring return
+- `\"`: for have a `"`
 
 #### Using registers
 
@@ -106,23 +113,34 @@ The syntax is: `#label_name;`.
 
 You can then use [`goto`](#goto).
 
-#### Math operations
+#### Operator
 
-Currently, only addition is available.
+Operator are the mathematic operator and logic operator.
+
+For all operator, all value are accepted. If the value is a char, the value used is the ASCII code.
+
+##### `+`
+
+Add tow value.
 
 Note: if the result exceeds 255, the carry flag is set to 1.
+
+
+##### `==` (equality)
+
+Compare 2 value, return True if value are equal False else.
+
 
 ##### Example
 
 ```Smart
-.result = 01 + 01;    // value 02 in result
-.result2 = 05 + 1F;   // value 36 (0x24) in result2
+.x = 1 + 1;
+
+.y = 10 == 10;
+
+.z = 'A' == 65
 ```
 
-You can also use a `char`; in that case, the character's ASCII code is added:
-```Smart
-.result = 'A' + 01;   // value 0x42 in result
-```
 
 #### Functions
 
