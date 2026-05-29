@@ -141,6 +141,25 @@ Compare 2 value, return True if value are equal False else.
 .z = 'A' == 65
 ```
 
+#### Condition
+
+You can use a conditionnal bloc with `if`.
+
+```Smart
+if condition{;
+    // code
+}
+```
+
+The condition is a value (int, char, boolean value...). If the value is not `0`, the bloc is run.
+
+##### Exemple
+
+```Smart
+if True == True{;
+    print: "THE CONDITION IS TRUE";
+}
+```
 
 #### Functions
 

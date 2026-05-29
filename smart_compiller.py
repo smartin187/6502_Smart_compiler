@@ -154,8 +154,6 @@ def compile_smarty(
             code_compile += "20 !  smart_input"     # set 2 space on placeholder for counting adress
 
             adress_conter += 3
-        
-        
 
 
     def line_of_instruction(nb_instruction:int) -> tuple[int, str]:
@@ -587,10 +585,44 @@ def compile_smarty(
             adress_conter += 3
 
             logging.info(f"Build asm command: using RAM for variable '{var_name}'")
+
+        elif line.replace(" ", "").startswith("if"):
+            line_2 = replace_code(line, " ", "")[2:]
+
+            if not line_2.endswith("{"):
+                raise SmartError("On if bloc, expected '{'", line_conter)
+            else:
+                line_2 = line_2[:-1]
+
+            code_compile += set_one_A_value(line_2)
+
+            bloc_code, bloc_line = get_bloc(line_conter, code, error_message="On if bloc")
+
+            jump_line = bloc_line - line_conter - 1
+            
+            code_compile += "C9 00 D0 03 4C {} "
+            adress_conter += 7
+
+            code_if = compile_smarty(make_file=False, function_mode=(True, bloc_code, function_name_usr, function_replace, caller_ctx, smart_var, None), CODE_ADRESSE=CODE_ADRESSE + adress_conter)
+
+            new_adress = code_if.count(" ")
+
+            hex_adress_if = hex(CODE_ADRESSE + adress_conter + new_adress)[2:].upper()
+            hex_adress_if = "0" * (4 - len(hex_adress_if)) + hex_adress_if
+            hex_adress_if = hex_adress_if[2:] + " " + hex_adress_if[:2]
+
+
+            code_compile = code_compile.format(hex_adress_if)
+
+            adress_conter += new_adress
+            code_compile += code_if
+
+
+
         
         elif line.replace(" ", "").startswith("void"):      # make fonction
             if function_mode[0]:
-                raise SmartError(f"Error with function: impossible to create new function on function.")
+                raise SmartError(f"Error with function: impossible to create new function on function.", line_conter)
 
             func_name = line.split(" ")[1]
 
