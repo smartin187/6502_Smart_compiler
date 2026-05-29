@@ -7,6 +7,7 @@ Run Smart code one a emulator.
 
 
 from sys import argv
+import sys
 import tkinter as tk
 from tkinter import scrolledtext, messagebox, filedialog
 from time import sleep
@@ -16,7 +17,7 @@ import os
 
 from threading import Thread
 
-from smart_compiller import compile_smarty
+from smart_compiller import compile_smarty, SmartError, CompileError
 
 if "--debug" in argv:
     normal_speed = "Debug"
@@ -66,7 +67,7 @@ if len(argv) != 2:
     button_open = tk.Button(window_start, text="Open *.sma of *.asm", command=open_smart)
     button_open.pack()
 
-    window_start.protocol("WM_DELETE_WINDOW", quit)
+    window_start.protocol("WM_DELETE_WINDOW", lambda:sys.exit(0))
     window_start.mainloop()
     
 
@@ -79,7 +80,15 @@ if file_name == "--asm-entry":
 elif open_from_asm:pass
 
 else:
-    code = compile_smarty(file=file_name, argv=[], CODE_ADRESSE=1024, make_file=False)
+    try:
+        code = compile_smarty(file=file_name, argv=[], CODE_ADRESSE=1024, make_file=False)
+    except SmartError as se:
+        messagebox.showerror("Error", "Error during compilation of the Smart code.", detail=f"Detail: {se.syntaxerror}")
+        sys.exit(1)
+
+    except CompileError as ce:
+        messagebox.showerror("Error", "Error during compilation of the Smart code.", detail=f"Detail: {ce.error}")
+        sys.exit(1)
 
 asm_code = code
 

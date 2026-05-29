@@ -37,6 +37,14 @@ logging.info("Starting compiller...")
 
 ESCAPE_CHAR = {"\\r":"\r", "\\\"":"\""}        # the escape characters for str and char (\r...)
 
+class CompileError(Exception):
+    """An error with compile (file not found, unknow error...).
+    Use SmartError for error with code (syntaxe, bad value...)"""
+    def __init__(self, message:str="Error"):
+        logging.critical(message)
+
+        self.error = message
+
 class SmartError(Exception):
     """The error for Smart (syntaxe error)."""
     def __init__(self, message:str, nb_instruction:int=0):
@@ -592,13 +600,17 @@ def compile_smarty(
         code_line = function_mode[1].split("\n")
         code_start = function_mode[1]
     else:
-        sma = open(file, "r", encoding="UTF-8")
+        try:
+            sma = open(file, "r", encoding="UTF-8")
 
-        code_start = sma.read()
+            code_start = sma.read()
 
-        sma.close()
+            sma.close()
 
-        code_line = code_start.split("\n")
+            code_line = code_start.split("\n")
+        except FileNotFoundError:
+            raise CompileError(f"File not found: '{file}'")
+
 
     code = ""
 
