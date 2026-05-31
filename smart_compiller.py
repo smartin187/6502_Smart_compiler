@@ -128,13 +128,10 @@ def compile_smarty(
         argv:list | tuple=[],
         CODE_ADRESSE:int=0x400,
         make_file:bool=True,
-        function_mode:tuple[
-            bool,
+        function_mode:dict[
             str,
-            list[str],
-            list[str],
-            SmartFunction
-        ]=(False, "", [], [], "", {}, None),
+            bool | str | list | dict | SmartFunction | None
+        ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None},
         bin_outpout_file:bool=False
     ) -> None:
     """Start the compile from file."""
@@ -460,30 +457,30 @@ def compile_smarty(
 
     # -----------
 
-    smart_var = {} if not function_mode[0] else function_mode[5]
+    smart_var = {} if not function_mode["function_mode"] else function_mode["global_var"]
     adress_var = 0x300 + len(smart_var)
 
     line_conter = 0
 
     adress_str = hex(CODE_ADRESSE)[2:].upper() + ": "
 
-    code_compile = "0" * (6 - len(adress_str)) + adress_str if not function_mode[0] else ""
+    code_compile = "0" * (6 - len(adress_str)) + adress_str if not function_mode["function_mode"] else ""
 
     go_to = {}
 
-    function_name_usr: dict[str, SmartFunction] = function_mode[2] if function_mode[0] else {}
+    function_name_usr: dict[str, SmartFunction] = function_mode["global_function"] if function_mode["function_mode"] else {}
 
     go_to_replace = []
-    function_replace = function_mode[3] if function_mode[0] else []
+    function_replace = function_mode["global_function_replace"] if function_mode["function_mode"] else []
 
     adress_conter = 0
 
     CALLER_MAIN = "__MAIN__"
-    caller_ctx = function_mode[4] if (function_mode[0] and len(function_mode) >= 5) else CALLER_MAIN
+    caller_ctx = function_mode["function_caller_ctx"] if (function_mode["function_mode"] and len(function_mode) >= 5) else CALLER_MAIN
 
-    if function_mode[0]:
-        code_line = function_mode[1].split("\n")
-        code_start = function_mode[1]
+    if function_mode["function_mode"]:
+        code_line = function_mode["source_code"].split("\n")
+        code_start = function_mode["source_code"]
     else:
         try:
             sma = open(file, "r", encoding="UTF-8")
@@ -603,7 +600,11 @@ def compile_smarty(
             code_compile += "C9 00 D0 03 4C {} "
             adress_conter += 7
 
-            code_if = compile_smarty(make_file=False, function_mode=(True, bloc_code, function_name_usr, function_replace, caller_ctx, smart_var, None), CODE_ADRESSE=CODE_ADRESSE + adress_conter)
+            code_if = compile_smarty(
+                make_file=False,
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None},
+                CODE_ADRESSE=CODE_ADRESSE + adress_conter
+            )
 
             new_adress = code_if.count(" ")
 
@@ -621,7 +622,7 @@ def compile_smarty(
 
         
         elif line.replace(" ", "").startswith("void"):      # make fonction
-            if function_mode[0]:
+            if function_mode["function_mode"]:
                 raise SmartError(f"Error with function: impossible to create new function on function.", line_conter)
 
             func_name = line.split(" ")[1]
@@ -649,7 +650,7 @@ def compile_smarty(
         
         elif line.replace(" ", "").startswith("return"):        # return value
             
-            if not function_mode[0]:
+            if not function_mode["function_mode"]:
                 raise SmartError("Smart syntaxe error: 'return' key word can't be used outside function.", line_conter)
             
             try:
@@ -660,7 +661,7 @@ def compile_smarty(
 
             code_compile += set_one_A_value(value_return)
             
-            function_mode[6].return_value = True
+            function_mode["smart_func"].return_value = True
 
             # save new A at RAM
             code_compile += "8D E8 02 "
@@ -792,12 +793,12 @@ def compile_smarty(
 
         line_conter += 1
     
-    if not function_mode[0]:
+    if not function_mode["function_mode"]:
         code_compile += "00 "
     else:
         code_compile += "4C 00 00 "
     
-    if need_input and not function_mode[0]:
+    if need_input and not function_mode["function_mode"]:
         input_adress = adress_conter + CODE_ADRESSE + 1
 
         hex_input_adress = hex(input_adress)[2:].upper()
@@ -810,14 +811,18 @@ def compile_smarty(
 
     # compile function:
 
-    if not function_mode[0]:
+    if not function_mode["function_mode"]:
         for function in function_name_usr:
 
             code = function_name_usr[function].source_code_function
 
             smart_func = function_name_usr[function]
-
-            function_name_usr[function].code_compile_f = compile_smarty(make_file=False, function_mode=(True, code, function_name_usr, function_replace, function, smart_var, smart_func), CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1)
+                                    
+            function_name_usr[function].code_compile_f = compile_smarty(
+                make_file=False,
+                function_mode={"function_mode":True, "source_code":code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":function, "global_var":smart_var, "smart_func":smart_func},
+                CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1
+            )
 
 
 
@@ -869,7 +874,7 @@ def compile_smarty(
 
                 function_name_usr[function_name_tmp].called_function = True
 
-    if not function_mode[0]:
+    if not function_mode["function_mode"]:
         for name, f in function_name_usr.items():
             if not f.called_function:
                 logging.warning(f"Function '{name}' was never called.")
@@ -889,7 +894,7 @@ def compile_smarty(
     
 
 
-    if not function_mode[0]:
+    if not function_mode["function_mode"]:
         if bin_outpout_file:
             code_bin = "".join(chr(int(byte, base=16)) for byte in code_compile.split(" ")[1:-1])   # code_bin can have error with UTF-8, used for print only
             
