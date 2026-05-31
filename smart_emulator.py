@@ -92,6 +92,9 @@ else:
 
 asm_code = code
 
+ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n\r "
+START_RAM = 0x2E7
+
 window_emulator = tk.Tk()
 window_emulator.title("Smart emulator")
 
@@ -113,8 +116,6 @@ text_info_run.pack()
 
 frame_option = tk.Frame(window_emulator)
 frame_option.pack()
-
-ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n\r "
 
 def print_on_text(text:str, sys_message:bool=False, error:bool=False) -> None:
     """Insert on the scolledtext the text.
@@ -213,7 +214,7 @@ def see_memory() -> None:
 
             window.destroy()
 
-        adress = RAM_info.curselection()[0] - 1 + 0x300
+        adress = RAM_info.curselection()[0] - 1 + START_RAM
         window = tk.Toplevel(window_memory)
         window.title("Edit RAM")
 
