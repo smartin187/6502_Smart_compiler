@@ -131,7 +131,7 @@ def compile_smarty(
         function_mode:dict[
             str,
             bool | str | list | dict | SmartFunction | None
-        ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None},
+        ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None, "if_mode":False},
         bin_outpout_file:bool=False
     ) -> None:
     """Start the compile from file."""
@@ -602,7 +602,7 @@ def compile_smarty(
 
             code_if = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
@@ -792,11 +792,15 @@ def compile_smarty(
                 raise SmartError(f"Function '{function_name}' not exist.", line_conter)
 
         line_conter += 1
-    
-    if not function_mode["function_mode"]:
-        code_compile += "00 "
-    else:
+        
+    if function_mode["if_mode"]:
+        pass
+
+    elif function_mode["function_mode"]:
         code_compile += "4C 00 00 "
+    
+    else:
+        code_compile += "00 "
     
     if need_input and not function_mode["function_mode"]:
         input_adress = adress_conter + CODE_ADRESSE + 1
