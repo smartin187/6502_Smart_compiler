@@ -542,6 +542,10 @@ def pressed_key(event:tk.Event) -> str:
 window_emulator.bind("<KeyPress>", pressed_key)
 monitor.bind("<KeyPress>", pressed_key)
 
+def error_during_run() -> None:
+    """Print an error message on the monitor."""
+    print_on_text("\nError occurred during run...", True, True)
+
 def set_flag_for_LD(byte_hex: str) -> None:
     v = int(byte_hex, 16) & 0xFF
     flags["Z"] = 1 if v == 0 else 0
@@ -565,16 +569,6 @@ def run_smart() -> None:
     RAM = {"0" + hex(i)[2:].upper():"00" for i in range(0x02E7, 0x400 + 1)}
     RAM["D010"] = "00"
     RAM["D011"] = "00"
-
-    """flags = {
-        "C": 0,  # Carry flag
-        "Z": 0,  # Zero flag
-        "I": 0,  # Interrupt disable flag
-        "D": 0,  # Decimal mode flag
-        "B": 0,  # Break flag
-        "V": 0,  # Overflow flag
-        "N": 0   # Negative flag
-    }"""
 
     run_fail = False
 
@@ -752,7 +746,7 @@ def run_smart() -> None:
     print_on_text("\n\nEnd of run", True)
 
     if run_fail:
-        print_on_text("\nError occurred during run...", True, True)
+        error_during_run()
    
 menu_window = tk.Menu(window_emulator)
 window_emulator.config(menu=menu_window)
@@ -789,7 +783,19 @@ def save_asm() -> None:
 
 menu_save.add_command(label="Save assembly (as *.asm)", command=save_asm)
 
-thread_run = Thread(target=run_smart, daemon=True)
+def start_run() -> None:
+    """Call run_smart."""
+    try:
+        run_smart()
+    except IndexError:
+        messagebox.showerror("Error", "Error with adress.")
+        error_during_run()
+
+    except Exception as e:
+        messagebox.showerror("Error", "Error during run.", detail=f"Detail: {str(e)}")
+        error_during_run()
+
+thread_run = Thread(target=start_run, daemon=True)
 thread_run.start()
 
 
