@@ -235,7 +235,7 @@ def compile_smarty(
         if not good_hex(code):
             raise SmartError(f"Bad hex value '{code}'", line_conter)
     
-    def set_one_A_value(value:str, one_addition:bool=False, recursiv_value:bool=False, forbiden_math:bool=False) -> str:
+    def set_one_A_value(value:str, one_math:bool=False, hex_math_op:str="", recursiv_value:bool=False, forbiden_math:bool=False) -> str:
         """Return the value for set one A."""
         def control_math() -> None:
             """If forbiden_math is True, raise SmartError if there is a math in value."""
@@ -257,7 +257,7 @@ def compile_smarty(
 
                     counter_adress_value += 1       # add for the OP code 18
                 
-                    hex_value_2 = set_one_A_value(value_2, one_addition=True, recursiv_value=True)
+                    hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True, hex_math_op="6D")
 
                     if hex_value_2.startswith("6D ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
                         asm = f"{hex_value_1}18 {hex_value_2}"
@@ -274,14 +274,41 @@ def compile_smarty(
 
                 except:
                     raise SmartError(f"Error with math '+' : '{value}'", line_conter)
+            
+            elif in_code("-", value):    # substraction
+                control_math()
+                try:
+                    value_1, value_2 = split_code(value, "-", max_split=1)
+
+                    hex_value_1 = set_one_A_value(value_1, recursiv_value=True)
+
+                    counter_adress_value += 1       # add for the OP code 18
+                
+                    hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True, hex_math_op="E9")
+
+                    if hex_value_2.startswith("6D ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
+                        asm = f"{hex_value_1}38 E9 {hex_value_2}"
+
+                    else:
+                        asm = f"{hex_value_1}38 ED {hex_value_2[3:]}"
+                        
+                        
+
+                    return asm
+
+                except SmartError as se:
+                    raise SmartError(str(se), se.nbline)
+
+                except:
+                    raise SmartError(f"Error with math '-' : '{value}'", line_conter)
                 
             elif in_code("==", value):
                 try:
                     value_1, value_2 = split_code(value, "==", max_split=1)
 
-                    hex_value_1 = set_one_A_value(value_1, one_addition=True, recursiv_value=True)
+                    hex_value_1 = set_one_A_value(value_1, one_math=True, recursiv_value=True)#a terminer
 
-                    hex_value_2 = set_one_A_value(value_2, one_addition=True, recursiv_value=True)
+                    hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
 
                     if hex_value_2.startswith("6D ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
                         
@@ -310,10 +337,10 @@ def compile_smarty(
                 
                 counter_adress_value += 3
                 
-                if not one_addition:
+                if not one_math:
                     return f"AD {adress_for_RAM(smart_var[variable])} "
                 else:
-                    return f"6D {adress_for_RAM(smart_var[variable])} "
+                    return f"{hex_math_op} {adress_for_RAM(smart_var[variable])} "
             
             elif value.startswith("True"):
                 counter_adress_value += 2
@@ -393,10 +420,10 @@ def compile_smarty(
 
                     counter_adress_value += 3
 
-                    if not one_addition:
+                    if not one_math:
                         return saver_A + text_code + "AD E8 02 "
                     else:
-                        return saver_A + text_code + "6D E8 02 "
+                        return saver_A + text_code + f"{hex_math_op} E8 02 "
       
             else:
                 raise SmartError(f"Smart value error: {value}", line_conter)

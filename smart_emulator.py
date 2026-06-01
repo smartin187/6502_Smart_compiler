@@ -632,8 +632,13 @@ def run_smart() -> None:
 
             run_step += 3
         
-        elif run == "E9":   # subtract
-            value = code[run_step + 1]
+        elif run == "E9" or run == "ED":   # subtract
+            if run == "E9":
+                value = code[run_step + 1]
+            else:
+                value = RAM[code[run_step + 2] + code[run_step + 1]]
+
+
             new_A = int(accumulator["A"], base=16) - int(value, base=16) - (1 - flags["C"])
 
             if new_A < 0:
@@ -648,7 +653,7 @@ def run_smart() -> None:
 
             accumulator["A"] = hex(new_A)[2:].upper().zfill(2)
 
-            run_step += 2
+            run_step += 2 if run == "E9" else 3
         
         elif run == "38":
             flags["C"] = 1
