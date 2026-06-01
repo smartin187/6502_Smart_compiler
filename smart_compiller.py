@@ -50,12 +50,17 @@ class CompileError(Exception):
 class SmartError(CompileError):
     """The error for Smart (syntaxe error)."""
     def __init__(self, message:str, nb_instruction:int=0):
-        logging.critical("\033[31mError during build:")
+        logging.critical(ColoredFormatter.COLORS["CRITICAL"] + "Error during build:")
 
 
         nbline, line_error = line_of_instruction(nb_instruction)
 
-        print(f"~~~~~~~~~~\nAt {nbline} line:\n{line_error}\n~~~~~~~~~~\nError :\n{message}\n\033[0m")
+        if warning_endline[0]:
+            text_endline = ColoredFormatter.COLORS["WARNING"] + f"Maybe you forget ';' at {warning_endline[1]} line?"
+        else:
+            text_endline = ""
+
+        print(f"~~~~~~~~~~\nAt {nbline} line:\n{line_error}\n~~~~~~~~~~\nError :\n{message}\n{text_endline}\n{ColoredFormatter.RESET}")
 
         self.syntaxerror = message
         self.nbline = nbline
@@ -77,6 +82,8 @@ code_line = None
 line_of_instruction = None
 
 need_input = False
+
+warning_endline = (False, )     # if an line not end by ; } or // in line or the last line
 
 def get_bloc(line_conter:int, code:str, error_message:str="") -> str:
     """Return the content of bloc {}
@@ -135,7 +142,7 @@ def compile_smarty(
         bin_outpout_file:bool=False
     ) -> None:
     """Start the compile from file."""
-    global line_of_instruction, code_line
+    global line_of_instruction, code_line, warning_endline
 
     class SmartBuiltIn:
         """Set the built in function of Smart.
@@ -494,6 +501,19 @@ def compile_smarty(
         except FileNotFoundError:
             raise CompileError(f"File not found: '{file}'")
 
+    #control syntaxe warning:
+    for i, line in enumerate(code_line):
+        line_controle = line.replace(" ", "").replace("\t", "")
+
+        if line_controle:
+            line_controle = split_code(line_controle, "//")[0]
+
+        if not(line_controle == "" or line_controle.endswith(";") or line_controle.endswith("}")):
+            i += 1
+            warning_endline = (True, i)
+
+            logging.warning(f"Sintaxe warn: at line {i}, can't identify end. Maybe you have forget ';'?")
+            break
 
     code = ""
 

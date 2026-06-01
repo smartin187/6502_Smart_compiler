@@ -27,7 +27,7 @@ def split_code(
 
 
     if code == "":
-        return ()
+        return []
     
     on_str = False
     open_str = ""
