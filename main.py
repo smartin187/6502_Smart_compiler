@@ -10,6 +10,15 @@ import traceback
 from smart_compiller import SmartError, CompileError, compile_smarty
 import logging
 
+from compiller_tool import smart_info
+
+if "--help" in argv:
+    print(smart_info.SMART_HELP["smart_compiller"])
+    sys.exit(0)
+elif "--version" in argv:
+    print(smart_info.SMART_VERSION)
+    sys.exit(0)
+
 CODE_ADRESSE = 1024
 
 if "--bin" in argv: # make a binary file
