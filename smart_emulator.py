@@ -74,8 +74,8 @@ if len(argv) != 2:
 else:
     file_name = argv[1]
 
-if file_name == "--asm-entry":
-    code = input("Enter the assembly code : ")#.split(" ")
+if file_name == "--hex-entry":
+    code = input("Enter the hex code : ")
 
 elif open_from_asm:pass
 
