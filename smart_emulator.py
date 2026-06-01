@@ -646,13 +646,15 @@ def run_smart() -> None:
             else:
                 return_ardess = run_step + 2
 
-                run_step = int(code[run_step + 1] + code[run_step], base=16) - START + 1
+                adress_call = int(code[run_step + 1] + code[run_step], base=16) - START + 1
 
-                """if not(0 >= run_step <= len(code)):
-
+                if adress_call + 0x400 >= 0x400 + len(code):
                     messagebox.showerror("Error", "Unknow adress for call.")
                     run_fail = True
-                    break"""
+                    break
+
+                run_step = adress_call
+
         
         elif run == "00":
             break
