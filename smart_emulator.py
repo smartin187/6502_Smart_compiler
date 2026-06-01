@@ -631,6 +631,29 @@ def run_smart() -> None:
                 RAM[code[run_step + 2] + code[run_step + 1]] = accumulator["A"]
 
             run_step += 3
+        
+        elif run == "E9":   # subtract
+            value = code[run_step + 1]
+            new_A = int(accumulator["A"], base=16) - int(value, base=16) - (1 - flags["C"])
+
+            if new_A < 0:
+                flags["C"] = 0
+                flags["V"] = 1  # Set Overflow flag
+                new_A += 256
+            else:
+                flags["C"] = 1
+            
+            flags["Z"] = 1 if new_A == 0 else 0
+            flags["N"] = 1 if new_A & 0x80 else 0
+
+            accumulator["A"] = hex(new_A)[2:].upper().zfill(2)
+
+            run_step += 2
+        
+        elif run == "38":
+            flags["C"] = 1
+
+            run_step += 1
 
         elif run == "AD":
             accumulator["A"] = RAM[code[run_step + 2] + code[run_step + 1]]
