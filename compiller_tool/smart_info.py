@@ -4,6 +4,7 @@
 Have the verion of Smart and the help.
 """
 import sys
+from compiller_tool.color_tool import Colors
 
 FROZEN = getattr(sys, 'frozen', False)  # if the programme is compiled by Pyinstaller
 
@@ -19,25 +20,26 @@ EXECUTABLE = {
 COMPILE_EXE = EXECUTABLE["compiller"] if FROZEN else "python3 main.py"
 
 SMART_HELP = {
-    "smart_compiller":f"""Welcome to Smart {SMART_VERSION}.
+    "smart_compiller":f"""\t\t{Colors.BG_BLUE}Welcome to Smart {SMART_VERSION}.{Colors.RESET}
 
-Help:
-\tCompile your programme: {COMPILE_EXE} your_programme.sma
-FLAGS:
-\tGet a binary file (default is hex file): {COMPILE_EXE} your_programme.sma --bin
-\tGet version of Smart: {COMPILE_EXE} --version
-\tGet help of Smart Compiller: {COMPILE_EXE} --help
+{Colors.BG_CYAN}Help:{Colors.RESET}
+\tCompile your programme: {Colors.MAGENTA}{COMPILE_EXE} your_programme.sma{Colors.RESET}
+{Colors.BG_CYAN}FLAGS:{Colors.RESET}
+\tGet a binary file (default is hex file): {Colors.MAGENTA}{COMPILE_EXE} your_programme.sma --bin{Colors.RESET}
+\tGet version of Smart: {Colors.MAGENTA}{COMPILE_EXE} --version{Colors.RESET}
+\tGet help of Smart Compiller: {Colors.MAGENTA}{COMPILE_EXE} --help{Colors.RESET}
 
 """,
-    "smart_emulator":f"""Welcome to Smart Emulator {SMART_VERSION}.
+    "smart_emulator":f"""\t\t{Colors.BG_BLUE}Welcome to Smart Emulator {SMART_VERSION}.{Colors.RESET}
 You can run your programme with emulator.
 
-Help:
-\tOpen emulator (with a graphical interface): {EXECUTABLE["emulator"]}\t\tWith GUI, you can open a hex file (compilled Smart recommended).
-\tRun your programme: {EXECUTABLE["emulator"]} your_programme.sma
-\tRun hex programme with entry point: {EXECUTABLE["emulator"]} --hex-entry
-\tRun programme on debug mode: {EXECUTABLE["emulator"]} --debug
-\tGet version of Smart: {EXECUTABLE["emulator"]} --version
-\tGet help of Smart Emulator: {EXECUTABLE["emulator"]} --help
+{Colors.BG_CYAN}Help:{Colors.RESET}
+\tOpen emulator (with a graphical interface): {Colors.MAGENTA}{EXECUTABLE["emulator"]}{Colors.RESET}\t\t{Colors.YELLOW}With GUI, you can open a hex file (compilled Smart recommended).{Colors.RESET}
+\tRun your programme: {Colors.MAGENTA}{EXECUTABLE["emulator"]} your_programme.sma{Colors.RESET}
+{Colors.BG_CYAN}FLAGS:{Colors.RESET}
+\tRun hex programme with entry point: {Colors.MAGENTA}{EXECUTABLE["emulator"]} --hex-entry{Colors.RESET}
+\tRun programme on debug mode: {Colors.MAGENTA}{EXECUTABLE["emulator"]} --debug{Colors.RESET}
+\tGet version of Smart: {Colors.MAGENTA}{EXECUTABLE["emulator"]} --version{Colors.RESET}
+\tGet help of Smart Emulator: {Colors.MAGENTA}{EXECUTABLE["emulator"]} --help{Colors.RESET}
     """
 }
