@@ -6,7 +6,6 @@ Run Smart code one a emulator.
 """
 
 
-from sys import argv
 import sys
 import tkinter as tk
 from tkinter import scrolledtext, messagebox, filedialog
@@ -19,23 +18,23 @@ from threading import Thread
 from compiller_tool import smart_info
 from smart_compiller import compile_smarty, SmartError, CompileError
 
-if "--help" in argv:
+if "--help" in sys.argv:
     print(smart_info.SMART_HELP["smart_emulator"])
     sys.exit(0)
-elif "--version" in argv:
+elif "--version" in sys.argv:
     print(smart_info.SMART_VERSION)
     sys.exit(0)
 
-if "--debug" in argv:
+if "--debug" in sys.argv:
     normal_speed = "Debug"
-    argv.remove("--debug")
+    sys.argv.remove("--debug")
 else:
     normal_speed = "1Mhz"
 
 
 open_from_asm = False
 
-if len(argv) != 2:
+if len(sys.argv) != 2:
     file_name = ""
     code = ""
     def open_smart() -> None:
@@ -79,7 +78,7 @@ if len(argv) != 2:
     
 
 else:
-    file_name = argv[1]
+    file_name = sys.argv[1]
 
 if file_name == "--hex-entry":
     code = input("Enter the hex code : ")
