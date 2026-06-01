@@ -131,7 +131,7 @@ def compile_smarty(
         function_mode:dict[
             str,
             bool | str | list | dict | SmartFunction | None
-        ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None, "if_mode":False},
+        ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}},
         bin_outpout_file:bool=False
     ) -> None:
     """Start the compile from file."""
@@ -466,7 +466,8 @@ def compile_smarty(
 
     code_compile = "0" * (6 - len(adress_str)) + adress_str if not function_mode["function_mode"] else ""
 
-    go_to = {}
+    go_to = {} if not function_mode["if_mode"] else function_mode["global_goto"]
+
 
     function_name_usr: dict[str, SmartFunction] = function_mode["global_function"] if function_mode["function_mode"] else {}
 
@@ -602,7 +603,7 @@ def compile_smarty(
 
             code_if = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
@@ -824,7 +825,7 @@ def compile_smarty(
                                     
             function_name_usr[function].code_compile_f = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":function, "global_var":smart_var, "smart_func":smart_func},
+                function_mode={"function_mode":True, "source_code":code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":function, "global_var":smart_var, "smart_func":smart_func, "if_mode":False},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1
             )
 
@@ -885,17 +886,18 @@ def compile_smarty(
 
     # set the goto:
 
-    for goto in go_to_replace:
-        goto_name = goto.split("|")[1]
+    if not function_mode["if_mode"]:
+        for goto in go_to_replace:
+            goto_name = goto.split("|")[1]
 
-        try:
-            adress = go_to[goto_name]
-                
-        except KeyError:
-            raise SmartError(f"'{name}' is not defined for goto !", line_conter)
+            try:
+                adress = go_to[goto_name]
+                    
+            except KeyError:
+                raise SmartError(f"'{name}' is not defined for goto !", line_conter)
 
-        code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
-    
+            code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
+        
 
 
     if not function_mode["function_mode"]:
