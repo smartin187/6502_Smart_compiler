@@ -498,8 +498,8 @@ def compile_smarty(
     code = ""
 
     for line in code_line:
-        line_tmp = line.split("//")[0] + "\n"
-        code += line_tmp.lstrip(" ")
+        line_tmp = line.split("//")[0].strip() + "\n"
+        code += line_tmp
     
     code = split_code(code.replace("\n", ""), ";")
 
