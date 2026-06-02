@@ -701,7 +701,7 @@ def compile_smarty(
         
         elif line.replace(" ", "").startswith("return"):        # return value
             
-            if not function_mode["function_mode"]:
+            if not(function_mode["function_mode"]) or function_mode["if_mode"]:
                 raise SmartError("Smart syntaxe error: 'return' key word can't be used outside function.", line_conter)
             
             try:
