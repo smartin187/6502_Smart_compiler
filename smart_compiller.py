@@ -274,8 +274,6 @@ def compile_smarty(
                 
                     hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True, hex_math_op="69")
 
-                    #if hex_value_2.startswith("6D ") or hex_value_2.startswith("AD ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
-                    
                     if not imediate_value(hex_value_2):     # adress value
                         asm = f"{hex_value_1}18 6D {hex_value_2[3:]}"
 
@@ -302,9 +300,6 @@ def compile_smarty(
                 
                     hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True, hex_math_op="E9")
 
-                    print("hex_value_2", hex_value_2)
-
-                    #if hex_value_2.startswith("6D ") or hex_value_2.startswith("E9 ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):       # bad condition
                     if not imediate_value(hex_value_2):
                         asm = f"{hex_value_1}38 ED {hex_value_2[3:]}"       # adress value
                         
@@ -329,7 +324,6 @@ def compile_smarty(
 
                     hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
 
-                    #if hex_value_2.startswith("6D ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
                     if not imediate_value(hex_value_2):
                         
                         asm = f"{hex_value_1}CD {hex_value_2[3:]}"      # adress value
