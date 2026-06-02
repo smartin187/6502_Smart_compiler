@@ -329,13 +329,13 @@ def compile_smarty(
 
                     hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
 
-                    if hex_value_2.startswith("6D ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
+                    #if hex_value_2.startswith("6D ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
+                    if not imediate_value(hex_value_2):
                         
-                        
-                        asm = f"{hex_value_1}CD {hex_value_2[3:]}"
+                        asm = f"{hex_value_1}CD {hex_value_2[3:]}"      # adress value
 
                     else:
-                        asm = f"{hex_value_1}C9 {hex_value_2[3:]}"
+                        asm = f"{hex_value_1}C9 {hex_value_2[3:]}"      # imediate value
                         counter_adress_value -= 1
 
                     asm += "D0 04 A9 01 D0 02 A9 00 "
