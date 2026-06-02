@@ -827,6 +827,10 @@ def start_run() -> None:
     except IndexError:
         messagebox.showerror("Error", "Error with adress.")
         error_during_run()
+    
+    except KeyError as e:
+        messagebox.showerror("Error", "Unknow adress RAM", detail=f"Adress: 0x{str(e)[1:-1]}")
+        error_during_run()
 
     except Exception as e:
         messagebox.showerror("Error", "Error during run.", detail=f"Detail: {str(e)}")
