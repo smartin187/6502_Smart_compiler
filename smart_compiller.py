@@ -237,6 +237,20 @@ def compile_smarty(
     
     def set_one_A_value(value:str, one_math:bool=False, hex_math_op:str="", recursiv_value:bool=False, forbiden_math:bool=False) -> str:
         """Return the value for set one A."""
+        def imediate_value(value:str) -> bool:
+            """Return True if the value is an imediate value else false.
+            A9 41 : imediate value (LDA #41)
+            AD 00 04 : adress value (LDA $0400)
+            """
+            try:
+                start = value[0:3]
+            except IndexError:
+                return False
+            
+            if start in ("A9", "69"):
+                return True
+            return False
+
         def control_math() -> None:
             """If forbiden_math is True, raise SmartError if there is a math in value."""
             if forbiden_math:
@@ -257,9 +271,11 @@ def compile_smarty(
 
                     counter_adress_value += 1       # add for the OP code 18
                 
-                    hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True, hex_math_op="6D")
+                    hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True, hex_math_op="69")
 
-                    if hex_value_2.startswith("6D ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
+                    print(hex_value_2)
+
+                    if hex_value_2.startswith("6D ") or hex_value_2.startswith("AD ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
                         asm = f"{hex_value_1}18 {hex_value_2}"
 
                     else:
@@ -286,8 +302,10 @@ def compile_smarty(
                 
                     hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True, hex_math_op="E9")
 
-                    if hex_value_2.startswith("6D ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
-                        asm = f"{hex_value_1}38 E9 {hex_value_2}"
+                    print("hex_value_2", hex_value_2)
+
+                    if hex_value_2.startswith("6D ") or hex_value_2.startswith("E9 ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):       # bad condition
+                        asm = f"{hex_value_1}38 {hex_value_2}"
 
                     else:
                         asm = f"{hex_value_1}38 ED {hex_value_2[3:]}"
@@ -340,7 +358,7 @@ def compile_smarty(
                 if not one_math:
                     return f"AD {adress_for_RAM(smart_var[variable])} "
                 else:
-                    return f"{hex_math_op} {adress_for_RAM(smart_var[variable])} "
+                    return f"AD {adress_for_RAM(smart_var[variable])} " # hex_math_op before AD ?
             
             elif value.startswith("True"):
                 counter_adress_value += 2
@@ -379,7 +397,9 @@ def compile_smarty(
 
                 counter_adress_value += 2
 
-                return "A9 " + value_hex + " "
+                load = "A9 " if not one_math else hex_math_op + " "
+
+                return load + value_hex + " "
 
             elif value[0] == "'":
                 counter_adress_value += 2
