@@ -501,6 +501,8 @@ def compile_smarty(
 
     go_to = {} if not function_mode["if_mode"] else function_mode["global_goto"]
 
+    if function_mode["function_mode"]:
+        return_line = False     # became True when they are the return line (if an line is after return line, raise SmartError)
 
     function_name_usr: dict[str, SmartFunction] = function_mode["global_function"] if function_mode["function_mode"] else {}
 
@@ -557,7 +559,6 @@ def compile_smarty(
         logging.warning("Smart file is empty!")
 
     for line in code:
-
         if jump_line:
             jump_line -= 1
             line_conter += 1
@@ -567,6 +568,10 @@ def compile_smarty(
             line_conter += 1
             logging.warning("Empty line detected.")
             continue
+
+        if function_mode["function_mode"]:
+            if return_line:
+                raise SmartError("On function {}, value was return before the end of function.".format(function_mode["smart_func"].name))
 
 
         if line[0] in ACUMULATOR_REGISTER:
@@ -666,7 +671,6 @@ def compile_smarty(
             code_compile += code_if
 
 
-
         
         elif line.replace(" ", "").startswith("void"):      # make fonction
             if function_mode["function_mode"]:
@@ -718,6 +722,7 @@ def compile_smarty(
             code_compile += "AD E7 02 "
             adress_conter += 3
 
+            return_line = True
 
 
         else:     # function
