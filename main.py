@@ -29,7 +29,8 @@ else:
     bin_file = False
 
 if len(sys.argv) == 1:
-    raise Exception("Error : no source was givent")
+    logging.critical("Error: no source was givent")
+    sys.exit(1)
 
 try:
     compile_smarty(sys.argv[1], sys.argv, CODE_ADRESSE, bin_outpout_file=bin_file)

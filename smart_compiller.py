@@ -19,7 +19,7 @@ for handler in logging.root.handlers:
     handler.setFormatter(ColoredFormatter('SmartCompiller %(levelname)s: %(message)s'))
 
 
-logging.info("Starting compiller...")
+
 
 ESCAPE_CHAR = {"\\r":"\r", "\\\"":"\""}        # the escape characters for str and char (\r...)
 
@@ -127,7 +127,7 @@ def compile_smarty(
     ) -> None:
     """Start the compile from file."""
     global line_of_instruction, code_line, warning_endline
-
+    logging.info("Starting compiller...")
     class SmartBuiltIn:
         """Set the built in function of Smart.
         Warning: some function are not in this class because it is assembly function (print, goto...)"""
