@@ -745,18 +745,23 @@ def compile_smarty(
                 else:
                     name_import = name_import[1:-1]
                 
+                try:
+                    if type_import == '"file"':
+                        import_info = import_tool.import_module(name_import, CODE_ADRESSE + adress_conter)
 
-                if type_import == '"file"':
-                    import_info = import_tool.import_module(name_import, CODE_ADRESSE + adress_conter)
+                    elif type_import == '"lib"':
+                        import_tool.import_lib(name_import, CODE_ADRESSE + adress_conter)
 
-                elif type_import == '"lib"':
-                    import_tool.import_lib(name_import, CODE_ADRESSE + adress_conter)
-
-                elif type_import == '"smart"':
-                    import_tool.import_smart(name_import, CODE_ADRESSE + adress_conter)
+                    elif type_import == '"smart"':
+                        import_tool.import_smart(name_import, CODE_ADRESSE + adress_conter)
+                    
+                    else:
+                        raise SmartError('Unknow import type. Must be "file", "lib", "smart"')
                 
-                else:
-                    raise SmartError('Unknow import type. Must be "file", "lib", "smart"')
+                except SmartError:
+                    raise SmartError()
+                except import_tool.ModuleError as me:
+                    raise SmartError("Error during importing module:\n" + str(me))
                 
                 adress_delta = import_info.binary.count(" ")
 
