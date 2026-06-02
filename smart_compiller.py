@@ -243,11 +243,12 @@ def compile_smarty(
             AD 00 04 : adress value (LDA $0400)
             """
             try:
-                start = value[0:3]
+                start = value.replace(" ", "")[0:2]
             except IndexError:
                 return False
             
-            if start in ("A9", "69"):
+
+            if start in ("A9", "69", "E9"):
                 return True
             return False
 
@@ -273,16 +274,15 @@ def compile_smarty(
                 
                     hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True, hex_math_op="69")
 
-                    print(hex_value_2)
+                    #if hex_value_2.startswith("6D ") or hex_value_2.startswith("AD ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
+                    
+                    if not imediate_value(hex_value_2):     # adress value
+                        asm = f"{hex_value_1}18 6D {hex_value_2[3:]}"
 
-                    if hex_value_2.startswith("6D ") or hex_value_2.startswith("AD ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):
-                        asm = f"{hex_value_1}18 {hex_value_2}"
 
                     else:
-                        asm = f"{hex_value_1}18 69 {hex_value_2[3:]}"
+                        asm = f"{hex_value_1}18 69 {hex_value_2[3:]}"       #valeur imédiate
                         
-                        
-
                     return asm
 
                 except SmartError as se:
@@ -304,11 +304,12 @@ def compile_smarty(
 
                     print("hex_value_2", hex_value_2)
 
-                    if hex_value_2.startswith("6D ") or hex_value_2.startswith("E9 ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):       # bad condition
-                        asm = f"{hex_value_1}38 {hex_value_2}"
-
+                    #if hex_value_2.startswith("6D ") or hex_value_2.startswith("E9 ") or hex_value_2.startswith("!smart_call_func|") or hex_value_2.startswith("8D "):       # bad condition
+                    if not imediate_value(hex_value_2):
+                        asm = f"{hex_value_1}38 ED {hex_value_2[3:]}"       # adress value
+                        
                     else:
-                        asm = f"{hex_value_1}38 ED {hex_value_2[3:]}"
+                        asm = f"{hex_value_1}38 E9 {hex_value_2[3:]}"      # valeur immédiate
                         
                         
 
