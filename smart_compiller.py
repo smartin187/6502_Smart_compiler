@@ -12,6 +12,7 @@ import logging
 
 from compiller_tool.string_tool import split_code, replace_code, in_code
 from compiller_tool.color_tool import ColoredFormatter
+from compiller_tool import import_tool
 
 logging.basicConfig(format="SmartCompiller %(levelname)s: %(message)s", level=logging.INFO)
 
@@ -123,7 +124,8 @@ def compile_smarty(
             str,
             bool | str | list | dict | SmartFunction | None
         ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[]},
-        bin_outpout_file:bool=False
+        bin_outpout_file:bool=False,
+        module_mode:bool=False
     ) -> None:
     """Start the compile from file."""
     global line_of_instruction, code_line, warning_endline
@@ -483,6 +485,8 @@ def compile_smarty(
             if (not (char.isalpha() or char.isdigit() or char == "_")) or char.isupper():
                 return False
         return True
+    
+    import_tool.config_import(compile_smarty)
 
     # -----------
 
@@ -635,7 +639,7 @@ def compile_smarty(
 
             logging.info(f"Build asm command: using RAM for variable '{var_name}'")
 
-        elif line.replace(" ", "").startswith("if"):
+        elif line.lstrip().startswith("if"):
             line_2 = replace_code(line, " ", "")[2:]
 
             if not line_2.endswith("{"):
@@ -672,7 +676,7 @@ def compile_smarty(
 
 
         
-        elif line.replace(" ", "").startswith("void"):      # make fonction
+        elif line.lstrip().startswith("void"):      # make fonction
             if function_mode["function_mode"]:
                 raise SmartError(f"Error with function: impossible to create new function on function.", line_conter)
 
@@ -695,11 +699,9 @@ def compile_smarty(
 
             jump_line = funciton_line - line_conter - 1
 
-            
-
             logging.debug(f"'{func_name}' has been created.")
         
-        elif line.replace(" ", "").startswith("return"):        # return value
+        elif line.lstrip().startswith("return "):        # return value
             
             if not(function_mode["function_mode"]) or function_mode["if_mode"]:
                 raise SmartError("Smart syntaxe error: 'return' key word can't be used outside function.", line_conter)
@@ -724,6 +726,54 @@ def compile_smarty(
 
             return_line = True
 
+        elif line.lstrip().startswith("import "):
+            line_import = split_code(line, " ")[1:]
+
+            if len(line_import) == 1:   # search in all directory
+                import_tool.import_all(line_import[0])
+
+            elif len(line_import) == 3: # search in a spesific directory (smart, lib or path of code)
+                line_from = split_code("".join(line_import), "from")
+
+                if len(line_from) != 2:
+                    raise SmartError("Sintaxe error: excepted 'from'.", line_conter)
+
+                name_import, type_import = line_from
+
+                if not(name_import.startswith('"') and name_import.endswith('"')):
+                    raise SmartError("Need a str value for path, in import.")
+                else:
+                    name_import = name_import[1:-1]
+                
+
+                if type_import == '"file"':
+                    import_info = import_tool.import_module(name_import, CODE_ADRESSE + adress_conter)
+
+                elif type_import == '"lib"':
+                    import_tool.import_lib(name_import, CODE_ADRESSE + adress_conter)
+
+                elif type_import == '"smart"':
+                    import_tool.import_smart(name_import, CODE_ADRESSE + adress_conter)
+                
+                else:
+                    raise SmartError('Unknow import type. Must be "file", "lib", "smart"')
+                
+                adress_delta = import_info.binary.count(" ")
+
+                code_compile += import_info.binary
+                adress_conter += adress_delta
+
+                function_name_usr |= import_info.function
+                smart_var |= import_info.variables
+
+
+                adress_conter += 2
+
+                new_adress_module = adress_for_RAM(CODE_ADRESSE + adress_conter) + " "
+
+                code_compile = code_compile.replace("!smart_module_goto", new_adress_module)
+                
+                
 
         else:     # function
             if not in_code(":", line):
@@ -847,6 +897,9 @@ def compile_smarty(
         
     if function_mode["if_mode"]:
         pass
+    
+    elif module_mode:
+        code_compile += "4C !smart_module_goto"
 
     elif function_mode["function_mode"]:
         code_compile += "4C 00 00 "
@@ -979,5 +1032,9 @@ def compile_smarty(
 
         logging.info(f"Memory info: virtual smart memory: 256bytes, used by programme: {len(smart_var)}bytes, using {len(smart_var) / 256 * 100}% of smart virtual memory. Programme size: used {adress_conter} bytes from {hex(CODE_ADRESSE)}")
 
+    if module_mode:
+        return import_tool.ModuleInfo(code_compile, smart_var, function_name_usr)
 
-    return code_compile
+    else:
+
+        return code_compile
