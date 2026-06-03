@@ -750,10 +750,10 @@ def compile_smarty(
                         import_info = import_tool.import_module(name_import, CODE_ADRESSE + adress_conter)
 
                     elif type_import == '"lib"':
-                        import_tool.import_lib(name_import, CODE_ADRESSE + adress_conter)
+                        import_info = import_tool.import_lib(name_import, CODE_ADRESSE + adress_conter)
 
                     elif type_import == '"smart"':
-                        import_tool.import_smart(name_import, CODE_ADRESSE + adress_conter)
+                        import_info = import_tool.import_smart(name_import, CODE_ADRESSE + adress_conter)
                     
                     else:
                         raise SmartError('Unknow import type. Must be "file", "lib", "smart"')
