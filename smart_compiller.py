@@ -507,7 +507,7 @@ def compile_smarty(
                 return False
         return True
     
-    def get_char_from_str(string:str) -> list[str, ...]:
+    def get_char_from_str(string:str) -> list[str]:
         """Return a list of int, the ascii code of char on the string, if the char is \r, \", \', the element of list have it."""        
         result = []
 
@@ -814,7 +814,10 @@ def compile_smarty(
             except SmartError as se:
                 raise SmartError("Error on module '{}':\n\t{}".format(name_import, (str(se)[1:-1].replace(",", "\n\t"))))
             except import_tool.ModuleError as me:
-                raise SmartError("Error during importing module:\n" + str(me))
+                if me.recursion:
+                    raise CompileError(f"Compile fail: error with module, maybe a module import self... (error in {me.module_name})")
+                else:
+                    raise SmartError("Error during importing module:\n" + str(me))
                 
             adress_delta = import_info.binary.count(" ")
 

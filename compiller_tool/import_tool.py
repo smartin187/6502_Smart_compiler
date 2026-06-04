@@ -10,7 +10,11 @@ PATH_LIB = {
 }
 
 class ModuleError(Exception):
-    pass
+    """Exception for module (file not found, recursion error...)"""
+    def __init__(self, message:str="", recursion:bool=False, module_name:str=""):
+        self.recursion = recursion
+        self.module_name = module_name
+        super().__init__(message)
 
 class ModuleInfo:
     """A class used from compile_smarty for get the variable and function name + binary code."""
@@ -35,17 +39,21 @@ def config_import(_compile_smarty) -> None:
 
 def get_module(path:str, start_adress:int) -> ModuleInfo:
     """Return the ModuleInfo from a path."""
-    module_info:ModuleInfo = compile_smarty(
-        file=path,
-        CODE_ADRESSE=start_adress,
-        make_file=False,
-        module_mode=True,
-        module_name=path
-    )
+    try:
+        module_info:ModuleInfo = compile_smarty(
+            file=path,
+            CODE_ADRESSE=start_adress,
+            make_file=False,
+            module_mode=True,
+            module_name=path
+        )
 
-    module_info.binary = module_info.binary.split(":")[1].lstrip()
+        module_info.binary = module_info.binary.split(":")[1].lstrip()
 
-    return module_info
+        return module_info
+    
+    except RecursionError:
+        raise ModuleError("Error during compiling module. Maybe a module have import it?", recursion=True, module_name=path)
 
 def import_module(file_name:str, start_adress:int) -> ModuleInfo:
     """Import a module from name (path can be relative of abs)."""
