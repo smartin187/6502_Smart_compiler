@@ -30,6 +30,10 @@ Smart comments use two slashes: `//`. Everything that follows on the same line i
 
 There are currently two value types: a hexadecimal value and a char (a single character). There is also a third type that can only be used in the [print](#print) function: a string of characters (`str`).
 
+##### `bool` value
+
+Can be `True` or `False` (upper case in first character).
+
 ##### `hex` value
 
 This value is a 1-byte hexadecimal number, ranging from `00` to `FF`.
@@ -152,6 +156,17 @@ if condition{;
 ```
 
 The condition is a value (int, char, boolean value...). If the value is not `0`, the bloc is run.
+
+Then an `if` bloc, you can set a `else` bloc:
+
+```Smart
+if False{;
+    print: "IF CODE";
+}
+else{;
+    print: "ELSE CODE";
+}
+```
 
 ##### Exemple
 
@@ -314,6 +329,6 @@ On a Smarty Kit, execution speed is slow. With the interpreter, you can increase
 Smart use RAM.
 - `0x0300` to `0x0400`: variables
 - `0x02E7` to `0x02FF`: Smart system:
->`0x02E7`: save of A (for return-function)<br>`0x02E8`: value of return-function
+>`0x02E7`: save of A (for return-function)<br>`0x02E8`: value of return-function<br>`0x02E9`: 01 if need to call `else bloc` (after `if`).
 
 

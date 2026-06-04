@@ -516,6 +516,8 @@ def compile_smarty(
 
     # -----------
 
+    last_if = False     # True if the last operation is if on Smart (for else).
+
     smart_var = {} if not function_mode["function_mode"] else function_mode["global_var"]
     adress_var = 0x300 + len(smart_var)
 
@@ -675,8 +677,8 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
             
-            code_compile += "C9 00 D0 03 4C {} "
-            adress_conter += 7
+            code_compile += "C9 00 D0 08 A9 01 8D E9 02 4C {} "
+            adress_conter += 12
 
             code_if = compile_smarty(
                 make_file=False,
@@ -696,7 +698,44 @@ def compile_smarty(
             adress_conter += new_adress
             code_compile += code_if
 
+            last_if = True
 
+            line_conter += 1    # add the line conter because continue
+            continue
+        
+        elif line.lstrip().startswith("else"):
+            if not last_if:
+                raise SmartError("'else bloc' was used but 'if bloc' was not created.")
+            
+            line_2 = replace_code(line, " ", "")[4:]
+
+            if not line_2.endswith("{"):
+                raise SmartError("On else bloc, expected '{'", line_conter)
+
+            bloc_code, bloc_line = get_bloc(line_conter, code, error_message="On else bloc")
+
+            jump_line = bloc_line - line_conter - 1
+            
+            code_compile += "AD E9 02 C9 00 D0 03 4C {} "
+            adress_conter += 10
+
+            code_else = compile_smarty(
+                make_file=False,
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace},
+                CODE_ADRESSE=CODE_ADRESSE + adress_conter
+            )
+
+            new_adress = code_else.count(" ") + code_else.count("!smart_call_func|") * 13 + code_else.count("!smart_tmp:goto|") * 3 - code_else.count("!smart_tmp:goto|")
+
+            hex_adress_else = hex(CODE_ADRESSE + adress_conter + new_adress)[2:].upper()
+            hex_adress_else = "0" * (4 - len(hex_adress_else)) + hex_adress_else
+            hex_adress_else = hex_adress_else[2:] + " " + hex_adress_else[:2]
+
+
+            code_compile = code_compile.format(hex_adress_else)
+
+            adress_conter += new_adress
+            code_compile += code_else
         
         elif line.lstrip().startswith("void"):      # make fonction
             if function_mode["function_mode"]:
@@ -937,6 +976,8 @@ def compile_smarty(
                 raise SmartError(f"Function '{function_name}' not exist.", line_conter)
 
         line_conter += 1
+
+        last_if = False
         
     if function_mode["if_mode"]:
         pass
