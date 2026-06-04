@@ -9,6 +9,7 @@ Fonction: compile_smarty for start the compile of a smart code.
 from pathlib import Path
 import os
 import logging
+import re
 
 from compiller_tool.string_tool import split_code, replace_code, in_code
 from compiller_tool.color_tool import ColoredFormatter
@@ -21,12 +22,10 @@ logging.basicConfig(format="SmartCompiller %(levelname)s: %(message)s", level=lo
 for handler in logging.root.handlers:
     handler.setFormatter(ColoredFormatter('SmartCompiller %(levelname)s: %(message)s'))
 
-
+FUNCTION_PATTERN = "^[a-z_][a-z0-9_]*.*:"
 
 
 ESCAPE_CHAR = {"\\r":"\r", "\\\"":"\"", "\\'":"'"}        # the escape characters for str and char (\r...)
-
-
 
 class SmartFunction:
     """Information about a smart function."""
@@ -857,9 +856,7 @@ def compile_smarty(
             
             
 
-        else:     # function
-            if not in_code(":", line):
-                raise SmartError("Smart invalid syntaxe", line_conter)
+        elif re.match(FUNCTION_PATTERN, line):     # function
 
             line = replace_code(line, " ", "")
 
@@ -886,14 +883,8 @@ def compile_smarty(
                 elif function_arg[0][0] == "\"":
                     smart_str = function_arg[0]
 
-                    """if smart_str[-1] != "\"":
-                        raise SmartError("str value was not closed.", line_conter)
-                    
-                    value_str = smart_str[1:-1]"""
 
                     value_str = get_str(smart_str)
-
-
 
                     for char in get_char_from_str(value_str):
                         code_compile += set_one_A_value(f"'{char}'") + "20 EF FF "
@@ -906,7 +897,6 @@ def compile_smarty(
                     adress_conter += 3
                 
                 logging.info("Build smart fonction as asm command: print")
-
 
 
             elif function_name == "quit":
@@ -974,6 +964,9 @@ def compile_smarty(
             
             else:
                 raise SmartError(f"Function '{function_name}' not exist.", line_conter)
+        
+        else:
+            raise SmartError("Smart invalid syntaxe", line_conter)
 
         line_conter += 1
 
