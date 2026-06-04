@@ -730,7 +730,13 @@ def compile_smarty(
             line_import = split_code(line, " ")[1:]
 
             if len(line_import) == 1:   # search in all directory
-                import_tool.import_all(line_import[0])
+                try:
+                    if not(line_import[0].startswith('"') and line_import[0].endswith('"')):
+                        raise SmartError("Need a str value for path, in import.")
+                    module_name = line_import[0][1:-1]
+                    import_info = import_tool.import_all(module_name, CODE_ADRESSE + adress_conter)
+                except import_tool.ModuleError as me:
+                    raise SmartError(f"Error during importing module in all path: '{str(me)}'.")
 
             elif len(line_import) == 3: # search in a spesific directory (smart, lib or path of code)
                 line_from = split_code("".join(line_import), "from")
@@ -763,22 +769,22 @@ def compile_smarty(
                 except import_tool.ModuleError as me:
                     raise SmartError("Error during importing module:\n" + str(me))
                 
-                adress_delta = import_info.binary.count(" ")
+            adress_delta = import_info.binary.count(" ")
 
-                code_compile += import_info.binary
-                adress_conter += adress_delta
+            code_compile += import_info.binary
+            adress_conter += adress_delta
 
-                function_name_usr |= import_info.function
-                smart_var |= import_info.variables
+            function_name_usr |= import_info.function
+            smart_var |= import_info.variables
 
 
-                adress_conter += 2
+            adress_conter += 2
 
-                new_adress_module = adress_for_RAM(CODE_ADRESSE + adress_conter) + " "
+            new_adress_module = adress_for_RAM(CODE_ADRESSE + adress_conter) + " "
 
-                code_compile = code_compile.replace("!smart_module_goto", new_adress_module)
-                
-                
+            code_compile = code_compile.replace("!smart_module_goto", new_adress_module)
+            
+            
 
         else:     # function
             if not in_code(":", line):

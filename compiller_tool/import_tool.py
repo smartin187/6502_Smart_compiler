@@ -5,8 +5,8 @@ import sys
 compile_smarty = None
 
 PATH_LIB = {
-    "global":"/usr/lib/Smart-SmartyKit/global_lib/" if sys.platform == "linux" else os.environ["LOCALAPPDATA"] + "/Smart-SmartyKit/lib/global_lib/",
-    "smart":"/usr/lib/Smart-SmartyKit/smart_lib/" if sys.platform == "linux" else os.environ["LOCALAPPDATA"] + "/Smart-SmartyKit/lib/smart_lib/"
+    "global":"/usr/lib/Smart-SmartyKit/global_lib/" if sys.platform == "linux" else os.path.join(os.environ["LOCALAPPDATA"], "Smart-SmartyKit\\lib\\global_lib\\"),
+    "smart":"/usr/lib/Smart-SmartyKit/smart_lib/" if sys.platform == "linux" else os.path.join(os.environ["LOCALAPPDATA"], "Smart-SmartyKit\\lib\\smart_lib\\")
 }
 
 class ModuleError(Exception):
@@ -66,6 +66,9 @@ def import_lib(file_name:str, start_adress:int) -> ModuleInfo:
 
     path = os.path.join(PATH_LIB["global"], file_name)
 
+    if not Path(path).is_file():
+        raise ModuleError(f"File '{path}' not exist!")
+
     return get_module(path, start_adress)
 
 def import_smart(file_name:str, start_adress:int) -> ModuleInfo:
@@ -77,6 +80,25 @@ def import_smart(file_name:str, start_adress:int) -> ModuleInfo:
 
     path = os.path.join(PATH_LIB["smart"], file_name)
 
+    if not Path(path).is_file():
+        raise ModuleError(f"File '{path}' not exist!")
+
     return get_module(path, start_adress)
 
-def import_all(file_name:str, start_adress:int) -> ModuleInfo:raise Exception("Not implemented")
+def import_all(file_name:str, start_adress:int) -> ModuleInfo:
+    """Import a module from all the path (file, lib, smart).
+    The order is file, lib, smart."""
+    try:
+        return import_module(file_name, start_adress)
+    except ModuleError:
+        pass
+
+    try:
+        return import_lib(file_name, start_adress)
+    except ModuleError:
+        pass
+
+    try:
+        return import_smart(file_name, start_adress)
+    except ModuleError:
+        raise ModuleError(f"Module '{file_name}' not found in any path.")
