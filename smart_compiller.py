@@ -729,45 +729,45 @@ def compile_smarty(
         elif line.lstrip().startswith("import "):
             line_import = split_code(line, " ")[1:]
 
-            if len(line_import) == 1:   # search in all directory
-                try:
+            try:
+
+                if len(line_import) == 1:   # search in all directory
                     if not(line_import[0].startswith('"') and line_import[0].endswith('"')):
                         raise SmartError("Need a str value for path, in import.")
-                    module_name = line_import[0][1:-1]
-                    import_info = import_tool.import_all(module_name, CODE_ADRESSE + adress_conter)
-                except import_tool.ModuleError as me:
-                    raise SmartError(f"Error during importing module in all path: '{str(me)}'.")
+                    name_import = line_import[0][1:-1]
+                    import_info = import_tool.import_all(name_import, CODE_ADRESSE + adress_conter)
 
-            elif len(line_import) == 3: # search in a spesific directory (smart, lib or path of code)
-                line_from = split_code("".join(line_import), "from")
 
-                if len(line_from) != 2:
-                    raise SmartError("Sintaxe error: excepted 'from'.", line_conter)
+                elif len(line_import) == 3: # search in a spesific directory (smart, lib or path of code)
+                    line_from = split_code("".join(line_import), "from")
 
-                name_import, type_import = line_from
+                    if len(line_from) != 2:
+                        raise SmartError("Sintaxe error: excepted 'from'.", line_conter)
 
-                if not(name_import.startswith('"') and name_import.endswith('"')):
-                    raise SmartError("Need a str value for path, in import.")
-                else:
-                    name_import = name_import[1:-1]
-                
-                try:
-                    if type_import == '"file"':
-                        import_info = import_tool.import_module(name_import, CODE_ADRESSE + adress_conter)
+                    name_import, type_import = line_from
 
-                    elif type_import == '"lib"':
-                        import_info = import_tool.import_lib(name_import, CODE_ADRESSE + adress_conter)
-
-                    elif type_import == '"smart"':
-                        import_info = import_tool.import_smart(name_import, CODE_ADRESSE + adress_conter)
-                    
+                    if not(name_import.startswith('"') and name_import.endswith('"')):
+                        raise SmartError("Need a str value for path, in import.")
                     else:
-                        raise SmartError('Unknow import type. Must be "file", "lib", "smart"')
-                
-                except SmartError:
-                    raise SmartError()
-                except import_tool.ModuleError as me:
-                    raise SmartError("Error during importing module:\n" + str(me))
+                        name_import = name_import[1:-1]
+                    
+                    
+                        if type_import == '"file"':
+                            import_info = import_tool.import_module(name_import, CODE_ADRESSE + adress_conter)
+
+                        elif type_import == '"lib"':
+                            import_info = import_tool.import_lib(name_import, CODE_ADRESSE + adress_conter)
+
+                        elif type_import == '"smart"':
+                            import_info = import_tool.import_smart(name_import, CODE_ADRESSE + adress_conter)
+                        
+                        else:
+                            raise SmartError('Unknow import type. Must be "file", "lib", "smart"')
+                    
+            except SmartError as se:
+                raise SmartError("Error on module '{}':\n\t{}".format(name_import, (str(se)[1:-1].replace(",", "\n\t"))))
+            except import_tool.ModuleError as me:
+                raise SmartError("Error during importing module:\n" + str(me))
                 
             adress_delta = import_info.binary.count(" ")
 
