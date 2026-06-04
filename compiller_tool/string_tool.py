@@ -43,6 +43,8 @@ def split_code(
 
     wait_char = 0
 
+    last_char = ""
+
     for i, char in enumerate(code):
         if wait_char:
             wait_char -= 1
@@ -69,12 +71,15 @@ def split_code(
 
             else:
                 new_element.append(char)
+
         
         else:
-            if char == open_str:
+            if char == open_str and last_char != "\\":
                 on_str = False
             
             new_element.append(char)
+
+            last_char = char
     
     if new_element != []:
         split.append("".join(new_element))
