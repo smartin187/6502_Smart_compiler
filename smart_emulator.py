@@ -154,7 +154,7 @@ def see_memory() -> None:
 
         RAM_info.delete(0, tk.END)
 
-        new_ram = (f"{adress}       {RAM[adress]}" for adress in RAM)
+        new_ram = (f"{adress}       {ram[adress]}" for adress in ram)
 
         RAM_info.insert(0, "Adress    Value")
 
@@ -216,7 +216,7 @@ def see_memory() -> None:
                 messagebox.showerror("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
                 return
             
-            RAM["0" + hex(adress)[2:].upper()] = new_value.upper()
+            ram["0" + hex(adress)[2:].upper()] = new_value.upper()
 
             window.destroy()
 
@@ -519,7 +519,7 @@ def emulator_setting() -> None:
 button_setting = tk.Button(frame_option, text="Setting", command=emulator_setting)
 button_setting.grid(column=2, row=0)
 
-RAM = {}
+ram = {}
 accumulator = {}
 flags = {
     "C": 0,  # Carry
@@ -540,8 +540,8 @@ def pressed_key(event:tk.Event) -> str:
     if char not in ALLOW_CHAR:
         return "break"
     try:
-        RAM["D010"] = hex(ord(char))[2:].upper()
-        RAM["D011"] = "01"
+        ram["D010"] = hex(ord(char))[2:].upper()
+        ram["D011"] = "01"
     except:
         pass
     return "break"
@@ -560,7 +560,7 @@ def set_flag_for_LD(byte_hex: str) -> None:
 
 def run_smart() -> None:
     """Run smart code."""
-    global code, RAM, accumulator, flags, run_step, end_run
+    global code, ram, accumulator, flags, run_step, end_run
 
     code = code.split(" ")
 
@@ -573,9 +573,7 @@ def run_smart() -> None:
 
     accumulator = {"A":"00", "X":"00", "Y":"00"}
 
-    RAM = {"0" + hex(i)[2:].upper():"00" for i in range(0x02E7, 0x400 + 1)}
-    RAM["D010"] = "00"
-    RAM["D011"] = "00"
+    ram = {"0" + hex(i)[2:].upper():"00" for i in range(0x02E7, 0x400)} | {"D010":"00", "D011":"00"}
 
     run_fail = False
 
@@ -590,13 +588,13 @@ def run_smart() -> None:
         
         if " ".join(code[run_step:run_step + 7]) == "10 FB AD 10 D0 29 7F":     # special code:
             var_info_run.set("The programme is waiting for a key...")
-            while RAM["D011"] == "00":
+            while ram["D011"] == "00":
                 sleep(0.1)        # wait for a key
             
             var_info_run.set("")
             
-            RAM["D011"] = "00"
-            accumulator["A"] = RAM["D010"]
+            ram["D011"] = "00"
+            accumulator["A"] = ram["D010"]
 
             run_step += 7
 
@@ -628,7 +626,7 @@ def run_smart() -> None:
                     run_fail = True
                     break
             else:
-                RAM[code[run_step + 2] + code[run_step + 1]] = accumulator["A"]
+                ram[code[run_step + 2] + code[run_step + 1]] = accumulator["A"]
 
             run_step += 3
         
@@ -636,7 +634,7 @@ def run_smart() -> None:
             if run == "E9":
                 value = code[run_step + 1]
             else:
-                value = RAM[code[run_step + 2] + code[run_step + 1]]
+                value = ram[code[run_step + 2] + code[run_step + 1]]
 
 
             new_A = int(accumulator["A"], base=16) - int(value, base=16) - (1 - flags["C"])
@@ -661,7 +659,7 @@ def run_smart() -> None:
             run_step += 1
 
         elif run == "AD":
-            accumulator["A"] = RAM[code[run_step + 2] + code[run_step + 1]]
+            accumulator["A"] = ram[code[run_step + 2] + code[run_step + 1]]
 
             set_flag_for_LD(accumulator["A"])
 
@@ -727,7 +725,7 @@ def run_smart() -> None:
             run_step += 2
 
         elif run == "C9" or run == "CD":       # compare A
-            value = code[run_step + 1] if run == "C9" else RAM[code[run_step + 2] + code[run_step + 1]]
+            value = code[run_step + 1] if run == "C9" else ram[code[run_step + 2] + code[run_step + 1]]
 
             result = int(accumulator["A"], base=16) - int(value, base=16)
 
@@ -749,7 +747,7 @@ def run_smart() -> None:
             RAM_adress = code[run_step + 2] + code[run_step + 1]
             
 
-            add = RAM[RAM_adress]
+            add = ram[RAM_adress]
 
             new_A = int(accumulator["A"], base=16) + int(add, base=16)
 
@@ -805,7 +803,7 @@ def export_memory() -> None:
     file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("Json files", "*.json")])
 
     if file_path:
-        data = {"RAM": RAM, "accumulator": accumulator, "carry_flag": flags["C"]}
+        data = {"RAM": ram, "accumulator": accumulator, "carry_flag": flags["C"]}
 
         Path(file_path).write_text(json.dumps(data, indent=4), encoding="utf-8")
 
