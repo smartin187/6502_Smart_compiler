@@ -24,8 +24,12 @@ for handler in logging.root.handlers:
 
 FUNCTION_PATTERN = "^[a-z_][a-z0-9_]*.*:"
 
+class EscapeChar:
+    """The escape char for str and char value."""
+    ESCAPE_CHAR = {"\\r":"\r", "\\\"":"\"", "\\'":"'"}        # the escape characters for str and char (\r...)
+    DOUBLE_SLASH = "\\\\"
+    PLACE_HOLDER_SLASH = "`smart_double_slash"                  # set ` because this character is not used in str / char value.
 
-ESCAPE_CHAR = {"\\r":"\r", "\\\"":"\"", "\\'":"'"}        # the escape characters for str and char (\r...)
 
 class SmartFunction:
     """Information about a smart function."""
@@ -166,16 +170,21 @@ def compile_smarty(
             str_value += char
 
             if char == "\\":
-                escape_char = True
+                escape_char = not escape_char
             
             else:
                 escape_char = False
 
         # replace char:
-        for char in ESCAPE_CHAR:
-            replace = ESCAPE_CHAR[char]
+
+        str_value = str_value.replace(EscapeChar.DOUBLE_SLASH, EscapeChar.PLACE_HOLDER_SLASH)   # use a placeholder for double slash
+
+        for char in EscapeChar.ESCAPE_CHAR:
+            replace = EscapeChar.ESCAPE_CHAR[char]
 
             str_value = str_value.replace(char, replace)
+        
+        str_value = str_value.replace(EscapeChar.PLACE_HOLDER_SLASH, "\\")
 
 
         if len(str_value) == 0:
@@ -196,8 +205,8 @@ def compile_smarty(
             char = char_type[1:-1]
 
             if len(char) == 2 and char.startswith("\\"):
-                if char in ESCAPE_CHAR:
-                    code_ascii = ord(ESCAPE_CHAR[char])
+                if char in EscapeChar.ESCAPE_CHAR:
+                    code_ascii = ord(EscapeChar.ESCAPE_CHAR[char])
                 else:
                     char_error()
 
