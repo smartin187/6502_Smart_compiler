@@ -749,13 +749,20 @@ def compile_smarty(
             return_line = True
 
         elif line.lstrip().startswith("import "):
+            if function_mode["function_mode"]:
+                if function_mode["if_mode"]:
+                    raise SmartError("Can't import a module on a bloc.")
+                else:
+                    raise SmartError("Can't import a module on function.", line_conter)
+            
+            
             line_import = split_code(line, " ")[1:]
 
             try:
 
                 if len(line_import) == 1:   # search in all directory
                     if not(line_import[0].startswith('"') and line_import[0].endswith('"')):
-                        raise SmartError("Need a str value for path, in import.")
+                        raise SmartError("Need a str value for path, in import.", line_conter)
                     name_import = line_import[0][1:-1]
                     import_info = import_tool.import_all(name_import, CODE_ADRESSE + adress_conter)
 
@@ -769,7 +776,7 @@ def compile_smarty(
                     name_import, type_import = line_from
 
                     if not(name_import.startswith('"') and name_import.endswith('"')):
-                        raise SmartError("Need a str value for path, in import.")
+                        raise SmartError("Need a str value for path, in import.", line_conter)
                     else:
                         name_import = name_import[1:-1]
                     
