@@ -41,7 +41,8 @@ class SmartError(CompileError):
         nbline, line_error = line_of_instruction(nb_instruction)
 
         if warning_endline[0]:
-            text_endline = ColoredFormatter.COLORS["WARNING"] + f"Maybe you forget ';' at {warning_endline[1]} line?"
+            module_name = "* (main_module)" if warning_endline[2] == "*" else warning_endline[2]
+            text_endline = ColoredFormatter.COLORS["WARNING"] + f"Maybe you forget ';' at {warning_endline[1]} line, on {module_name}?"
         else:
             text_endline = ""
 
@@ -69,6 +70,7 @@ line_of_instruction = None
 need_input = False
 
 warning_endline = (False, )     # if an line not end by ; } or // in line or the last line
+# format: [0]: warning end line ; [1] : line of error ; [2]: module of error ('*' if main module)
 
 def get_bloc(line_conter:int, code:str, error_message:str="") -> str:
     """Return the content of bloc {}
@@ -125,7 +127,8 @@ def compile_smarty(
             bool | str | list | dict | SmartFunction | None
         ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[]},
         bin_outpout_file:bool=False,
-        module_mode:bool=False
+        module_mode:bool=False,
+        module_name:str="*" # module name is '*' if main module.
     ) -> None:
     """Start the compile from file."""
     global line_of_instruction, code_line, warning_endline
@@ -542,7 +545,7 @@ def compile_smarty(
 
         if not(line_controle == "" or line_controle.endswith(";") or line_controle.endswith("}")):
             i += 1
-            warning_endline = (True, i)
+            warning_endline = (True, i, module_name)
 
             logging.warning(f"Sintaxe warn: at line {i}, can't identify end. Maybe you have forget ';'?")
             break
