@@ -507,6 +507,32 @@ def compile_smarty(
                 return False
         return True
     
+    def get_char_from_str(string:str) -> list[str, ...]:
+        """Return a list of int, the ascii code of char on the string, if the char is \r, \", \', the element of list have it."""        
+        result = []
+
+        counter = 0
+
+        while counter != len(string):
+            char = string[counter]
+
+
+            if char == "'":
+                result.append("\\'")
+            
+            elif char == "\"":
+                result.append('\\"')
+
+            else:
+                result.append(char)
+
+            counter += 1
+        
+        print("res", result)
+
+        return result
+            
+    
     import_tool.config_import(compile_smarty)
 
     # -----------
@@ -845,7 +871,7 @@ def compile_smarty(
 
 
 
-                    for char in value_str:
+                    for char in get_char_from_str(value_str):
                         code_compile += set_one_A_value(f"'{char}'") + "20 EF FF "
 
                         adress_conter += 3
