@@ -2,19 +2,14 @@ import os
 from pathlib import Path
 import sys
 
+from compiller_tool.smart_exception import ModuleError
+
 compile_smarty = None
 
 PATH_LIB = {
     "global":"/usr/lib/Smart-SmartyKit/global_lib/" if sys.platform == "linux" else os.path.join(os.environ["LOCALAPPDATA"], "Smart-SmartyKit\\lib\\global_lib\\"),
     "smart":"/usr/lib/Smart-SmartyKit/smart_lib/" if sys.platform == "linux" else os.path.join(os.environ["LOCALAPPDATA"], "Smart-SmartyKit\\lib\\smart_lib\\")
 }
-
-class ModuleError(Exception):
-    """Exception for module (file not found, recursion error...)"""
-    def __init__(self, message:str="", recursion:bool=False, module_name:str=""):
-        self.recursion = recursion
-        self.module_name = module_name
-        super().__init__(message)
 
 class ModuleInfo:
     """A class used from compile_smarty for get the variable and function name + binary code."""

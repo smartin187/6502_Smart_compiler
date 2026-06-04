@@ -189,7 +189,6 @@ def compile_smarty(
 
     def get_char(char_type:str) -> str:
         """Return the char value of Smart."""
-        print("char_type", char_type)
         def char_error() -> None:
             """Raise SmartError for error if the char value don't have 1 character."""
             raise SmartError(f"The char value `{char_type}` don't have 1 character.")
@@ -505,8 +504,6 @@ def compile_smarty(
                 result.append(char)
 
             counter += 1
-        
-        print("res", result)
 
         return result
             

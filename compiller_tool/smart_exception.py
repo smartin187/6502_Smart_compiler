@@ -45,3 +45,11 @@ class SmartError(CompileError):
 
         self.syntaxerror = message
         self.nbline = nbline
+
+
+class ModuleError(CompileError):
+    """Exception for module (file not found, recursion error...)"""
+    def __init__(self, message:str="", recursion:bool=False, module_name:str=""):
+        self.recursion = recursion
+        self.module_name = module_name
+        super().__init__(message)
