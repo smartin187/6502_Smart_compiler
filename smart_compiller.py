@@ -13,6 +13,8 @@ import logging
 from compiller_tool.string_tool import split_code, replace_code, in_code
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool import import_tool
+from compiller_tool.smart_exception import CompileError, SmartError, config_exception
+from compiller_tool import compiller_data_run
 
 logging.basicConfig(format="SmartCompiller %(levelname)s: %(message)s", level=logging.INFO)
 
@@ -24,32 +26,7 @@ for handler in logging.root.handlers:
 
 ESCAPE_CHAR = {"\\r":"\r", "\\\"":"\"", "\\'":"'"}        # the escape characters for str and char (\r...)
 
-class CompileError(Exception):
-    """An error with compile (file not found, unknow error...).
-    Use SmartError for error with code (syntaxe, bad value...)"""
-    def __init__(self, message:str="Error"):
-        logging.critical(message)
 
-        self.error = message
-
-class SmartError(CompileError):
-    """The error for Smart (syntaxe error)."""
-    def __init__(self, message:str, nb_instruction:int=0):
-        logging.critical(ColoredFormatter.COLORS["CRITICAL"] + "Error during build:")
-
-
-        nbline, line_error = line_of_instruction(nb_instruction)
-
-        if warning_endline[0]:
-            module_name = "* (main_module)" if warning_endline[2] == "*" else warning_endline[2]
-            text_endline = ColoredFormatter.COLORS["WARNING"] + f"Maybe you forget ';' at {warning_endline[1]} line, on {module_name}?"
-        else:
-            text_endline = ""
-
-        print(f"~~~~~~~~~~\nAt {nbline} line:\n{line_error}\n~~~~~~~~~~\nError :\n{message}\n{text_endline}\n{ColoredFormatter.RESET}")
-
-        self.syntaxerror = message
-        self.nbline = nbline
 
 class SmartFunction:
     """Information about a smart function."""
@@ -69,8 +46,7 @@ line_of_instruction = None
 
 need_input = False
 
-warning_endline = (False, )     # if an line not end by ; } or // in line or the last line
-# format: [0]: warning end line ; [1] : line of error ; [2]: module of error ('*' if main module)
+
 
 def get_bloc(line_conter:int, code:str, error_message:str="") -> str:
     """Return the content of bloc {}
@@ -131,7 +107,7 @@ def compile_smarty(
         module_name:str="*" # module name is '*' if main module.
     ) -> None:
     """Start the compile from file."""
-    global line_of_instruction, code_line, warning_endline
+    global line_of_instruction, code_line#, warning_endline
     logging.info("Starting compiller...")
     class SmartBuiltIn:
         """Set the built in function of Smart.
@@ -164,6 +140,8 @@ def compile_smarty(
                 return (line_counter + 1, code_line[line_counter-1])
         
         return (line_counter +1, code_line[line_counter-1])
+
+    config_exception(line_of_instruction)
 
     def get_str(string:str) -> str:
         """Return the str value. Add the escape char."""
@@ -589,7 +567,7 @@ def compile_smarty(
 
         if not(line_controle == "" or line_controle.endswith(";") or line_controle.endswith("}")):
             i += 1
-            warning_endline = (True, i, module_name)
+            compiller_data_run.warning_endline = (True, i, module_name)
 
             logging.warning(f"Sintaxe warn: at line {i}, can't identify end. Maybe you have forget ';'?")
             break
