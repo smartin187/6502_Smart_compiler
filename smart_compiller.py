@@ -346,7 +346,7 @@ def compile_smarty(
                 counter_adress_value += 3
                 
 
-                return f"AD {adress_for_RAM(smart_var[variable])} "
+                return f"AD {adress_for_RAM(smart_var[variable].ram_adress)} "
 
             
             elif value.startswith("True"):
@@ -478,7 +478,7 @@ def compile_smarty(
 
     last_if = False     # True if the last operation is if on Smart (for else).
 
-    smart_var = {} if not function_mode["function_mode"] else function_mode["global_var"]
+    smart_var:dict[str, smart_obj.SmartVariable] = {} if not function_mode["function_mode"] else function_mode["global_var"]
     adress_var = 0x300 + len(smart_var)
 
     line_conter = 0
@@ -612,12 +612,12 @@ def compile_smarty(
             if var_name not in smart_var: # make new variable
                 if len(smart_var) >= 256:
                     raise SmartError("Memory error : maximum variable are 256.", line_conter)
-                smart_var[var_name] = adress_var
+                smart_var[var_name] = smart_obj.SmartVariable(var_name, adress_var)
                 adress_var += 1
             
             value_RAM = set_one_A_value(value)
                         
-            code_compile += f"{value_RAM}8D {adress_for_RAM(smart_var[var_name])} "
+            code_compile += f"{value_RAM}8D {adress_for_RAM(smart_var[var_name].ram_adress)} "
 
             adress_conter += 3
 
