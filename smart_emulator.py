@@ -742,6 +742,14 @@ def run_smart() -> None:
                 run_step += 2 + offset
             else:
                 run_step += 2
+        
+        elif run == "F0":       # BEQ
+            offset = int(code[run_step + 1], base=16)
+
+            if flags["Z"] == 1:
+                run_step += 2 + offset
+            else:
+                run_step += 2
 
         elif run == "6D":
             RAM_adress = code[run_step + 2] + code[run_step + 1]
