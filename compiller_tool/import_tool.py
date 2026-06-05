@@ -39,7 +39,6 @@ def get_module(path:str, start_adress:int) -> ModuleInfo:
             file=path,
             CODE_ADRESSE=start_adress,
             make_file=False,
-            module_mode=True,
             module_name=path
         )
 

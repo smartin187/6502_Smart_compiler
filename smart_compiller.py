@@ -100,12 +100,13 @@ def compile_smarty(
             bool | str | list | dict | SmartFunction | None
         ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[]},
         bin_outpout_file:bool=False,
-        module_mode:bool=False,
         module_name:str="*" # module name is '*' if main module.
     ) -> None:
     """Start the compile from file."""
     global line_of_instruction, code_line#, warning_endline
     logging.info("Starting compiller...")
+
+    module_mode = module_name != "*"
     class SmartBuiltIn:
         """Set the built in function of Smart.
         Warning: some function are not in this class because it is assembly function (print, goto...)"""
