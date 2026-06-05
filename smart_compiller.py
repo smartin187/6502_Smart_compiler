@@ -947,12 +947,18 @@ def compile_smarty(
 
                 adress_conter += code_tmp.count(" ")
             
-            elif function_name == "input":
-                logging.warning("'input' function is a return-function, but was used as a function.")
+            elif function_name in SmartBuiltIn.BUILT_IN_NAME_RETURN:
+                logging.warning(f"'{function_name}' function is a return-function, but was used as a function.")
+                
+                match function_name:
+                    case "input":
+                        SmartBuiltIn.smartInput()
 
-                SmartBuiltIn.smartInput()
 
             elif function_name in function_name_usr:
+
+                if function_name_usr[function_name].return_value:
+                    logging.warning(f"Function '{function_name}' is a return-function but was used as a function.")
 
                 # use a goto
 
