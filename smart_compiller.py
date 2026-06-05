@@ -11,11 +11,11 @@ import os
 import logging
 import re
 
-from compiller_tool.string_tool import split_code, replace_code, in_code
+from compiller_tool.string_tool import split_code, replace_code, in_code, EscapeChar
 from compiller_tool.color_tool import ColoredFormatter
-from compiller_tool import import_tool
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception
 from compiller_tool import compiller_data_run
+from compiller_tool import import_tool
 
 logging.basicConfig(format="SmartCompiller %(levelname)s: %(message)s", level=logging.INFO)
 
@@ -23,13 +23,6 @@ for handler in logging.root.handlers:
     handler.setFormatter(ColoredFormatter('SmartCompiller %(levelname)s: %(message)s'))
 
 FUNCTION_PATTERN = "^[a-z_][a-z0-9_]*.*:"
-
-class EscapeChar:
-    """The escape char for str and char value."""
-    ESCAPE_CHAR = {"\\r":"\r", "\\\"":"\"", "\\'":"'"}        # the escape characters for str and char (\r...)
-    DOUBLE_SLASH = "\\\\"
-    PLACE_HOLDER_SLASH = "`smart_double_slash"                  # set ` because this character is not used in str / char value.
-
 
 class SmartFunction:
     """Information about a smart function."""

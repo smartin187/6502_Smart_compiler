@@ -6,7 +6,15 @@ Function:
 - split_code
 - replace_code
 - in_code
+- EscapeChar
 """
+
+class EscapeChar:
+    """The escape char for str and char value."""
+    ESCAPE_CHAR = {"\\r":"\r", "\\\"":"\"", "\\'":"'"}        # the escape characters for str and char (\r...)
+    DOUBLE_SLASH = "\\\\"
+    PLACE_HOLDER_SLASH = "`smart_double_slash"                  # set ` because this character is not used in str / char value.
+
 
 
 def split_code(
