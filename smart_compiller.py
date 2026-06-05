@@ -248,8 +248,7 @@ def compile_smarty(
             except IndexError:
                 return False
             
-
-            if start in ("A9", "69", "E9"):
+            if start == "A9":
                 return True
             return False
 
@@ -273,7 +272,7 @@ def compile_smarty(
 
                     counter_adress_value += 1       # add for the OP code 18
                 
-                    hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True, hex_math_op="69")
+                    hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
 
                     if not imediate_value(hex_value_2):     # adress value
                         asm = f"{hex_value_1}18 6D {hex_value_2[3:]}"
@@ -299,7 +298,7 @@ def compile_smarty(
 
                     counter_adress_value += 1       # add for the OP code 18
                 
-                    hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True, hex_math_op="E9")
+                    hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
 
                     if not imediate_value(hex_value_2):
                         asm = f"{hex_value_1}38 ED {hex_value_2[3:]}"       # adress value
@@ -321,7 +320,7 @@ def compile_smarty(
                 try:
                     value_1, value_2 = split_code(value, "==", max_split=1)
 
-                    hex_value_1 = set_one_A_value(value_1, one_math=True, recursiv_value=True)#a terminer
+                    hex_value_1 = set_one_A_value(value_1, one_math=True, recursiv_value=True)
 
                     hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
 
@@ -354,7 +353,7 @@ def compile_smarty(
                 if not one_math:
                     return f"AD {adress_for_RAM(smart_var[variable])} "
                 else:
-                    return f"AD {adress_for_RAM(smart_var[variable])} " # hex_math_op before AD ?
+                    return f"AD {adress_for_RAM(smart_var[variable])} "
             
             elif value.startswith("True"):
                 counter_adress_value += 2
@@ -393,7 +392,7 @@ def compile_smarty(
 
                 counter_adress_value += 2
 
-                load = "A9 " if not one_math else hex_math_op + " "
+                load = "A9 " if not one_math else "A9 "
 
                 return load + value_hex + " "
 
@@ -439,7 +438,7 @@ def compile_smarty(
                     if not one_math:
                         return saver_A + text_code + "AD E8 02 "
                     else:
-                        return saver_A + text_code + f"{hex_math_op} E8 02 "
+                        return saver_A + text_code + "AD E8 02 "
       
             else:
                 raise SmartError(f"Smart value error: {value}", line_conter)
