@@ -16,6 +16,7 @@ from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception
 from compiller_tool import compiller_data_run
 from compiller_tool import import_tool
+from compiller_tool import smart_obj
 
 logging.basicConfig(format="SmartCompiller %(levelname)s: %(message)s", level=logging.INFO)
 
@@ -24,18 +25,7 @@ for handler in logging.root.handlers:
 
 FUNCTION_PATTERN = "^[a-z_][a-z0-9_]*.*:"
 
-class SmartFunction:
-    """Information about a smart function."""
-    def __init__(self, name:str, func_code:str):
-        """Set the attibute of the function."""
-        self.name = name
-        self.source_code_function = func_code
-        self.code_compile_f = ""
-        self.function_adress = 0
-        self.return_value = in_code("return ", self.source_code_function)
 
-        self.called_function = False    # if False at the end of build, the function was never called
-        
 
 code_line = None
 
@@ -97,7 +87,7 @@ def compile_smarty(
         make_file:bool=True,
         function_mode:dict[
             str,
-            bool | str | list | dict | SmartFunction | None
+            bool | str | list | dict | smart_obj.SmartFunction | None
         ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[]},
         bin_outpout_file:bool=False,
         module_name:str="*" # module name is '*' if main module.
@@ -536,7 +526,7 @@ def compile_smarty(
     if function_mode["function_mode"]:
         return_line = False     # became True when they are the return line (if an line is after return line, raise SmartError)
 
-    function_name_usr: dict[str, SmartFunction] = function_mode["global_function"] if function_mode["function_mode"] else {}
+    function_name_usr: dict[str, smart_obj.SmartFunction] = function_mode["global_function"] if function_mode["function_mode"] else {}
 
     go_to_replace = [] if not function_mode["if_mode"] else function_mode["goto_replace"]
     function_replace = function_mode["global_function_replace"] if function_mode["function_mode"] else []
@@ -759,7 +749,7 @@ def compile_smarty(
            
             func_code, funciton_line = get_bloc(line_conter, code, error_message="On function '" + func_name + "'")
 
-            function_name_usr[func_name] = SmartFunction(func_name, func_code)
+            function_name_usr[func_name] = smart_obj.SmartFunction(func_name, func_code)
 
             jump_line = funciton_line - line_conter - 1
 
