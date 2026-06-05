@@ -1069,7 +1069,7 @@ def compile_smarty(
 
                 function_name_usr[function_name_tmp].called_function = True
 
-    if not function_mode["function_mode"]:
+    if (not function_mode["function_mode"]) and (not module_mode):
         for name, f in function_name_usr.items():
             if not f.called_function:
                 logging.warning(f"Function '{name}' was never called.")
