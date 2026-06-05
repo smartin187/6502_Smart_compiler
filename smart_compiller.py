@@ -473,6 +473,9 @@ def compile_smarty(
         - Any letter lower (a-z). Special letter (éèëù...) are accepted.
         - Any number 0-9
         - underscore _"""
+        if name[0].isdigit():
+            return False
+
         for char in name:
             if (not (char.isalpha() or char.isdigit() or char == "_")) or char.isupper():
                 return False
