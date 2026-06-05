@@ -25,4 +25,9 @@ class SmartFunction(SmartObj):
         self.called_function = False    # if False at the end of build, the function was never called
 
 
+class SmartGoto(SmartObj):
+    """Information about a goto (name and adress)."""
+    def __init__(self, name, adress):
+        super().__init__(name)
 
+        self.adress = adress

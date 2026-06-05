@@ -487,7 +487,7 @@ def compile_smarty(
 
     code_compile = "0" * (6 - len(adress_str)) + adress_str if not function_mode["function_mode"] else ""
 
-    go_to = {} if not function_mode["if_mode"] else function_mode["global_goto"]
+    go_to:dict[str, smart_obj.SmartGoto] = {} if not function_mode["if_mode"] else function_mode["global_goto"]
 
     if function_mode["function_mode"]:
         return_line = False     # became True when they are the return line (if an line is after return line, raise SmartError)
@@ -595,7 +595,7 @@ def compile_smarty(
             hex_adress = "0" * (4-len(hex_adress)) + hex_adress
 
 
-            go_to[name] = hex_adress
+            go_to[name] = smart_obj.SmartGoto(name, hex_adress)
 
             logging.info("Build asm command: goto")
 
@@ -1038,7 +1038,7 @@ def compile_smarty(
             goto_name = goto.split("|")[1]
 
             try:
-                adress = go_to[goto_name]
+                adress = go_to[goto_name].adress
                     
             except KeyError:
                 raise SmartError(f"'{name}' is not defined for goto !", line_conter)
