@@ -26,15 +26,16 @@ FUNCTION_PATTERN = "^[a-z_][a-z0-9_]*.*:"
 
 class SmartFunction:
     """Information about a smart function."""
-    def __init__(self, name:str):
+    def __init__(self, name:str, func_code:str):
         """Set the attibute of the function."""
         self.name = name
-        self.source_code_function = ""
+        self.source_code_function = func_code
         self.code_compile_f = ""
         self.function_adress = 0
-        self.return_value = False
+        self.return_value = in_code("return ", self.source_code_function)
 
         self.called_function = False    # if False at the end of build, the function was never called
+        
 
 code_line = None
 
@@ -119,6 +120,11 @@ def compile_smarty(
             code_compile += "20 !  smart_input"     # set 2 space on placeholder for counting adress
 
             adress_conter += 3
+        
+        BUILT_IN_NAME_RETURN = ["input"]
+        BUILT_IN_NAME_NORETURN = ["print", "quit", "goto", "asm_entry"]
+
+        BUILT_IN_NAME = BUILT_IN_NAME_RETURN + BUILT_IN_NAME_NORETURN
 
 
     def line_of_instruction(nb_instruction:int) -> tuple[int, str]:
@@ -407,16 +413,20 @@ def compile_smarty(
 
                 func_name_value, func_arg_value = value.split(":", 1)
 
-                if func_name_value == "input":
-                    SmartBuiltIn.smartInput()
-                    counter_adress_value += 3
-                    return ""
+                if func_name_value in SmartBuiltIn.BUILT_IN_NAME_RETURN:
+                    if func_name_value == "input":
+                        SmartBuiltIn.smartInput()
+                        counter_adress_value += 3
+                        return ""
                 
+                elif func_name_value in SmartBuiltIn.BUILT_IN_NAME_NORETURN:
+                    raise SmartError(f"Built in function {func_name_value} is not a return-function.")
+
                 else:
 
                     if func_name_value in function_name_usr:
-                        """if not function_name_usr[func_name_value].return_value:
-                            raise SmartError(f"Function '{func_name_value}' is not a return-function.", line_conter)"""
+                        if not function_name_usr[func_name_value].return_value:
+                            raise SmartError(f"Function '{func_name_value}' is not a return-function.", line_conter)
 
                     else:
                         raise SmartError(f"Function '{func_name_value}' not exist.", line_conter)
@@ -748,8 +758,7 @@ def compile_smarty(
            
             func_code, funciton_line = get_bloc(line_conter, code, error_message="On function '" + func_name + "'")
 
-            function_name_usr[func_name] = SmartFunction(func_name)
-            function_name_usr[func_name].source_code_function = func_code
+            function_name_usr[func_name] = SmartFunction(func_name, func_code)
 
             jump_line = funciton_line - line_conter - 1
 
