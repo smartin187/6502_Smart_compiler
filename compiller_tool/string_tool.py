@@ -6,6 +6,7 @@ Function:
 - split_code
 - replace_code
 - in_code
+- good_variable_name
 - EscapeChar
 """
 
@@ -181,3 +182,41 @@ def in_code(
     return False
 
 counter_adress_value = 0        # the relative adress used by set_one_A_value. Be carful with this value.
+
+
+def good_variable_name(name:str) -> bool:
+        """Return True if the name of variable is good, False else.
+        An variable name can have :
+        - Any letter lower (a-z). Special letter (éèëù...) are accepted.
+        - Any number 0-9
+        - underscore _"""
+        if name[0].isdigit():
+            return False
+
+        for char in name:
+            if (not (char.isalpha() or char.isdigit() or char == "_")) or char.isupper():
+                return False
+        return True
+
+def get_char_from_str(string:str) -> list[str]:
+    """Return a list of int, the ascii code of char on the string, if the char is \r, \", \', the element of list have it."""        
+    result = []
+
+    counter = 0
+
+    while counter != len(string):
+        char = string[counter]
+
+
+        if char == "'":
+            result.append("\\'")
+        
+        elif char == "\"":
+            result.append('\\"')
+
+        else:
+            result.append(char)
+
+        counter += 1
+
+    return result
