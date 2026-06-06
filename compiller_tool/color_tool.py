@@ -1,7 +1,8 @@
 import logging
-from os import system
+from os import system, name
 
-system("color")
+if name == "nt":
+    system("color")
 
 class Colors:
     """Class to store the color codes for terminal output."""
