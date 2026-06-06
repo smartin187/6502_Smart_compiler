@@ -157,7 +157,20 @@ if condition{;
 
 The condition is a value (int, char, boolean value...). If the value is not `0`, the bloc is run.
 
-Then an `if` bloc, you can set a `else` bloc:
+Then an `if` bloc, you can set a `elif` bloc. This condition is verifed if the condition of `if` bloc is `False`.
+
+```Smart
+if False{;
+    print: "IF CODE";
+}
+elif True{;
+    print: "ELIF CODE";
+}
+```
+
+>You can have several `elif` bloc.
+
+Then an `if` or `elif` bloc, you can set a `else` bloc:
 
 ```Smart
 if False{;
@@ -173,6 +186,35 @@ else{;
 ```Smart
 if True == True{;
     print: "THE CONDITION IS TRUE";
+}
+```
+
+#### Loop
+
+You can do loop in Smart.
+
+Smart have the [`while` loop](#while-loop).
+
+>Moreover, you can build your own loop with [goto](#goto) and [label](#labels-anchors).
+
+>Note: you can also set a infinit loop with recursive function. It work, the perf are low...
+
+##### `while` loop
+
+This loop is runing as long as the condition is `True`.
+
+If you set `True` on the condition, you have an infinity loop.
+
+###### Sintaxe
+
+```Smart
+while True{;
+    print: "INFINIT LOOP";
+}
+// you can set any condition:
+.my_variable = 1;
+while 1 == .my_variable{;
+    // ...
 }
 ```
 
