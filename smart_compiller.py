@@ -637,8 +637,8 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
             
-            code_compile += "C9 00 D0 08 A9 01 8D E9 02 4C {} "
-            adress_conter += 12
+            code_compile += "C9 00 D0 08 A9 01 8D E9 02 4C {} A9 00 8D E9 02 "
+            adress_conter += 17
 
             code_if = compile_smarty(
                 make_file=False,
@@ -657,6 +657,58 @@ def compile_smarty(
 
             adress_conter += new_adress
             code_compile += code_if
+
+            last_if = True
+
+            line_conter += 1    # add the line conter because continue
+            continue
+
+        elif line.lstrip().startswith("elif"):
+            line_2 = replace_code(line, " ", "")[4:]
+
+            if not line_2.endswith("{"):
+                raise SmartError("On elif bloc, expected '{'", line_conter)
+            else:
+                line_2 = line_2[:-1]
+
+
+            bloc_code, bloc_line = get_bloc(line_conter, code, error_message="On elif bloc")
+
+            jump_line = bloc_line - line_conter - 1
+            
+            code_compile += "AD E9 02 C9 01 D0 !smart_tmp:elif "
+            adress_conter += 7
+
+            value_tmp = set_one_A_value(line_2)
+
+            code_compile += value_tmp
+
+            delta_branch = hex(value_tmp.count(" ") + value_tmp.count("!smart_call_func|") * 13 + 9)[2:].upper()
+
+            code_compile = code_compile.replace("!smart_tmp:elif", delta_branch)
+
+            code_compile += "C9 00 D0 08 A9 01 8D E9 02 4C {} A9 00 8D E9 02 "
+            #                             ^ del A9 01 ?
+
+            adress_conter += 17
+
+            code_elif = compile_smarty(
+                make_file=False,
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace},
+                CODE_ADRESSE=CODE_ADRESSE + adress_conter
+            )
+
+            new_adress = code_elif.count(" ") + code_elif.count("!smart_call_func|") * 13 + code_elif.count("!smart_tmp:goto|") * 3 - code_elif.count("!smart_tmp:goto|")
+
+            hex_adress_elif = hex(CODE_ADRESSE + adress_conter + new_adress)[2:].upper()
+            hex_adress_elif = "0" * (4 - len(hex_adress_elif)) + hex_adress_elif
+            hex_adress_elif = hex_adress_elif[2:] + " " + hex_adress_elif[:2]
+
+
+            code_compile = code_compile.format(hex_adress_elif)
+
+            adress_conter += new_adress
+            code_compile += code_elif
 
             last_if = True
 
