@@ -598,186 +598,187 @@ def run_smart() -> None:
 
             run_step += 7
 
-        # normal instruction:
-
-        elif run == "A9":     # A
-            accumulator["A"] = code[run_step + 1]
-            run_step += 2
-            set_flag_for_LD(accumulator["A"])
-        
-        elif run == "A2":
-            accumulator["X"] = code[run_step + 1]
-            run_step += 2
-            set_flag_for_LD(accumulator["X"])
-        
-        elif run == "A0":
-            accumulator["Y"] = code[run_step + 1]
-            run_step += 2
-            set_flag_for_LD(accumulator["Y"])
-        
-        elif run == "8D":
-            adress = code[run_step + 2] + code[run_step + 1]
-
-            if 0x300 <= int(adress, base=16) >= 0x400:    # write one the programme
-                try:
-                    code[int(adress, base=16) - START + 1] = accumulator["A"]
-                except:
-                    messagebox.showerror("Error", "Write on unknow adress.", detail="Detail: {}".format(hex(0x400 + int(adress, base=16) - START + 1)).upper())
-                    run_fail = True
-                    break
-            else:
-                ram[code[run_step + 2] + code[run_step + 1]] = accumulator["A"]
-
-            run_step += 3
-        
-        elif run == "E9" or run == "ED":   # subtract
-            if run == "E9":
-                value = code[run_step + 1]
-            else:
-                value = ram[code[run_step + 2] + code[run_step + 1]]
-
-
-            new_A = int(accumulator["A"], base=16) - int(value, base=16) - (1 - flags["C"])
-
-            if new_A < 0:
-                flags["C"] = 0
-                flags["V"] = 1  # Set Overflow flag
-                new_A += 256
-            else:
-                flags["C"] = 1
-            
-            flags["Z"] = 1 if new_A == 0 else 0
-            flags["N"] = 1 if new_A & 0x80 else 0
-
-            accumulator["A"] = hex(new_A)[2:].upper().zfill(2)
-
-            run_step += 2 if run == "E9" else 3
-        
-        elif run == "38":
-            flags["C"] = 1
-
-            run_step += 1
-
-        elif run == "AD":
-            accumulator["A"] = ram[code[run_step + 2] + code[run_step + 1]]
-
-            set_flag_for_LD(accumulator["A"])
-
-            run_step += 3
-        
-        elif run == "20":
-            run_step += 1
-
-            code[run_step]
-
-            if code[run_step] == "EF" and code[run_step + 1] == "FF":
-                print_on_text(chr(int(accumulator["A"], base=16)))
-
-                run_step += 2
-            
-            else:
-                return_ardess = run_step + 2
-
-                adress_call = int(code[run_step + 1] + code[run_step], base=16) - START + 1
-
-                if adress_call + 0x400 >= 0x400 + len(code):
-                    messagebox.showerror("Error", "Unknow adress for call.")
-                    run_fail = True
-                    break
-
-                run_step = adress_call
-
-        
-        elif run == "00":
-            break
-
-        elif run == "60":
-            run_step = return_ardess
-
-        elif run == "4C":   # goto
-            goto = code[run_step + 2] + code[run_step + 1]
-
-            run_step = int(goto, base=16) - START + 1
-        
-        elif run == "18":
-            flags["C"] = 0
-
-            run_step += 1
-        
-        elif run == "69":
-            add = code[run_step + 1]
-
-            new_A = int(accumulator["A"], base=16) + int(add, base=16)
-
-            if new_A >= 256:
-                flags["C"] = 1
-                flags["V"] = 1  # Set Overflow flag
-                new_A -= 256
-            else:
-                flags["C"] = 0
-
-            # Set Zero and Negative flags
-            flags["Z"] = 1 if new_A == 0 else 0
-            flags["N"] = 1 if new_A & 0x80 else 0
-
-            accumulator["A"] = hex(new_A)[2:].upper().zfill(2)
-
-            run_step += 2
-
-        elif run == "C9" or run == "CD":       # compare A
-            value = code[run_step + 1] if run == "C9" else ram[code[run_step + 2] + code[run_step + 1]]
-
-            result = int(accumulator["A"], base=16) - int(value, base=16)
-
-            flags["C"] = 1 if result >= 0 else 0
-            flags["Z"] = 1 if result == 0 else 0
-            flags["N"] = 1 if result & 0x80 else 0
-
-            run_step += 2 if run == "C9" else 3
-
-        elif run == "D0":       # BNE
-            offset = int(code[run_step + 1], base=16)
-
-            if flags["Z"] == 0:
-                run_step += 2 + offset
-            else:
-                run_step += 2
-        
-        elif run == "F0":       # BEQ
-            offset = int(code[run_step + 1], base=16)
-
-            if flags["Z"] == 1:
-                run_step += 2 + offset
-            else:
-                run_step += 2
-
-        elif run == "6D":
-            RAM_adress = code[run_step + 2] + code[run_step + 1]
-            
-
-            add = ram[RAM_adress]
-
-            new_A = int(accumulator["A"], base=16) + int(add, base=16)
-
-            if new_A >= 256:
-                flags["C"] = 1
-                flags["V"] = 1  # Set Overflow flag
-                new_A -= 256
-            else:
-                flags["C"] = 0
-
-
-            flags["Z"] = 1 if new_A == 0 else 0
-            flags["N"] = 1 if new_A & 0x80 else 0
-
-            accumulator["A"] = hex(new_A)[2:].upper().zfill(2)
-
-            run_step += 3
-        
         else:
-            messagebox.showerror("Error", f"Unknow assembly : {run}, at {run_step} step.")
-            run_fail = True
-            break
+            match run:# normal instruction:
+
+                case "A9":     # A
+                    accumulator["A"] = code[run_step + 1]
+                    run_step += 2
+                    set_flag_for_LD(accumulator["A"])
+                
+                case "A2":
+                    accumulator["X"] = code[run_step + 1]
+                    run_step += 2
+                    set_flag_for_LD(accumulator["X"])
+                
+                case "A0":
+                    accumulator["Y"] = code[run_step + 1]
+                    run_step += 2
+                    set_flag_for_LD(accumulator["Y"])
+                
+                case "8D":
+                    adress = code[run_step + 2] + code[run_step + 1]
+
+                    if 0x300 <= int(adress, base=16) >= 0x400:    # write one the programme
+                        try:
+                            code[int(adress, base=16) - START + 1] = accumulator["A"]
+                        except:
+                            messagebox.showerror("Error", "Write on unknow adress.", detail="Detail: {}".format(hex(0x400 + int(adress, base=16) - START + 1)).upper())
+                            run_fail = True
+                            break
+                    else:
+                        ram[code[run_step + 2] + code[run_step + 1]] = accumulator["A"]
+
+                    run_step += 3
+                
+                case "E9" | "ED":   # subtract
+                    if run == "E9":
+                        value = code[run_step + 1]
+                    else:
+                        value = ram[code[run_step + 2] + code[run_step + 1]]
+
+
+                    new_A = int(accumulator["A"], base=16) - int(value, base=16) - (1 - flags["C"])
+
+                    if new_A < 0:
+                        flags["C"] = 0
+                        flags["V"] = 1  # Set Overflow flag
+                        new_A += 256
+                    else:
+                        flags["C"] = 1
+                    
+                    flags["Z"] = 1 if new_A == 0 else 0
+                    flags["N"] = 1 if new_A & 0x80 else 0
+
+                    accumulator["A"] = hex(new_A)[2:].upper().zfill(2)
+
+                    run_step += 2 if run == "E9" else 3
+                
+                case "38":
+                    flags["C"] = 1
+
+                    run_step += 1
+
+                case "AD":
+                    accumulator["A"] = ram[code[run_step + 2] + code[run_step + 1]]
+
+                    set_flag_for_LD(accumulator["A"])
+
+                    run_step += 3
+                
+                case "20":
+                    run_step += 1
+
+                    code[run_step]
+
+                    if code[run_step] == "EF" and code[run_step + 1] == "FF":
+                        print_on_text(chr(int(accumulator["A"], base=16)))
+
+                        run_step += 2
+                    
+                    else:
+                        return_ardess = run_step + 2
+
+                        adress_call = int(code[run_step + 1] + code[run_step], base=16) - START + 1
+
+                        if adress_call + 0x400 >= 0x400 + len(code):
+                            messagebox.showerror("Error", "Unknow adress for call.")
+                            run_fail = True
+                            break
+
+                        run_step = adress_call
+
+                
+                case "00":
+                    break
+
+                case "60":
+                    run_step = return_ardess
+
+                case "4C":   # goto
+                    goto = code[run_step + 2] + code[run_step + 1]
+
+                    run_step = int(goto, base=16) - START + 1
+                
+                case "18":
+                    flags["C"] = 0
+
+                    run_step += 1
+                
+                case "69":
+                    add = code[run_step + 1]
+
+                    new_A = int(accumulator["A"], base=16) + int(add, base=16)
+
+                    if new_A >= 256:
+                        flags["C"] = 1
+                        flags["V"] = 1  # Set Overflow flag
+                        new_A -= 256
+                    else:
+                        flags["C"] = 0
+
+                    # Set Zero and Negative flags
+                    flags["Z"] = 1 if new_A == 0 else 0
+                    flags["N"] = 1 if new_A & 0x80 else 0
+
+                    accumulator["A"] = hex(new_A)[2:].upper().zfill(2)
+
+                    run_step += 2
+
+                case "C9" | "CD":       # compare A
+                    value = code[run_step + 1] if run == "C9" else ram[code[run_step + 2] + code[run_step + 1]]
+
+                    result = int(accumulator["A"], base=16) - int(value, base=16)
+
+                    flags["C"] = 1 if result >= 0 else 0
+                    flags["Z"] = 1 if result == 0 else 0
+                    flags["N"] = 1 if result & 0x80 else 0
+
+                    run_step += 2 if run == "C9" else 3
+
+                case "D0":       # BNE
+                    offset = int(code[run_step + 1], base=16)
+
+                    if flags["Z"] == 0:
+                        run_step += 2 + offset
+                    else:
+                        run_step += 2
+                
+                case "F0":       # BEQ
+                    offset = int(code[run_step + 1], base=16)
+
+                    if flags["Z"] == 1:
+                        run_step += 2 + offset
+                    else:
+                        run_step += 2
+
+                case "6D":
+                    RAM_adress = code[run_step + 2] + code[run_step + 1]
+                    
+
+                    add = ram[RAM_adress]
+
+                    new_A = int(accumulator["A"], base=16) + int(add, base=16)
+
+                    if new_A >= 256:
+                        flags["C"] = 1
+                        flags["V"] = 1  # Set Overflow flag
+                        new_A -= 256
+                    else:
+                        flags["C"] = 0
+
+
+                    flags["Z"] = 1 if new_A == 0 else 0
+                    flags["N"] = 1 if new_A & 0x80 else 0
+
+                    accumulator["A"] = hex(new_A)[2:].upper().zfill(2)
+
+                    run_step += 3
+                
+                case _:
+                    messagebox.showerror("Error", f"Unknow assembly : {run}, at {run_step} step.")
+                    run_fail = True
+                    break
 
         if normal_speed == "1Mhz":
             sleep(0.0025)
