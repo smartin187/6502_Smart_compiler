@@ -688,7 +688,6 @@ def compile_smarty(
             code_compile = code_compile.replace("!smart_tmp:elif", delta_branch)
 
             code_compile += "C9 00 D0 08 A9 01 8D E9 02 4C {} A9 00 8D E9 02 "
-            #                             ^ del A9 01 ?
 
             adress_conter += 17
 
@@ -748,6 +747,47 @@ def compile_smarty(
 
             adress_conter += new_adress
             code_compile += code_else
+        
+        elif line.lstrip().startswith("while"):
+            line_2 = replace_code(line, " ", "")[5:]
+
+            if not line_2.endswith("{"):
+                raise SmartError("On while bloc, expected '{'", line_conter)
+            else:
+                line_2 = line_2[:-1]
+            
+            while_adress = hex(CODE_ADRESSE + adress_conter)[2:].upper()
+            while_adress = "0" * (4 - len(while_adress)) + while_adress
+            while_adress = while_adress[2:] + " " + while_adress[:2] + " "
+
+            code_compile += set_one_A_value(line_2)
+
+            bloc_code, bloc_line = get_bloc(line_conter, code, error_message="On while bloc")
+
+            jump_line = bloc_line - line_conter - 1
+            
+            code_compile += "C9 00 D0 03 4C {} "
+            adress_conter += 7
+
+            code_while = compile_smarty(
+                make_file=False,
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace},
+                CODE_ADRESSE=CODE_ADRESSE + adress_conter
+            )
+
+            new_adress = code_while.count(" ") + code_while.count("!smart_call_func|") * 13 + code_while.count("!smart_tmp:goto|") * 3 - code_while.count("!smart_tmp:goto|")
+
+            adress_conter += new_adress
+            code_compile += code_while
+
+            code_compile += "4C " + while_adress
+            adress_conter += 3
+
+            end_adress = hex(CODE_ADRESSE + adress_conter)[2:].upper()
+            end_adress = "0" * (4 - len(end_adress)) + end_adress
+            end_adress = end_adress[2:] + " " + end_adress[:2]
+
+            code_compile = code_compile.format(end_adress)
         
         elif line.lstrip().startswith("void"):      # make fonction
             if function_mode["function_mode"]:
