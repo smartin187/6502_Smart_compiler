@@ -127,8 +127,15 @@ For all operator, all value are accepted. If the value is a char, the value used
 
 Add tow value.
 
-Note: if the result exceeds 255, the carry flag is set to 1.
+>Note: if the result exceeds 255, the carry flag is set to 1.
 
+##### `-`
+
+Substract tow values.
+
+##### `*`
+
+Multiply tow values
 
 ##### `==` (equality)
 
