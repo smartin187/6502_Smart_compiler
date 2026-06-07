@@ -292,7 +292,7 @@ def compile_smarty(
                     raise SmartError(str(se), se.nbline)
 
                 except:
-                    raise SmartError(f"Error with math '+' : '{value}'", line_conter)
+                    raise SmartError(f"Error with math '*' : '{value}'", line_conter)
             
 
             elif in_code("+", value):    # addition
