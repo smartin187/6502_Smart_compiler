@@ -371,6 +371,6 @@ On a Smarty Kit, execution speed is slow. With the interpreter, you can increase
 Smart use RAM.
 - `0x0300` to `0x0400`: variables
 - `0x02E7` to `0x02FF`: Smart system:
->`0x02E7`: save of A (for return-function)<br>`0x02E8`: value of return-function<br>`0x02E9`: 01 if need to call `else bloc` (after `if`). If 0x02E9 = 01 bloc `else` or `elif` are called.
+>`0x02E7`: save of A (for return-function)<br>`0x02E8`: value of return-function<br>`0x02E9`: 01 if need to call `else bloc` (after `if`). If 0x02E9 = 01 bloc `else` or `elif` are called.<br>`0x02F0`: used for math.
 
 

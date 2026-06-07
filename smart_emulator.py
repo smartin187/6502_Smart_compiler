@@ -739,6 +739,9 @@ def run_smart() -> None:
                 case "D0":       # BNE
                     offset = int(code[run_step + 1], base=16)
 
+                    if offset >= 0x80:
+                        offset -= 0x100
+
                     if flags["Z"] == 0:
                         run_step += 2 + offset
                     else:
@@ -747,6 +750,10 @@ def run_smart() -> None:
                 case "F0":       # BEQ
                     offset = int(code[run_step + 1], base=16)
 
+                    if offset >= 0x80:
+                        offset -= 0x100
+
+                        
                     if flags["Z"] == 1:
                         run_step += 2 + offset
                     else:
@@ -775,6 +782,23 @@ def run_smart() -> None:
 
                     run_step += 3
                 
+                case "CA":
+                    accumulator["X"] = hex((int(accumulator["X"], base=16) - 1) % 256)[2:].upper().zfill(2)
+
+                    flags["Z"] = 1 if accumulator["X"] == "00" else 0
+                    flags["N"] = 1 if int(accumulator["X"], base=16) & 0x80 else 0
+
+                    run_step += 1
+                
+                case "E0":
+                    value = code[run_step + 1]
+
+                    flags["C"] = 1 if int(accumulator["X"], base=16) >= int(value, base=16) else 0
+                    flags["Z"] = 1 if accumulator["X"] == value else 0
+                    flags["N"] = 1 if int(accumulator["X"], base=16) & 0x80 else 0
+
+                    run_step += 2
+
                 case _:
                     messagebox.showerror("Error", f"Unknow assembly : {run}, at {run_step} step.")
                     run_fail = True

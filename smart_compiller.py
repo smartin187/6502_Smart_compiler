@@ -260,7 +260,42 @@ def compile_smarty(
             """Return asm value"""
             global counter_adress_value
             nonlocal adress_conter, code_compile
-            if in_code("+", value):    # addition
+
+            if in_code("*", value):
+                control_math()
+                try:
+                    value_1, value_2 = split_code(value, "*", max_split=1)
+
+                    asm = ""
+
+                    hex_value_1 = set_one_A_value(value_1, recursiv_value=True)
+
+                    asm += hex_value_1 + "8D F0 02 A9 00 "  # save value 1 on ram and set A to 00.
+                    counter_adress_value += 5
+
+                    value_2_tmp = set_one_A_value(value_2, one_math=True, recursiv_value=True)
+                
+                    hex_value_2 = "A2" + value_2_tmp[2:] if value_2_tmp.startswith("A9") else "AE" + value_2_tmp[2:]
+
+                    asm += hex_value_2
+
+                    asm += "CA "    # decrement X
+                    counter_adress_value += 1
+
+                    asm += "18 6D F0 02 "   # add to A hex_value_2
+                    asm += "E0 00 D0 F7 "   # continue or not the loop
+
+
+                    return asm
+
+                except SmartError as se:
+                    raise SmartError(str(se), se.nbline)
+
+                except:
+                    raise SmartError(f"Error with math '+' : '{value}'", line_conter)
+            
+
+            elif in_code("+", value):    # addition
                 control_math()
                 try:
                     value_1, value_2 = split_code(value, "+", max_split=1)
