@@ -2,10 +2,14 @@
 
 """
 This module have the Smart object class:
+- SmartObj
 - SmartFunction
+- SmartVariable
+- SmartGoto
 """
 
 from compiller_tool.string_tool import in_code
+
 
 class SmartObj:
     def __init__(self, name:str):

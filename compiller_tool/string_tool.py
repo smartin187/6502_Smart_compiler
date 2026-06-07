@@ -9,6 +9,8 @@ Function:
 - good_variable_name
 - EscapeChar
 """
+import logging
+from compiller_tool.color_tool import Colors
 
 class EscapeChar:
     """The escape char for str and char value."""
@@ -183,6 +185,7 @@ def in_code(
 
 counter_adress_value = 0        # the relative adress used by set_one_A_value. Be carful with this value.
 
+SMART_KEYWORD = ("void", "if", "elif", "else", "while")
 
 def good_variable_name(name:str) -> bool:
         """Return True if the name of variable is good, False else.
@@ -190,6 +193,11 @@ def good_variable_name(name:str) -> bool:
         - Any letter lower (a-z). Special letter (éèëù...) are accepted.
         - Any number 0-9
         - underscore _"""
+
+        if name in SMART_KEYWORD:
+            logging.error(f"{Colors.RED}Name `{name}` is a Smart keyword, can't be used for a name.{Colors.RESET}")   # set a error message, but SmartException is used on the call of function
+            return False
+
         if name[0].isdigit():
             return False
 
