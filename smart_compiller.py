@@ -88,7 +88,7 @@ def compile_smarty(
         function_mode:dict[
             str,
             bool | str | list | dict | smart_obj.SmartFunction | None
-        ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[]},
+        ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[], "while_mode":False},
         bin_outpout_file:bool=False,
         module_name:str="*" # module name is '*' if main module.
     ) -> None:
@@ -476,6 +476,13 @@ def compile_smarty(
 
     # -----------
 
+    on_loop = False
+
+    if "while_mode" in function_mode:
+        if function_mode["while_mode"]:
+            on_loop = True
+
+
     last_if = False     # True if the last operation is if on Smart (for else).
 
     smart_var:dict[str, smart_obj.SmartVariable] = {} if not function_mode["function_mode"] else function_mode["global_var"]
@@ -642,7 +649,7 @@ def compile_smarty(
 
             code_if = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
@@ -693,7 +700,7 @@ def compile_smarty(
 
             code_elif = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
@@ -732,7 +739,7 @@ def compile_smarty(
 
             code_else = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
@@ -771,7 +778,7 @@ def compile_smarty(
 
             code_while = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
@@ -787,8 +794,15 @@ def compile_smarty(
             end_adress = "0" * (4 - len(end_adress)) + end_adress
             end_adress = end_adress[2:] + " " + end_adress[:2]
 
-            code_compile = code_compile.format(end_adress)
+            code_compile = code_compile.format(end_adress).replace("! smart:break", end_adress)
         
+        elif line.lstrip().startswith("break"):
+            if not on_loop:
+                raise SmartError("Error: 'break' keyword can only be used inside a loop.", line_conter)
+        
+            code_compile += "4C ! smart:break "     # set space on placeholder for conting adress
+            adress_conter += 3
+
         elif line.lstrip().startswith("void"):      # make fonction
             if function_mode["function_mode"]:
                 raise SmartError(f"Error with function: impossible to create new function on function.", line_conter)
