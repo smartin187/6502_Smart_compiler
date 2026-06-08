@@ -606,9 +606,9 @@ def run_smart() -> None:
                     run_step += 2
                     set_flag_for_LD(accumulator["A"])
                 
-                case "A2":
-                    accumulator["X"] = code[run_step + 1]
-                    run_step += 2
+                case "A2" | "AE":
+                    accumulator["X"] = code[run_step + 1] if run == "A2" else ram[code[run_step + 2] + code[run_step + 1]]
+                    run_step += 2 if run == "A2" else 3
                     set_flag_for_LD(accumulator["X"])
                 
                 case "A0":
