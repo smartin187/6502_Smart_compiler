@@ -285,6 +285,7 @@ def compile_smarty(
                     asm += "18 6D F0 02 "   # add to A hex_value_2
                     asm += "E0 00 D0 F7 "   # continue or not the loop
 
+                    counter_adress_value += 8
 
                     return asm
 
@@ -294,6 +295,46 @@ def compile_smarty(
                 except:
                     raise SmartError(f"Error with math '*' : '{value}'", line_conter)
             
+            elif in_code("/", value):
+                control_math()
+                try:
+                    value_1, value_2 = split_code(value, "/", max_split=1)
+
+                    asm = ""
+
+                    hex_value_2 = set_one_A_value(value_2, recursiv_value=True)
+
+                    asm += hex_value_2 + "8D F0 02 "  # save value 2 on ram
+                    counter_adress_value += 3
+
+                    hex_value_1 = set_one_A_value(value_1, one_math=True, recursiv_value=True)
+                    
+                    asm += hex_value_1
+
+                    asm += "CD F0 02 " 
+                    asm += "90 0A "    
+                    counter_adress_value += 5
+
+                    asm += "A2 00 E8 "    # set X to 00, and increment X on loop.
+                    counter_adress_value += 3
+
+                    asm += "38 ED F0 02 "      # substract to A hex_value_2
+                    asm += "CD F0 02 B0 F6 "   # continue or not the loop
+
+                    counter_adress_value += 9
+
+                    asm += "8A "
+                    counter_adress_value += 1
+
+                    return asm
+
+                except SmartError as se:
+                    raise SmartError(str(se), se.nbline)
+
+                except:
+                    raise SmartError(f"Error with math '/' : '{value}'", line_conter)
+            
+
 
             elif in_code("+", value):    # addition
                 control_math()

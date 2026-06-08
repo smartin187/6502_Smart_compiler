@@ -631,6 +631,17 @@ def run_smart() -> None:
 
                     run_step += 3
                 
+                case "B0":  # BCS
+                    offset = int(code[run_step + 1], base=16)
+                    if offset >= 0x80:
+                        offset -= 0x100
+                    
+                    if flags["C"] == 1:
+                        run_step += 2 + offset
+                    else:
+                        run_step += 2
+
+                
                 case "E9" | "ED":   # subtract
                     if run == "E9":
                         value = code[run_step + 1]
@@ -758,6 +769,16 @@ def run_smart() -> None:
                         run_step += 2 + offset
                     else:
                         run_step += 2
+                    
+                case "90":       # BCC
+                    offset = int(code[run_step + 1], base=16)
+                    if offset >= 0x80:
+                        offset -= 0x100
+                    
+                    if flags["C"] == 0:
+                        run_step += 2 + offset
+                    else:
+                        run_step += 2
 
                 case "6D":
                     RAM_adress = code[run_step + 2] + code[run_step + 1]
@@ -787,6 +808,35 @@ def run_smart() -> None:
 
                     flags["Z"] = 1 if accumulator["X"] == "00" else 0
                     flags["N"] = 1 if int(accumulator["X"], base=16) & 0x80 else 0
+
+                    run_step += 1
+                
+                case "88":
+                    accumulator["Y"] = hex((int(accumulator["Y"], base=16) - 1) % 256)[2:].upper().zfill(2)
+
+                    flags["Z"] = 1 if accumulator["Y"] == "00" else 0
+                    flags["N"] = 1 if int(accumulator["Y"], base=16) & 0x80 else 0
+
+                    run_step += 1
+                
+                case "E8":
+                    accumulator["X"] = hex((int(accumulator["X"], base=16) + 1) % 256)[2:].upper().zfill(2)
+
+                    flags["Z"] = 1 if accumulator["X"] == "00" else 0
+                    flags["N"] = 1 if int(accumulator["X"], base=16) & 0x80 else 0
+
+                    run_step += 1
+                
+                case "C8":
+                    accumulator["Y"] = hex((int(accumulator["Y"], base=16) + 1) % 256)[2:].upper().zfill(2)
+
+                    flags["Z"] = 1 if accumulator["Y"] == "00" else 0
+                    flags["N"] = 1 if int(accumulator["Y"], base=16) & 0x80 else 0
+
+                    run_step += 1
+
+                case "8A":  # transfer X to A
+                    accumulator["A"] = accumulator["X"]
 
                     run_step += 1
                 
