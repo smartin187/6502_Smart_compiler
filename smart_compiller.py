@@ -426,7 +426,10 @@ def compile_smarty(
 
             elif value[0] == "'":
                 counter_adress_value += 2
-                return "A9 " + get_char(value) + " "
+
+                ascii_code = get_char(value)
+
+                return "A9 " + ("0" * (2-len(ascii_code))) + ascii_code + " "
         
             elif value[0] == "\"":
                 raise SmartError(f"Smart forbiden value: '{value}'", line_conter)
