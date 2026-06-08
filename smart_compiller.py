@@ -11,7 +11,7 @@ import os
 import logging
 import re
 
-from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, EscapeChar
+from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, EscapeChar
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool import compiller_data_run
@@ -25,62 +25,15 @@ logging.basicConfig(
 
 for handler in logging.root.handlers:
     handler.setFormatter(ColoredFormatter('SmartCompiller %(levelname)s: %(message)s'))
-    handler.terminator = ''  # Supprime le newline automatique pour permettre input() sur la même ligne
+    handler.terminator = ""
 
 FUNCTION_PATTERN = "^[a-z_][a-z0-9_]*.*:"
-
-
 
 code_line = None
 
 line_of_instruction = None
 
 need_input = False
-
-
-
-def get_bloc(line_conter:int, code:str, error_message:str="") -> str:
-    """Return the content of bloc {}
-    
-    error_message is the text for info about error."""
-    # get the code of function:
-
-    funciton_line = line_conter + 1
-
-    func_code = ""
-
-    number_open = 1
-
-    try:
-        while True:
-            code_line_func = code[funciton_line]
-            close_pos = None
-
-            for i, ch in enumerate(code_line_func):
-                if ch == "{":
-                    number_open += 1
-                elif ch == "}":
-                    number_open -= 1
-                    if number_open == 0:
-                        close_pos = i
-                        break
-
-            if close_pos is not None:
-                inside = code_line_func[:close_pos]
-                if inside.replace(" ", "") != "":
-                    func_code += inside + ";"
-
-                code[funciton_line] = code_line_func[close_pos + 1:]
-                break
-
-            func_code += code_line_func + ";"
-            funciton_line += 1
-
-
-    except IndexError:
-        raise SmartError(error_message + ", brackets '{' was never closed.", line_conter)
-    
-    return func_code, funciton_line
 
 
 

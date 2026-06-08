@@ -11,6 +11,7 @@ Function:
 """
 import logging
 from compiller_tool.color_tool import Colors
+from compiller_tool.smart_exception import SmartError
 
 class EscapeChar:
     """The escape char for str and char value."""
@@ -228,3 +229,47 @@ def get_char_from_str(string:str) -> list[str]:
         counter += 1
 
     return result
+
+
+def get_bloc(line_conter:int, code:str, error_message:str="") -> str:
+    """Return the content of bloc {}
+    
+    error_message is the text for info about error."""
+    # get the code of function:
+
+    funciton_line = line_conter + 1
+
+    func_code = ""
+
+    number_open = 1
+
+    try:
+        while True:
+            code_line_func = code[funciton_line]
+            close_pos = None
+
+            for i, ch in enumerate(code_line_func):
+                if ch == "{":
+                    number_open += 1
+                elif ch == "}":
+                    number_open -= 1
+                    if number_open == 0:
+                        close_pos = i
+                        break
+
+            if close_pos is not None:
+                inside = code_line_func[:close_pos]
+                if inside.replace(" ", "") != "":
+                    func_code += inside + ";"
+
+                code[funciton_line] = code_line_func[close_pos + 1:]
+                break
+
+            func_code += code_line_func + ";"
+            funciton_line += 1
+
+
+    except IndexError:
+        raise SmartError(error_message + ", brackets '{' was never closed.", line_conter)
+    
+    return func_code, funciton_line
