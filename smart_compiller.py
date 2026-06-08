@@ -1095,16 +1095,7 @@ def compile_smarty(
     else:
         code_compile += "00 "
     
-    if need_input and not function_mode["function_mode"]:
-        input_adress = adress_conter + CODE_ADRESSE + 1
 
-        hex_input_adress = hex(input_adress)[2:].upper()
-        hex_input_adress = "0" * (4 - len(hex_input_adress)) + hex_input_adress
-
-        code_compile += SmartBuiltIn.input_code
-        adress_conter += SmartBuiltIn.input_code.count(" ")
-
-        code_compile = code_compile.replace("!  smart_input", f"{hex_input_adress[2:]} {hex_input_adress[:2]} ")
 
     # compile function:
 
@@ -1176,6 +1167,17 @@ def compile_smarty(
             if not f.called_function:
                 logging.warning(f"Function '{name}' was never called.")
 
+    if need_input and not function_mode["function_mode"]:
+        input_adress = adress_conter + CODE_ADRESSE + 1
+
+        hex_input_adress = hex(input_adress)[2:].upper()
+        hex_input_adress = "0" * (4 - len(hex_input_adress)) + hex_input_adress
+
+        code_compile += SmartBuiltIn.input_code
+        adress_conter += SmartBuiltIn.input_code.count(" ")
+
+        code_compile = code_compile.replace("!  smart_input", f"{hex_input_adress[2:]} {hex_input_adress[:2]} ")
+
     # set the goto:
 
     if not function_mode["if_mode"]:
@@ -1191,8 +1193,11 @@ def compile_smarty(
             code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
         
 
+    if not function_mode["function_mode"]:      
 
-    if not function_mode["function_mode"]:
+        if "!" in code_compile:
+            confirm_user("Error: a placeholder was not used, the compilation failed. Do you want to print the code with placeholder for debug?", error_message="Placeholder error!")
+
         if bin_outpout_file:
             code_bin = "".join(chr(int(byte, base=16)) for byte in code_compile.split(" ")[1:-1])   # code_bin can have error with UTF-8, used for print only
             
