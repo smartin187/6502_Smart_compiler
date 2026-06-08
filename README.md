@@ -386,4 +386,10 @@ Smart use RAM.
 - `0x02E7` to `0x02FF`: Smart system:
 >`0x02E7`: save of A (for return-function)<br>`0x02E8`: value of return-function<br>`0x02E9`: 01 if need to call `else bloc` (after `if`). If 0x02E9 = 01 bloc `else` or `elif` are called.<br>`0x02F0`: used for math (for operator `*` and `/`).
 
+## VS Code extension
+
+An extention for VS Code set a coloration for Smart language.
+
+Go to the reposytory: [smart_smartykit_vscode_extension-cpmpr](https://github.com/smartin187/smart_smartykit_vscode_extension-cpmpr).
+
 
