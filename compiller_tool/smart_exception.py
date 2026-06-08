@@ -19,6 +19,35 @@ def config_exception(_line_of_instruction) -> None:
     global line_of_instruction
     line_of_instruction = _line_of_instruction
 
+def confirm_user(log_message:str, error_reply:str="N", defaut:str="N", error_message:str="Aborted by user request.", line_counter:int=0) -> None:
+    """Set a error log for say a question for user (Y/N).
+    Arg:
+    - log_message: the message on log*
+    - error_reply: can be Y or N (UPPERCASE), the reply of user raise SmartError
+    - defaut: de defaut reply is user not reply
+    - error_message: the message on raise SmartError, used only if the user reply by `error_reply`
+    - line_counter: the number of line.
+    """
+    continue_reply = "N" if error_reply == "Y" else "Y"
+
+    choos = f'({"N" if defaut == "N" else "n"}/{"Y" if defaut == "Y" else "y"}): '
+
+    logging.error(log_message + choos, extra={'no_newline': True})
+    reply = input().upper()
+
+    if reply == "": # defaut
+        reply = defaut
+
+    if reply == error_reply:
+        raise SmartError(error_message, line_counter)
+
+    elif reply == continue_reply:
+        pass
+    
+    else:
+        print("Unknow reply!")
+        confirm_user(log_message, error_reply, error_message, line_counter)
+
 class CompileError(Exception):
     """An error with compile (file not found, unknow error...).
     Use SmartError for error with code (syntaxe, bad value...)"""

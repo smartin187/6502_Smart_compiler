@@ -13,15 +13,19 @@ import re
 
 from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, EscapeChar
 from compiller_tool.color_tool import ColoredFormatter
-from compiller_tool.smart_exception import CompileError, SmartError, config_exception
+from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool import compiller_data_run
 from compiller_tool import import_tool
 from compiller_tool import smart_obj
 
-logging.basicConfig(format="SmartCompiller %(levelname)s: %(message)s", level=logging.INFO)
+logging.basicConfig(
+    format="SmartCompiller %(levelname)s: %(message)s",
+    level=logging.INFO
+)
 
 for handler in logging.root.handlers:
     handler.setFormatter(ColoredFormatter('SmartCompiller %(levelname)s: %(message)s'))
+    handler.terminator = ''  # Supprime le newline automatique pour permettre input() sur la même ligne
 
 FUNCTION_PATTERN = "^[a-z_][a-z0-9_]*.*:"
 
@@ -306,6 +310,9 @@ def compile_smarty(
 
                     asm += hex_value_2 + "8D F0 02 "  # save value 2 on ram
                     counter_adress_value += 3
+
+                    if hex_value_2 == "A9 00 ":       # division by 0
+                        confirm_user(f"Division by 0: {value}. It make an infinit loop! Continue compilation ? ", line_counter=line_conter)
 
                     hex_value_1 = set_one_A_value(value_1, one_math=True, recursiv_value=True)
                     
