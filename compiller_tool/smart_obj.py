@@ -42,3 +42,23 @@ class SmartGoto(SmartObj):
         super().__init__(name)
 
         self.adress = adress
+
+class AdvancedObj(SmartObj):
+    """Information about an advanced object (str).
+    Use multi-byte
+    """
+    def __init__(self, name:str, adress:str, size:int=0x15):
+        super().__init__(name)
+
+        self.adress = adress
+        self.size = size
+
+class SmartStr(AdvancedObj):
+    """Information about a string (name and adress)."""
+    def __init__(self, name:str, adress:str):
+        super().__init__(name, adress)
+
+
+        
+
+        
