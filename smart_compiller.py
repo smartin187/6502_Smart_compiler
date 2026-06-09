@@ -485,6 +485,31 @@ def compile_smarty(
             adress_conter += asm_v.count(" ")
 
         return asm_v
+
+    def set_on_ram_str(string:str, start_adress:int) -> str:
+        """Return the hex code for set a string on ram."""
+
+        str_value = get_str(string)
+
+        len_str = len(str_value)
+
+        if len_str > 0x15:
+            raise SmartError(f"String too long: '{str_value}', max length is 21 for set on RAM (variable).", line_conter)
+
+        for i in range(0x15 - len_str):
+            str_value += "\0"
+
+        code_str = ""
+
+        for char in str_value:
+            char_code = hex(ord(char))[2:].upper()
+            char_code = ("0" if len(char_code) == 1 else "") + char_code
+
+            code_str += f"A9 {char_code} 8D {adress_for_RAM(start_adress)} "
+
+            start_adress += 1
+        
+        return code_str
     
     def good_asm(asm:str) -> bool:
         """Return True if assembly is good.
