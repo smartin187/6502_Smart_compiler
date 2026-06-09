@@ -3,6 +3,7 @@ from pathlib import Path
 import sys
 
 from compiller_tool.smart_exception import ModuleError
+from compiller_tool.color_tool import Colors
 
 compile_smarty = None
 
@@ -18,6 +19,15 @@ class ModuleInfo:
         self.variables = variable
         self.function = function
     
+def show_path_lib() -> None:
+    """Show the path for the global and smart lib."""
+    print(f"{Colors.GREEN}Lib path (for import from lib and smart):{Colors.RESET}",
+        f"Global lib path: {PATH_LIB['global']}",
+        f"Smart lib path: {PATH_LIB['smart']}",
+        sep="\n"
+    )
+
+
 def control_lib() -> None:
     """Raise ModuleError if the path for the global and smart lib is missing."""
     if not Path(PATH_LIB["global"]).is_dir():

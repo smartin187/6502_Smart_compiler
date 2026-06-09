@@ -17,6 +17,10 @@ if "--help" in sys.argv:
 elif "--version" in sys.argv:
     print(smart_info.SMART_VERSION)
     sys.exit(0)
+elif "--show-lib-path" in sys.argv:
+    from compiller_tool.import_tool import show_path_lib
+    show_path_lib()
+    sys.exit(0)
 
 CODE_ADRESSE = 1024
 
