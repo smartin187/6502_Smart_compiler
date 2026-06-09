@@ -212,6 +212,8 @@ Smart have the [`while` loop](#while-loop).
 
 >Note: you can also set a infinit loop with recursive function. It work, the perf are low...
 
+On loop, you can use [`break`](#break) and [`continue`](#continue) keyword.
+
 ##### `while` loop
 
 This loop is runing as long as the condition is `True`.
@@ -228,6 +230,35 @@ while True{;
 .my_variable = 1;
 while 1 == .my_variable{;
     // ...
+}
+```
+
+##### `break`
+
+Use this keyword for go out of loop.
+
+###### Sintaxe
+
+```Smart
+while True{;
+    print: 'A';
+    break;  // go out of loop.
+    print: "THIS CODE WILL NOT RUN";
+}
+```
+
+##### `continue`
+
+Use this keyword for restart the loop.
+
+###### Sintaxe
+
+```Smart
+while True{;
+    print: 'A';
+    continue;  // restart the loop
+    // the code after will not run
+
 }
 ```
 

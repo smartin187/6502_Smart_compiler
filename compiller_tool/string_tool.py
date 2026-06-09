@@ -8,6 +8,9 @@ Function:
 - in_code
 - good_variable_name
 - EscapeChar
+
+Constent:
+- SMART_KEYWORD (dict)
 """
 import logging
 from compiller_tool.color_tool import Colors
@@ -186,7 +189,7 @@ def in_code(
 
 counter_adress_value = 0        # the relative adress used by set_one_A_value. Be carful with this value.
 
-SMART_KEYWORD = ("void", "if", "elif", "else", "while", "break")
+SMART_KEYWORD = ("void", "if", "elif", "else", "while", "break", "continue")
 
 def good_variable_name(name:str) -> bool:
         """Return True if the name of variable is good, False else.

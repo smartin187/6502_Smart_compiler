@@ -834,12 +834,20 @@ def compile_smarty(
             end_adress = end_adress[2:] + " " + end_adress[:2]
 
             code_compile = code_compile.format(end_adress).replace("! smart:break", end_adress)
+            code_compile = code_compile.replace("! smart:continue ", while_adress)
         
         elif line.lstrip().startswith("break"):
             if not on_loop:
                 raise SmartError("Error: 'break' keyword can only be used inside a loop.", line_conter)
         
             code_compile += "4C ! smart:break "     # set space on placeholder for conting adress
+            adress_conter += 3
+        
+        elif line.lstrip().startswith("continue"):
+            if not on_loop:
+                raise SmartError("Error: 'continue' keyword can only be used inside a loop.", line_conter)
+        
+            code_compile += "4C ! smart:continue "     # set space on placeholder for conting adress
             adress_conter += 3
 
         elif line.lstrip().startswith("void"):      # make fonction
