@@ -36,7 +36,6 @@ line_of_instruction = None
 need_input = False
 
 
-
 def compile_smarty(
         file:str="",
         argv:list | tuple=[],
@@ -485,6 +484,15 @@ def compile_smarty(
             adress_conter += asm_v.count(" ")
 
         return asm_v
+
+
+    def is_a_simple_value(value:str) -> bool:
+        """Return True if the value is a value for set on A (use 1 byte), False else (if the value is a str, use 21 bytes)."""
+        try:
+            set_one_A_value(value)
+            return True
+        except SmartError:
+            return False
 
     def set_on_ram_str(string:str, start_adress:int) -> str:
         """Return the hex code for set a string on ram."""
@@ -1060,10 +1068,22 @@ def compile_smarty(
 
                         adress_conter += 3
                 
-                else:
+                elif is_a_simple_value(function_arg[0]):
                     code_compile += set_one_A_value(function_arg[0])
                     code_compile += "20 EF FF "
                     adress_conter += 3
+                
+                elif not is_a_simple_value(function_arg[0]):    # the value is str
+                    adress_print = smart_var[function_arg[0][1:]].ram_adress
+
+                    for deltal in range(smart_obj.SIZE_ADVANCED_OBJ):
+                        code_compile += f"AD {adress_for_RAM(adress_print + deltal)} 20 EF FF "
+
+                    
+                    adress_conter += 6 * smart_obj.SIZE_ADVANCED_OBJ
+
+                    
+
                 
                 logging.info("Build smart fonction as asm command: print")
 
