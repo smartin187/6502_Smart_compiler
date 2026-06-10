@@ -627,7 +627,7 @@ def run_smart() -> None:
                             run_fail = True
                             break
                     else:
-                        ram[code[run_step + 2] + code[run_step + 1]] = accumulator["A"]
+                        ram[adress] = accumulator["A"]
 
                     run_step += 3
                 
