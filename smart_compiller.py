@@ -488,15 +488,16 @@ def compile_smarty(
 
     def set_on_ram_str(string:str, start_adress:int) -> str:
         """Return the hex code for set a string on ram."""
-
+        nonlocal adress_conter
         str_value = get_str(string)
+
 
         len_str = len(str_value)
 
-        if len_str > 0x15:
-            raise SmartError(f"String too long: '{str_value}', max length is 21 for set on RAM (variable).", line_conter)
+        if len_str > smart_obj.SIZE_ADVANCED_OBJ:
+            raise SmartError(f"String too long: '{str_value}', max length is {smart_obj.SIZE_ADVANCED_OBJ} for set on RAM (variable).", line_conter)
 
-        for i in range(0x15 - len_str):
+        for i in range(smart_obj.SIZE_ADVANCED_OBJ - len_str):
             str_value += "\0"
 
         code_str = ""
@@ -508,6 +509,8 @@ def compile_smarty(
             code_str += f"A9 {char_code} 8D {adress_for_RAM(start_adress)} "
 
             start_adress += 1
+        
+        adress_conter += 63
         
         return code_str
     
@@ -524,7 +527,7 @@ def compile_smarty(
         """Return the RAM adress one hex.
         Exemple :
         768 -> 00 03"""
-        adress_RAM = hex(adress)[2:]
+        adress_RAM = hex(adress)[2:].upper()
 
         adress_RAM = "0" * (4 - len(adress_RAM)) + adress_RAM
 
@@ -693,6 +696,34 @@ def compile_smarty(
             adress_conter += 3
 
             logging.info(f"Build asm command: using RAM for variable '{var_name}'")
+        
+        elif line.startswith("~"):      # advenced variable
+            line = replace_code(line, " ", "")[1:]
+
+            var_name, value = line.split("=", 1)
+
+            if not good_variable_name(var_name):
+                raise SmartError(f"Bad variable name : '{var_name}'", line_conter)
+
+            if var_name not in smart_var: # make new variable
+
+                if len(smart_var) >= 256 - smart_obj.SIZE_ADVANCED_OBJ:
+                    raise SmartError(f"Memory error : maximum variable are 256 byte. An str value need {smart_obj.SIZE_ADVANCED_OBJ} bytes.", line_conter)
+    
+                smart_var[var_name] = smart_obj.SmartStr(var_name, adress_var)
+
+                adress_var += 1
+
+                for i in range(smart_obj.SIZE_ADVANCED_OBJ - 1):
+                    smart_var[f"NotUsedRAM{i}"] = smart_obj.ReservedAdress(adress_var)
+                    compiller_data_run.not_used_ram += 1
+
+                    adress_var += 1
+
+            try:
+                code_compile += set_on_ram_str(value, smart_var[var_name].ram_adress)
+            except SmartError as se:
+                raise SmartError(f"{str(se)}\t\tOn str variable (~), need str value, not `{value}`.")
 
         elif line.lstrip().startswith("if"):
             line_2 = replace_code(line, " ", "")[2:]
