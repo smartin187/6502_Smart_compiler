@@ -710,10 +710,19 @@ def compile_smarty(
 
             var_name, value = line.split("=", 1)
 
+            if bool(re.fullmatch(r'.*\[-?\d+\]$', var_name)):     # a index for str value
+                var_name = var_name.split("[", 1)[0]
+
+                index_mode = True
+            else:
+                index_mode = False
+
             if not good_variable_name(var_name):
                 raise SmartError(f"Bad variable name : '{var_name}'", line_conter)
 
             if var_name not in smart_var: # make new variable
+                if index_mode:
+                    raise SmartError(f"Used index in undefined variable: `{var_name}`", line_conter)
 
                 if len(smart_var) >= 256 - smart_obj.SIZE_ADVANCED_OBJ:
                     raise SmartError(f"Memory error : maximum variable are 256 byte. An str value need {smart_obj.SIZE_ADVANCED_OBJ} bytes.", line_conter)
@@ -728,10 +737,28 @@ def compile_smarty(
 
                     adress_var += 1
 
-            try:
-                code_compile += set_on_ram_str(value, smart_var[var_name].ram_adress)
-            except SmartError as se:
-                raise SmartError(f"{str(se)}\t\tOn str variable (~), need str value, not `{value}`.")
+            if not index_mode:  # set a str value on variable
+                try:
+                    code_compile += set_on_ram_str(value, smart_var[var_name].ram_adress)
+                except SmartError as se:
+                    raise SmartError(f"{str(se)}\t\tOn str variable (~), need str value, not `{value}`.")
+
+            else:   # set a value at index:
+                # get index:
+                index = int(line.split("=")[0].split("[")[1].replace("]", ""))
+
+                if index >= smart_obj.SIZE_ADVANCED_OBJ:
+                    raise SmartError(f"Index out of range for '{line.split('=')[0]}', max index is {smart_obj.SIZE_ADVANCED_OBJ - 1}.")
+
+                elif index < -smart_obj.SIZE_ADVANCED_OBJ:
+                    raise SmartError(f"Index out of range for '{line.split('=')[0]}', min index is {-smart_obj.SIZE_ADVANCED_OBJ}.")
+            
+                if index < 0:
+                    index = smart_obj.SIZE_ADVANCED_OBJ + index
+                
+                code_compile += f"{set_one_A_value(value)}8D {adress_for_RAM(smart_var[var_name].ram_adress + index)} "
+                adress_conter += 3
+
 
         elif line.lstrip().startswith("if"):
             line_2 = replace_code(line, " ", "")[2:]
