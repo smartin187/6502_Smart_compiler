@@ -744,17 +744,7 @@ def compile_smarty(
                     raise SmartError(f"{str(se)}\t\tOn str variable (~), need str value, not `{value}`.")
 
             else:   # set a value at index:
-                # get index:
-                index = int(line.split("=")[0].split("[")[1].replace("]", ""))
-
-                if index >= smart_obj.SIZE_ADVANCED_OBJ:
-                    raise SmartError(f"Index out of range for '{line.split('=')[0]}', max index is {smart_obj.SIZE_ADVANCED_OBJ - 1}.")
-
-                elif index < -smart_obj.SIZE_ADVANCED_OBJ:
-                    raise SmartError(f"Index out of range for '{line.split('=')[0]}', min index is {-smart_obj.SIZE_ADVANCED_OBJ}.")
-            
-                if index < 0:
-                    index = smart_obj.SIZE_ADVANCED_OBJ + index
+                index = smart_var[var_name].get_index(line)
                 
                 code_compile += f"{set_one_A_value(value)}8D {adress_for_RAM(smart_var[var_name].ram_adress + index)} "
                 adress_conter += 3
