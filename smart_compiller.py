@@ -383,7 +383,24 @@ def compile_smarty(
 
                 return f"AD {adress_for_RAM(smart_var[variable].ram_adress)} "
 
+            elif value[0] == "~":       # advanced variable, need index
+                try:
+                    advenced_var_name = value[1:].split("[", 1)[0]
+
+                    obj_var = smart_var[advenced_var_name]
+
+                    index_var = obj_var.get_index(value)
+                    adress_var = obj_var.get_adress_from_index(index_var)
+
+                    counter_adress_value += 3
+
+                    return f"AD {adress_for_RAM(adress_var)} "
+
             
+                except:
+                    raise SmartError(f"Invalid value for '{value}': can't use a advenced variable for this operation.")
+
+
             elif value.startswith("True"):
                 counter_adress_value += 2
                 return "A9 01 "
@@ -518,7 +535,7 @@ def compile_smarty(
 
             start_adress += 1
         
-        adress_conter += 63
+        adress_conter += 105
         
         return code_str
     
@@ -724,9 +741,7 @@ def compile_smarty(
                 if index_mode:
                     raise SmartError(f"Used index in undefined variable: `{var_name}`", line_conter)
 
-                if len(smart_var) >= 256 - smart_obj.SIZE_ADVANCED_OBJ:
-                    raise SmartError(f"Memory error : maximum variable are 256 byte. An str value need {smart_obj.SIZE_ADVANCED_OBJ} bytes.", line_conter)
-    
+
                 smart_var[var_name] = smart_obj.SmartStr(var_name, adress_var)
 
                 adress_var += 1

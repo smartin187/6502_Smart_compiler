@@ -88,4 +88,4 @@ class SmartStr(AdvancedObj):
 
     def get_adress_from_index(self, index:int) -> str:
         """Return the adress of the character at the given index."""
-        return hex(int(self.ram_adress, 16) + index)
+        return self.ram_adress + index
