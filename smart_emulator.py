@@ -347,6 +347,8 @@ def window_code() -> None:
     """Open a window for see the code and see the step."""
     def update_code() -> None:
         """Update the listbox for code"""
+        string_run.set(f"Adress running: 0x{hex(0x400 + run_step)[2:].upper() if not end_run else 'End of code'}")
+
         pos_listbox = list_code.yview()[0]
         selection = list_code.curselection()
         selected_index = selection[0] if selection else None
@@ -376,6 +378,11 @@ def window_code() -> None:
 
     text_info = tk.Label(window_code, text="See code\nDouble click on a line for edit the code.\nCarful: editing code can cause errors.")
     text_info.pack()
+
+    string_run = tk.StringVar(window_code, value="")
+
+    text_run = tk.Label(window_code, textvariable=string_run)
+    text_run.pack()
 
     frame_code = tk.Frame(window_code)
     frame_code.pack(expand=True, fill=tk.BOTH)
@@ -580,6 +587,12 @@ def run_smart() -> None:
     return_ardess = 0
 
     while run_step < len(code):
+
+        if run_step < 0:
+            messagebox.showerror("Error", "Run step before 0x400.\nRun step is on variable adress.\n", detail="This can be caused by a wrong jump or branch in the code.")
+            run_fail = True
+            break
+
         run = code[run_step]
 
         if one_pause:
@@ -853,6 +866,8 @@ def run_smart() -> None:
                     messagebox.showerror("Error", f"Unknow assembly : {run}, at {run_step} step.")
                     run_fail = True
                     break
+            
+
 
         if normal_speed == "1Mhz":
             sleep(0.0025)
