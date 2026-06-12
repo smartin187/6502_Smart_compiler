@@ -15,7 +15,7 @@ SYS_ADRESS = {
     "SaveA":"E7 02 ",
     "ReturnValue":"E8 02 ",
     "CallElse":"E9 02 ",
-    "MathOP":"F0 02 ",
+    "MathOP":"EA 02 ",
 }
 
 # variable -------------------------------
