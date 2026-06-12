@@ -371,23 +371,42 @@ def compile_smarty(
                         return asm
                     
                     elif (not is_a_simple_value(value_1)) and (not is_a_simple_value(value_2)):
-                        
-                        raise Exception("not implemented")
 
                         # load at SaveStr (smart systeme) value 1:
 
                         adress_v_1 = int(compiller_data_run.SYS_ADRESS["SaveStr"].split(" ")[1] + compiller_data_run.SYS_ADRESS["SaveStr"].split(" ")[0], base=16)
 
-                        hex_value_1 = set_on_ram_str(value_1, adress_v_1)
+                        hex_value_1 = set_on_ram_str(value_1, adress_v_1, add_adress=False)
 
                         counter_adress_value += hex_value_1.count(" ")
 
+
                         asm = hex_value_1
+
+                        adress_v_2 = int(compiller_data_run.SYS_ADRESS["SaveStrCMP"].split(" ")[1] + compiller_data_run.SYS_ADRESS["SaveStrCMP"].split(" ")[0], base=16)
+
+                        hex_value_2 = set_on_ram_str(value_2, adress_v_2, add_adress=False)
+
+                        counter_adress_value += hex_value_2.count(" ")
+
+                        asm += hex_value_2
+
                         
                         # compare with value 2
                         for i in range(smart_obj.SIZE_ADVANCED_OBJ):
-                            asm += f"AD {adress_for_RAM(adress_v_1 + i)} CD {adress_for_RAM()} D0 "
+                            asm += f"AD {adress_for_RAM(adress_v_1 + i)} CD {adress_for_RAM(adress_v_2 + i)} F0 03 4C !smart:adress_false "
 
+                        counter_adress_value += 11 * smart_obj.SIZE_ADVANCED_OBJ
+
+                        # set A to 1 and goto after A9 00 if not branch
+                        asm += f"A9 01 4C {adress_for_RAM(CODE_ADRESSE + adress_conter + counter_adress_value + 7)} "
+
+                        counter_adress_value += 5
+
+                        asm = asm.replace("!smart:adress_false", adress_for_RAM(CODE_ADRESSE + counter_adress_value + adress_conter))
+
+                        asm += "A9 00 "       # BNE set to this code
+                        counter_adress_value += 2
 
                         return asm
                 
@@ -537,7 +556,7 @@ def compile_smarty(
         except SmartError:
             return False
 
-    def set_on_ram_str(string_or_variable:str, start_adress:int) -> str:
+    def set_on_ram_str(string_or_variable:str, start_adress:int, add_adress:bool=True) -> str:
         """Return the hex code for set a string on ram."""
         nonlocal adress_conter
         
@@ -552,7 +571,8 @@ def compile_smarty(
             for i in range(smart_obj.SIZE_ADVANCED_OBJ):
                 code_hex_copy += f"AD {adress_for_RAM(smart_var[var_name].ram_adress + i)} 8D {adress_for_RAM(start_adress + i)} "
 
-            adress_conter += 6 * smart_obj.SIZE_ADVANCED_OBJ
+            if add_adress:
+                adress_conter += 6 * smart_obj.SIZE_ADVANCED_OBJ
 
             return code_hex_copy
 
@@ -579,7 +599,8 @@ def compile_smarty(
 
                 start_adress += 1
             
-            adress_conter += 105
+            if add_adress:
+                adress_conter += 105
             
             return code_str
     
