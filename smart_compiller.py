@@ -465,7 +465,7 @@ def compile_smarty(
             elif in_code(":", value):
 
                 # save A to 0x02E7 if the function is a return-function
-                saver_A = "8D E7 02 "
+                saver_A = f"8D {compiller_data_run.SYS_ADRESS['SaveA']}"
 
                 counter_adress_value += 3
 
@@ -498,7 +498,7 @@ def compile_smarty(
 
                     counter_adress_value += 3
 
-                    return saver_A + text_code + "AD E8 02 "
+                    return saver_A + text_code + f"AD {compiller_data_run.SYS_ADRESS['ReturnValue']}"
 
       
             else:
@@ -809,7 +809,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
             
-            code_compile += "C9 00 D0 08 A9 01 8D E9 02 4C {} A9 00 8D E9 02 "
+            code_compile += f"C9 00 D0 08 A9 01 8D {compiller_data_run.SYS_ADRESS['CallElse']} 4C {{}} A9 00 8D {compiller_data_run.SYS_ADRESS['CallElse']}"
             adress_conter += 17
 
             code_if = compile_smarty(
@@ -848,7 +848,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
             
-            code_compile += "AD E9 02 C9 01 D0 !smart_tmp:elif "
+            code_compile += f"AD {compiller_data_run.SYS_ADRESS['CallElse']} C9 01 D0 !smart_tmp:elif "
             adress_conter += 7
 
             value_tmp = set_one_A_value(line_2)
@@ -859,7 +859,7 @@ def compile_smarty(
 
             code_compile = code_compile.replace("!smart_tmp:elif", delta_branch)
 
-            code_compile += "C9 00 D0 08 A9 01 8D E9 02 4C {} A9 00 8D E9 02 "
+            code_compile += f"C9 00 D0 08 A9 01 8D {compiller_data_run.SYS_ADRESS['CallElse']} 4C {{}} A9 00 8D {compiller_data_run.SYS_ADRESS['CallElse']}"
 
             adress_conter += 17
 
@@ -899,7 +899,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
             
-            code_compile += "AD E9 02 C9 00 D0 03 4C {} "
+            code_compile += f"AD {compiller_data_run.SYS_ADRESS['CallElse']} C9 00 D0 03 4C {{}} "
             adress_conter += 10
 
             code_else = compile_smarty(
@@ -1016,11 +1016,11 @@ def compile_smarty(
             function_mode["smart_func"].return_value = True
 
             # save new A at RAM
-            code_compile += "8D E8 02 "
+            code_compile += f"8D {compiller_data_run.SYS_ADRESS['ReturnValue']}"
             adress_conter += 3
 
             # reuse the old value for A
-            code_compile += "AD E7 02 "
+            code_compile += f"AD {compiller_data_run.SYS_ADRESS['SaveA']}"
             adress_conter += 3
 
             return_line = True
