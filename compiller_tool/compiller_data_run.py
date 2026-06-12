@@ -5,9 +5,11 @@ Have data during the compilation.
 
 Have:
 - warning_endline: tuple for know if they are a warning if a line not end with ';'.
+- the number of adress reserved for str value.
 """
 
 warning_endline = (False, )     # if an line not end by ; } or // in line or the last line
 # format: [0]: warning end line ; [1] : line of error ; [2]: module of error ('*' if main module)
 
 not_used_ram = 0    # the number of not used RAM for str value
+

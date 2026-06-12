@@ -511,33 +511,51 @@ def compile_smarty(
         except SmartError:
             return False
 
-    def set_on_ram_str(string:str, start_adress:int) -> str:
+    def set_on_ram_str(string_or_variable:str, start_adress:int) -> str:
         """Return the hex code for set a string on ram."""
         nonlocal adress_conter
-        str_value = get_str(string)
-
-
-        len_str = len(str_value)
-
-        if len_str > smart_obj.SIZE_ADVANCED_OBJ:
-            raise SmartError(f"String too long: '{str_value}', max length is {smart_obj.SIZE_ADVANCED_OBJ} for set on RAM (variable).", line_conter)
-
-        for i in range(smart_obj.SIZE_ADVANCED_OBJ - len_str):
-            str_value += "\0"
-
-        code_str = ""
-
-        for char in str_value:
-            char_code = hex(ord(char))[2:].upper()
-            char_code = ("0" if len(char_code) == 1 else "") + char_code
-
-            code_str += f"A9 {char_code} 8D {adress_for_RAM(start_adress)} "
-
-            start_adress += 1
         
-        adress_conter += 105
-        
-        return code_str
+        if string_or_variable.startswith("~"):   # advenced variable
+            var_name = string_or_variable[1:]
+
+            if var_name not in smart_var:
+                raise SmartError(f"Name error : name '{var_name}' is not defined.", line_conter)
+            
+            code_hex_copy = ""
+
+            for i in range(smart_obj.SIZE_ADVANCED_OBJ):
+                code_hex_copy += f"AD {adress_for_RAM(smart_var[var_name].ram_adress + i)} 8D {adress_for_RAM(start_adress + i)} "
+
+            adress_conter += 6 * smart_obj.SIZE_ADVANCED_OBJ
+
+            return code_hex_copy
+
+        else:
+
+            str_value = get_str(string_or_variable)
+
+
+            len_str = len(str_value)
+
+            if len_str > smart_obj.SIZE_ADVANCED_OBJ:
+                raise SmartError(f"String too long: '{str_value}', max length is {smart_obj.SIZE_ADVANCED_OBJ} for set on RAM (variable).", line_conter)
+
+            for i in range(smart_obj.SIZE_ADVANCED_OBJ - len_str):
+                str_value += "\0"
+
+            code_str = ""
+
+            for char in str_value:
+                char_code = hex(ord(char))[2:].upper()
+                char_code = ("0" if len(char_code) == 1 else "") + char_code
+
+                code_str += f"A9 {char_code} 8D {adress_for_RAM(start_adress)} "
+
+                start_adress += 1
+            
+            adress_conter += 105
+            
+            return code_str
     
     def good_asm(asm:str) -> bool:
         """Return True if assembly is good.
