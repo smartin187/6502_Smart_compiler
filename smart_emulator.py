@@ -99,7 +99,7 @@ else:
 asm_code = code
 
 ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n\r "
-START_RAM = 0x2E7
+START_RAM = 0
 
 window_emulator = tk.Tk()
 window_emulator.title("Smart emulator")
@@ -216,7 +216,7 @@ def see_memory() -> None:
                 messagebox.showerror("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
                 return
             
-            ram["0" + hex(adress)[2:].upper()] = new_value.upper()
+            ram[("0" * (4 - len(hex(adress)[2:]))) + hex(adress)[2:].upper()] = new_value.upper()
 
             window.destroy()
 
@@ -573,7 +573,7 @@ def run_smart() -> None:
 
     accumulator = {"A":"00", "X":"00", "Y":"00"}
 
-    ram = {"0" + hex(i)[2:].upper():"00" for i in range(0x02E7, 0x400)} | {"D010":"00", "D011":"00"}
+    ram = {("0" * (4 - len(hex(i)[2:]))) + hex(i)[2:].upper():"00" for i in range(0, 0x400)} | {"D010":"00", "D011":"00"}
 
     run_fail = False
 

@@ -12,11 +12,11 @@ Have:
 # constent -------------------------------
 
 SYS_ADRESS = {
-    "SaveA":"E7 02 ",
-    "ReturnValue":"E8 02 ",
-    "CallElse":"E9 02 ",
-    "MathOP":"EA 02 ",
-    "SaveStr":"EB 02 ",     # SaveStr start at EB 02 and have a len of 21 (end at FF 02)
+    "SaveA":"00 00 ",
+    "ReturnValue":"01 00 ",
+    "CallElse":"02 00 ",
+    "MathOP":"03 00 ",
+    "SaveStr":"04 00 ",     # SaveStr start at EB 00 and have a len of 21 (end at 0x19 00)
 }
 
 # variable -------------------------------
