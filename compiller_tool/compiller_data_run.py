@@ -16,6 +16,7 @@ SYS_ADRESS = {
     "ReturnValue":"E8 02 ",
     "CallElse":"E9 02 ",
     "MathOP":"EA 02 ",
+    "SaveStr":"EB 02 ",     # SaveStr start at EB 02 and have a len of 21 (end at FF 02)
 }
 
 # variable -------------------------------

@@ -371,9 +371,23 @@ def compile_smarty(
                         return asm
                     
                     elif (not is_a_simple_value(value_1)) and (not is_a_simple_value(value_2)):
-                        asm = ""
-
+                        
                         raise Exception("not implemented")
+
+                        # load at SaveStr (smart systeme) value 1:
+
+                        adress_v_1 = int(compiller_data_run.SYS_ADRESS["SaveStr"].split(" ")[1] + compiller_data_run.SYS_ADRESS["SaveStr"].split(" ")[0], base=16)
+
+                        hex_value_1 = set_on_ram_str(value_1, adress_v_1)
+
+                        counter_adress_value += hex_value_1.count(" ")
+
+                        asm = hex_value_1
+                        
+                        # compare with value 2
+                        for i in range(smart_obj.SIZE_ADVANCED_OBJ):
+                            asm += f"AD {adress_for_RAM(adress_v_1 + i)} CD {adress_for_RAM()} D0 "
+
 
                         return asm
                 
