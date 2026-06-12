@@ -350,23 +350,35 @@ def compile_smarty(
                 try:
                     value_1, value_2 = split_code(value, "==", max_split=1)
 
-                    hex_value_1 = set_one_A_value(value_1, one_math=True, recursiv_value=True)
+                    if is_a_simple_value(value_1) and is_a_simple_value(value_2):
 
-                    hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
+                        hex_value_1 = set_one_A_value(value_1, one_math=True, recursiv_value=True)
 
-                    if not imediate_value(hex_value_2):
+                        hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
+
+                        if not imediate_value(hex_value_2):
+                            
+                            asm = f"{hex_value_1}CD {hex_value_2[3:]}"      # adress value
+
+                        else:
+                            asm = f"{hex_value_1}C9 {hex_value_2[3:]}"      # imediate value
+                            counter_adress_value -= 1
+
+                        asm += "D0 04 A9 01 D0 02 A9 00 "
+
+                        counter_adress_value += 9
                         
-                        asm = f"{hex_value_1}CD {hex_value_2[3:]}"      # adress value
-
-                    else:
-                        asm = f"{hex_value_1}C9 {hex_value_2[3:]}"      # imediate value
-                        counter_adress_value -= 1
-
-                    asm += "D0 04 A9 01 D0 02 A9 00 "
-
-                    counter_adress_value += 9
+                        return asm
                     
-                    return asm
+                    elif (not is_a_simple_value(value_1)) and (not is_a_simple_value(value_2)):
+                        asm = ""
+
+                        raise Exception("not implemented")
+
+                        return asm
+                
+                    else:
+                        raise SmartError(f"Can't compare advenced value with value: `{value}`", line_conter)
 
 
                 except SmartError as se:
