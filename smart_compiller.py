@@ -563,6 +563,8 @@ def compile_smarty(
     def set_on_ram_str(string_or_variable:str, start_adress:int, add_adress:bool=True) -> str:
         """Return the hex code for set a string on ram."""
         nonlocal adress_conter
+
+        string_or_variable = replace_code(string_or_variable, " ", "")
         
         if string_or_variable.startswith("~"):   # advenced variable
             var_name = string_or_variable[1:]
@@ -580,7 +582,7 @@ def compile_smarty(
 
             return code_hex_copy
 
-        else:
+        elif string_or_variable.startswith("\""):   # str value
 
             str_value = get_str(string_or_variable)
 
@@ -607,7 +609,34 @@ def compile_smarty(
                 adress_conter += 105
             
             return code_str
+        
+        elif string_or_variable.startswith("["):    # list
+            if not string_or_variable.endswith("]"):
+                raise SmartError(f"Sintaxe error: on '{string_or_variable}', bracket '[' was never closed", line_conter)
     
+            list_value = string_or_variable[1:-1].split(",")
+
+            len_list = len(list_value)
+
+            if len_list > smart_obj.SIZE_ADVANCED_OBJ:
+                raise SmartError(f"List too long: '{string_or_variable}', max length is {smart_obj.SIZE_ADVANCED_OBJ}.", line_conter)
+    
+            for i in range(smart_obj.SIZE_ADVANCED_OBJ - len_list):
+                list_value.append("0")
+
+            code_list = ""
+
+            for element in list_value:
+                code_list += f"{set_one_A_value(element)} 8D {adress_for_RAM(start_adress)} "
+
+                start_adress += 1
+
+            if add_adress:
+                adress_conter += 3 * smart_obj.SIZE_ADVANCED_OBJ
+
+            return code_list
+
+
     def good_asm(asm:str) -> bool:
         """Return True if assembly is good.
         Assembly is good if char is in A-F 0-9"""
