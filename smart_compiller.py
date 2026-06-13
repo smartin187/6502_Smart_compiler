@@ -772,7 +772,10 @@ def compile_smarty(
             
             line = replace_code(line, " ", "")[1:]
 
-            var_name, value = line.split("=", 1)
+            try:
+                var_name, value = line.split("=", 1)
+            except ValueError:
+                raise SmartError(f"Error with variable `{line}`: expected '='", line_conter)
 
             if not good_variable_name(var_name):
                 raise SmartError(f"Bad variable name : '{var_name}'", line_conter)
@@ -794,7 +797,10 @@ def compile_smarty(
         elif line.startswith("~"):      # advenced variable
             line = replace_code(line, " ", "")[1:]
 
-            var_name, value = line.split("=", 1)
+            try:
+                var_name, value = line.split("=", 1)
+            except ValueError:
+                raise SmartError(f"Error with variable `{line}`: expected '='", line_conter)
 
             if bool(re.fullmatch(r'.*\[-?\d+\]$', var_name)):     # a index for str value
                 var_name = var_name.split("[", 1)[0]
