@@ -62,9 +62,9 @@ Examples:
 
 ##### `str` (string of `char`)
 
-This value cannot be stored in a variable or in a register because it requires multiple bytes. However, you can use it in the [print](#print) function.
+This value is savet on 21 bytes, so the max length of a `str` if 21 characters.
 
-It starts and ends with double quotes. There is no length limit.
+It starts and ends with double quotes.
 
 Allowed characters are the same as for [`char`](#char-value).
 
@@ -93,19 +93,36 @@ Registers X and Y are rarely used directly, because they are normally used for l
 
 #### Variables
 
-Smart variables must start with a dot `.`.
+On Smart, they are 2 variables type: simple and advenced.
 
-Values that can be stored in a variable are [`hex`](#hex-value) and [`char`](#char-value).
+Simple variable can be used for [`bool` value](#bool-value), [`hex` value](#hex-value), [`int` value](#int-value), and [`char` value](#char-value).
 
-The maximum number of variables is 256 (size of Smart's virtual RAM).
+Advenced value can be used for [`str` value](#str-string-of-char).
 
-##### Syntax
+>Carful: advenced value need a lot of memory!
+
+##### Simple variable
+
+Simple variables must start with a dot `.`.
+
+
+###### Syntax
 
 The syntax is `.variable_name = value;`.
 
-Variable names can contain lowercase letters, digits, and underscores `_`. A leading dot is required, but dots cannot appear elsewhere in the name.
+Variable names can contain lowercase letters, digits, and underscores `_`. A leading dot `.` is required, but dots cannot appear elsewhere in the name.
 
 To use the value of a variable (for example, in a function), write the variable name (including the leading dot).
+
+##### Advenced variable
+
+The syntax is `~variable_name = "VALUE";`.
+
+Variable names can contain lowercase letters, digits, and underscores `_`. A leading tilde `~` is required, but dots cannot appear elsewhere in the name.
+
+To use the value of a variable (for example, in a function), write the variable name (including the leading tilde).
+
+>Carful: advenced variable canno't be used for some operation (like math operation...).
 
 #### Labels (anchors)
 
@@ -122,6 +139,8 @@ You can then use [`goto`](#goto).
 Operator are the mathematic operator and logic operator.
 
 For all operator, all value are accepted. If the value is a char, the value used is the ASCII code.
+
+**Warning**: `str` value are not accepted, except for `==` operator.
 
 ##### `+`
 
@@ -147,6 +166,7 @@ Division integer of 2 values. The result is round for a integer result.
 
 Compare 2 value, return True if value are equal False else.
 
+>This value can be `str`. If it is the case, the `str` can't be compared to an other value type.
 
 ##### Example
 
@@ -415,7 +435,7 @@ On a Smarty Kit, execution speed is slow. With the interpreter, you can increase
 Smart use RAM.
 - `0x0300` to `0x0400`: variables
 - `0x0000` to `0x02FF`: Smart system:
->`0x0000`: save of A (for return-function)<br>`0x0001`: value of return-function<br>`0x0002`: `01` if need to call `else bloc` (after `if`). If `0x02E9 = 01` bloc `else` or `elif` are called.<br>`0x0003`: used for math (for operator `*` and `/`).
+>`0x0000`: save of A (for return-function)<br>`0x0001`: value of return-function<br>`0x0002`: `01` if need to call `else bloc` (after `if`). If `0x02E9 = 01` bloc `else` or `elif` are called.<br>`0x0003`: used for math (for operator `*` and `/`).<br>`0x0004` to `0x0032`: used for string `str`.
 
 ## VS Code extension
 
