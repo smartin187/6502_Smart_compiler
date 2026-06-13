@@ -11,7 +11,7 @@ import os
 import logging
 import re
 
-from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, EscapeChar
+from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, EscapeChar
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool import compiller_data_run
@@ -1210,10 +1210,15 @@ def compile_smarty(
                     adress_conter += 3
                 
                 elif not is_a_simple_value(function_arg[0]):    # the value is str
-                    adress_print = smart_var[function_arg[0][1:]].ram_adress
 
-                    for deltal in range(smart_obj.SIZE_ADVANCED_OBJ):
-                        code_compile += f"AD {adress_for_RAM(adress_print + deltal)} 20 EF FF "
+                    string_adress = get_int_adress_from_str(compiller_data_run.SYS_ADRESS["SaveStr"])
+
+                    set_ram_str = set_on_ram_str(function_arg[0], string_adress)
+
+                    code_compile += set_ram_str
+
+                    for deltal in range(string_adress, string_adress + smart_obj.SIZE_ADVANCED_OBJ):
+                        code_compile += f"AD {adress_for_RAM(deltal)} 20 EF FF "
 
                     
                     adress_conter += 6 * smart_obj.SIZE_ADVANCED_OBJ

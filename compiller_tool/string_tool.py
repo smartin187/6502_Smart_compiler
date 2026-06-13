@@ -27,7 +27,7 @@ class EscapeChar:
 def split_code(
         code:str,
         sep:str | tuple[str, ...]=(" ",),
-        string:tuple=("'", '"'),
+        string:tuple[tuple[str, str]]=(("'", "'"), ('"', '"'), ("[", "]")),
         max_split:int=0
     ) -> list[str]:
     """Split a code, but ignore sep if it is in a str or char Smart Value.
@@ -66,9 +66,11 @@ def split_code(
             continue
 
         if not on_str:
-            if char in string:
-                on_str = True
-                open_str = char
+            for open_quote, close_quote in string:
+                if char == open_quote:
+                    on_str = True
+                    open_str = close_quote
+                    break
 
             char_is_sep_result = char_is_sep(i)
 
@@ -276,3 +278,11 @@ def get_bloc(line_conter:int, code:str, error_message:str="") -> str:
         raise SmartError(error_message + ", brackets '{' was never closed.", line_conter)
     
     return func_code, funciton_line
+
+def get_int_adress_from_str(string:str) -> int:
+    """Return the int value of adress from a str. The str adress is in hex and in little endian (example: 00 04 for 0x0400)"""
+    string = string.replace(" ", "")
+    if len(string) != 4:
+        raise ValueError(f"Adress str must have 4 char, not {len(string)} char.")
+    
+    return int(string[2:4] + string[0:2], 16)
