@@ -189,8 +189,12 @@ def compile_smarty(
         if not good_hex(code):
             raise SmartError(f"Bad hex value '{code}'", line_conter)
     
-    def set_one_A_value(value:str, one_math:bool=False, recursiv_value:bool=False, forbiden_math:bool=False) -> str:
-        """Return the value for set one A."""
+    def set_one_A_value(value:str, one_math:bool=False, recursiv_value:bool=False, forbiden_math:bool=False, test_value_mode:bool=False) -> str:
+        """Return the value for set one A.
+        arg: test_value_mode: if True, not print the error message on console (but raise SmartError).
+        """
+        set_error_exception = not test_value_mode
+
         def imediate_value(value:str) -> bool:
             """Return True if the value is an imediate value else false.
             A9 41 : imediate value (LDA #41)
@@ -208,7 +212,7 @@ def compile_smarty(
         def control_math() -> None:
             """If forbiden_math is True, raise SmartError if there is a math in value."""
             if forbiden_math:
-                raise SmartError(f"Math is forbiden for this value: '{value}'", line_conter)
+                raise SmartError(f"Math is forbiden for this value: '{value}'", line_conter, set_error=set_error_exception)
         global counter_adress_value
         nonlocal adress_conter
 
@@ -246,10 +250,10 @@ def compile_smarty(
                     return asm
 
                 except SmartError as se:
-                    raise SmartError(str(se), se.nbline)
+                    raise SmartError(str(se), se.nbline, set_error=set_error_exception)
 
                 except:
-                    raise SmartError(f"Error with math '*' : '{value}'", line_conter)
+                    raise SmartError(f"Error with math '*' : '{value}'", line_conter, set_error=set_error_exception)
             
             elif in_code("/", value):
                 control_math()
@@ -288,10 +292,10 @@ def compile_smarty(
                     return asm
 
                 except SmartError as se:
-                    raise SmartError(str(se), se.nbline)
+                    raise SmartError(str(se), se.nbline, set_error=set_error_exception)
 
                 except:
-                    raise SmartError(f"Error with math '/' : '{value}'", line_conter)
+                    raise SmartError(f"Error with math '/' : '{value}'", line_conter, set_error=set_error_exception)
             
 
 
@@ -316,10 +320,10 @@ def compile_smarty(
                     return asm
 
                 except SmartError as se:
-                    raise SmartError(str(se), se.nbline)
+                    raise SmartError(str(se), se.nbline, set_error=set_error_exception)
 
                 except:
-                    raise SmartError(f"Error with math '+' : '{value}'", line_conter)
+                    raise SmartError(f"Error with math '+' : '{value}'", line_conter, set_error=set_error_exception)
             
             elif in_code("-", value):    # substraction
                 control_math()
@@ -341,10 +345,10 @@ def compile_smarty(
                     return asm
 
                 except SmartError as se:
-                    raise SmartError(str(se), se.nbline)
+                    raise SmartError(str(se), se.nbline, set_error=set_error_exception)
 
                 except:
-                    raise SmartError(f"Error with math '-' : '{value}'", line_conter)
+                    raise SmartError(f"Error with math '-' : '{value}'", line_conter, set_error=set_error_exception)
                 
             elif in_code("==", value):
                 try:
@@ -411,17 +415,17 @@ def compile_smarty(
                         return asm
                 
                     else:
-                        raise SmartError(f"Can't compare advenced value with value: `{value}`", line_conter)
+                        raise SmartError(f"Can't compare advenced value with value: `{value}`", line_conter, set_error=set_error_exception)
 
 
                 except SmartError as se:
-                    raise SmartError(str(se), se.nbline)
+                    raise SmartError(str(se), se.nbline, set_error=set_error_exception)
 
             elif value[0] == ".":
                 variable = value[1:]
 
                 if variable not in smart_var:
-                    raise SmartError(f"Name error : name '{value}' is not defined.", line_conter)
+                    raise SmartError(f"Name error : name '{value}' is not defined.", line_conter, set_error=set_error_exception)
                 
                 counter_adress_value += 3
                 
@@ -434,7 +438,7 @@ def compile_smarty(
 
                     obj_var = smart_var[advenced_var_name]
 
-                    index_var = obj_var.get_index(value)
+                    index_var = obj_var.get_index(value, test_mode=test_value_mode)
                     adress_var = obj_var.get_adress_from_index(index_var)
 
                     counter_adress_value += 3
@@ -443,7 +447,7 @@ def compile_smarty(
 
             
                 except:
-                    raise SmartError(f"Invalid value for '{value}': can't use a advenced variable for this operation.")
+                    raise SmartError(f"Invalid value for '{value}': can't use a advenced variable for this operation.", line_conter, set_error=set_error_exception)
 
 
             elif value.startswith("True"):
@@ -467,16 +471,16 @@ def compile_smarty(
             
             elif value[0] in "0123456789":
                 if len(value) > 3:
-                    raise SmartError(f"Invalid value: {value}", line_conter)
+                    raise SmartError(f"Invalid value: {value}", line_conter, set_error=set_error_exception)
                 
                 try:
                     value_int = int(value)
                 except:
-                    raise SmartError(f"Invalid int value: {value}")
+                    raise SmartError(f"Invalid int value: {value}", line_conter, set_error=set_error_exception)
 
                 if value_int > 255:
-                    raise SmartError(f"Invalid value: {value_int}, max int value is 255")
-                
+                    raise SmartError(f"Invalid value: {value_int}, max int value is 255", line_conter, set_error=set_error_exception)
+
                 value_int_to_hex = hex(value_int)[2:].upper()
 
                 value_hex = ("0" if len(value_int_to_hex) == 1 else "") + value_int_to_hex
@@ -493,7 +497,7 @@ def compile_smarty(
                 return "A9 " + ("0" * (2-len(ascii_code))) + ascii_code + " "
         
             elif value[0] == "\"":
-                raise SmartError(f"Smart forbiden value: '{value}'", line_conter)
+                raise SmartError(f"Smart forbiden value: '{value}'", line_conter, set_error=set_error_exception)
 
             elif in_code(":", value):
 
@@ -511,16 +515,16 @@ def compile_smarty(
                         return ""
                 
                 elif func_name_value in SmartBuiltIn.BUILT_IN_NAME_NORETURN:
-                    raise SmartError(f"Built in function {func_name_value} is not a return-function.")
+                    raise SmartError(f"Built in function {func_name_value} is not a return-function.", line_conter, set_error=set_error_exception)
 
                 else:
 
                     if func_name_value in function_name_usr:
                         if not function_name_usr[func_name_value].return_value:
-                            raise SmartError(f"Function '{func_name_value}' is not a return-function.", line_conter)
+                            raise SmartError(f"Function '{func_name_value}' is not a return-function.", line_conter, set_error=set_error_exception)
 
                     else:
-                        raise SmartError(f"Function '{func_name_value}' not exist.", line_conter)
+                        raise SmartError(f"Function '{func_name_value}' not exist.", line_conter, set_error=set_error_exception)
 
                     adress_conter += 13
 
@@ -535,8 +539,8 @@ def compile_smarty(
 
       
             else:
-                raise SmartError(f"Smart value error: {value}", line_conter)
-        
+                raise SmartError(f"Smart value error: {value}", line_conter, set_error=set_error_exception)
+
         if not recursiv_value:
             counter_adress_value = 0
 
@@ -551,7 +555,7 @@ def compile_smarty(
     def is_a_simple_value(value:str) -> bool:
         """Return True if the value is a value for set on A (use 1 byte), False else (if the value is a str, use 21 bytes)."""
         try:
-            set_one_A_value(value)
+            set_one_A_value(value, test_value_mode=True)
             return True
         except SmartError:
             return False

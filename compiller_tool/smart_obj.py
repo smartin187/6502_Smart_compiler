@@ -68,18 +68,18 @@ class SmartStr(AdvancedObj):
     def __init__(self, name:str, adress:str):
         super().__init__(name, adress)
     
-    def get_index(self, line:str) -> int:
+    def get_index(self, line:str, test_mode:bool=False) -> int:
         """Return the index from the line."""
         if "[" not in line or "]" not in line:
-            raise SmartError(f"Invalid syntax for '{line.split('=')[0]}', expected an index between brackets [].")
+            raise SmartError(f"Invalid syntax for '{line.split('=')[0]}', expected an index between brackets [].", set_error=not test_mode)
 
         index = int(line.split("=")[0].split("[")[1].replace("]", ""))
 
         if index >= SIZE_ADVANCED_OBJ:
-            raise SmartError(f"Index out of range for '{line.split('=')[0]}', max index is {SIZE_ADVANCED_OBJ - 1}.")
+            raise SmartError(f"Index out of range for '{line.split('=')[0]}', max index is {SIZE_ADVANCED_OBJ - 1}.", set_error=not test_mode)
 
         elif index < -SIZE_ADVANCED_OBJ:
-            raise SmartError(f"Index out of range for '{line.split('=')[0]}', min index is {-SIZE_ADVANCED_OBJ}.")
+            raise SmartError(f"Index out of range for '{line.split('=')[0]}', min index is {-SIZE_ADVANCED_OBJ}.", set_error=not test_mode)
     
         if index < 0:
             index = SIZE_ADVANCED_OBJ + index

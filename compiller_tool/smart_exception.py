@@ -58,8 +58,11 @@ class CompileError(Exception):
 
 class SmartError(CompileError):
     """The error for Smart (syntaxe error)."""
-    def __init__(self, message:str, nb_instruction:int=0):
-        logging.critical(ColoredFormatter.COLORS["CRITICAL"] + "Error during build:")
+    def __init__(self, message:str, nb_instruction:int=0, set_error:bool=True):
+        """Error for Smart language. Arg:
+        - message: the error message
+        - nb_instruction: the number of instruction (for find the line)
+        - set_error: if True, print the error in red on console (default True)"""
 
 
         nbline, line_error = line_of_instruction(nb_instruction)
@@ -69,8 +72,10 @@ class SmartError(CompileError):
             text_endline = ColoredFormatter.COLORS["WARNING"] + f"Maybe you forget ';' at {compiller_data_run.warning_endline[1]} line, on {module_name}?"
         else:
             text_endline = ""
-
-        print(f"~~~~~~~~~~\nAt {nbline} line:\n{line_error}\n~~~~~~~~~~\nError :\n{message}\n{text_endline}\n{ColoredFormatter.RESET}")
+        
+        if set_error:
+            logging.critical(ColoredFormatter.COLORS["CRITICAL"] + "Error during build:")
+            print(f"~~~~~~~~~~\nAt {nbline} line:\n{line_error}\n~~~~~~~~~~\nError :\n{message}\n{text_endline}\n{ColoredFormatter.RESET}")
 
         self.syntaxerror = message
         self.nbline = nbline
