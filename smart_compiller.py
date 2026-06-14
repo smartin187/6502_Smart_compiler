@@ -189,7 +189,7 @@ def compile_smarty(
         if not good_hex(code):
             raise SmartError(f"Bad hex value '{code}'", line_conter)
     
-    def set_one_A_value(value:str, one_math:bool=False, recursiv_value:bool=False, forbiden_math:bool=False, test_value_mode:bool=False) -> str:
+    def set_one_A_value(value:str, one_math:bool=False, recursiv_value:bool=False, forbiden_math:bool=False, test_value_mode:bool=False, add_adress:bool=True) -> str:
         """Return the value for set one A.
         arg: test_value_mode: if True, not print the error message on console (but raise SmartError).
         """
@@ -546,7 +546,7 @@ def compile_smarty(
 
         asm_v = eval_value()
 
-        if not recursiv_value:
+        if add_adress and not recursiv_value:
             adress_conter += asm_v.count(" ")
 
         return asm_v
@@ -609,6 +609,55 @@ def compile_smarty(
                 adress_conter += 105
             
             return code_str
+        
+        elif string_or_variable.startswith("F\""):      # F-string
+            str_value = get_str(string_or_variable[1:])
+            
+            code_str = ""
+
+            len_counter = 0
+
+            f_bloc_len = 0
+
+            char_counter = 0
+
+            for char in str_value:
+                if f_bloc_len:
+                    f_bloc_len -= 1
+                    continue
+
+                if char == "{":
+                    f_bloc = str_value[char_counter + 1:].split("}", 1)[0]
+
+                    print("f_bloc", f_bloc.replace(" ", "."))
+
+                    code_str += set_one_A_value(f_bloc, add_adress=False) + f"8D {adress_for_RAM(start_adress)} "
+
+                    f_bloc_len = len(f_bloc)
+                    char_counter += f_bloc_len + 1
+
+                    len_counter -= 1
+
+                else:
+
+                    char_code = hex(ord(char))[2:].upper()
+                    char_code = ("0" if len(char_code) == 1 else "") + char_code
+
+                    code_str += f"A9 {char_code} 8D {adress_for_RAM(start_adress)} "
+
+                    char_counter += 1
+
+                start_adress += 1
+                len_counter += 1
+            
+            if len_counter > smart_obj.SIZE_ADVANCED_OBJ:
+                raise SmartError(f"F-string too long: '{str_value}', max length is {smart_obj.SIZE_ADVANCED_OBJ}.", line_conter)
+            
+            if add_adress:
+                adress_conter += code_str.count(" ")
+            
+            return code_str
+
         
         elif string_or_variable.startswith("["):    # list
             if not string_or_variable.endswith("]"):
