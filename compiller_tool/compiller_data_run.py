@@ -18,6 +18,7 @@ SYS_ADRESS = {
     "MathOP":"03 00 ",
     "SaveStr":"04 00 ",     # SaveStr start at EB 00 and have a len of 21 (end at 0x19 00)
     "SaveStrCMP":"19 00 ",  # SaveStrCMP start at 0x19 00 and have a len of 21 (end at 0x32 00) - Used to save a str for compare (if, ==...)
+    "SaveAToIndex":"32 00 ",   # SaveAToIndex start at 0x32 00
 }
 
 # variable -------------------------------

@@ -68,12 +68,23 @@ class SmartStr(AdvancedObj):
     def __init__(self, name:str, adress:str):
         super().__init__(name, adress)
     
-    def get_index(self, line:str, test_mode:bool=False) -> int:
-        """Return the index from the line."""
+
+    def get_index(self, line:str, test_mode:bool=False) -> tuple[bool, int | str]:
+        """Return the index from the line.
+        Return: tuple[
+            bool: if the value is an literal value (True) or a variable / expression (False),
+            int | str: the index (int) or the variable / expression (str)
+        ]
+        """
         if "[" not in line or "]" not in line:
             raise SmartError(f"Invalid syntax for '{line.split('=')[0]}', expected an index between brackets [].", set_error=not test_mode)
 
-        index = int(line.split("=")[0].split("[")[1].replace("]", ""))
+        value = line.split("=")[0].split("[")[1].replace("]", "")
+
+        try:
+            index = int(value)
+        except ValueError:
+            return False, value
 
         if index >= SIZE_ADVANCED_OBJ:
             raise SmartError(f"Index out of range for '{line.split('=')[0]}', max index is {SIZE_ADVANCED_OBJ - 1}.", set_error=not test_mode)
@@ -84,7 +95,7 @@ class SmartStr(AdvancedObj):
         if index < 0:
             index = SIZE_ADVANCED_OBJ + index
         
-        return index
+        return True, index
 
     def get_adress_from_index(self, index:int) -> str:
         """Return the adress of the character at the given index."""

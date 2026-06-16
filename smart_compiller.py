@@ -10,6 +10,7 @@ from pathlib import Path
 import os
 import logging
 import re
+import traceback
 
 from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, EscapeChar
 from compiller_tool.color_tool import ColoredFormatter
@@ -438,12 +439,33 @@ def compile_smarty(
 
                     obj_var = smart_var[advenced_var_name]
 
-                    index_var = obj_var.get_index(value, test_mode=test_value_mode)
-                    adress_var = obj_var.get_adress_from_index(index_var)
+                    index_mode, index_var = obj_var.get_index(value, test_mode=test_value_mode)
 
-                    counter_adress_value += 3
+                    if index_mode:
+                        adress_var = obj_var.get_adress_from_index(index_var)
 
-                    return f"AD {adress_for_RAM(adress_var)} "
+                        counter_adress_value += 3
+
+                        return f"AD {adress_for_RAM(adress_var)} "
+                    
+                    else:
+                        
+                        # save A at smart sys
+                        asm = f"8D {compiller_data_run.SYS_ADRESS['SaveAToIndex']} "
+                        counter_adress_value += 3
+
+                        asm += set_one_A_value(index_var, recursiv_value=True, test_value_mode=test_value_mode) + "AA "
+                        counter_adress_value += 1
+
+                        start_adress_var = obj_var.get_adress_from_index(0)
+
+                        hex_start_adress_var = adress_for_RAM(start_adress_var)
+
+                        asm += f"BD {hex_start_adress_var} "    # LDA $start_adress_var,X
+
+                        counter_adress_value += 3
+
+                        return asm
 
             
                 except:
@@ -628,8 +650,6 @@ def compile_smarty(
 
                 if char == "{":
                     f_bloc = str_value[char_counter + 1:].split("}", 1)[0]
-
-                    print("f_bloc", f_bloc.replace(" ", "."))
 
                     code_str += set_one_A_value(f_bloc, add_adress=False) + f"8D {adress_for_RAM(start_adress)} "
 
@@ -880,7 +900,7 @@ def compile_smarty(
             except ValueError:
                 raise SmartError(f"Error with variable `{line}`: expected '='", line_conter)
 
-            if bool(re.fullmatch(r'.*\[-?\d+\]$', var_name)):     # a index for str value
+            if bool(re.fullmatch(r'.*\[\]$', var_name)):     # a index for str value
                 var_name = var_name.split("[", 1)[0]
 
                 index_mode = True
