@@ -108,7 +108,7 @@ def replace_code(
         code: str,
         old: str,
         new: str,
-        string: tuple = ("'", '"'),
+        string: tuple[tuple[str, str]] = (("'", "'"), ('"', '"'), ("[", "]")),
         max_replace: int = -1
     ) -> str:
     """Replace a substring in code, but ignore if it is in a str or char Smart Value.
@@ -127,22 +127,25 @@ def replace_code(
         char = code[i]
         
         if not on_str:
-            if char in string:
-                on_str = True
-                open_str = char
-                result.append(char)
-                i += 1
-            elif code[i:i+len(old)] == old:
-                if max_replace == -1 or replacements < max_replace:
-                    result.append(new)
-                    i += len(old)
-                    replacements += 1
+            for open_quote, close_quote in string:
+                if char == open_quote:
+                    on_str = True
+                    open_str = close_quote
+                    result.append(char)
+                    i += 1
+                    break
+            else:
+                if code[i:i+len(old)] == old:
+                    if max_replace == -1 or replacements < max_replace:
+                        result.append(new)
+                        i += len(old)
+                        replacements += 1
+                    else:
+                        result.append(char)
+                        i += 1
                 else:
                     result.append(char)
                     i += 1
-            else:
-                result.append(char)
-                i += 1
         else:
             if char == open_str:
                 on_str = False
@@ -156,7 +159,7 @@ def replace_code(
 def in_code(
         substring: str,
         code: str,
-        string: tuple = ("'", '"')
+        string: tuple[tuple[str, str]] = (("'", "'"), ('"', '"'), ("[", "]"))
     ) -> bool:
     """Check if substring is in code, but ignore if it is in a str or char Smart Value.
     Similar to 'substring in code', but with string awareness.
@@ -173,13 +176,15 @@ def in_code(
         char = code[i]
         
         if not on_str:
-            if char in string:
-                on_str = True
-                open_str = char
-                i += 1
-            elif code[i:i+len(substring)] == substring:
-                return True
+            for open_quote, close_quote in string:
+                if char == open_quote:
+                    on_str = True
+                    open_str = close_quote
+                    i += 1
+                    break
             else:
+                if code[i:i+len(substring)] == substring:
+                    return True
                 i += 1
         else:
             if char == open_str:
