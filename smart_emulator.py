@@ -26,8 +26,11 @@ elif "--version" in sys.argv:
     print(smart_info.SMART_VERSION)
     sys.exit(0)
 
-
-GUI_MODE = True
+if "--console" in sys.argv:
+    GUI_MODE = False
+    sys.argv.remove("--console")
+else:
+    GUI_MODE = True
 
 if GUI_MODE:
 
@@ -629,10 +632,12 @@ def run_smart() -> None:
                 accumulator["A"] = ram["D010"]
             
             else:
-                sys.stdout.write(Colors.GREEN)
+                sys.stdout.write(Colors.BG_GREEN)
                 key = input()
 
-                sys.stdout.write(Colors.RESET)
+                sys.stdout.write(Colors.RESET + "\x1b[K")
+                sys.stdout.flush()
+
 
                 if len(key) != 1:
                     messagebox.showerror("Error", "You must enter a single character.")
