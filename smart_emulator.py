@@ -683,8 +683,21 @@ def run_smart() -> None:
 
                     run_step += 1
 
-                case "AD":
-                    accumulator["A"] = ram[code[run_step + 2] + code[run_step + 1]]
+                case "AD" | "BD":
+                    
+                    if run == "BD":
+                        offset_lda = int(accumulator["X"], base=16)
+                    else:
+                        offset_lda = 0
+                    
+                    base_adress = code[run_step + 2] + code[run_step + 1]
+
+                    offset_adress = int(base_adress, base=16) + offset_lda
+
+                    adress = hex(offset_adress)[2:].upper()
+                    adress = ("0" * (4 - len(adress))) + adress
+
+                    accumulator["A"] = ram[adress]
 
                     set_flag_for_LD(accumulator["A"])
 
@@ -712,7 +725,11 @@ def run_smart() -> None:
 
                         run_step = adress_call
 
+                case "AA":  # transfer A to X
+                    accumulator["X"] = accumulator["A"]
+                    run_step += 1
                 
+
                 case "00":
                     break
 
