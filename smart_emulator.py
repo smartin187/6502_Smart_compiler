@@ -934,63 +934,64 @@ def run_smart() -> None:
     if run_fail:
         error_during_run()
 
-if GUI_MODE:
-    menu_window = tk.Menu(window_emulator)
-    window_emulator.config(menu=menu_window)
+if __name__ == "__main__":
+    if GUI_MODE:
+        menu_window = tk.Menu(window_emulator)
+        window_emulator.config(menu=menu_window)
 
-    menu_save = tk.Menu(menu_window, tearoff=0)
-    menu_window.add_cascade(label="Save...", menu=menu_save)
+        menu_save = tk.Menu(menu_window, tearoff=0)
+        menu_window.add_cascade(label="Save...", menu=menu_save)
 
-    def save_monitor() -> None:
-        """Save the text of monitor in a *.txt file."""
-        file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt")])
+        def save_monitor() -> None:
+            """Save the text of monitor in a *.txt file."""
+            file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt")])
 
-        if file_path:
-            Path(file_path).write_text(monitor.get("1.0", tk.END), encoding="utf-8")
+            if file_path:
+                Path(file_path).write_text(monitor.get("1.0", tk.END), encoding="utf-8")
 
-    menu_save.add_command(label="Save monitor (as *.txt)", command=save_monitor)
+        menu_save.add_command(label="Save monitor (as *.txt)", command=save_monitor)
 
-    def export_memory() -> None:
-        """Export RAM, accumulator and carry flag in a *.json file."""
-        file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("Json files", "*.json")])
+        def export_memory() -> None:
+            """Export RAM, accumulator and carry flag in a *.json file."""
+            file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("Json files", "*.json")])
 
-        if file_path:
-            data = {"RAM": ram, "accumulator": accumulator, "carry_flag": flags["C"]}
+            if file_path:
+                data = {"RAM": ram, "accumulator": accumulator, "carry_flag": flags["C"]}
 
-            Path(file_path).write_text(json.dumps(data, indent=4), encoding="utf-8")
+                Path(file_path).write_text(json.dumps(data, indent=4), encoding="utf-8")
 
-    menu_save.add_command(label="Save memory (as *.json)", command=export_memory)
+        menu_save.add_command(label="Save memory (as *.json)", command=export_memory)
 
-    def save_asm() -> None:
-        """Save the assembly code in a *.asm file."""
-        file_path = filedialog.asksaveasfilename(defaultextension=".asm", filetypes=[("Assembly files", "*.asm")])
+        def save_asm() -> None:
+            """Save the assembly code in a *.asm file."""
+            file_path = filedialog.asksaveasfilename(defaultextension=".asm", filetypes=[("Assembly files", "*.asm")])
 
-        if file_path:
-            Path(file_path).write_text(asm_code, encoding="utf-8")
+            if file_path:
+                Path(file_path).write_text(asm_code, encoding="utf-8")
 
-    menu_save.add_command(label="Save assembly (as *.asm)", command=save_asm)
+        menu_save.add_command(label="Save assembly (as *.asm)", command=save_asm)
 
-    def start_run() -> None:
-        """Call run_smart."""
-        try:
-            run_smart()
-        except IndexError:
-            messagebox.showerror("Error", "Error with adress.")
-            error_during_run()
-        
-        except KeyError as e:
-            messagebox.showerror("Error", "Unknow adress RAM", detail=f"Adress: 0x{str(e)[1:-1]}")
-            error_during_run()
+        def start_run() -> None:
+            """Call run_smart."""
+            try:
+                run_smart()
+            except IndexError:
+                messagebox.showerror("Error", "Error with adress.")
+                error_during_run()
+            
+            except KeyError as e:
+                messagebox.showerror("Error", "Unknow adress RAM", detail=f"Adress: 0x{str(e)[1:-1]}")
+                error_during_run()
 
-        except Exception as e:
-            messagebox.showerror("Error", "Error during run.", detail=f"Detail: {str(e)}")
-            error_during_run()
+            except Exception as e:
+                messagebox.showerror("Error", "Error during run.", detail=f"Detail: {str(e)}")
+                error_during_run()
 
-    thread_run = Thread(target=start_run, daemon=True)
-    thread_run.start()
+        thread_run = Thread(target=start_run, daemon=True)
+        thread_run.start()
 
 
-    window_emulator.mainloop()
+        window_emulator.mainloop()
 
-else:
-    run_smart()
+    else:
+        run_smart()
