@@ -145,7 +145,9 @@ if GUI_MODE:
 def print_on_text(text:str, sys_message:bool=False, error:bool=False) -> None:
     """Insert on the scolledtext the text.
     If error = True, use tag for set the text one red."""
+    global output_test
     text = text.replace("\r", "\n")
+
 
     if not sys_message:
         text = text.upper()
@@ -1027,7 +1029,7 @@ def start_test(test_code:str) -> None:
 
     output_test = ""
 
-    
+
 
     run_smart()
 
