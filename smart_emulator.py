@@ -26,11 +26,14 @@ elif "--version" in sys.argv:
     print(smart_info.SMART_VERSION)
     sys.exit(0)
 
-if "--console" in sys.argv:
-    GUI_MODE = False
-    sys.argv.remove("--console")
+if __name__ == "__main__":
+    if "--console" in sys.argv:
+        GUI_MODE = False
+        sys.argv.remove("--console")
+    else:
+        GUI_MODE = True
 else:
-    GUI_MODE = True
+    GUI_MODE = False
 
 if GUI_MODE:
 
@@ -42,72 +45,75 @@ if GUI_MODE:
 else:
     normal_speed = "Normal"
 
-
+on_test = False
 open_from_asm = False
 
-if len(sys.argv) != 2:
-    file_name = ""
-    code = ""
-    def open_smart() -> None:
-        """Use filedialoge for open a file."""
-        global file_name, code, open_from_asm
+output_test = ""    # used only on test mode
 
-        path = filedialog.askopenfilename(defaultextension="sma", filetypes=[("Smart source code", "*.sma"), ("Assembly", "*.asm")])
+if __name__ == "__main__":
+    if len(sys.argv) != 2 and GUI_MODE:
+        file_name = ""
+        code = ""
+        def open_smart() -> None:
+            """Use filedialoge for open a file."""
+            global file_name, code, open_from_asm
 
-
-        if path:
-            file_type = os.path.splitext(path)[1]
-
-            if file_type == ".sma":
-                file_name = path
-            elif file_type == ".asm":
-                asm_f = open(path, mode="r", encoding="UTF-8")
-
-                code = asm_f.read()
-
-                asm_f.close()
-
-                open_from_asm = True
+            path = filedialog.askopenfilename(defaultextension="sma", filetypes=[("Smart source code", "*.sma"), ("Assembly", "*.asm")])
 
 
-            else:
-                messagebox.showerror("Error", f"Unknow file type {file_type}.")
-            
-            window_start.destroy()
+            if path:
+                file_type = os.path.splitext(path)[1]
 
-    window_start = tk.Tk()
-    window_start.title("Smart emulator")
+                if file_type == ".sma":
+                    file_name = path
+                elif file_type == ".asm":
+                    asm_f = open(path, mode="r", encoding="UTF-8")
 
-    text_info = tk.Label(window_start, text="Open a Smart code source (*.sma) or open a Assembly (*.asm).\nCarful: with assembly, the emulator can have error...")
-    text_info.pack()
+                    code = asm_f.read()
 
-    button_open = tk.Button(window_start, text="Open *.sma of *.asm", command=open_smart)
-    button_open.pack()
+                    asm_f.close()
 
-    window_start.protocol("WM_DELETE_WINDOW", lambda:sys.exit(0))
-    window_start.mainloop()
-    
+                    open_from_asm = True
 
-else:
-    file_name = sys.argv[1]
 
-if file_name == "--hex-entry":
-    code = input("Enter the hex code : ")
+                else:
+                    messagebox.showerror("Error", f"Unknow file type {file_type}.")
+                
+                window_start.destroy()
 
-elif open_from_asm:pass
+        window_start = tk.Tk()
+        window_start.title("Smart emulator")
 
-else:
-    try:
-        code = compile_smarty(file=file_name, argv=[], CODE_ADRESSE=1024, make_file=False)
-    except SmartError as se:
-        messagebox.showerror("Error", "Error during compilation of the Smart code.", detail=f"Detail: {se.syntaxerror}")
-        sys.exit(1)
+        text_info = tk.Label(window_start, text="Open a Smart code source (*.sma) or open a Assembly (*.asm).\nCarful: with assembly, the emulator can have error...")
+        text_info.pack()
 
-    except CompileError as ce:
-        messagebox.showerror("Error", "Error during compilation of the Smart code.", detail=f"Detail: {ce.error}")
-        sys.exit(1)
+        button_open = tk.Button(window_start, text="Open *.sma of *.asm", command=open_smart)
+        button_open.pack()
 
-asm_code = code
+        window_start.protocol("WM_DELETE_WINDOW", lambda:sys.exit(0))
+        window_start.mainloop()
+        
+
+    else:
+        file_name = sys.argv[1]
+
+    if file_name == "--hex-entry":
+        code = input("Enter the hex code : ")
+
+    elif open_from_asm:pass
+
+    else:
+        try:
+            code = compile_smarty(file=file_name, argv=[], CODE_ADRESSE=1024, make_file=False)
+        except SmartError as se:
+            messagebox.showerror("Error", "Error during compilation of the Smart code.", detail=f"Detail: {se.syntaxerror}")
+            sys.exit(1)
+
+        except CompileError as ce:
+            messagebox.showerror("Error", "Error during compilation of the Smart code.", detail=f"Detail: {ce.error}")
+            sys.exit(1)
+
+    asm_code = code
 
 ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n\r "
 START_RAM = 0
@@ -154,6 +160,8 @@ def print_on_text(text:str, sys_message:bool=False, error:bool=False) -> None:
         else:
             monitor.insert(tk.END, text)
         monitor.see(tk.END)
+    elif on_test:
+        output_test += text
     else:
         print(text, end="\n" if sys_message else "")
 
@@ -563,7 +571,14 @@ else:
 
 ram = {}
 accumulator = {}
-flags = {
+
+run_step = 0
+end_run = False
+
+BASE_RAM = {("0" * (4 - len(hex(i)[2:]))) + hex(i)[2:].upper():"00" for i in range(0, 0x400)} | {"D010":"00", "D011":"00"}
+BASE_ACCUMULATOR = {"A":"00", "X":"00", "Y":"00"}
+
+BASE_FLAGS = {
     "C": 0,  # Carry
     "Z": 0,  # Zero
     "I": 0,  # Interrupt disable
@@ -572,10 +587,8 @@ flags = {
     "V": 0,  # Overflow
     "N": 0   # Negative
 }
-run_step = 0
-end_run = False
 
-
+flags = BASE_FLAGS
 
 def error_during_run() -> None:
     """Print an error message on the monitor."""
@@ -599,9 +612,9 @@ def run_smart() -> None:
 
     run_step = 1
 
-    accumulator = {"A":"00", "X":"00", "Y":"00"}
+    accumulator = BASE_ACCUMULATOR
 
-    ram = {("0" * (4 - len(hex(i)[2:]))) + hex(i)[2:].upper():"00" for i in range(0, 0x400)} | {"D010":"00", "D011":"00"}
+    ram = BASE_RAM
 
     run_fail = False
 
@@ -995,3 +1008,27 @@ if __name__ == "__main__":
 
     else:
         run_smart()
+    
+
+
+def start_test(test_code:str) -> None:
+    """Used by test.py for test a funcionalyty."""
+    global code, ram, accumulator, flags, run_step, end_run, output_test
+
+    # reset value:
+    run_step = 0
+    end_run = False
+
+    ram = BASE_RAM
+    accumulator = BASE_ACCUMULATOR
+    flags = BASE_FLAGS
+
+    code = test_code
+
+    output_test = ""
+
+    
+
+    run_smart()
+
+    return output_test
