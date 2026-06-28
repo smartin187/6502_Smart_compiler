@@ -8,8 +8,16 @@ from smart_compiller import compile_smarty
 from compiller_tool.color_tool import Colors
 from compiller_tool.smart_exception import SmartError
 
-class StopTest(Exception):
+class TestError(Exception):
+    """Mian Exception for test."""
+    pass
+
+class StopTest(TestError):
     """This exception is for stop the test."""
+    pass
+
+class OutputError(TestError):
+    """If the output of programme are not good."""
     pass
 
 class Test:
@@ -18,7 +26,7 @@ class Test:
         self.name = name
         self.code = code
         self.compile_only = compile_only
-        self.output = output
+        self.output = output + "\n\nEnd of run"
         self.compile_output = compile_output
         self.sucess = sucess
     
@@ -62,7 +70,15 @@ class Test:
         else:
             if not self.compile_only:
                 try:
-                    smart_emulator.start_test(self.code_compile)
+                    output = smart_emulator.start_test(self.code_compile)
+
+                    if output != self.output:
+                        raise OutputError(f"The output of programme is not good:\n{output}")
+
+                except OutputError as oe:
+                    error = True
+                    error_output = str(oe)
+
                 except Exception as e:
                     error = True
                     error_output = str(e)

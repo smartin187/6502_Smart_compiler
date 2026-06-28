@@ -1013,7 +1013,7 @@ if __name__ == "__main__":
     
 
 
-def start_test(test_code:str) -> None:
+def start_test(test_code:str) -> str:
     """Used by test.py for test a funcionalyty."""
     global code, ram, accumulator, flags, run_step, end_run, output_test
 
