@@ -58,6 +58,13 @@ class Test:
 
         try:
             self.code_compile = compile_smarty("test/test.sma", make_file=False)
+
+            if self.code_compile != self.compile_output:
+                if self.compile_only:
+                    raise OutputError(f"The output of compilation is not good:\n{self.code_compile}")
+                else:
+                    print(f"{Colors.YELLOW}Warning: hex compilation of Smart programme is not normal{Colors.RESET}")
+
         except SmartError as se:
             error = True
             compilation_error = True
@@ -122,7 +129,7 @@ tests = [
         code="""
         print: "HELLO";
         """,
-        compile_output="0400: A9 48 20 EF FF A9 45 20 EF FF A9 4C 20 EF FF A9 4C 20 EF FF A9 4F 20 EF FF 00",
+        compile_output="0400: A9 48 20 EF FF A9 45 20 EF FF A9 4C 20 EF FF A9 4C 20 EF FF A9 4F 20 EF FF 00 ",
         output="HELLO"
     )
 ]
