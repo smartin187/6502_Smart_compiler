@@ -696,6 +696,7 @@ def compile_smarty(
             code_list = ""
 
             for element in list_value:
+                element = element.strip()
                 code_list += f"{set_one_A_value(element)} 8D {adress_for_RAM(start_adress)} "
 
                 start_adress += 1
