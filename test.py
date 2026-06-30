@@ -113,115 +113,122 @@ class Test:
             print(f"{Colors.BG_GREEN}Test OK{Colors.RESET}", end="\n"*10)
 
         
-
-smart_emulator.GUI_MODE = False
-smart_emulator.on_test = True
-
-os.makedirs("test", exist_ok=True)
-
-all_ok = True
-error_counter = 0
-
-syntaxe_error_test = [  # this test have the same class Test but for test sintaxe error.
-    Test(
-        "Forget ';'",
-        code='print: "TEST"\nprint: "ERROR"',
-        compile_only=True,
-        sucess=False
-    ),
-    Test(
-        "Unclosed str",
-        code="print: \"TEST",
-        compile_only=True,
-        sucess=False
-    ),
-    Test(
-        "Bad char in str",
-        code='print: "a"',
-        compile_only=True,
-        sucess=False
-    ),
-    Test(
-        "Sintaxe error after str",
-        code='print: "HELLO" error',
-        compile_only=True,
-        sucess=False
-    )
-]
-
-
-tests = [
-    Test(
-        "Test print",
-        code='print: "PRINT TEST";',
-        compile_output="0400: A9 50 20 EF FF A9 52 20 EF FF A9 49 20 EF FF A9 4E 20 EF FF A9 54 20 EF FF A9 20 20 EF FF A9 54 20 EF FF A9 45 20 EF FF A9 53 20 EF FF A9 54 20 EF FF 00 ",
-        output="PRINT TEST"
-    ),
-    Test(
-        "Variable test",
-        code="""
-.a = 'A';
-.b = 'B';
-print: .a;
-print: .b;
-
-.a = .b;
-print: .a;
-.b = 64;
-print: .b;
-""",
-        compile_output="0400: A9 41 8D 00 03 A9 42 8D 01 03 AD 00 03 20 EF FF AD 01 03 20 EF FF AD 01 03 8D 00 03 AD 00 03 20 EF FF A9 40 8D 01 03 AD 01 03 20 EF FF 00 ",
-        output="ABB@"
-    ),
-    Test(
-        "Input test",
-        code=".i = input:;print: .i;",
-        compile_output="0400: 20 10 04 8D 00 03 AD 00 03 20 EF FF 00 AD 11 D0 10 FB AD 10 D0 29 7F 60 ",
-        compile_only=True,
-    ),
-    Test(
-        "If test",
-        code="""
-if True{;
-    print: "IF TEST";
-}
-else{;
-    print: "ERROR";
-}
-
-.a = True == False;
-if .a{;
-    print: "ERROR";
-} elif .a == False{;
-    print: "ELIF TEST";
-}
-
-.b = 10;
-if .b == 9{;
-    print: "ERROR";
-} elif .b == 11{;
-    print: "ERROR";
-}
-else{;
-    print: "ELSE TEST";
-}
-""",
-    output="IF TESTELIF TESTELSE TEST"
-    )
-]
-
-global_tests = syntaxe_error_test + tests
-
 try:
-    for test in global_tests:
-        test.run()
-except StopTest as st:
-    print(f"{Colors.BG_YELLOW}{st}{Colors.RESET}")
 
-if all_ok:
-    print(f"{Colors.BG_GREEN}All tests without error!{Colors.RESET}")
-else:
-    print(
-        f"{Colors.BG_RED}Some tests failed!{Colors.RESET}",
-        f"{Colors.RED}Error: {error_counter}/{len(global_tests)}{Colors.RESET}",
-    )
+    smart_emulator.GUI_MODE = False
+    smart_emulator.on_test = True
+
+    os.makedirs("test", exist_ok=True)
+
+    all_ok = True
+    error_counter = 0
+
+    syntaxe_error_test = [  # this test have the same class Test but for test sintaxe error.
+        Test(
+            "Forget ';'",
+            code='print: "TEST"\nprint: "ERROR"',
+            compile_only=True,
+            sucess=False
+        ),
+        Test(
+            "Unclosed str",
+            code="print: \"TEST",
+            compile_only=True,
+            sucess=False
+        ),
+        Test(
+            "Bad char in str",
+            code='print: "a"',
+            compile_only=True,
+            sucess=False
+        ),
+        Test(
+            "Sintaxe error after str",
+            code='print: "HELLO" error',
+            compile_only=True,
+            sucess=False
+        )
+    ]
+
+
+    tests = [
+        Test(
+            "Test print",
+            code='print: "PRINT TEST";',
+            compile_output="0400: A9 50 20 EF FF A9 52 20 EF FF A9 49 20 EF FF A9 4E 20 EF FF A9 54 20 EF FF A9 20 20 EF FF A9 54 20 EF FF A9 45 20 EF FF A9 53 20 EF FF A9 54 20 EF FF 00 ",
+            output="PRINT TEST"
+        ),
+        Test(
+            "Variable test",
+            code="""
+    .a = 'A';
+    .b = 'B';
+    print: .a;
+    print: .b;
+
+    .a = .b;
+    print: .a;
+    .b = 64;
+    print: .b;
+    """,
+            compile_output="0400: A9 41 8D 00 03 A9 42 8D 01 03 AD 00 03 20 EF FF AD 01 03 20 EF FF AD 01 03 8D 00 03 AD 00 03 20 EF FF A9 40 8D 01 03 AD 01 03 20 EF FF 00 ",
+            output="ABB@"
+        ),
+        Test(
+            "Input test",
+            code=".i = input:;print: .i;",
+            compile_output="0400: 20 10 04 8D 00 03 AD 00 03 20 EF FF 00 AD 11 D0 10 FB AD 10 D0 29 7F 60 ",
+            compile_only=True,
+        ),
+        Test(
+            "If test",
+            code="""
+    if True{;
+        print: "IF TEST";
+    }
+    else{;
+        print: "ERROR";
+    }
+
+    .a = True == False;
+    if .a{;
+        print: "ERROR";
+    } elif .a == False{;
+        print: "ELIF TEST";
+    }
+
+    .b = 10;
+    if .b == 9{;
+        print: "ERROR";
+    } elif .b == 11{;
+        print: "ERROR";
+    }
+    else{;
+        print: "ELSE TEST";
+    }
+    """,
+        output="IF TESTELIF TESTELSE TEST"
+        )
+    ]
+
+    global_tests = syntaxe_error_test + tests
+
+    try:
+        for test in global_tests:
+            test.run()
+    except StopTest as st:
+        print(f"{Colors.BG_YELLOW}{st}{Colors.RESET}")
+
+    if all_ok:
+        print(f"{Colors.BG_GREEN}All tests without error!{Colors.RESET}")
+    else:
+        print(
+            f"{Colors.BG_RED}Some tests failed!{Colors.RESET}",
+            f"{Colors.RED}Error: {error_counter}/{len(global_tests)}{Colors.RESET}",
+        )
+    
+except KeyboardInterrupt:
+    print(f"\n{Colors.BG_YELLOW}Test stopped by user\nKeyboard interrupt.{Colors.RESET}")
+
+except Exception as e:
+    print(f"{Colors.BG_RED}An error occured during test: {e}{Colors.RESET}")
