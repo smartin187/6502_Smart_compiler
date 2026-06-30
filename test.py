@@ -22,7 +22,7 @@ class OutputError(TestError):
 
 class Test:
     """This class is for testing all functionalities of smart."""
-    def __init__(self, name:str, code:str, output:str, compile_output:str, compile_only:bool=False, sucess:bool=True):
+    def __init__(self, name:str, code:str, output:str="", compile_output:str="", compile_only:bool=False, sucess:bool=True):
         self.name = name
         self.code = code
         self.compile_only = compile_only
@@ -122,19 +122,63 @@ os.makedirs("test", exist_ok=True)
 all_ok = True
 error_counter = 0
 
-
-tests = [
+syntaxe_error_test = [  # this test have the same class Test but for test sintaxe error.
     Test(
-        "Test print",
-        code="""
-        print: "HELLO";
-        """,
-        compile_output="0400: A9 48 20 EF FF A9 45 20 EF FF A9 4C 20 EF FF A9 4C 20 EF FF A9 4F 20 EF FF 00 ",
-        output="HELLO"
+        "Forget ';'",
+        code='print: "TEST"\nprint: "ERROR"',
+        compile_only=True,
+        sucess=False
+    ),
+    Test(
+        "Unclosed str",
+        code="print: \"TEST",
+        compile_only=True,
+        sucess=False
+    ),
+    Test(
+        "Bad char in str",
+        code='print: "a"',
+        compile_only=True,
+        sucess=False
+    ),
+    Test(
+        "Sintaxe error after str",
+        code='print: "HELLO" error',
+        compile_only=True,
+        sucess=False
     )
 ]
 
-for test in tests:
+
+tests = [
+
+    Test(
+        "Test print",
+        code='print: "PRINT TEST";',
+        compile_output="0400: A9 50 20 EF FF A9 52 20 EF FF A9 49 20 EF FF A9 4E 20 EF FF A9 54 20 EF FF A9 20 20 EF FF A9 54 20 EF FF A9 45 20 EF FF A9 53 20 EF FF A9 54 20 EF FF 00 ",
+        output="PRINT TEST"
+    ),
+    Test(
+        "Variable test",
+        code="""
+.a = 'A';
+.b = 'B';
+print: .a;
+print: .b;
+
+.a = .b;
+print: .a;
+.b = 64;
+print: .b;
+""",
+        compile_output="0400: A9 41 8D 00 03 A9 42 8D 01 03 AD 00 03 20 EF FF AD 01 03 20 EF FF AD 01 03 8D 00 03 AD 00 03 20 EF FF A9 40 8D 01 03 AD 01 03 20 EF FF 00 ",
+        output="ABB@"
+    )
+]
+
+global_tests = syntaxe_error_test + tests
+
+for test in global_tests:
     test.run()
 
 if all_ok:
