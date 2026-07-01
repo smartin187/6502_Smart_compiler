@@ -901,7 +901,8 @@ def compile_smarty(
             except ValueError:
                 raise SmartError(f"Error with variable `{line}`: expected '='", line_conter)
 
-            if bool(re.fullmatch(r'.*\[\]$', var_name)):     # a index for str value
+            if var_name.endswith("]"):#bool(re.fullmatch(r'.*\[[0-9]+\]\$', var_name)):     # a index for str value
+
                 var_name = var_name.split("[", 1)[0]
 
                 index_mode = True
@@ -933,10 +934,18 @@ def compile_smarty(
                     raise SmartError(f"{str(se)}\t\tOn str variable (~), need str value, not `{value}`.")
 
             else:   # set a value at index:
-                index = smart_var[var_name].get_index(line)
-                
-                code_compile += f"{set_one_A_value(value)}8D {adress_for_RAM(smart_var[var_name].ram_adress + index)} "
-                adress_conter += 3
+                index_mode, index_var = smart_var[var_name].get_index(line)
+
+                if index_mode:
+                    code_compile += f"{set_one_A_value(value)}8D {adress_for_RAM(smart_var[var_name].ram_adress + index_var)} "
+                    adress_conter += 3
+                else:
+                    code_compile += f"{set_one_A_value(index_var)} AA"     # save on X index delta
+                    adress_conter += 1
+
+                    code_compile += set_one_A_value(value)
+                                   
+                    code_compile += f"9D {adress_for_RAM(smart_var[var_name].ram_adress)} "
 
 
         elif line.lstrip().startswith("if"):
