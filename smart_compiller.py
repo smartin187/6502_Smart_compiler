@@ -643,7 +643,8 @@ def compile_smarty(
 
             char_counter = 0
 
-            for char in str_value:
+            while char_counter < len(str_value):
+                char = str_value[char_counter]
                 if f_bloc_len:
                     f_bloc_len -= 1
                     continue
@@ -654,7 +655,7 @@ def compile_smarty(
                     code_str += set_one_A_value(f_bloc, add_adress=False) + f"8D {adress_for_RAM(start_adress)} "
 
                     f_bloc_len = len(f_bloc)
-                    char_counter += f_bloc_len + 1
+                    char_counter += f_bloc_len + 2
 
                     len_counter -= 1
 
