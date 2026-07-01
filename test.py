@@ -208,7 +208,54 @@ try:
     }
     """,
         output="IF TESTELIF TESTELSE TEST"
-        )
+        ),
+    Test(
+        "while test",
+        code="""
+while True{;
+    print: "TEST WHILE";
+    break;
+}
+.a = True;
+while .a{;
+    print: "TEST WHILE 2";
+    .a = False;
+}
+""",
+    output="TEST WHILETEST WHILE 2"
+    ),
+    Test(
+        "strin test",
+        code="""
+~a = "STRING";
+print: ~a;
+
+if ~a == "STRING"{;
+    print: "OK";
+}
+
+~b = "STRING2";
+if ~a == ~b{;
+    print: "ERROR";
+}
+else{;
+    print: "OK2";
+}
+
+~c = "ABC";
+
+print: ~c[0];
+
+.d = 1;
+print: ~c[.d];
+
+~c[0] = '@';
+
+print: ~c;
+
+""",
+    output="STRINGOKOK2AB@BC"
+    )
     ]
 
     global_tests = syntaxe_error_test + tests
