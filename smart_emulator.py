@@ -680,8 +680,17 @@ def run_smart() -> None:
                     run_step += 2
                     set_flag_for_LD(accumulator["Y"])
                 
-                case "8D":
-                    adress = code[run_step + 2] + code[run_step + 1]
+                case "8D" | "9D":
+
+                    if run == "9D":
+                        offset = int(accumulator["X"], base=16)
+
+                        base_adress = int(code[run_step + 2] + code[run_step + 1], base=16)
+
+                        adress = hex(base_adress + offset)[2:].upper().zfill(4)
+
+                    else:
+                        adress = code[run_step + 2] + code[run_step + 1]
 
                     if 0x300 <= int(adress, base=16) >= 0x400:    # write one the programme
                         try:

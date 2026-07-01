@@ -934,18 +934,20 @@ def compile_smarty(
                     raise SmartError(f"{str(se)}\t\tOn str variable (~), need str value, not `{value}`.")
 
             else:   # set a value at index:
-                index_mode, index_var = smart_var[var_name].get_index(line)
+                index_mode_const, index_var = smart_var[var_name].get_index(line)
+                # ^ if the index is a number literal, else it is variable or expression
 
-                if index_mode:
+                if index_mode_const:
                     code_compile += f"{set_one_A_value(value)}8D {adress_for_RAM(smart_var[var_name].ram_adress + index_var)} "
                     adress_conter += 3
                 else:
-                    code_compile += f"{set_one_A_value(index_var)} AA"     # save on X index delta
+                    code_compile += f"{set_one_A_value(index_var)}AA "     # save on X index delta
                     adress_conter += 1
 
                     code_compile += set_one_A_value(value)
-                                   
+                    
                     code_compile += f"9D {adress_for_RAM(smart_var[var_name].ram_adress)} "
+                    adress_conter += 3
 
 
         elif line.lstrip().startswith("if"):
