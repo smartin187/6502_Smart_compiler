@@ -8,7 +8,7 @@ This repository contains a compiler for Smart code (a language created for the S
 
 Smart is a very simple programming language. If you need more features, you should use BASIC instead, or write assembly directly.
 
-_New features (especially math operations) will be added soon..._
+_New features will be added soon..._
 
 The advantage of Smart is that it is optimized for the Smarty Kit CPU.
 
@@ -29,6 +29,8 @@ Smart comments use two slashes: `//`. Everything that follows on the same line i
 #### Value types
 
 There are currently two value types: a hexadecimal value and a char (a single character). There is also a third type that can only be used in the [print](#print) function: a string of characters (`str`).
+
+_Simple value (on 1 byte):_
 
 ##### `bool` value
 
@@ -60,20 +62,47 @@ Examples:
 - `'B'`
 - `'1'`
 
-##### `str` (string of `char`)
+---
 
-This value is savet on 21 bytes, so the max length of a `str` if 21 characters.
+_advanced value (on 21 bytes):_
+
+##### `str` (string of `char`) and `list`
+
+This value is saved on 21 bytes, so the max length of a `str` of `list` is 21 characters.
+
+###### `str` value
 
 It starts and ends with double quotes.
 
 Allowed characters are the same as for [`char`](#char-value).
 
-###### Escape caracters
+**Escape caracters**
 
 One `str`, you have escape caracters.
 
 - `\r`: carring return
 - `\"`: for have a `"`
+
+###### F-string
+
+F-string is a mode for add simple value incide a `str` value.
+
+F-string start with `F` and have `{}` for add a simple value.
+
+`F"TEXT{SIMPLE_VALUE}TEXT"`
+
+###### `list` value
+
+`list` value is an other representation of `str` value.
+
+`list` start with `[` and end with `]`. Inside, you can add simple value separated by `,`.
+
+`[SIMPLE_VALUE,SIMPLE_VALUE]//max len of 21`
+
+###### Index on `list` or `str`
+
+See the documentation of [advanced variable](#indexing-on-advanced-variable-list-or-str) for indexing on `list` or `str` value.
+
 
 #### Using registers
 
@@ -123,6 +152,14 @@ Variable names can contain lowercase letters, digits, and underscores `_`. A lea
 To use the value of a variable (for example, in a function), write the variable name (including the leading tilde).
 
 >Carful: advenced variable canno't be used for some operation (like math operation...).
+
+###### Indexing on advanced variable (`list` or `str`)
+
+For get a value from an index on advanced variable (`list` or `str`), use: `~var[index]`.
+
+Index need to be a value between `0` and `20`, or `-21` and `-1` (for reverse index).
+
+You can set a variable for the index, but the index can't be negative. If you need a negative index, you can do: `~var[21-.my_variable]` (because the length of `list` or `str` is 21).
 
 #### Labels (anchors)
 
