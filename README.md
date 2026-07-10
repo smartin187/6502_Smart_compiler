@@ -161,6 +161,12 @@ Index need to be a value between `0` and `20`, or `-21` and `-1` (for reverse in
 
 You can set a variable for the index, but the index can't be negative. If you need a negative index, you can do: `~var[21-.my_variable]` (because the length of `list` or `str` is 21).
 
+You can also change value of an index on advanced variable:
+```Smart
+~var[index] = 'A';
+```
+
+
 #### Labels (anchors)
 
 You can create labels (anchors) and later use the [`goto`](#goto) function to jump to a label.
