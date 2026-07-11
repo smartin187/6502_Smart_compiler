@@ -3,6 +3,8 @@
 *.bin
 *.hex
 
+*.jpeg
+
 __pycache__/
 
 # pyinstaller build
