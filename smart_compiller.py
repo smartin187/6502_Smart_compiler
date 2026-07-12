@@ -47,7 +47,8 @@ def compile_smarty(
             bool | str | list | dict | smart_obj.SmartFunction | None
         ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[], "while_mode":False},
         bin_outpout_file:bool=False,
-        module_name:str="*" # module name is '*' if main module.
+        module_name:str="*", # module name is '*' if main module.
+        regroup_bytes:int=-1 # for the render of code. -1 for 1 line of hex, other value for regroup bytes in lines.
     ) -> None:
     """Start the compile from file."""
     global line_of_instruction, code_line#, warning_endline
@@ -1533,7 +1534,29 @@ def compile_smarty(
             data = bytes(int(b, 16) for b in hex_bytes)
             
         else:
-            code_bin = code_compile
+            if regroup_bytes == -1:
+                code_bin = code_compile
+
+            else:
+
+                start = int(code_compile.split(":")[0], base=16)
+
+                hex_opcode = code_compile.split(": ")[1]
+
+                hex_opcode = hex_opcode[:-1]        # for remove space at end
+
+                code_bytes = hex_opcode.split(" ")
+
+                lines = [code_bytes[i:i+regroup_bytes] for i in range(0, len(code_bytes), regroup_bytes)]
+
+                if len(lines[-1]) != regroup_bytes:
+                    lines[-1] += ["00"] * (regroup_bytes - len(lines[-1]))
+
+                lines_str = [f"{hex(start + i * regroup_bytes)[2:].upper().zfill(4)}: {' '.join(line)}" for i, line in enumerate(lines)]
+
+
+                code_bin = " \n".join(lines_str)
+
 
         logging.info("Build completed!")
         

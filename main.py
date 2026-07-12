@@ -22,6 +22,25 @@ elif "--show-lib-path" in sys.argv:
     show_path_lib()
     sys.exit(0)
 
+
+regroup_number = -1
+
+for arg in sys.argv:
+    if arg.startswith("--regroup="):
+        try:
+            regroup_number = int(arg.split("=")[1])
+        except:
+            logging.critical("Error: regroup number must be an integer")
+            sys.exit(1)
+
+        if regroup_number < 1:
+            logging.critical("Error: regroup number must be greater than 0, or -1 for no regroup.")
+            sys.exit(1)
+
+        sys.argv.remove(arg)
+        break
+        
+
 CODE_ADRESSE = 1024
 
 if "--bin" in sys.argv: # make a binary file
@@ -37,7 +56,7 @@ if len(sys.argv) == 1:
     sys.exit(1)
 
 try:
-    compile_smarty(sys.argv[1], sys.argv, CODE_ADRESSE, bin_outpout_file=bin_file)
+    compile_smarty(sys.argv[1], sys.argv, CODE_ADRESSE, bin_outpout_file=bin_file, regroup_bytes=regroup_number)
 except SmartError:
     sys.exit(1)
 
