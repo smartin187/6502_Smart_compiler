@@ -430,6 +430,27 @@ void returnfonction{;
 }
 ```
 
+#### Runtime error
+
+You can set a runtime error with keyword `error`. Next keyword you set a error code (can be `char`, `hex`, `int`).
+
+```Smart
+error 'A'; // the error code is 'A'
+```
+
+If an runtime error is set, the program displays `E` and next the error code.
+
+>**The error code is display as ASCII code.** If your error code is `65` the error code is `A`.
+
+>Warning: if the ASCII code can't be display by SmartyKit, the runtime error print only `E`.
+
+>Note: the value of `error` keyword can be a `bool`, but the character of `0` and `1` ASCII are not visible...
+
+The program is stopped when a runtime error is set.
+
+>If you use runtime error, you can say what is your error code. For example: error `A` is "invalid value", error `B` is ...
+
+
 ## Compile Smart code
 
 Once you have your code, the first option is to compile it so it can run on a Smarty Kit (code is theoretically compatible with an Apple 1).

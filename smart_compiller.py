@@ -1132,6 +1132,23 @@ def compile_smarty(
             code_compile += "4C ! smart:continue "     # set space on placeholder for conting adress
             adress_conter += 3
 
+        elif line.lstrip().startswith("error "):        # runtime error
+            try:
+                error_value = line.split(" ", 1)[1]
+
+            except IndexError:
+                raise SmartError(f"Expected value after `error`: '{line}'", line_conter)
+
+            code_compile += "A9 45 20 EF FF "     # print E
+            adress_conter += 5
+
+            code_compile += set_one_A_value(error_value)
+
+            code_compile += f"4C !  smart_runtime_error"    # set 2 space on place holder for counting adress          
+            adress_conter += 3
+
+            compiller_data_run.need_error = True
+
         elif line.lstrip().startswith("void"):      # make fonction
             if function_mode["function_mode"]:
                 raise SmartError(f"Error with function: impossible to create new function on function.", line_conter)
@@ -1401,7 +1418,11 @@ def compile_smarty(
     
     else:
         code_compile += "00 "
-    
+        if compiller_data_run.need_error:
+            code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(adress_conter + CODE_ADRESSE + 1) + " ")
+            code_compile += "20 EF FF 00 "
+
+            adress_conter += 4
 
 
     # compile function:

@@ -28,5 +28,5 @@ warning_endline = (False, )     # if an line not end by ; } or // in line or the
 
 not_used_ram = 0    # the number of not used RAM for str value
 
-
+need_error = False   # if need runtime error
 
