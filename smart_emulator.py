@@ -90,6 +90,11 @@ if __name__ == "__main__":
         button_open = tk.Button(window_start, text="Open *.sma of *.asm", command=open_smart)
         button_open.pack()
 
+        logo_smart = tk.PhotoImage(file="./img/logo_smart_small.png", width=200, height=200)
+
+        label_logo = tk.Label(window_start, image=logo_smart)
+        label_logo.pack()
+
         window_start.protocol("WM_DELETE_WINDOW", lambda:sys.exit(0))
         window_start.mainloop()
         
