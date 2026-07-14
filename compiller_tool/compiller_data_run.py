@@ -30,3 +30,8 @@ not_used_ram = 0    # the number of not used RAM for str value
 
 need_error = False   # if need runtime error
 
+SMART_ERRORS = {     # the code error for Smart
+    "Index out of range": "I",
+    "Division by zero": "/"
+}
+

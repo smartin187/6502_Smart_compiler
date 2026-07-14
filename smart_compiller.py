@@ -75,6 +75,34 @@ def compile_smarty(
 
         BUILT_IN_NAME = BUILT_IN_NAME_RETURN + BUILT_IN_NAME_NORETURN
 
+    def make_error(error_value:str, set_need_error:bool=True) -> str:
+        """
+        Return the op code for the runtime error.
+        return hex code.
+        ADD TO ADDRESS_CONTER
+        """
+        nonlocal adress_conter
+        code_compile = ""
+
+        compiller_data_run.need_error = set_need_error
+
+        code_compile += "A9 45 20 EF FF "     # print E
+        adress_conter += 5
+
+        print("adress_conter", adress_conter)
+
+        code_compile += set_one_A_value(error_value)
+        #adress_conter += 2
+        #print("value", set_one_A_value(error_value))
+
+        print("adress_conter2", adress_conter)
+
+        code_compile += "4C !  smart_runtime_error"    # set 2 space on place holder for counting adress          
+        adress_conter += 3
+
+        print("code_add", code_compile)
+
+        return code_compile
 
     def line_of_instruction(nb_instruction:int) -> tuple[int, str]:
         """Return the number of line and the line of the instruction."""
@@ -268,6 +296,9 @@ def compile_smarty(
 
                     asm += hex_value_2 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']} "  # save value 2 on ram
                     counter_adress_value += 3
+
+                    '''# control division by 0
+                    asm += "C9 00 D0 .. "'''
 
                     if hex_value_2 == "A9 00 ":       # division by 0
                         confirm_user(f"Division by 0: {value}. It make an infinit loop! Continue compilation ? ", line_counter=line_conter)
@@ -1140,15 +1171,10 @@ def compile_smarty(
             except IndexError:
                 raise SmartError(f"Expected value after `error`: '{line}'", line_conter)
 
-            code_compile += "A9 45 20 EF FF "     # print E
-            adress_conter += 5
 
-            code_compile += set_one_A_value(error_value)
+            code_compile += make_error(error_value)
 
-            code_compile += f"4C !  smart_runtime_error"    # set 2 space on place holder for counting adress          
-            adress_conter += 3
-
-            compiller_data_run.need_error = True
+            print("adres_conter3", adress_conter)
 
         elif line.lstrip().startswith("void"):      # make fonction
             if function_mode["function_mode"]:
@@ -1420,7 +1446,7 @@ def compile_smarty(
     else:
         code_compile += "00 "
         if compiller_data_run.need_error:
-            code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(adress_conter + CODE_ADRESSE + 1) + " ")
+            code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(adress_conter + CODE_ADRESSE - 1) + " ")
             code_compile += "20 EF FF 00 "
 
             adress_conter += 4
