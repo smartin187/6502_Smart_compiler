@@ -4,6 +4,8 @@ Smarty Compiler is a project that aims to make programming on a Smarty Kit (an A
 
 This repository contains a compiler for Smart code (a language created for the Smarty Kit) and an interpreter for that language (if you want to test a program without a Smarty Kit).
 
+>Smart is in development. Some bugs are to fix. Report issues if you have problems. New features will be added soon...
+
 ## The Smart programming language
 
 Smart is a very simple programming language. If you need more features, you should use BASIC instead, or write assembly directly.
