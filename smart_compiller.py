@@ -997,7 +997,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
             
-            code_compile += f"C9 00 D0 08 A9 01 8D {compiller_data_run.SYS_ADRESS['CallElse']} 4C {{}} A9 00 8D {compiller_data_run.SYS_ADRESS['CallElse']}"
+            code_compile += f"C9 00 D0 08 A9 01 8D {compiller_data_run.SYS_ADRESS['CallElse']}4C {{}} A9 00 8D {compiller_data_run.SYS_ADRESS['CallElse']}"
             adress_conter += 17
 
             code_if = compile_smarty(
@@ -1047,7 +1047,7 @@ def compile_smarty(
 
             code_compile = code_compile.replace("!smart_tmp:elif", delta_branch)
 
-            code_compile += f"C9 00 D0 08 A9 01 8D {compiller_data_run.SYS_ADRESS['CallElse']} 4C {{}} A9 00 8D {compiller_data_run.SYS_ADRESS['CallElse']}"
+            code_compile += f"C9 00 D0 08 A9 01 8D {compiller_data_run.SYS_ADRESS['CallElse']}4C {{}} A9 00 8D {compiller_data_run.SYS_ADRESS['CallElse']}"
 
             adress_conter += 17
 
@@ -1543,10 +1543,12 @@ def compile_smarty(
 
             code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
     
-    if compiller_data_run.need_error and not function_mode["function_mode"]:
+    if compiller_data_run.need_error and not(function_mode["function_mode"]):
             print("adress_conter", adress_conter + 4)
             print("adress", hex(adress_conter + CODE_ADRESSE + 1)[2:].upper())
             print("adress_for_RAM", adress_for_RAM(adress_conter + CODE_ADRESSE))
+
+            print("-- code compile --", code_compile)
 
             code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(code_compile.count(" ") + CODE_ADRESSE - 1) + " ")
             code_compile += "20 EF FF 00 "
