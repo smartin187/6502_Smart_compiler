@@ -1445,11 +1445,7 @@ def compile_smarty(
     
     else:
         code_compile += "00 "
-        if compiller_data_run.need_error:
-            code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(adress_conter + CODE_ADRESSE - 1) + " ")
-            code_compile += "20 EF FF 00 "
 
-            adress_conter += 4
 
 
     # compile function:
@@ -1546,7 +1542,16 @@ def compile_smarty(
                 raise SmartError(f"'{name}' is not defined for goto !", line_conter)
 
             code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
-        
+    
+    if compiller_data_run.need_error and not function_mode["function_mode"]:
+            print("adress_conter", adress_conter + 4)
+            print("adress", hex(adress_conter + CODE_ADRESSE + 1)[2:].upper())
+            print("adress_for_RAM", adress_for_RAM(adress_conter + CODE_ADRESSE))
+
+            code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(code_compile.count(" ") + CODE_ADRESSE - 1) + " ")
+            code_compile += "20 EF FF 00 "
+
+            adress_conter += 4
 
     if not function_mode["function_mode"]:      
 
