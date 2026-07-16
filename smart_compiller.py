@@ -19,6 +19,8 @@ from compiller_tool import compiller_data_run
 from compiller_tool import import_tool
 from compiller_tool import smart_obj
 
+from compiller_tool.asm_tool import verryfing_adress_conter # use only for debug, not need for compilation
+
 logging.basicConfig(
     format="SmartCompiller %(levelname)s: %(message)s",
     level=logging.INFO
@@ -609,7 +611,7 @@ def compile_smarty(
     def is_a_simple_value(value:str) -> bool:
         """Return True if the value is a value for set on A (use 1 byte), False else (if the value is a str, use 21 bytes)."""
         try:
-            set_one_A_value(value, test_value_mode=True)
+            set_one_A_value(value, test_value_mode=True, add_adress=False)
             return True
         except SmartError:
             return False
@@ -1171,10 +1173,14 @@ def compile_smarty(
             except IndexError:
                 raise SmartError(f"Expected value after `error`: '{line}'", line_conter)
 
+            verryfing_adress_conter(adress_conter, code_compile)
 
             code_compile += make_error(error_value)
 
-            print("adres_conter3", adress_conter)
+            print("code_compile ici", code_compile)
+
+
+            #print("adres_conter3", adress_conter)
 
         elif line.lstrip().startswith("void"):      # make fonction
             if function_mode["function_mode"]:
@@ -1433,6 +1439,10 @@ def compile_smarty(
         line_conter += 1
 
         last_if = False
+
+        verryfing_adress_conter(adress_conter, code_compile)
+
+        print("code_compile", code_compile)
         
     if function_mode["if_mode"]:
         pass
@@ -1544,16 +1554,16 @@ def compile_smarty(
             code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
     
     if compiller_data_run.need_error and not(function_mode["function_mode"]):
-            print("adress_conter", adress_conter + 4)
-            print("adress", hex(adress_conter + CODE_ADRESSE + 1)[2:].upper())
-            print("adress_for_RAM", adress_for_RAM(adress_conter + CODE_ADRESSE))
+        print("adress_conter", adress_conter + 4)
+        print("adress", hex(adress_conter + CODE_ADRESSE + 1)[2:].upper())
+        print("adress_for_RAM", adress_for_RAM(adress_conter + CODE_ADRESSE))
 
-            print("-- code compile --", code_compile)
+        print("-- code compile --", code_compile)
 
-            code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(code_compile.count(" ") + CODE_ADRESSE - 1) + " ")
-            code_compile += "20 EF FF 00 "
+        code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(code_compile.count(" ") + CODE_ADRESSE - 1) + " ") # use count intead adress_conter for not error
+        code_compile += "20 EF FF 00 "
 
-            adress_conter += 4
+        adress_conter += 4
 
     if not function_mode["function_mode"]:      
 
