@@ -3,25 +3,37 @@
 """
 This module is not used for compilation, but for help debug.
 You can set the function of asm_tool on the compiller for debuging.
+
+On compiller, it is used for warning.
 """
 
 from compiller_tool import color_tool
 
-def verryfing_adress_conter(adress_conter:int, code_compile:str) -> bool:
-    """This function is used to verify the adress_conter and the code_compile.
-    Use this function is the adress_conter is not good. Test on the compiller"""
-    normal_adress = code_compile.count(" ") + 13 * code_compile.count("!smart_call_func|")
+def get_adress(code_compile:str) -> int:
+    """Return the adress offset from the start of programme from a hex code."""
+    offset_adress = code_compile.count(" ") + 13 * code_compile.count("!smart_call_func|")
 
     if code_compile.startswith("0400: "):
-        normal_adress -= 1
+        offset_adress -= 1
+    
+    return offset_adress
+
+def verryfing_adress_conter(adress_conter:int, code_compile:str, not_print:bool=False) -> bool:
+    """This function is used to verify the adress_conter and the code_compile.
+    Use this function is the adress_conter is not good. Test on the compiller"""
+
+    normal_adress = get_adress(code_compile)
 
     if adress_conter != normal_adress:
-        print(color_tool.Colors.RED, "verryfing_adress_conter: error. Normal adress:", normal_adress, "\nadress_conter:", adress_conter, color_tool.Colors.RESET)
+        if not not_print:
+            print(color_tool.Colors.RED, "verryfing_adress_conter: error. Normal adress:", normal_adress, "\nadress_conter:", adress_conter, color_tool.Colors.RESET)
         return False
     
     else:
-        print(color_tool.Colors.GREEN, "verryfing_adress_conter: adress_conter is good.", color_tool.Colors.RESET)
+        if not not_print:
+            print(color_tool.Colors.GREEN, "verryfing_adress_conter: adress_conter is good.", color_tool.Colors.RESET)
 
     return True
-        
 
+
+verryfing_adress_conter_no_print = lambda adress_conter, code_compile: verryfing_adress_conter(adress_conter, code_compile, not_print=True)

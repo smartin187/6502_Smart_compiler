@@ -15,11 +15,13 @@ import traceback
 from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, EscapeChar
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
+from compiller_tool.smart_info import GIT_HUB_LINK
 from compiller_tool import compiller_data_run
 from compiller_tool import import_tool
 from compiller_tool import smart_obj
+from compiller_tool import color_tool
 
-from compiller_tool.asm_tool import verryfing_adress_conter # use only for debug, not need for compilation
+from compiller_tool.asm_tool import verryfing_adress_conter_no_print, get_adress # use only for debug, not need for compilation
 
 logging.basicConfig(
     format="SmartCompiller %(levelname)s: %(message)s",
@@ -1173,11 +1175,11 @@ def compile_smarty(
             except IndexError:
                 raise SmartError(f"Expected value after `error`: '{line}'", line_conter)
 
-            verryfing_adress_conter(adress_conter, code_compile)
+            #verryfing_adress_conter(adress_conter, code_compile)
 
             code_compile += make_error(error_value)
 
-            print("code_compile ici", code_compile)
+            #print("code_compile ici", code_compile)
 
 
             #print("adres_conter3", adress_conter)
@@ -1440,9 +1442,21 @@ def compile_smarty(
 
         last_if = False
 
-        verryfing_adress_conter(adress_conter, code_compile)
+        if not verryfing_adress_conter_no_print(adress_conter, code_compile):
+            logging.error(f"""Adress counter (offset from the start of programme) is not good
+If the programme fail, please report this error to the developer.
+{color_tool.Colors.BG_YELLOW}Fail detail:{color_tool.Colors.RESET}
+\tNormal adress: {hex(get_adress(code_compile)).upper()} + {hex(CODE_ADRESSE).upper()}
+\tError adress: {hex(adress_conter).upper()} + {hex(CODE_ADRESSE).upper()}
 
-        print("code_compile", code_compile)
+\t{color_tool.Colors.GREEN}You can report to `{GIT_HUB_LINK}`.{color_tool.Colors.RESET}
+""")
+            
+            if input("Continue ? (y/N): ").lower() != "y":
+                raise CompileError("User quit: error with adress counter.")
+
+
+        # print("code_compile", code_compile)
         
     if function_mode["if_mode"]:
         pass
@@ -1553,7 +1567,7 @@ def compile_smarty(
 
             code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
     
-    if compiller_data_run.need_error and not(function_mode["function_mode"]):
+    if compiller_data_run.need_error and not(function_mode["function_mode"]) and not(function_mode["if_mode"]):
         print("adress_conter", adress_conter + 4)
         print("adress", hex(adress_conter + CODE_ADRESSE + 1)[2:].upper())
         print("adress_for_RAM", adress_for_RAM(adress_conter + CODE_ADRESSE))

@@ -43,3 +43,5 @@ You can run your programme with emulator.
 \tGet help of Smart Emulator: {Colors.MAGENTA}{EXECUTABLE["emulator"]} --help{Colors.RESET}
     """
 }
+
+GIT_HUB_LINK = "https://github.com/smartin187/smartykit_compiler"
