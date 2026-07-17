@@ -1091,7 +1091,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
             
-            code_compile += f"AD {compiller_data_run.SYS_ADRESS['CallElse']} C9 00 D0 03 4C {{}} "
+            code_compile += f"AD {compiller_data_run.SYS_ADRESS['CallElse']}C9 00 D0 03 4C {{}} "
             adress_conter += 10
 
             code_else = compile_smarty(
@@ -1443,14 +1443,21 @@ def compile_smarty(
         last_if = False
 
         if not verryfing_adress_conter_no_print(adress_conter, code_compile):
-            logging.error(f"""Adress counter (offset from the start of programme) is not good
-If the programme fail, please report this error to the developer.
-{color_tool.Colors.BG_YELLOW}Fail detail:{color_tool.Colors.RESET}
-\tNormal adress: {hex(get_adress(code_compile)).upper()} + {hex(CODE_ADRESSE).upper()}
-\tError adress: {hex(adress_conter).upper()} + {hex(CODE_ADRESSE).upper()}
 
-\t{color_tool.Colors.GREEN}You can report to `{GIT_HUB_LINK}`.{color_tool.Colors.RESET}
-""")
+            if verryfing_adress_conter_no_print(adress_conter, code_compile) is None:
+                logging.error(f"{color_tool.Colors.RED}Error: double space on code_compile.\n\tYou can report to `{GIT_HUB_LINK}`.{color_tool.Colors.RESET}")
+
+            else:
+                logging.error(f"""Adress counter (offset from the start of programme) is not good
+    If the programme fail, please report this error to the developer.
+    {color_tool.Colors.BG_YELLOW}Fail detail:{color_tool.Colors.RESET}
+    \tNormal adress: {hex(get_adress(code_compile)).upper()} + {hex(CODE_ADRESSE).upper()}
+    \tError adress: {hex(adress_conter).upper()} + {hex(CODE_ADRESSE).upper()}
+
+    \t{color_tool.Colors.GREEN}You can report to `{GIT_HUB_LINK}`.{color_tool.Colors.RESET}
+    """)
+            
+            #print("code_compile", code_compile)
             
             if input("Continue ? (y/N): ").lower() != "y":
                 raise CompileError("User quit: error with adress counter.")

@@ -11,18 +11,26 @@ from compiller_tool import color_tool
 
 def get_adress(code_compile:str) -> int:
     """Return the adress offset from the start of programme from a hex code."""
-    offset_adress = code_compile.count(" ") + 13 * code_compile.count("!smart_call_func|")
+    offset_adress = code_compile.count(" ") + 13 * code_compile.count("!smart_call_func|") + code_compile.count("!smart_tmp:goto|") * 3 - code_compile.count("!smart_tmp:goto|")
 
     if code_compile.startswith("0400: "):
         offset_adress -= 1
     
     return offset_adress
 
-def verryfing_adress_conter(adress_conter:int, code_compile:str, not_print:bool=False) -> bool:
+def verryfing_adress_conter(adress_conter:int, code_compile:str, not_print:bool=False) -> bool | None:
     """This function is used to verify the adress_conter and the code_compile.
-    Use this function is the adress_conter is not good. Test on the compiller"""
+    Use this function is the adress_conter is not good. Test on the compiller
+    Return None if double space on code.
+    """
 
     normal_adress = get_adress(code_compile)
+
+    if "  " in code_compile:
+        if not not_print:
+            print(color_tool.Colors.RED, "verryfing_adress_conter: error. code_compile have double space.", color_tool.Colors.RESET)
+        
+        return None
 
     if adress_conter != normal_adress:
         if not not_print:
