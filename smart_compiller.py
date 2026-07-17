@@ -264,7 +264,7 @@ def compile_smarty(
 
                     hex_value_1 = set_one_A_value(value_1, recursiv_value=True)
 
-                    asm += hex_value_1 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']} A9 00 "  # save value 1 on ram and set A to 00.
+                    asm += hex_value_1 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}A9 00 "  # save value 1 on ram and set A to 00.
                     counter_adress_value += 5
 
                     value_2_tmp = set_one_A_value(value_2, one_math=True, recursiv_value=True)
@@ -276,7 +276,7 @@ def compile_smarty(
                     asm += "CA "    # decrement X
                     counter_adress_value += 1
 
-                    asm += f"18 6D {compiller_data_run.SYS_ADRESS['MathOP']} "   # add to A hex_value_2
+                    asm += f"18 6D {compiller_data_run.SYS_ADRESS['MathOP']}"   # add to A hex_value_2
                     asm += "E0 00 D0 F7 "   # continue or not the loop
 
                     counter_adress_value += 8
@@ -298,7 +298,7 @@ def compile_smarty(
 
                     hex_value_2 = set_one_A_value(value_2, recursiv_value=True)
 
-                    asm += hex_value_2 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']} "  # save value 2 on ram
+                    asm += hex_value_2 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}"  # save value 2 on ram
                     counter_adress_value += 3
 
                     '''# control division by 0
@@ -311,15 +311,15 @@ def compile_smarty(
                     
                     asm += hex_value_1
 
-                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']} " 
+                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']}" 
                     asm += "90 0A "    
                     counter_adress_value += 5
 
                     asm += "A2 00 E8 "    # set X to 00, and increment X on loop.
                     counter_adress_value += 3
 
-                    asm += f"38 ED {compiller_data_run.SYS_ADRESS['MathOP']} "      # substract to A hex_value_2
-                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']} B0 F6 "   # continue or not the loop
+                    asm += f"38 ED {compiller_data_run.SYS_ADRESS['MathOP']}"      # substract to A hex_value_2
+                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']}B0 F6 "   # continue or not the loop
 
                     counter_adress_value += 9
 
