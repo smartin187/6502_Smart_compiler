@@ -79,11 +79,11 @@ def compile_smarty(
 
         BUILT_IN_NAME = BUILT_IN_NAME_RETURN + BUILT_IN_NAME_NORETURN
 
-    def make_error(error_value:str, set_need_error:bool=True) -> str:
+    def make_error(error_value:str, set_need_error:bool=True, add_to_adress_conter:bool=True) -> str:
         """
         Return the op code for the runtime error.
         return hex code.
-        ADD TO ADDRESS_CONTER
+        Add to adress conter if the argument is True
         """
         nonlocal adress_conter
         code_compile = ""
@@ -91,18 +91,20 @@ def compile_smarty(
         compiller_data_run.need_error = set_need_error
 
         code_compile += "A9 45 20 EF FF "     # print E
-        adress_conter += 5
+        if add_to_adress_conter:
+            adress_conter += 5
 
         print("adress_conter", adress_conter)
 
-        code_compile += set_one_A_value(error_value)
+        code_compile += set_one_A_value(error_value, add_adress=add_to_adress_conter)
         #adress_conter += 2
         #print("value", set_one_A_value(error_value))
 
         print("adress_conter2", adress_conter)
 
         code_compile += "4C !  smart_runtime_error"    # set 2 space on place holder for counting adress          
-        adress_conter += 3
+        if add_to_adress_conter:
+            adress_conter += 3
 
         print("code_add", code_compile)
 
@@ -301,11 +303,20 @@ def compile_smarty(
                     asm += hex_value_2 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}"  # save value 2 on ram
                     counter_adress_value += 3
 
-                    '''# control division by 0
-                    asm += "C9 00 D0 .. "'''
+                    # control division by 0
+
+                    error_code = make_error("'/'", add_to_adress_conter=False)
+
+                    control_code = "C9 00 D0 !smart:len_error {}".format(error_code)
+
+                    control_code = control_code.replace("!smart:len_error", hex(error_code.count(" "))[2:].upper())
+
+                    counter_adress_value += control_code.count(" ")
+
+                    asm += control_code
 
                     if hex_value_2 == "A9 00 ":       # division by 0
-                        confirm_user(f"Division by 0: {value}. It make an infinit loop! Continue compilation ? ", line_counter=line_conter)
+                        confirm_user(f"Division by 0: {value}. It make an runtime error `E/`! Continue compilation ? ", line_counter=line_conter)
 
                     hex_value_1 = set_one_A_value(value_1, one_math=True, recursiv_value=True)
                     
@@ -332,6 +343,7 @@ def compile_smarty(
                     raise SmartError(str(se), se.nbline, set_error=set_error_exception)
 
                 except:
+                    print(traceback.format_exc())
                     raise SmartError(f"Error with math '/' : '{value}'", line_conter, set_error=set_error_exception)
             
 
