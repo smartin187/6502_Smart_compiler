@@ -1,6 +1,8 @@
-# Smarty Compiler
+# Smart Compiler
 
-Smarty Compiler is a project that aims to make programming on a Smarty Kit (an Apple-1 replica) simpler.
+![Logo](./img/logo_smart_small.png)
+
+Smart Compiler is a project that aims to make programming on a Smarty Kit (an Apple-1 replica) simpler.
 
 This repository contains a compiler for Smart code (a language created for the Smarty Kit) and an interpreter for that language (if you want to test a program without a Smarty Kit).
 
