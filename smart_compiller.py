@@ -12,7 +12,7 @@ import logging
 import re
 import traceback
 
-from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, EscapeChar
+from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, EscapeChar
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool.smart_info import GIT_HUB_LINK
@@ -309,7 +309,7 @@ def compile_smarty(
 
                     control_code = "C9 00 D0 !smart:len_error {}".format(error_code)
 
-                    control_code = control_code.replace("!smart:len_error", hex(error_code.count(" "))[2:].upper())
+                    control_code = control_code.replace("!smart:len_error", get_hex_from_int(error_code.count(" ")))
 
                     counter_adress_value += control_code.count(" ")
 
@@ -499,7 +499,7 @@ def compile_smarty(
                     else:
                         
                         # save A at smart sys
-                        asm = f"8D {compiller_data_run.SYS_ADRESS['SaveAToIndex']} "
+                        asm = f"8D {compiller_data_run.SYS_ADRESS['SaveAToIndex']}"
                         counter_adress_value += 3
 
                         asm += set_one_A_value(index_var, recursiv_value=True, test_value_mode=test_value_mode) + "AA "
@@ -508,6 +508,21 @@ def compile_smarty(
                         start_adress_var = obj_var.get_adress_from_index(0)
 
                         hex_start_adress_var = adress_for_RAM(start_adress_var)
+
+                        # test index out of range on runtime error
+                        test_index = "C9 15 "    # CMP #0x15
+                        counter_adress_value += 3
+
+                        test_index += "90 !smart:len_error_index "     # branch if index > 21
+                        counter_adress_value += 2
+
+                        error_code = make_error("'I'", add_to_adress_conter=False)
+                        test_index = test_index.replace("!smart:len_error_index", get_hex_from_int(error_code.count(" ")))
+
+                        test_index += error_code
+                        counter_adress_value += error_code.count(" ")
+
+                        asm += test_index
 
                         asm += f"BD {hex_start_adress_var} "    # LDA $start_adress_var,X
 
