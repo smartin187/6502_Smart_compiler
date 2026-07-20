@@ -454,6 +454,13 @@ The program is stopped when a runtime error is set.
 
 >If you use runtime error, you can say what is your error code. For example: error `A` is "invalid value", error `B` is ...
 
+##### Runtime error built-in
+
+They are built-in runtime error for some operation:
+- error `'/'`: division by zero
+- error `'I'`: index out of range (for advanced variables)
+
+_Please do not use this error code for your runtime error: you can't know what error is it..._
 
 ## Compile Smart code
 
