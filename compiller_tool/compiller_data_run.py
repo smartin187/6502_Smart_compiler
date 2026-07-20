@@ -35,3 +35,8 @@ SMART_ERRORS = {     # the code error for Smart
     "Division by zero": "/"
 }
 
+# placeholder with double space
+SMART_PLACEHOLDER = (
+    "!  smart_input",
+    "!  smart_runtime_error"
+)

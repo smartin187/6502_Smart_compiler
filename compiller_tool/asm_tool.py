@@ -8,6 +8,7 @@ On compiller, it is used for warning.
 """
 
 from compiller_tool import color_tool
+from compiller_tool.compiller_data_run import SMART_PLACEHOLDER
 
 def get_adress(code_compile:str) -> int:
     """Return the adress offset from the start of programme from a hex code."""
@@ -27,10 +28,21 @@ def verryfing_adress_conter(adress_conter:int, code_compile:str, not_print:bool=
     normal_adress = get_adress(code_compile)
 
     if "  " in code_compile:
-        if not not_print:
-            print(color_tool.Colors.RED, "verryfing_adress_conter: error. code_compile have double space.", color_tool.Colors.RESET)
+
+        double_space = code_compile.count("  ")
+
+        double_space_placeholder = 0
+        for placeholder in SMART_PLACEHOLDER:
+            double_space_placeholder += code_compile.count(placeholder)
         
-        return None
+        double_space -= double_space_placeholder
+
+        if double_space != 0:
+
+            if not not_print:
+                print(color_tool.Colors.RED, "verryfing_adress_conter: error. code_compile have double space.", color_tool.Colors.RESET)
+            
+            return None
 
     if adress_conter != normal_adress:
         if not not_print:
