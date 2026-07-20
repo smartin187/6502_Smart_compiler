@@ -291,3 +291,9 @@ def get_int_adress_from_str(string:str) -> int:
         raise ValueError(f"Adress str must have 4 char, not {len(string)} char.")
     
     return int(string[2:4] + string[0:2], 16)
+
+def get_hex_from_int(value:int) -> str:
+    """Return the hex value of int, on 2 character (1 byte)."""
+    hex_value = hex(value)[2:].upper().zfill(2)
+
+    return hex_value

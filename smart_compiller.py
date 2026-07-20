@@ -12,12 +12,16 @@ import logging
 import re
 import traceback
 
-from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, EscapeChar
+from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, EscapeChar
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
+from compiller_tool.smart_info import GIT_HUB_LINK
 from compiller_tool import compiller_data_run
 from compiller_tool import import_tool
 from compiller_tool import smart_obj
+from compiller_tool import color_tool
+
+from compiller_tool.asm_tool import verryfing_adress_conter_no_print, get_adress # use only for debug, not need for compilation
 
 logging.basicConfig(
     format="SmartCompiller %(levelname)s: %(message)s",
@@ -75,6 +79,36 @@ def compile_smarty(
 
         BUILT_IN_NAME = BUILT_IN_NAME_RETURN + BUILT_IN_NAME_NORETURN
 
+    def make_error(error_value:str, set_need_error:bool=True, add_to_adress_conter:bool=True) -> str:
+        """
+        Return the op code for the runtime error.
+        return hex code.
+        Add to adress conter if the argument is True
+        """
+        nonlocal adress_conter
+        code_compile = ""
+
+        compiller_data_run.need_error = set_need_error
+
+        code_compile += "A9 45 20 EF FF "     # print E
+        if add_to_adress_conter:
+            adress_conter += 5
+
+        print("adress_conter", adress_conter)
+
+        code_compile += set_one_A_value(error_value, add_adress=add_to_adress_conter)
+        #adress_conter += 2
+        #print("value", set_one_A_value(error_value))
+
+        print("adress_conter2", adress_conter)
+
+        code_compile += "4C !  smart_runtime_error"    # set 2 space on place holder for counting adress          
+        if add_to_adress_conter:
+            adress_conter += 3
+
+        print("code_add", code_compile)
+
+        return code_compile
 
     def line_of_instruction(nb_instruction:int) -> tuple[int, str]:
         """Return the number of line and the line of the instruction."""
@@ -232,7 +266,7 @@ def compile_smarty(
 
                     hex_value_1 = set_one_A_value(value_1, recursiv_value=True)
 
-                    asm += hex_value_1 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']} A9 00 "  # save value 1 on ram and set A to 00.
+                    asm += hex_value_1 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}A9 00 "  # save value 1 on ram and set A to 00.
                     counter_adress_value += 5
 
                     value_2_tmp = set_one_A_value(value_2, one_math=True, recursiv_value=True)
@@ -244,7 +278,7 @@ def compile_smarty(
                     asm += "CA "    # decrement X
                     counter_adress_value += 1
 
-                    asm += f"18 6D {compiller_data_run.SYS_ADRESS['MathOP']} "   # add to A hex_value_2
+                    asm += f"18 6D {compiller_data_run.SYS_ADRESS['MathOP']}"   # add to A hex_value_2
                     asm += "E0 00 D0 F7 "   # continue or not the loop
 
                     counter_adress_value += 8
@@ -266,25 +300,37 @@ def compile_smarty(
 
                     hex_value_2 = set_one_A_value(value_2, recursiv_value=True)
 
-                    asm += hex_value_2 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']} "  # save value 2 on ram
+                    asm += hex_value_2 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}"  # save value 2 on ram
                     counter_adress_value += 3
 
+                    # control division by 0
+
+                    error_code = make_error("'/'", add_to_adress_conter=False)
+
+                    control_code = "C9 00 D0 !smart:len_error {}".format(error_code)
+
+                    control_code = control_code.replace("!smart:len_error", get_hex_from_int(error_code.count(" ")))
+
+                    counter_adress_value += control_code.count(" ")
+
+                    asm += control_code
+
                     if hex_value_2 == "A9 00 ":       # division by 0
-                        confirm_user(f"Division by 0: {value}. It make an infinit loop! Continue compilation ? ", line_counter=line_conter)
+                        confirm_user(f"Division by 0: {value}. It make an runtime error `E/`! Continue compilation ? ", line_counter=line_conter)
 
                     hex_value_1 = set_one_A_value(value_1, one_math=True, recursiv_value=True)
                     
                     asm += hex_value_1
 
-                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']} " 
+                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']}" 
                     asm += "90 0A "    
                     counter_adress_value += 5
 
                     asm += "A2 00 E8 "    # set X to 00, and increment X on loop.
                     counter_adress_value += 3
 
-                    asm += f"38 ED {compiller_data_run.SYS_ADRESS['MathOP']} "      # substract to A hex_value_2
-                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']} B0 F6 "   # continue or not the loop
+                    asm += f"38 ED {compiller_data_run.SYS_ADRESS['MathOP']}"      # substract to A hex_value_2
+                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']}B0 F6 "   # continue or not the loop
 
                     counter_adress_value += 9
 
@@ -297,6 +343,7 @@ def compile_smarty(
                     raise SmartError(str(se), se.nbline, set_error=set_error_exception)
 
                 except:
+                    print(traceback.format_exc())
                     raise SmartError(f"Error with math '/' : '{value}'", line_conter, set_error=set_error_exception)
             
 
@@ -452,7 +499,7 @@ def compile_smarty(
                     else:
                         
                         # save A at smart sys
-                        asm = f"8D {compiller_data_run.SYS_ADRESS['SaveAToIndex']} "
+                        asm = f"8D {compiller_data_run.SYS_ADRESS['SaveAToIndex']}"
                         counter_adress_value += 3
 
                         asm += set_one_A_value(index_var, recursiv_value=True, test_value_mode=test_value_mode) + "AA "
@@ -461,6 +508,21 @@ def compile_smarty(
                         start_adress_var = obj_var.get_adress_from_index(0)
 
                         hex_start_adress_var = adress_for_RAM(start_adress_var)
+
+                        # test index out of range on runtime error
+                        test_index = "C9 15 "    # CMP #0x15
+                        counter_adress_value += 3
+
+                        test_index += "90 !smart:len_error_index "     # branch if index > 21
+                        counter_adress_value += 2
+
+                        error_code = make_error("'I'", add_to_adress_conter=False)
+                        test_index = test_index.replace("!smart:len_error_index", get_hex_from_int(error_code.count(" ")))
+
+                        test_index += error_code
+                        counter_adress_value += error_code.count(" ")
+
+                        asm += test_index
 
                         asm += f"BD {hex_start_adress_var} "    # LDA $start_adress_var,X
 
@@ -578,7 +640,7 @@ def compile_smarty(
     def is_a_simple_value(value:str) -> bool:
         """Return True if the value is a value for set on A (use 1 byte), False else (if the value is a str, use 21 bytes)."""
         try:
-            set_one_A_value(value, test_value_mode=True)
+            set_one_A_value(value, test_value_mode=True, add_adress=False)
             return True
         except SmartError:
             return False
@@ -966,7 +1028,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
             
-            code_compile += f"C9 00 D0 08 A9 01 8D {compiller_data_run.SYS_ADRESS['CallElse']} 4C {{}} A9 00 8D {compiller_data_run.SYS_ADRESS['CallElse']}"
+            code_compile += f"C9 00 D0 08 A9 01 8D {compiller_data_run.SYS_ADRESS['CallElse']}4C {{}} A9 00 8D {compiller_data_run.SYS_ADRESS['CallElse']}"
             adress_conter += 17
 
             code_if = compile_smarty(
@@ -1016,7 +1078,7 @@ def compile_smarty(
 
             code_compile = code_compile.replace("!smart_tmp:elif", delta_branch)
 
-            code_compile += f"C9 00 D0 08 A9 01 8D {compiller_data_run.SYS_ADRESS['CallElse']} 4C {{}} A9 00 8D {compiller_data_run.SYS_ADRESS['CallElse']}"
+            code_compile += f"C9 00 D0 08 A9 01 8D {compiller_data_run.SYS_ADRESS['CallElse']}4C {{}} A9 00 8D {compiller_data_run.SYS_ADRESS['CallElse']}"
 
             adress_conter += 17
 
@@ -1056,7 +1118,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
             
-            code_compile += f"AD {compiller_data_run.SYS_ADRESS['CallElse']} C9 00 D0 03 4C {{}} "
+            code_compile += f"AD {compiller_data_run.SYS_ADRESS['CallElse']}C9 00 D0 03 4C {{}} "
             adress_conter += 10
 
             code_else = compile_smarty(
@@ -1140,15 +1202,14 @@ def compile_smarty(
             except IndexError:
                 raise SmartError(f"Expected value after `error`: '{line}'", line_conter)
 
-            code_compile += "A9 45 20 EF FF "     # print E
-            adress_conter += 5
+            #verryfing_adress_conter(adress_conter, code_compile)
 
-            code_compile += set_one_A_value(error_value)
+            code_compile += make_error(error_value)
 
-            code_compile += f"4C !  smart_runtime_error"    # set 2 space on place holder for counting adress          
-            adress_conter += 3
+            #print("code_compile ici", code_compile)
 
-            compiller_data_run.need_error = True
+
+            #print("adres_conter3", adress_conter)
 
         elif line.lstrip().startswith("void"):      # make fonction
             if function_mode["function_mode"]:
@@ -1407,6 +1468,29 @@ def compile_smarty(
         line_conter += 1
 
         last_if = False
+
+        if not verryfing_adress_conter_no_print(adress_conter, code_compile):
+
+            if verryfing_adress_conter_no_print(adress_conter, code_compile) is None:
+                logging.error(f"{color_tool.Colors.RED}Error: double space on code_compile.\n\tYou can report to `{GIT_HUB_LINK}`.{color_tool.Colors.RESET}")
+
+            else:
+                logging.error(f"""Adress counter (offset from the start of programme) is not good
+    If the programme fail, please report this error to the developer.
+    {color_tool.Colors.BG_YELLOW}Fail detail:{color_tool.Colors.RESET}
+    \tNormal adress: {hex(get_adress(code_compile)).upper()} + {hex(CODE_ADRESSE).upper()}
+    \tError adress: {hex(adress_conter).upper()} + {hex(CODE_ADRESSE).upper()}
+
+    \t{color_tool.Colors.GREEN}You can report to `{GIT_HUB_LINK}`.{color_tool.Colors.RESET}
+    """)
+            
+            #print("code_compile", code_compile)
+            
+            if input("Continue ? (y/N): ").lower() != "y":
+                raise CompileError("User quit: error with adress counter.")
+
+
+        # print("code_compile", code_compile)
         
     if function_mode["if_mode"]:
         pass
@@ -1419,11 +1503,7 @@ def compile_smarty(
     
     else:
         code_compile += "00 "
-        if compiller_data_run.need_error:
-            code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(adress_conter + CODE_ADRESSE + 1) + " ")
-            code_compile += "20 EF FF 00 "
 
-            adress_conter += 4
 
 
     # compile function:
@@ -1520,7 +1600,18 @@ def compile_smarty(
                 raise SmartError(f"'{name}' is not defined for goto !", line_conter)
 
             code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
-        
+    
+    if compiller_data_run.need_error and not(function_mode["function_mode"]) and not(function_mode["if_mode"]):
+        print("adress_conter", adress_conter + 4)
+        print("adress", hex(adress_conter + CODE_ADRESSE + 1)[2:].upper())
+        print("adress_for_RAM", adress_for_RAM(adress_conter + CODE_ADRESSE))
+
+        print("-- code compile --", code_compile)
+
+        code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(code_compile.count(" ") + CODE_ADRESSE - 1) + " ") # use count intead adress_conter for not error
+        code_compile += "20 EF FF 00 "
+
+        adress_conter += 4
 
     if not function_mode["function_mode"]:      
 
