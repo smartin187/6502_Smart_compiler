@@ -404,11 +404,21 @@ Exemple:
 asm_entry: "A9 41 20 EF FF";    // display A on monitor
 ```
 
+###### `wozm` (Woz Monitor)
+
+This function stop programme and return to Woz Monitor.
+
+This function go to `FF1F`, the Woz Monitor `GETLINE`.
+
+Not take any argument.
+
 ###### `quit`
 
 This function exits the program.
 
 It does not take any arguments.
+
+> `quit` stop the programme but not return to Woz Monitor. Use `wozm` if you want to return to Woz Monitor.
 
 ##### Build your own function
 

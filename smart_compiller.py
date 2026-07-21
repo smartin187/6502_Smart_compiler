@@ -1442,6 +1442,14 @@ def compile_smarty(
                     case "input":
                         SmartBuiltIn.smartInput()
 
+            elif function_name == "wozm":   # return to woz monitor
+                if len(function_arg) != 0:
+                    raise SmartError("Function 'wozm' not take arg.", line_conter)
+                
+                code_compile += "4C 1F FF " # the adress of woz monitor get line
+                adress_conter += 3
+
+                logging.info("Build smart function with use Woz monitor: wozm")
 
             elif function_name in function_name_usr:
 
