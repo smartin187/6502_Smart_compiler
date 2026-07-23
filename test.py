@@ -164,16 +164,16 @@ try:
         Test(
             "Variable test",
             code="""
-    .a = 'A';
-    .b = 'B';
-    print: .a;
-    print: .b;
+                .a = 'A';
+                .b = 'B';
+                print: .a;
+                print: .b;
 
-    .a = .b;
-    print: .a;
-    .b = 64;
-    print: .b;
-    """,
+                .a = .b;
+                print: .a;
+                .b = 64;
+                print: .b;
+            """,
             compile_output="0400: A9 41 8D 00 03 A9 42 8D 01 03 AD 00 03 20 EF FF AD 01 03 20 EF FF AD 01 03 8D 00 03 AD 00 03 20 EF FF A9 40 8D 01 03 AD 01 03 20 EF FF 00 ",
             output="ABB@"
         ),
@@ -186,78 +186,77 @@ try:
         Test(
             "If test",
             code="""
-    if True{;
-        print: "IF TEST";
-    }
-    else{;
-        print: "ERROR";
-    }
+                if True{;
+                    print: "IF TEST";
+                }
+                else{;
+                    print: "ERROR";
+                }
 
-    .a = True == False;
-    if .a{;
-        print: "ERROR";
-    } elif .a == False{;
-        print: "ELIF TEST";
-    }
+                .a = True == False;
+                if .a{;
+                    print: "ERROR";
+                } elif .a == False{;
+                    print: "ELIF TEST";
+                }
 
-    .b = 10;
-    if .b == 9{;
-        print: "ERROR";
-    } elif .b == 11{;
-        print: "ERROR";
-    }
-    else{;
-        print: "ELSE TEST";
-    }
-    """,
-        output="IF TESTELIF TESTELSE TEST"
+                .b = 10;
+                if .b == 9{;
+                    print: "ERROR";
+                } elif .b == 11{;
+                    print: "ERROR";
+                }
+                else{;
+                    print: "ELSE TEST";
+                }
+            """,
+            output="IF TESTELIF TESTELSE TEST"
         ),
     Test(
         "while test",
         code="""
-while True{;
-    print: "TEST WHILE";
-    break;
-}
-.a = True;
-while .a{;
-    print: "TEST WHILE 2";
-    .a = False;
-}
-""",
-    output="TEST WHILETEST WHILE 2"
+            while True{;
+                print: "TEST WHILE";
+                break;
+            }
+            .a = True;
+            while .a{;
+                print: "TEST WHILE 2";
+                .a = False;
+            }
+        """,
+        output="TEST WHILETEST WHILE 2"
     ),
     Test(
-        "strin test",
+        "string test",
         code="""
-~a = "STRING";
-print: ~a;
+            ~a = "STRING";
+            print: ~a;
 
-if ~a == "STRING"{;
-    print: "OK";
-}
+            if ~a == "STRING"{;
+                print: "OK";
+            }
 
-~b = "STRING2";
-if ~a == ~b{;
-    print: "ERROR";
-}
-else{;
-    print: "OK2";
-}
+            ~b = "STRING2";
+            if ~a == ~b{;
+                print: "ERROR";
+            }
+            else{;
+                print: "OK2";
+            }
 
-~c = "ABC";
+            ~c = "ABC";
 
-print: ~c[0];
+            print: ~c[0];
 
-.d = 1;
-print: ~c[.d];
+            .d = 1;
+            print: ~c[.d];
 
-~c[0] = '@';
+            ~c[0] = '@';
 
-print: ~c;
-
-""",
-    output="STRINGOKOK2AB@BC"
+            print: ~c;
+        """,
+        output="STRINGOKOK2AB@BC"
     )
     ]
 
