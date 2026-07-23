@@ -1624,7 +1624,7 @@ def compile_smarty(
 
     if not function_mode["function_mode"]:      
 
-        if "!" in code_compile:
+        if "!" in code_compile and not module_mode and not function_mode["if_mode"]:
             confirm_user("Error: a placeholder was not used, the compilation failed. Do you want to print the code with placeholder for debug?", error_message="Placeholder error!")
 
         if bin_outpout_file:

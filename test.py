@@ -2,6 +2,7 @@
 This programme is for test all functionalities of smart.
 """
 import os
+import traceback
 
 import smart_emulator
 from smart_compiller import compile_smarty
@@ -115,7 +116,31 @@ class Test:
         else:
             print(f"{Colors.BG_GREEN}Test OK{Colors.RESET}", end="\n"*10)
 
+class ModuleTest(Test):
+    """This class is for testing a Smart code with some modules (in different files)."""
+    def __init__(self, name:str, code_modules:list[tuple[str, str]], output:str="", compile_output:str="", compile_only:bool=False, sucess:bool=True):
+        super().__init__(name, code_modules[0][1], output, compile_output, compile_only, sucess)
+
+        self.code_modules = code_modules[1:]    # get all module excepted main module
+
+    '''def show_module_test(self) -> None:
+        """Print the detail of module test"""
+        print(f"{Colors.BG_BLUE}Test with some modules:{Colors.RESET}")
+        self.show_test()'''
+
+    def run_modules(self) -> None:
+        """This function make all module and run test.
+        Next dellet the modules."""
+
+        for module in self.code_modules:
+            with open(f"test/{module[0]}", "w") as f:
+                f.write(module[1])
         
+        self.run()
+
+        for module in self.code_modules:
+            os.remove(f"test/{module[0]}")
+
 try:
 
     smart_emulator.GUI_MODE = False
@@ -405,11 +430,31 @@ try:
         )
     ]
 
-    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test
+    modules_test = [
+        ModuleTest(
+            "Simple module test",
+            code_modules=[
+                (
+                    "test.sma",
+                    'import "test/module1.sma";'
+                ),
+                (
+                    "module1.sma",
+                    'print: "MODULE TEST";'
+                )
+            ],
+            output="MODULE TEST"
+        )
+    ]
+
+    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test
 
     try:
         for test in global_tests:
-            test.run()
+            if isinstance(test, ModuleTest):
+                test.run_modules()
+            else:
+                test.run()
     except StopTest as st:
         print(f"{Colors.BG_YELLOW}{st}{Colors.RESET}")
 
@@ -425,4 +470,8 @@ except KeyboardInterrupt:
     print(f"\n{Colors.BG_YELLOW}Test stopped by user\nKeyboard interrupt.{Colors.RESET}")
 
 except Exception as e:
-    print(f"{Colors.BG_RED}An error occured during test: {e}{Colors.RESET}")
+    print(
+        f"{Colors.BG_RED}An error occured during test: {e}{Colors.RESET}",
+        traceback.format_exc(),
+        sep="\n"
+    )
