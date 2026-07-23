@@ -9,7 +9,7 @@ from compiller_tool.color_tool import Colors
 from compiller_tool.smart_exception import SmartError
 
 class TestError(Exception):
-    """Mian Exception for test."""
+    """Main Exception for test."""
     pass
 
 class StopTest(TestError):
@@ -58,6 +58,9 @@ class Test:
 
         try:
             self.code_compile = compile_smarty("test/test.sma", make_file=False)
+
+            if "  " in self.code_compile:
+                raise OutputError(f"{Colors.RED}Double space on output. Risk of erorr with adress counting...{Colors.RESET}")
 
             if self.code_compile != self.compile_output:
                 if self.compile_only:
@@ -177,7 +180,7 @@ try:
         Test(
             "Input test",
             code=".i = input:;print: .i;",
-            compile_output="0400: 20 10 04 8D 00 03 AD 00 03 20 EF FF 00 AD 11 D0 10 FB AD 10 D0 29 7F 60 ",
+            compile_output="0400: 20 0D 04 8D 00 03 AD 00 03 20 EF FF 00 AD 11 D0 10 FB AD 10 D0 29 7F 60 ",
             compile_only=True,
         ),
         Test(
