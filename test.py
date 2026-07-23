@@ -146,8 +146,29 @@ try:
             sucess=False
         ),
         Test(
+            "Bad char in char",
+            code="print: 'a'",
+            compile_only=True,
+            sucess=False
+        ),
+        Test(
             "Sintaxe error after str",
             code='print: "HELLO" error',
+            compile_only=True,
+            sucess=False
+        ),
+        Test(
+            "Sintaxe error after char",
+            code="print: 'A' error",
+            compile_only=True,
+            sucess=False
+        ),
+        Test(
+            "Unclosed block",
+            code="""
+                if True{;
+                    print: "ERROR";
+            """,
             compile_only=True,
             sucess=False
         )
@@ -260,7 +281,82 @@ try:
     )
     ]
 
-    global_tests = syntaxe_error_test + tests
+    math_test = [
+        # addition test ---
+        Test(
+            "Simple addition test",
+            code="print: 65+1;",
+            output="B"
+        ),
+        Test(
+            "char addition test",
+            code="print: 'A'+1;print: '!' + '#';",
+            output="BD"
+        ),
+        # substraction test ---
+        Test(
+            "Simple substraction test",
+            code="print: 65-1;",
+            output="@"
+        ),
+        Test(
+            "char substraction test",
+            code="print: 'A'-1;",
+            output="@"
+        ),
+        # multiplication test ---
+        Test(
+            "Simple multiplication test",
+            code="print: 13*5;", # 13 * 5 = 65 'A'
+            output="A"
+        ),
+        Test(
+            "char multiplication test",
+            code="print: '!'*2;", # 33 * 2 = 66 'B'
+            output="B"
+        ),
+        # division test ---
+        Test(
+            "Simple division test",
+            code="print: 130/2;", # 130 / 2 = 65 'A'
+            output="A"
+        ),
+        Test(
+            "char division test",
+            code="print: 'Z'/2;", # 90 / 2 = 45 '-'
+            output="-"
+        ),
+        # advenced test ---
+        Test(
+            "Different operation test", # warning: smart do operation in order, not priority
+            code="""
+                print: 65+3-2/2;
+                print: 80+3-2/4*3;
+            """,
+            output="!<"
+        ),
+        Test(
+            "Math operation with variable",
+            code="""
+                .a = 1;
+                .b = 2;
+                .c = 3;
+                .d = 10;
+                .e = 'A';
+
+                print: .a + 'A';
+                print: .b + 'A';
+                print: 'A' - .c;
+                print: .e + .a;
+                print: .c * .d + .d;
+                .x = .d / .b;
+                print: .x + .e;
+            """,
+            output="BC>B(F"
+        )
+    ]
+
+    global_tests = syntaxe_error_test + tests + math_test
 
     try:
         for test in global_tests:
