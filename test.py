@@ -278,6 +278,15 @@ try:
             print: ~c;
         """,
         output="STRINGOKOK2AB@BC"
+    ),
+    Test(
+        "quit test",
+        code="""
+            print: "OK";
+            quit:;
+            print: 'E';
+        """,
+        output="OK"   
     )
     ]
 

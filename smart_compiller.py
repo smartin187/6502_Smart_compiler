@@ -1391,10 +1391,11 @@ def compile_smarty(
 
 
             elif function_name == "quit":
-                if function_arg != [""]:
+                if len(function_arg) != 0:
                     raise SmartError("Function 'quit' not take arg.", line_conter)
                 
                 code_compile += "00 "
+                adress_conter += 1
 
                 logging.info("Build smart fonction as asm command: quit")
             
