@@ -365,7 +365,47 @@ try:
         )
     ]
 
-    global_tests = syntaxe_error_test + tests + math_test
+    runtime_error_test = [
+        Test(
+            "Error keyword test",
+            code="""
+                print: "OK";
+                error 'A';
+                print: "KO";
+            """,
+            output="OKEA"
+        ),
+        Test(
+            "Error keyword with variable",
+            code="""
+                .code_e = 'B';
+                error .code_e;
+                print: "KO";
+            """,
+            output="EB"
+        ),
+        Test(
+            "Division by zero test",
+            code="""
+                .a = 1;
+                .b = 0;
+                .c = .a / .b;
+                print: "KO";
+            """,
+            output="E/"
+        ),
+        Test(
+            "Index error test",
+            code="""
+                .index = 30;
+                ~str = "TEST";
+                print: ~str[.index];
+            """,
+            output="EI"    
+        )
+    ]
+
+    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test
 
     try:
         for test in global_tests:
