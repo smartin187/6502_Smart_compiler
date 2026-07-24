@@ -507,7 +507,43 @@ try:
                 ),
             ],
             output="ABMODULE2"
+        ),
+        # test error with modules:
+        ModuleTest(
+            "Module not found test",
+            code_modules=[
+                (
+                    "test.sma",
+                    'import "test/module_not_found.sma";'
+                )
+            ],
+            sucess=False
+        ),
+        ModuleTest(
+            "Module with error",
+            code_modules=[
+                (
+                    "test.sma",
+                    'import "test/module_error.sma";'
+                ),
+                (
+                    "module_error.sma",
+                    'print: "ERROR' # error sintaxe the the error
+                )
+            ],
+            sucess=False
         )
+
+        #ModuleTest(    # uncomment for set the test. But this test have a long output
+        #    "Self import test",
+        #    code_modules=[
+        #        (
+        #            "test.sma",
+        #            'import "test/test.sma";'
+        #        )
+        #    ],
+        #    sucess=False
+        #)
     ]
 
     global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test
