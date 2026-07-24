@@ -444,6 +444,69 @@ try:
                 )
             ],
             output="MODULE TEST"
+        ),
+        ModuleTest(
+            "Get function and var from module",
+            code_modules=[
+                (
+                    "test.sma",
+                    """
+                    import "test/module2.sma";
+
+                    function:;
+                    print: .var1;
+                    print: ~var2;
+
+                    print: "OK";
+                    """
+                ),
+                (
+                    "module2.sma",
+                    """
+                    void function{;
+                        print: "FUNCTION TEST";
+                    }
+                    
+                    .var1 = 'A';
+                    ~var2 = "STRING";
+                    """
+                )
+            ],
+            output="FUNCTION TESTASTRINGOK"
+        ),
+        ModuleTest(
+            "Recursive import",
+            code_modules=[
+                (
+                    "test.sma",
+                    """
+                    import "test/module1.sma";
+
+                    print: .var1;
+                    print: .var2;
+                    func:;
+                    """
+                ),
+                (
+                    "module1.sma",
+                    """
+                    import "test/module2.sma";
+
+                    .var1 = 'A';
+                    """
+                ),
+                (
+                    "module2.sma",
+                    """
+                    .var2 = 'B';
+
+                    void func{;
+                        print: "MODULE2";
+                    }
+                    """
+                ),
+            ],
+            output="ABMODULE2"
         )
     ]
 
