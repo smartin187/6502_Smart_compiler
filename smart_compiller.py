@@ -40,6 +40,11 @@ line_of_instruction = None
 
 need_input = False
 
+PROGRESS_BAR_LEN = 25   # the len of progresse bar during compilation. Not set a big len
+PROGRESS_BAR_CHAR = {
+    "completed":f"{color_tool.Colors.BG_GREEN}#{color_tool.Colors.RESET}",
+    "not_completed":"."
+}
 
 def compile_smarty(
         file:str="",
@@ -1499,7 +1504,12 @@ def compile_smarty(
                 raise CompileError("User quit: error with adress counter.")
 
 
-        # print("code_compile", code_compile)
+        # progress bar
+        advencement = int(line_conter / len(code) * PROGRESS_BAR_LEN)
+        print(f"[{PROGRESS_BAR_CHAR['completed'] * advencement}{PROGRESS_BAR_CHAR['not_completed'] * (PROGRESS_BAR_LEN - advencement)}]", end="\r")
+
+
+# -------------------------------End compille loop----------------------------------------------
         
     if function_mode["if_mode"]:
         pass
