@@ -255,6 +255,36 @@ try:
         )
     ]
 
+    test_int_hex = [
+        Test(
+            "Simple int and hex",
+            code="""
+                .a = 65;
+                .b = 0x41;
+
+                print: .a;
+                print: .b;
+            """,
+            output="AA"
+        ),
+        # ---- test error ----
+        Test(
+            "Value too big (int)",
+            code=".a = 300;",
+            sucess=False
+        ),
+        Test(
+            "Value too big (hex)",
+            code=".a = 0x300;",
+            sucess=False
+        ),
+        Test(
+            "Bad hex value",
+            code=".a = 0xG;",
+            sucess=False
+        )
+    ]
+
 
     tests = [
         Test(
@@ -602,7 +632,7 @@ try:
         #)
     ]
 
-    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test
+    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex
 
     try:
         for test in global_tests:
