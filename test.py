@@ -414,6 +414,54 @@ try:
         )
     ]
 
+    register_tests = [
+        Test(
+            "Accumulator A test",
+            code="""
+                A = 65;
+                print: A;
+
+                A = '0';
+                print: A;
+            """,
+            output="AB0"
+        ),
+        Test(
+            "Register X and Y test",    # this test can't have output because X and Y are not printable
+            code="""
+                X = 1;
+                Y = 2;
+            """,
+            output=""
+        ),
+        # ---- error ----
+        Test(
+            "Print X test",
+            code="print: X;",
+            sucess=False
+        ),
+        Test(
+            "Print Y test",
+            code="print: Y;",
+            sucess=False
+        ),
+        Test(
+            "Set advanced var on A",
+            code='A = "STR";',
+            sucess=False
+        ),
+        Test(
+            "Set advanced var on X",
+            code='X = "STR";',
+            sucess=False
+        ),
+        Test(
+            "Set advanced var on Y",
+            code='Y = "STR";',
+            sucess=False
+        )
+    ]
+
     tests = [
         Test(
             "Test print",
@@ -760,7 +808,7 @@ try:
         #)
     ]
 
-    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex + test_char + advenced_value_test
+    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex + test_char + advenced_value_test + register_tests
 
     try:
         for test in global_tests:
