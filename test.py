@@ -285,6 +285,35 @@ try:
         )
     ]
 
+    test_char = [
+        Test(
+            "Simple char",
+            code="print: 'A';",
+            output="A"
+        ),
+        Test(
+            "Char in variables",
+            code="""
+                .a = 'A';
+                print: .a;
+                
+                .b = 'B';
+                print: .b;
+            """,
+            output="AB"
+        ),
+        # ----- error 
+        Test(
+            "Char not autorize",
+            code=".a = 'a'",
+            sucess=False
+        ),
+        Test(
+            "Bad len char",
+            code=".a = 'AA'",
+            sucess=False
+        )
+    ]
 
     tests = [
         Test(
@@ -632,7 +661,7 @@ try:
         #)
     ]
 
-    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex
+    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex + test_char
 
     try:
         for test in global_tests:
