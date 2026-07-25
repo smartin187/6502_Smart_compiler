@@ -1483,7 +1483,9 @@ def compile_smarty(
 
         last_if = False
 
-        if not verryfing_adress_conter_no_print(adress_conter, code_compile):
+        if not(compiller_data_run.double_space_error) and not verryfing_adress_conter_no_print(adress_conter, code_compile):
+
+            compiller_data_run.double_space_error = True
 
             if verryfing_adress_conter_no_print(adress_conter, code_compile) is None:
                 logging.error(f"{color_tool.Colors.RED}Error: double space on code_compile.\n\tYou can report to `{GIT_HUB_LINK}`.{color_tool.Colors.RESET}")

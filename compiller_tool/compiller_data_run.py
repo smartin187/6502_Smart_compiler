@@ -40,3 +40,6 @@ SMART_PLACEHOLDER = (
     "!  smart_input",
     "!  smart_runtime_error"
 )
+
+double_space_error = False # if an double space on code is detected.
+
