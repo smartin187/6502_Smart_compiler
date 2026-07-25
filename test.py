@@ -315,6 +315,105 @@ try:
         )
     ]
 
+    advenced_value_test = [
+        Test(
+            "Simple str",
+            code="""
+                ~a = "STRING";
+                print: ~a;
+
+                print: "STRING2";
+            """,
+            output="STRINGSTRING2"
+        ),
+        Test(
+            "Simple list",
+            code="""
+                ~a = ['A', 'B', 'C'];
+                print: ~a;
+
+                print: ['1', '2', '3'];
+            """,
+            output="ABC123"
+        ),
+        Test(
+            "F-string test",
+            code="""
+                ~str1 = F"AA{65}AA{'@'}";
+                print: ~str1;
+
+                .a = 'A';
+                .b = '1';
+                .c = 64;
+
+                ~str2 = F"NEW FSTR{.a}{.b}{.c}";
+                print: ~str2;
+                """,
+            output="AAAAA@NEW FSTRA1@"
+        ),
+        Test(
+            "List with var",
+            code="""
+                .a = 'A';
+                .b = 'B';
+                .c = 'C';
+
+                ~list1 = [.a, .b, .c];
+                print: ~list1;
+
+                ~list2 = [.a, '1', .b, '2', .c, '3'];
+                print: ~list2;
+            """,
+            output="ABCA1B2C3"
+        ),
+        Test(
+            "Index on str",
+            code="""
+                ~str1 = "STRING";
+                print: ~str1[0];
+                print: ~str1[3];
+
+                print: ~str1[-16];
+
+                .a = 1;
+                print: ~str1[.a];
+            """,
+            output="SIGT"
+        ),
+        Test(
+            "Index on list",
+            code="""
+                ~list1 = ['A', 'B', 'C'];
+                print: ~list1[0];
+                print: ~list1[2];
+
+                .a = 1;
+                print: ~list1[.a];
+
+                print: ~list1[-19];
+            """,
+            output="ACBC"
+        ),
+        Test(
+            "Str an list comparison",
+            code="""
+                ~str1 = "STRING";
+                ~list1 = ['S', 'T', 'R', 'I', 'N', 'G'];
+                print: ~str1 == ~list1;"""
+        ),
+        # ---- error ----
+        Test(
+            "Str not in advenced var",
+            code='.a = "STRING";',
+            sucess=False
+        ),
+        Test(
+            "Simple value in advenced var",
+            code="~a = 1;",
+            sucess=False
+        )
+    ]
+
     tests = [
         Test(
             "Test print",
@@ -661,7 +760,7 @@ try:
         #)
     ]
 
-    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex + test_char
+    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex + test_char + advenced_value_test
 
     try:
         for test in global_tests:
