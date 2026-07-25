@@ -66,8 +66,8 @@ class Test:
             if self.code_compile != self.compile_output:
                 if self.compile_only:
                     raise OutputError(f"The output of compilation is not good:\n{self.code_compile}")
-                else:
-                    print(f"{Colors.YELLOW}Warning: hex compilation of Smart programme is not normal{Colors.RESET}")
+                #else:
+                #    print(f"{Colors.YELLOW}Warning: hex compilation of Smart programme is not normal{Colors.RESET}")
 
         except SmartError as se:
             error = True
@@ -196,6 +196,62 @@ try:
             """,
             compile_only=True,
             sucess=False
+        )
+    ]
+
+    boolean_test = [
+        Test(
+            "Simple boolean",
+            code="""
+                .a = True;
+                .b = False;
+
+                print: .a + '0';
+                print: .b + '0';
+
+                print: True + '0';
+                print: False + '0';
+            """,
+            output="1010"
+        ),
+        Test(
+            "Boolean comparaison",
+            code="""
+                .a = True;
+                .b = False;
+
+                .comparaison1 = .a == .b;
+                print: .comparaison1 + '0';
+
+                .comparaison2 = .a == True;
+                print: .comparaison2 + '0';
+
+                .comparaison3 = .b == False;
+                print: .comparaison3 + '0';
+
+                .comparaison4 = True == 1;
+                print: .comparaison4 + '0';
+
+                .comparaison5 = False == 0;
+                print: .comparaison5 + '0';
+
+                .comparaison6 = True == False;
+                print: .comparaison6 + '0';
+            """,
+            output="011110"
+        ),
+        Test(
+            "Boolean if",
+            code="""
+                .a = True;
+                if .a{;
+                    print: "IF TEST";
+                }
+                else{;
+                    print: "ERROR";
+                }
+            """,
+            output="IF TEST"
         )
     ]
 
@@ -546,7 +602,7 @@ try:
         #)
     ]
 
-    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test
+    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test
 
     try:
         for test in global_tests:
