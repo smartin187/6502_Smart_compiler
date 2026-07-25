@@ -462,6 +462,50 @@ try:
         )
     ]
 
+    goto_test = [
+        Test(
+            "Goto test 1",
+            code="""
+                goto: label1;
+                print: "ERROR";
+                #label1;
+                print: "GOTO TEST 1";
+            """,
+            output="GOTO TEST 1"
+        ),
+        Test(
+            "Advenced Goto test",
+            code="""
+                goto: label;
+
+                // this code are succeptible to move adress
+                if True{;
+                    print: "ERROR";
+                }
+                else {;
+                    A = 65;
+                }
+
+                while False{;
+                    print: 'E';
+                }
+                
+                #label;    
+                print: "GOTO TEST 2";        
+            """,
+            output="GOTO TEST 2"
+        ),
+        # ---- error ----
+        Test(
+            "Goto label not found",
+            code="""
+                goto: label_not_found;
+                print: "ERROR";
+            """,
+            sucess=False
+        )
+    ]
+
     tests = [
         Test(
             "Test print",
@@ -808,7 +852,7 @@ try:
         #)
     ]
 
-    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex + test_char + advenced_value_test + register_tests
+    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex + test_char + advenced_value_test + register_tests + goto_test
 
     try:
         for test in global_tests:
