@@ -777,6 +777,48 @@ try:
         )
     ]
 
+    while_test = [      # warning in this test, because while can be infinite...
+        Test(
+            "Simple while test",
+            code="""
+                .i = 0;
+                .loop = True;
+                while .loop {;
+                    .i = .i + 1;
+                    if .i == 5{;
+                        .loop = False;
+                    }
+                    print: .i;    
+                }
+            """,
+            output="12345"
+        ),
+        Test(
+            "Break in while",
+            code="""
+                while True{;
+                    print: "TEST";
+                    break;
+                }
+            """,
+            output="TEST"
+        ),
+        Test(
+            "Continue in while",
+            code="""
+                .a = True;
+
+                while .a{;
+                    .a = False;
+                    print: "TEST1";
+                    continue;
+                    print: "ERROR";
+                }
+            """,
+            output="TEST1"
+        )
+    ]
+
     math_test = [
         # addition test ---
         Test(
@@ -1008,7 +1050,7 @@ try:
         #)
     ]
 
-    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex + test_char + advenced_value_test + register_tests + goto_test + if_test
+    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex + test_char + advenced_value_test + register_tests + goto_test + if_test + while_test
 
     try:
         for test in global_tests:
