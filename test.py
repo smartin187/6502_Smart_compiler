@@ -618,7 +618,163 @@ try:
             print: 'E';
         """,
         output="OK"   
-    )
+        )
+    ]
+
+    if_test = [
+        Test(
+            "Simple if test",
+            code="""
+                .a = True;
+                if .a{;
+                    print: "OK";
+                }
+
+                if True{;
+                    print: "OK2";
+                }
+
+                .b = False;
+                if .b{;
+                    print: "ERROR";
+                }
+
+                if False{;
+                    print: "ERROR2";
+                }
+            """,
+            output="OKOK2"
+        ),
+        Test(
+            "Condition test",
+            code="""
+                .a = True;
+                if .a == True{;
+                    print: "OK";
+                }
+
+                if .a == False{;
+                    print: "ERROR";
+                }
+
+                .b = 'A';
+
+                if .b == 'A'{;
+                    print: "OK2";
+                }
+                if .b == 'B'{;
+                    print: "ERROR2";
+                }
+            """,
+            output="OKOK2"
+        ),
+        Test(
+            "Else test",
+            code="""
+                .a = False;
+                if .a{;
+                    print: "ERROR";
+                }
+                else{;
+                    print: "OK";
+                }
+
+                .b = True;
+                if .b{;
+                    print: "OK2";
+                }
+                else{;
+                    print: "ERROR2";
+                }
+            """,
+            output="OKOK2",
+        ),
+        Test(
+            "Elif test",
+            code="""
+                .a = False;
+                .b = True;
+
+                if .a{;
+                    print: "ERROR";
+                }
+                elif .b{;
+                    print: "OK";
+                }
+                else{;
+                    print: "ERROR2";
+                }
+
+                if False{;
+                    print: "ERROR3";
+                }
+                elif False{;
+                    print: "ERROR4";
+                }
+                elif True{;
+                    print: "OK2";
+                }
+                else{;
+                    print: "ERROR5";
+                }
+            """,
+            output="OKOK2"
+        ),
+        Test(
+            "Advenced structure condition",
+            code="""
+                .a = True;
+                .b = False;    
+            
+                if True{;
+                    print: "OK";
+
+                    if .a{;
+                        print: "OK2";
+
+                        if .b{;
+                            print: "ERROR";
+                        }
+                        else{;
+                            print: "OK3";
+
+                            if False{;
+                                print: "ERROR2";
+                            }
+                            elif False{;
+                                print: "ERROR3";
+                            }
+                            else{;
+                                print: "OK4";
+                            }
+                        }
+                    }
+                    else{;
+                        print: "ERROR";
+                    }
+                }
+            """,
+            output="OKOK2OK3OK4"
+        ),
+        # ---- error ----
+        Test(
+            "Else without if",
+            code="""
+                else{;
+                    print: "ERROR";
+                }
+            """,
+            sucess=False
+        ),
+        Test(
+            "Elif without if",
+            code="""
+                elif True{;
+                    print: "ERROR";
+                }
+            """,
+            sucess=False
+        )
     ]
 
     math_test = [
@@ -852,7 +1008,7 @@ try:
         #)
     ]
 
-    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex + test_char + advenced_value_test + register_tests + goto_test
+    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex + test_char + advenced_value_test + register_tests + goto_test + if_test
 
     try:
         for test in global_tests:
