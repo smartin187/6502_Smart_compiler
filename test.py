@@ -1105,6 +1105,59 @@ try:
         #)
     ]
 
+    built_in = [
+        Test(
+            "asm_entry test",
+            code="""
+                asm_entry: "A9 41 20 EF FF";  // print 'A'
+                asm_entry: "A9 42 20 EF FF";  // print 'B'
+
+                print: "OK";
+            """,
+            output="ABOK"
+        ),
+        Test(
+            "quit function test",
+            code="""
+                print: "OK";
+                quit:;
+                print: "ERROR";
+            """,
+            output="OK"
+        ),
+        Test(
+            "wozm test",
+            code="""
+                print: "OK";
+                wozm:;
+                print: "ERROR";
+            """,
+            output="OK"
+        ),
+        # --- error ---
+        Test(
+            "Bad hex on asm_entry",
+            code='asm_entry: "A9 41 20 EF FG";',
+            sucess=False
+        ),
+        Test(
+            "Bad arg on quit",
+            code="quit: 'A';",
+            sucess=False
+        ),
+        Test(
+            "Bad arg on wozm",
+            code="wozm: 'A';",
+            sucess=False
+        ),
+        Test(
+            "Bad arg on input",
+            code=".a = input: 'A';",
+            sucess=False,
+            compile_only=True
+        )
+    ]
+
     global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex + test_char + advenced_value_test + register_tests + goto_test + if_test + while_test
 
     try:
