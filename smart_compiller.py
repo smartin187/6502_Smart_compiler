@@ -40,6 +40,11 @@ line_of_instruction = None
 
 need_input = False
 
+PROGRESS_BAR_LEN = 25   # the len of progresse bar during compilation. Not set a big len
+PROGRESS_BAR_CHAR = {
+    "completed":f"{color_tool.Colors.BG_GREEN}#{color_tool.Colors.RESET}",
+    "not_completed":"."
+}
 
 def compile_smarty(
         file:str="",
@@ -1391,10 +1396,11 @@ def compile_smarty(
 
 
             elif function_name == "quit":
-                if function_arg != [""]:
+                if len(function_arg) != 0:
                     raise SmartError("Function 'quit' not take arg.", line_conter)
                 
                 code_compile += "00 "
+                adress_conter += 1
 
                 logging.info("Build smart fonction as asm command: quit")
             
@@ -1477,7 +1483,9 @@ def compile_smarty(
 
         last_if = False
 
-        if not verryfing_adress_conter_no_print(adress_conter, code_compile):
+        if not(compiller_data_run.double_space_error) and not verryfing_adress_conter_no_print(adress_conter, code_compile):
+
+            compiller_data_run.double_space_error = True
 
             if verryfing_adress_conter_no_print(adress_conter, code_compile) is None:
                 logging.error(f"{color_tool.Colors.RED}Error: double space on code_compile.\n\tYou can report to `{GIT_HUB_LINK}`.{color_tool.Colors.RESET}")
@@ -1498,7 +1506,12 @@ def compile_smarty(
                 raise CompileError("User quit: error with adress counter.")
 
 
-        # print("code_compile", code_compile)
+        # progress bar
+        advencement = int(line_conter / len(code) * PROGRESS_BAR_LEN)
+        print(f"[{PROGRESS_BAR_CHAR['completed'] * advencement}{PROGRESS_BAR_CHAR['not_completed'] * (PROGRESS_BAR_LEN - advencement)}]", end="\r")
+
+
+# -------------------------------End compille loop----------------------------------------------
         
     if function_mode["if_mode"]:
         pass
@@ -1623,7 +1636,7 @@ def compile_smarty(
 
     if not function_mode["function_mode"]:      
 
-        if "!" in code_compile:
+        if "!" in code_compile and not module_mode and not function_mode["if_mode"]:
             confirm_user("Error: a placeholder was not used, the compilation failed. Do you want to print the code with placeholder for debug?", error_message="Placeholder error!")
 
         if bin_outpout_file:
