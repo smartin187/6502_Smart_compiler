@@ -99,19 +99,11 @@ def compile_smarty(
         if add_to_adress_conter:
             adress_conter += 5
 
-        print("adress_conter", adress_conter)
-
         code_compile += set_one_A_value(error_value, add_adress=add_to_adress_conter)
-        #adress_conter += 2
-        #print("value", set_one_A_value(error_value))
-
-        print("adress_conter2", adress_conter)
 
         code_compile += "4C !  smart_runtime_error"    # set 2 space on place holder for counting adress          
         if add_to_adress_conter:
             adress_conter += 3
-
-        print("code_add", code_compile)
 
         return code_compile
 
@@ -1211,11 +1203,6 @@ def compile_smarty(
 
             code_compile += make_error(error_value)
 
-            #print("code_compile ici", code_compile)
-
-
-            #print("adres_conter3", adress_conter)
-
         elif line.lstrip().startswith("void"):      # make fonction
             if function_mode["function_mode"]:
                 raise SmartError(f"Error with function: impossible to create new function on function.", line_conter)
@@ -1499,8 +1486,7 @@ def compile_smarty(
 
     \t{color_tool.Colors.GREEN}You can report to `{GIT_HUB_LINK}`.{color_tool.Colors.RESET}
     """)
-            
-            #print("code_compile", code_compile)
+
             
             if input("Continue ? (y/N): ").lower() != "y":
                 raise CompileError("User quit: error with adress counter.")
@@ -1623,11 +1609,6 @@ def compile_smarty(
             code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
     
     if compiller_data_run.need_error and not(function_mode["function_mode"]) and not(function_mode["if_mode"]):
-        print("adress_conter", adress_conter + 4)
-        print("adress", hex(adress_conter + CODE_ADRESSE + 1)[2:].upper())
-        print("adress_for_RAM", adress_for_RAM(adress_conter + CODE_ADRESSE))
-
-        print("-- code compile --", code_compile)
 
         code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(code_compile.count(" ") + CODE_ADRESSE - 1) + " ") # use count intead adress_conter for not error
         code_compile += "20 EF FF 00 "
