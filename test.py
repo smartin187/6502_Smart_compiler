@@ -6,11 +6,30 @@ import traceback
 import threading
 import time
 import sys
+import logging
+
+if "--compile-debug" in sys.argv:
+    sys.argv.remove("--compile-debug")
+
+    logging.basicConfig(
+        format="SmartCompiller %(levelname)s: %(message)s",
+        level=logging.INFO
+    )
+else:
+    logging.basicConfig(
+        format="SmartCompiller %(levelname)s: %(message)s",
+        level=logging.WARNING
+    )
 
 import smart_emulator
 from smart_compiller import compile_smarty
 from compiller_tool.color_tool import Colors
 from compiller_tool.smart_exception import SmartError
+
+SYMBOL_OK = False
+
+TEST_OK = "✔️   " if SYMBOL_OK else ""
+TEST_ERROR = "❌   " if SYMBOL_OK else ""
 
 class TestError(Exception):
     """Main Exception for test."""
@@ -142,7 +161,7 @@ class Test:
             error_counter += 1
 
             print(
-                f"{Colors.BG_RED}ERROR: Test failed{Colors.RESET}",
+                f"{TEST_ERROR}{Colors.BG_RED}ERROR: Test failed{Colors.RESET}",
                 f"{Colors.RED}{'Compilation error' if compilation_error else 'Runtime error'}",
                 f"Error output: {error_output}{Colors.RESET}",
 
@@ -157,7 +176,7 @@ class Test:
             print(end="\n"*10)
         
         else:
-            print(f"{Colors.BG_GREEN}Test OK{Colors.RESET}", end="\n"*10)
+            print(f"{TEST_OK}{Colors.BG_GREEN}Test OK{Colors.RESET}", end="\n"*10)
 
 class ModuleTest(Test):
     """This class is for testing a Smart code with some modules (in different files)."""
@@ -1170,10 +1189,10 @@ try:
         print(f"{Colors.BG_YELLOW}{st}{Colors.RESET}")
 
     if all_ok:
-        print(f"{Colors.BG_GREEN}All tests without error!{Colors.RESET}")
+        print(f"{TEST_OK}{Colors.BG_GREEN}All tests without error!{Colors.RESET}")
     else:
         print(
-            f"{Colors.BG_RED}Some tests failed!{Colors.RESET}",
+            f"{TEST_ERROR}{Colors.BG_RED}Some tests failed!{Colors.RESET}",
             f"{Colors.RED}Error: {error_counter}/{len(global_tests)}{Colors.RESET}",
         )
     
