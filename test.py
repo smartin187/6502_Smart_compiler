@@ -26,6 +26,8 @@ from smart_compiller import compile_smarty
 from compiller_tool.color_tool import Colors
 from compiller_tool.smart_exception import SmartError
 
+ERASE_PROGRESSBAR = "\033[2K\033[1G"
+
 SYMBOL_OK = False
 
 TEST_OK = "✔️   " if SYMBOL_OK else ""
@@ -161,7 +163,7 @@ class Test:
             error_counter += 1
 
             print(
-                f"{TEST_ERROR}{Colors.BG_RED}ERROR: Test failed{Colors.RESET}",
+                f"{ERASE_PROGRESSBAR}{TEST_ERROR}{Colors.BG_RED}ERROR: Test failed{Colors.RESET}",
                 f"{Colors.RED}{'Compilation error' if compilation_error else 'Runtime error'}",
                 f"Error output: {error_output}{Colors.RESET}",
 
@@ -176,7 +178,8 @@ class Test:
             print(end="\n"*10)
         
         else:
-            print(f"{TEST_OK}{Colors.BG_GREEN}Test OK{Colors.RESET}", end="\n"*10)
+            
+            print(f"{ERASE_PROGRESSBAR}{TEST_OK}{Colors.BG_GREEN}Test OK{Colors.RESET}", end="\n"*10)
 
 class ModuleTest(Test):
     """This class is for testing a Smart code with some modules (in different files)."""
