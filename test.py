@@ -13,12 +13,16 @@ if "--compile-debug" in sys.argv:
 
     logging.basicConfig(
         format="SmartCompiller %(levelname)s: %(message)s",
-        level=logging.INFO
+        level=logging.INFO,
+        stream=sys.stdout,  # for redirecting the output
+        force=True
     )
 else:
     logging.basicConfig(
         format="SmartCompiller %(levelname)s: %(message)s",
-        level=logging.WARNING
+        level=logging.WARNING,
+        stream=sys.stdout,
+        force=True
     )
 
 import smart_emulator
