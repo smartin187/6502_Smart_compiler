@@ -758,7 +758,7 @@ def compile_smarty(
 
             for element in list_value:
                 element = element.strip()
-                code_list += f"{set_one_A_value(element)} 8D {adress_for_RAM(start_adress)} "
+                code_list += f"{set_one_A_value(element)}8D {adress_for_RAM(start_adress)} "
 
                 start_adress += 1
 
@@ -1064,7 +1064,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
             
-            code_compile += f"AD {compiller_data_run.SYS_ADRESS['CallElse']} C9 01 D0 !smart_tmp:elif "
+            code_compile += f"AD {compiller_data_run.SYS_ADRESS['CallElse']}C9 01 D0 !smart_tmp:elif "
             adress_conter += 7
 
             value_tmp = set_one_A_value(line_2)
