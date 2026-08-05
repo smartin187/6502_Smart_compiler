@@ -30,8 +30,8 @@ ERASE_PROGRESSBAR = "\033[2K\033[1G"
 
 SYMBOL_OK = False
 
-TEST_OK = "✔️   " if SYMBOL_OK else ""
-TEST_ERROR = "❌   " if SYMBOL_OK else ""
+TEST_OK = "✔️   " if SYMBOL_OK else f"{Colors.GREEN}OK{Colors.RESET}  "
+TEST_ERROR = "❌   " if SYMBOL_OK else f"{Colors.RED}ERR{Colors.RESET}  "
 
 class TestError(Exception):
     """Main Exception for test."""
