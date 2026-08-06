@@ -866,7 +866,7 @@ try:
                     if .i == 5{;
                         .loop = False;
                     }
-                    print: .i;    
+                    print: '0' + .i;    
                 }
             """,
             output="12345",
