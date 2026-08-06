@@ -808,6 +808,7 @@ def compile_smarty(
 
     smart_var:dict[str, smart_obj.SmartVariable] = {} if not function_mode["function_mode"] else function_mode["global_var"]
     adress_var = 0x300 + len(smart_var)
+    #print("initialize adress_var", adress_var, "module", module_name)
 
     line_conter = 0
 
@@ -944,6 +945,7 @@ def compile_smarty(
                 if len(smart_var) >= 256:
                     raise SmartError("Memory error : maximum variable are 256.", line_conter)
                 smart_var[var_name] = smart_obj.SmartVariable(var_name, adress_var)
+                #print("variable ", var_name, "adress", adress_var, "-- len smart_var", len(smart_var))
                 adress_var += 1
             
             value_RAM = set_one_A_value(value)
@@ -1311,7 +1313,16 @@ def compile_smarty(
             adress_conter += adress_delta
 
             function_name_usr |= import_info.function
-            smart_var |= import_info.variables
+
+            for var_name in import_info.variables:
+                smart_var[var_name] = import_info.variables[var_name]
+            #smart_var |= import_info.variables
+
+            #print("smart_var dans", module_name, ":", smart_var)
+            #for var in smart_var:
+            #    print(var, ":", smart_var[var].ram_adress)
+            
+            adress_var += len(import_info.variables)
 
 
             adress_conter += 2
