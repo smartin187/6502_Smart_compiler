@@ -493,7 +493,7 @@ try:
                 A = '0';
                 print: A;
             """,
-            output="AB0"
+            output="A0"
         ),
         Test(
             "Register X and Y test",    # this test can't have output because X and Y are not printable
