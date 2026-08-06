@@ -32,14 +32,27 @@ SMART_PLACEHOLDER = (
     "!  smart_runtime_error"
 )
 
-# variable -------------------------------
+# base value -------------------------------
 
-warning_endline = (False, )     # if an line not end by ; } or // in line or the last line
+_WARNING_ENDLINE = (False, )     # if an line not end by ; } or // in line or the last line
 # format: [0]: warning end line ; [1] : line of error ; [2]: module of error ('*' if main module)
 
-not_used_ram = 0    # the number of not used RAM for str value
+_NOT_USED_RAM = 0    # the number of not used RAM for str value
 
-need_error = False   # if need runtime error
+_NEED_ERROR = False   # if need runtime error
 
-double_space_error = False # if an double space on code is detected.
+_DOUBLE_SPACE_ERROR = False # if an double space on code is detected.
+
+# -------------------------------
+
+# variable -------------------------------
+
+warning_endline = _WARNING_ENDLINE
+
+
+not_used_ram = _NOT_USED_RAM
+
+need_error = _NEED_ERROR
+
+double_space_error = _DOUBLE_SPACE_ERROR
 
