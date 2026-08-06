@@ -10,5 +10,8 @@ __pycache__/
 # pyinstaller build
 *.spec
 
+# for the test programme (test.py), the output can be make with: python3 test.py > result.ans (for have the ANSI)
+*.ans
+
 dist/
 build/
