@@ -45,6 +45,15 @@ _DOUBLE_SPACE_ERROR = False # if an double space on code is detected.
 
 # -------------------------------
 
+def reset_data() -> None:
+    """Reset the data.
+    Used for test.py (because tests are run one after the other)."""
+    global warning_endline, not_used_ram, need_error, double_space_error
+    warning_endline = _WARNING_ENDLINE
+    not_used_ram = _NOT_USED_RAM
+    need_error = _NEED_ERROR
+    double_space_error = _DOUBLE_SPACE_ERROR
+
 # variable -------------------------------
 
 warning_endline = _WARNING_ENDLINE

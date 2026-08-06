@@ -27,8 +27,10 @@ else:
 
 import smart_emulator
 from smart_compiller import compile_smarty
+from compiller_tool import compiller_data_run
 from compiller_tool.color_tool import Colors
 from compiller_tool.smart_exception import SmartError
+
 
 ERASE_PROGRESSBAR = "\033[2K\033[1G"
 
@@ -107,6 +109,8 @@ class Test:
     def run(self) -> None:
         """This function is for running the test."""
         global all_ok, error_counter
+
+        compiller_data_run.reset_data()
 
         with open("test/test.sma", "w") as f:
             f.write(self.code)
