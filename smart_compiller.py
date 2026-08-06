@@ -1054,6 +1054,10 @@ def compile_smarty(
             continue
 
         elif line.lstrip().startswith("elif"):
+
+            if not last_if:
+                raise SmartError("'elif bloc' was used but 'if bloc' was not created.")
+
             line_2 = replace_code(line, " ", "")[4:]
 
             if not line_2.endswith("{"):
