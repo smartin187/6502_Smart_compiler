@@ -595,7 +595,7 @@ BASE_FLAGS = {
     "N": 0   # Negative
 }
 
-flags = BASE_FLAGS
+flags = dict(BASE_FLAGS)
 
 def error_during_run() -> None:
     """Print an error message on the monitor."""
@@ -619,9 +619,9 @@ def run_smart() -> None:
 
     run_step = 1
 
-    accumulator = BASE_ACCUMULATOR
+    accumulator = dict(BASE_ACCUMULATOR)
 
-    ram = BASE_RAM
+    ram = dict(BASE_RAM)
 
     run_fail = False
 
@@ -1035,9 +1035,9 @@ def start_test(test_code:str) -> str:
     run_step = 0
     end_run = False
 
-    ram = BASE_RAM
-    accumulator = BASE_ACCUMULATOR
-    flags = BASE_FLAGS
+    ram = dict(BASE_RAM)
+    accumulator =dict(BASE_ACCUMULATOR)
+    flags = dict(BASE_FLAGS)
 
     code = test_code
 
