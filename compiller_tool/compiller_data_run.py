@@ -21,15 +21,6 @@ SYS_ADRESS = {
     "SaveAToIndex":"32 00 ",   # SaveAToIndex start at 0x32 00
 }
 
-# variable -------------------------------
-
-warning_endline = (False, )     # if an line not end by ; } or // in line or the last line
-# format: [0]: warning end line ; [1] : line of error ; [2]: module of error ('*' if main module)
-
-not_used_ram = 0    # the number of not used RAM for str value
-
-need_error = False   # if need runtime error
-
 SMART_ERRORS = {     # the code error for Smart
     "Index out of range": "I",
     "Division by zero": "/"
@@ -40,6 +31,15 @@ SMART_PLACEHOLDER = (
     "!  smart_input",
     "!  smart_runtime_error"
 )
+
+# variable -------------------------------
+
+warning_endline = (False, )     # if an line not end by ; } or // in line or the last line
+# format: [0]: warning end line ; [1] : line of error ; [2]: module of error ('*' if main module)
+
+not_used_ram = 0    # the number of not used RAM for str value
+
+need_error = False   # if need runtime error
 
 double_space_error = False # if an double space on code is detected.
 
