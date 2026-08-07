@@ -1026,8 +1026,16 @@ def compile_smarty(
             bloc_code, bloc_line = get_bloc(line_conter, code, error_message="On if bloc")
 
             jump_line = bloc_line - line_conter - 1
+
+            smart_var[f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else}"] = smart_obj.ReservedAdress(adress_var)
+            compiller_data_run.not_used_call_else += 1
             
-            code_compile += f"C9 00 D0 08 A9 01 8D {compiller_data_run.SYS_ADRESS['CallElse']}4C {{}} A9 00 8D {compiller_data_run.SYS_ADRESS['CallElse']}"
+            call_else_adress = adress_for_RAM(smart_var[f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else - 1}"].adress) + " "
+            print("new call_adress", call_else_adress)
+            
+            adress_var += 1
+            
+            code_compile += f"C9 00 D0 08 A9 01 8D {call_else_adress}4C {{}} A9 00 8D {call_else_adress}"
             adress_conter += 17
 
             code_if = compile_smarty(
@@ -1070,7 +1078,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
             
-            code_compile += f"AD {compiller_data_run.SYS_ADRESS['CallElse']}C9 01 D0 !smart_tmp:elif "
+            code_compile += f"AD {call_else_adress}C9 01 D0 !smart_tmp:elif "
             adress_conter += 7
 
             value_tmp = set_one_A_value(line_2)
@@ -1081,7 +1089,7 @@ def compile_smarty(
 
             code_compile = code_compile.replace("!smart_tmp:elif", delta_branch)
 
-            code_compile += f"C9 00 D0 08 A9 01 8D {compiller_data_run.SYS_ADRESS['CallElse']}4C {{}} A9 00 8D {compiller_data_run.SYS_ADRESS['CallElse']}"
+            code_compile += f"C9 00 D0 08 A9 01 8D {call_else_adress}4C {{}} A9 00 8D {call_else_adress}"
 
             adress_conter += 17
 
@@ -1121,7 +1129,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
             
-            code_compile += f"AD {compiller_data_run.SYS_ADRESS['CallElse']}C9 00 D0 03 4C {{}} "
+            code_compile += f"AD {call_else_adress}C9 00 D0 03 4C {{}} "
             adress_conter += 10
 
             code_else = compile_smarty(
