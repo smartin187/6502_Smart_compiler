@@ -14,7 +14,7 @@ Have:
 SYS_ADRESS = {
     "SaveA":"00 00 ",
     "ReturnValue":"01 00 ",
-    "CallElse":"02 00 ",
+    #"CallElse":"02 00 ",    # obsolette ! To remove
     "MathOP":"03 00 ",
     "SaveStr":"04 00 ",     # SaveStr start at EB 00 and have a len of 21 (end at 0x19 00)
     "SaveStrCMP":"19 00 ",  # SaveStrCMP start at 0x19 00 and have a len of 21 (end at 0x32 00) - Used to save a str for compare (if, ==...)
@@ -43,21 +43,25 @@ _NEED_ERROR = False   # if need runtime error
 
 _DOUBLE_SPACE_ERROR = False # if an double space on code is detected.
 
+_NOT_USED_CALL_ELSE = 0
+
 # -------------------------------
 
 def reset_data() -> None:
     """Reset the data.
     Used for test.py (because tests are run one after the other)."""
-    global warning_endline, not_used_ram, need_error, double_space_error
+    global warning_endline, not_used_ram, need_error, double_space_error, not_used_call_else
     warning_endline = _WARNING_ENDLINE
     not_used_ram = _NOT_USED_RAM
     need_error = _NEED_ERROR
     double_space_error = _DOUBLE_SPACE_ERROR
+    not_used_call_else = _NOT_USED_CALL_ELSE
 
 # variable -------------------------------
 
 warning_endline = _WARNING_ENDLINE
 
+not_used_call_else = _NOT_USED_CALL_ELSE
 
 not_used_ram = _NOT_USED_RAM
 
