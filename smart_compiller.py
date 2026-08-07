@@ -906,8 +906,6 @@ def compile_smarty(
                 value_accumulator = set_one_A_value(read_line[1], forbiden_math=True)
           
             code_compile += value_accumulator if r == "A" else "A2" + value_accumulator[2:] if r == "X" else "A0" + value_accumulator[2:]
-
-            adress_conter -= 1 if r != "A" else 0
             
             logging.info("Build asm command: set on accumulator value")
 
