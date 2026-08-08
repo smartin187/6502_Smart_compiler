@@ -50,6 +50,12 @@ open_from_asm = False
 
 output_test = ""    # used only on test mode
 
+def control_adress(address: int, type_jump: str) -> None:
+    """If the adress is outside the programme, set a warning to user and stop the programme."""
+    if address >= len(code):
+        messagebox.showerror("Error", "Address is outside the programme.", detail=f"Caused by a {type_jump} instruction.\nAdress outside: {hex(address + 0x400).upper()}")
+        
+
 if __name__ == "__main__":
     if len(sys.argv) != 2 and GUI_MODE:
         file_name = ""
@@ -771,8 +777,6 @@ def run_smart() -> None:
                 case "20":
                     run_step += 1
 
-                    code[run_step]
-
                     if code[run_step] == "EF" and code[run_step + 1] == "FF":
                         print_on_text(chr(int(accumulator["A"], base=16)))
 
@@ -784,7 +788,7 @@ def run_smart() -> None:
                         adress_call = int(code[run_step + 1] + code[run_step], base=16) - START + 1
 
                         if adress_call + 0x400 >= 0x400 + len(code):
-                            messagebox.showerror("Error", "Unknow adress for call.")
+                            messagebox.showerror("Error", "Unknow adress for call.", detail=f"On JSR (jump to subroutine), the adress is outside the programme.\nAdress outside: {hex(adress_call + 0x400).upper()}")
                             run_fail = True
                             break
 
@@ -804,7 +808,13 @@ def run_smart() -> None:
                 case "4C":   # goto
                     goto = code[run_step + 2] + code[run_step + 1]
 
+                    if goto == "FF1F":  # routine Get Line of woz monitor
+                        messagebox.showwarning("Warning", "The code jump to the routine Get Line of Woz monitor.", detail="The programme have retourned to Woz monitor.\nThe emulator are stopping...")
+                        break
+
                     run_step = int(goto, base=16) - START + 1
+
+                    control_adress(run_step, "JMP (jump)")
                 
                 case "18":
                     flags["C"] = 0
