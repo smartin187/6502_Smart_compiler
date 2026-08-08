@@ -14,6 +14,7 @@ from pathlib import Path
 import json
 import os
 from threading import Thread
+import webbrowser
 
 from compiller_tool import smart_info
 from compiller_tool.color_tool import Colors
@@ -134,6 +135,56 @@ if __name__ == "__main__":
         label_logo.pack()
 
         window_start.protocol("WM_DELETE_WINDOW", lambda:sys.exit(0))
+
+        def about_smart() -> None:
+            """Open a window for information about Smart Emulator."""
+            def window_command() -> None:
+                """Open a window for information about the command and flag of Smart Emulator."""
+                window_command = tk.Toplevel(window_about)
+                window_command.title("Command and flag of Smart Emulator")
+
+                frame_info = tk.LabelFrame(window_command, text="Command and flag of Smart Emulator")
+                frame_info.pack()
+
+                clean_help = smart_info.SMART_HELP["smart_emulator"]
+                for _, color in Colors.__dict__.items():
+                    if isinstance(color, str):
+                        clean_help = clean_help.replace(color, "")
+
+
+                text_command = tk.Label(frame_info, text=clean_help, justify=tk.LEFT)
+                text_command.pack()
+
+                bouton_close = tk.Button(window_command, text="Close", command=window_command.destroy)
+                bouton_close.pack()
+
+            window_about = tk.Toplevel(window_start)
+            window_about.title(f"About Smart Emulator {smart_info.SMART_VERSION}")
+
+            text_info_1 = tk.Label(window_about, text=f"Smart {smart_info.SMART_VERSION}", font=("Arial", 14, "bold"))
+            text_info_1.pack()
+
+            text_info_2 = tk.Label(window_about, text="Smart programming is a small language for Apple 1, SmartyKit, or other processor MOS6502.")
+            text_info_2.pack()
+
+            logo = tk.PhotoImage(file="./img/logo_smart_small.png")
+            logo_label = tk.Label(window_about, image=logo)
+            logo_label.pack()
+
+            frame_bouton = tk.LabelFrame(window_about)
+            frame_bouton.pack()
+
+            bouton_command = tk.Button(frame_bouton, text="Command", command=window_command)
+            bouton_command.grid(column=0, row=0, padx=10)
+
+            bouton_github = tk.Button(frame_bouton, text="See GitHub repository", command=lambda:webbrowser.open(smart_info.GIT_HUB_LINK))
+            bouton_github.grid(column=1, row=0, padx=10)
+
+            window_about.wait_window()
+
+        button_about = tk.Button(window_start, text="About Smart emulator", command=about_smart)
+        button_about.pack()
+
         window_start.mainloop()
         
 
