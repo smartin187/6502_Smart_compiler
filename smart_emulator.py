@@ -45,6 +45,38 @@ if GUI_MODE:
 else:
     normal_speed = "Normal"
 
+class MessageUser:
+    """Message for the user. Can be graphic message if GUI_MODE else on the console."""
+    def show_message_user(type_message:str, title:str, message:str, detail:str="") -> None:
+        """Show a message for user. If GUI_MODE is True, use messagebox, else, print on console."""
+        if GUI_MODE:
+            match type_message:
+                case "error":
+                    messagebox.showerror(title, message, detail=detail)
+                case "warning":
+                    messagebox.showwarning(title, message, detail=detail)
+                case "info":
+                    messagebox.showinfo(title, message, detail=detail)
+
+                case _:
+                    raise ValueError(f"Internal value error on smart emulator: unknow type_message {type_message}. Contact the developer if the probleme persists.")
+            
+        else:
+            head = f"{Colors.RED}Error{Colors.RESET}" if type_message == "error" else f"{Colors.YELLOW}Warning{Colors.RESET}" if type_message == "warning" else f"{Colors.BLUE}Info{Colors.RESET}" if type_message == "info" else ""
+            input(f"{head}: {Colors.BOLD}{message}{Colors.RESET}\n{detail}\n{Colors.GREEN}Press enter to continue...{Colors.RESET}")
+
+    def show_error(title:str, message:str, detail:str="") -> None:
+        """Show an error message for user. If GUI_MODE is True, use messagebox, else, print on console."""
+        MessageUser.show_message_user("error", title, message, detail)
+
+    def show_warning(title:str, message:str, detail:str="") -> None:
+        """Show a warning message for user. If GUI_MODE is True, use messagebox, else, print on console."""
+        MessageUser.show_message_user("warning", title, message, detail)
+    
+    def show_info(title:str, message:str, detail:str="") -> None:
+        """Show an info message for user. If GUI_MODE is True, use messagebox, else, print on console."""
+        MessageUser.show_message_user("info", title, message, detail)
+
 on_test = False
 open_from_asm = False
 
@@ -53,7 +85,7 @@ output_test = ""    # used only on test mode
 def control_adress(address: int, type_jump: str) -> None:
     """If the adress is outside the programme, set a warning to user and stop the programme."""
     if address >= len(code):
-        messagebox.showerror("Error", "Address is outside the programme.", detail=f"Caused by a {type_jump} instruction.\nAdress outside: {hex(address + 0x400).upper()}")
+        MessageUser.show_error("Error", "Address is outside the programme.", detail=f"Caused by a {type_jump} instruction.\nAdress outside: {hex(address + 0x400).upper()}")
         
 
 if __name__ == "__main__":
