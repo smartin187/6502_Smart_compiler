@@ -115,7 +115,7 @@ if __name__ == "__main__":
 
 
                 else:
-                    messagebox.showerror("Error", f"Unknow file type {file_type}.")
+                    MessageUser.show_error("Error", f"Unknow file type {file_type}.")
                 
                 window_start.destroy()
 
@@ -149,11 +149,11 @@ if __name__ == "__main__":
         try:
             code = compile_smarty(file=file_name, argv=[], CODE_ADRESSE=1024, make_file=False)
         except SmartError as se:
-            messagebox.showerror("Error", "Error during compilation of the Smart code.", detail=f"Detail: {se.syntaxerror}")
+            MessageUser.show_error("Error", "Error during compilation of the Smart code.", detail=f"Detail: {se.syntaxerror}")
             sys.exit(1)
 
         except CompileError as ce:
-            messagebox.showerror("Error", "Error during compilation of the Smart code.", detail=f"Detail: {ce.error}")
+            MessageUser.show_error("Error", "Error during compilation of the Smart code.", detail=f"Detail: {ce.error}")
             sys.exit(1)
 
     asm_code = code
@@ -282,7 +282,7 @@ if GUI_MODE:        # set the button for ram and code
                 new_value = entry_value.get()
 
                 if len(new_value) != 2 or not all(c in "0123456789abcdefABCDEF" for c in new_value):
-                    messagebox.showerror("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
+                    MessageUser.show_error("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
                     return
                 
                 ram[("0" * (4 - len(hex(adress)[2:]))) + hex(adress)[2:].upper()] = new_value.upper()
@@ -310,7 +310,7 @@ if GUI_MODE:        # set the button for ram and code
                 new_value = entry_value.get()
 
                 if len(new_value) != 2 or not all(c in "0123456789abcdefABCDEF" for c in new_value):
-                    messagebox.showerror("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
+                    MessageUser.show_error("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
                     return
                 
                 acc_index = accumulator_info.curselection()[0] - 1
@@ -367,7 +367,7 @@ if GUI_MODE:        # set the button for ram and code
                 new_value = entry_value.get()
 
                 if new_value not in ["0", "1"]:
-                    messagebox.showerror("Error", "Invalid value. Please enter 0 or 1.")
+                    MessageUser.show_error("Error", "Invalid value. Please enter 0 or 1.")
                     return
                 
                 flag_index = flags_info.curselection()[0] - 1
@@ -470,13 +470,13 @@ if GUI_MODE:        # set the button for ram and code
                 new_value = entry_value.get()
 
                 if len(new_value) != 2 or not all(c in "0123456789abcdefABCDEF" for c in new_value):
-                    messagebox.showerror("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
+                    MessageUser.show_error("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
                     return
                 
                 code_index = list_code.curselection()[0] - 1
 
                 if code_index < 0:
-                    messagebox.showerror("Error", "You can't edit this line.")
+                    MessageUser.show_error("Error", "You can't edit this line.")
                     return
                 
                 code[code_index + 1] = new_value.upper()
@@ -486,7 +486,7 @@ if GUI_MODE:        # set the button for ram and code
             code_index = list_code.curselection()[0] - 1
 
             if code_index < 0:
-                messagebox.showerror("Error", "You can't edit this line.")
+                MessageUser.show_error("Error", "You can't edit this line.")
                 return
             
             window = tk.Toplevel(window_code)
@@ -542,19 +542,19 @@ if GUI_MODE:        # set the button for ram and code
             global run_step
 
             if end_run:
-                messagebox.showerror("Error", "The code is already run. You can't go to an adress.")
+                MessageUser.show_error("Error", "The code is already run. You can't go to an adress.")
                 return
 
             try:
                 adress = int(entry_goto.get(), base=16)
             except ValueError:
-                messagebox.showerror("Error", "Invalid hexadecimal value. Please enter a valid hexadecimal number.")
+                MessageUser.show_error("Error", "Invalid hexadecimal value. Please enter a valid hexadecimal number.")
                 return
             
             if 0x400 <= adress < 0x400 + len(code) - 1:
                 run_step = adress - 0x400 + 1
             else:
-                messagebox.showerror("Error", f"Invalid adress. Please enter a hexadecimal value between {hex(0x400)} and {hex(0x400 + len(code) - 1)}.")
+                MessageUser.show_error("Error", f"Invalid adress. Please enter a hexadecimal value between {hex(0x400)} and {hex(0x400 + len(code) - 1)}.")
             
             
 
@@ -668,7 +668,7 @@ def run_smart() -> None:
     while run_step < len(code):
 
         if run_step < 0:
-            messagebox.showerror("Error", "Run step before 0x400.\nRun step is on variable adress.\n", detail="This can be caused by a wrong jump or branch in the code.")
+            MessageUser.show_error("Error", "Run step before 0x400.\nRun step is on variable adress.\n", detail="This can be caused by a wrong jump or branch in the code.")
             run_fail = True
             break
 
@@ -698,7 +698,7 @@ def run_smart() -> None:
 
 
                 if len(key) != 1:
-                    messagebox.showerror("Error", "You must enter a single character.")
+                    MessageUser.show_error("Error", "You must enter a single character.")
                 
                 accumulator["A"] = hex(ord(key))[2:].upper().zfill(2)
 
@@ -739,7 +739,7 @@ def run_smart() -> None:
                         try:
                             code[int(adress, base=16) - START + 1] = accumulator["A"]
                         except:
-                            messagebox.showerror("Error", "Write on unknow adress.", detail="Detail: {}".format(hex(0x400 + int(adress, base=16) - START + 1)).upper())
+                            MessageUser.show_error("Error", "Write on unknow adress.", detail="Detail: {}".format(hex(0x400 + int(adress, base=16) - START + 1)).upper())
                             run_fail = True
                             break
                     else:
@@ -820,7 +820,7 @@ def run_smart() -> None:
                         adress_call = int(code[run_step + 1] + code[run_step], base=16) - START + 1
 
                         if adress_call + 0x400 >= 0x400 + len(code):
-                            messagebox.showerror("Error", "Unknow adress for call.", detail=f"On JSR (jump to subroutine), the adress is outside the programme.\nAdress outside: {hex(adress_call + 0x400).upper()}")
+                            MessageUser.show_error("Error", "Unknow adress for call.", detail=f"On JSR (jump to subroutine), the adress is outside the programme.\nAdress outside: {hex(adress_call + 0x400).upper()}")
                             run_fail = True
                             break
 
@@ -841,7 +841,7 @@ def run_smart() -> None:
                     goto = code[run_step + 2] + code[run_step + 1]
 
                     if goto == "FF1F":  # routine Get Line of woz monitor
-                        messagebox.showwarning("Warning", "The code jump to the routine Get Line of Woz monitor.", detail="The programme have retourned to Woz monitor.\nThe emulator are stopping...")
+                        MessageUser.show_warning("Warning", "The code jump to the routine Get Line of Woz monitor.", detail="The programme have retourned to Woz monitor.\nThe emulator are stopping...")
                         break
 
                     run_step = int(goto, base=16) - START + 1
@@ -987,7 +987,7 @@ def run_smart() -> None:
                     run_step += 2
 
                 case _:
-                    messagebox.showerror("Error", f"Unknow assembly : {run}, at {run_step} step.")
+                    MessageUser.show_error("Error", f"Unknow assembly : {run}, at {run_step} step.")
                     run_fail = True
                     break
             
@@ -1047,15 +1047,15 @@ if __name__ == "__main__":
             try:
                 run_smart()
             except IndexError:
-                messagebox.showerror("Error", "Error with adress.")
+                MessageUser.show_error("Error", "Error with adress.")
                 error_during_run()
             
             except KeyError as e:
-                messagebox.showerror("Error", "Unknow adress RAM", detail=f"Adress: 0x{str(e)[1:-1]}")
+                MessageUser.show_error("Error", "Unknow adress RAM", detail=f"Adress: 0x{str(e)[1:-1]}")
                 error_during_run()
 
             except Exception as e:
-                messagebox.showerror("Error", "Error during run.", detail=f"Detail: {str(e)}")
+                MessageUser.show_error("Error", "Error during run.", detail=f"Detail: {str(e)}")
                 error_during_run()
 
         thread_run = Thread(target=start_run, daemon=True)
