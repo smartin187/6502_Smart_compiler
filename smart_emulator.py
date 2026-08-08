@@ -167,6 +167,12 @@ if __name__ == "__main__":
             text_info_2 = tk.Label(window_about, text="Smart programming is a small language for Apple 1, SmartyKit, or other processor MOS6502.")
             text_info_2.pack()
 
+            text_info_3 = tk.Label(window_about, text=f"Open Source licence: {smart_info.LICENCE['licence']}", font=("Arial", 10, "bold"))
+            text_info_3.pack()
+
+            text_info_4 = tk.Label(window_about, text="Make with Python 3")
+            text_info_4.pack()
+
             logo = tk.PhotoImage(file="./img/logo_smart_small.png")
             logo_label = tk.Label(window_about, image=logo)
             logo_label.pack()
@@ -179,6 +185,9 @@ if __name__ == "__main__":
 
             bouton_github = tk.Button(frame_bouton, text="See GitHub repository", command=lambda:webbrowser.open(smart_info.GIT_HUB_LINK))
             bouton_github.grid(column=1, row=0, padx=10)
+
+            bouton_licence = tk.Button(frame_bouton, text="See licence", command=lambda:MessageUser.show_info("Licence", smart_info.LICENCE["licence"], detail=smart_info.LICENCE["text"]))
+            bouton_licence.grid(column=2, row=0, padx=10)
 
             window_about.wait_window()
 
