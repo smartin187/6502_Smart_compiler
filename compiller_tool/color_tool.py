@@ -19,6 +19,8 @@ class Colors:
     BG_BLUE = "\033[44m"
     BG_MAGENTA = "\033[45m"
     BG_CYAN = "\033[46m"
+    
+    BOLD = "\033[1m"
 
     RESET = "\033[0m"
 
