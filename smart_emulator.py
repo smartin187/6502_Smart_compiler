@@ -50,6 +50,8 @@ if GUI_MODE:
 else:
     normal_speed = "Normal"
 
+no_wozm = False     # used on the test: if true, no message box if the programme return for woz monitor
+
 class MessageUser:
     """Message for the user. Can be graphic message if GUI_MODE else on the console."""
     def show_message_user(type_message:str, title:str, message:str, detail:str="") -> None:
@@ -905,7 +907,8 @@ def run_smart() -> None:
                     goto = code[run_step + 2] + code[run_step + 1]
 
                     if goto == "FF1F":  # routine Get Line of woz monitor
-                        MessageUser.show_warning("Warning", "The code jump to the routine Get Line of Woz monitor.", detail="The programme have retourned to Woz monitor.\nThe emulator are stopping...")
+                        if not no_wozm:
+                            MessageUser.show_warning("Warning", "The code jump to the routine Get Line of Woz monitor.", detail="The programme have retourned to Woz monitor.\nThe emulator are stopping...")
                         break
 
                     run_step = int(goto, base=16) - START + 1
@@ -1135,14 +1138,15 @@ if __name__ == "__main__":
 
 def start_test(test_code:str) -> str:
     """Used by test.py for test a funcionalyty."""
-    global code, ram, accumulator, flags, run_step, end_run, output_test
+    global code, ram, accumulator, flags, run_step, end_run, output_test, no_wozm
 
     # reset value:
     run_step = 0
     end_run = False
+    no_wozm = True
 
     ram = dict(BASE_RAM)
-    accumulator =dict(BASE_ACCUMULATOR)
+    accumulator = dict(BASE_ACCUMULATOR)
     flags = dict(BASE_FLAGS)
 
     code = test_code
