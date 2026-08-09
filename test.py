@@ -487,6 +487,57 @@ try:
         )
     )
 
+    ESCAPE_CHARACTER = (
+        Test(
+            "Escape character on char",
+            code=r"""
+                .a = '\r';  // on the emulator it will replace by `\n`
+                print: .a;
+
+                .b = '\'';
+                print: .b;
+
+                .c = '\"';
+                print: .c;
+
+                .d = '\\';
+                print: .d;
+
+                .e = '"';   // not a escpae char but for test
+                print: .e;
+            """,
+            output="\n'\"\\\""
+        ),
+        Test(
+            "Escape character on str",
+            code=r"""
+                ~a = "AA\rAA";  // on the emulator it will replace by `\n`
+                print: ~a;
+
+                ~b = "BB\'BB";
+                print: ~b;
+
+                ~c = "CC\"CC";
+                print: ~c;
+
+                ~d = "DD\\DD";
+                print: ~d;
+
+                ~e = "EE'EE";   // not a escpae char but for test
+                print: ~e;            
+            """,
+            output="AA\nAABB'BBCC\"CCDD\\DDEE'EE"
+        ),
+        Test(
+            "Some escape characters in str",
+            code=r"""
+                ~a = "\r\'\"\\";
+                print: ~a;
+            """,
+            output="\r'\"\\"
+        )
+    )
+
     REGISTER_TESTS = (
         Test(
             "Accumulator A test",
@@ -1188,7 +1239,7 @@ try:
         )
     )
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER
 
     try:
         for test in GLOBAL_TESTS:
