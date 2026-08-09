@@ -12,7 +12,7 @@ from compiller_tool.compiller_data_run import SMART_PLACEHOLDER
 
 def get_adress(code_compile:str) -> int:
     """Return the adress offset from the start of programme from a hex code."""
-    offset_adress = code_compile.count(" ") + 13 * code_compile.count("!smart_call_func|") + code_compile.count("!smart_tmp:goto|") * 3 - code_compile.count("!smart_tmp:goto|")
+    offset_adress = code_compile.count(" ") + 3 * code_compile.count("!smart_call_func|") + code_compile.count("!smart_tmp:goto|") * 3 - code_compile.count("!smart_tmp:goto|")
 
     if code_compile.startswith("0400: "):
         offset_adress -= 1
