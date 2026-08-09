@@ -1186,6 +1186,73 @@ try:
         #)
     )
 
+    FUNCTION_TEST = (
+        Test(
+            "Simple function test",
+            code="""
+                void f{;
+                    print: "OK";
+                }
+
+                f:;
+            """,
+            output="OK"
+        ),
+        Test(
+            "Var in function",
+            code="""
+                .a = 0;
+                ~b = "";
+
+                void f{;
+                    .a = 'A';
+                    ~b = "STRING";
+                }
+                f:;
+
+                print: .a;
+                print: ~b;
+            """,
+            output="ASTRING"
+        ),
+        Test(
+            "Call function in function",    # this test don't do recursive function...
+            code="""
+                void f1{;
+                    print: "F1";
+                    f2:;
+                }
+                
+                void f2{;
+                    print: "F2";
+                    f3:;
+                }
+
+                void f3{;
+                    print: "F3";
+                }
+
+                f1:;
+                print: "OK";
+            """,
+            output="F1F2F3OK"
+        ),
+        Test(
+            "Return-function simple",
+            code="""
+                void f{;
+                    print: "F";
+                    return 'A';
+                }
+
+                .a = f:;
+                print: .a;
+                print: "OK";
+            """,
+            output="FAOK"
+        )
+    )
+
     BUILT_IN = (
         Test(
             "asm_entry test",
@@ -1239,7 +1306,7 @@ try:
         )
     )
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST
 
     try:
         for test in GLOBAL_TESTS:
