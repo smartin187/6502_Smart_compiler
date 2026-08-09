@@ -224,7 +224,7 @@ try:
     all_ok = True
     error_counter = 0
 
-    syntaxe_error_test = [  # this test have the same class Test but for test sintaxe error.
+    SYNTAXE_ERROR_TEST = (  # this test have the same class Test but for test sintaxe error.
         Test(
             "Forget ';'",
             code='print: "TEST"\nprint: "ERROR"',
@@ -270,9 +270,9 @@ try:
             compile_only=True,
             sucess=False
         )
-    ]
+    )
 
-    boolean_test = [
+    BOOLEAN_TEST = (
         Test(
             "Simple boolean",
             code="""
@@ -326,9 +326,9 @@ try:
             """,
             output="IF TEST"
         )
-    ]
+    )
 
-    test_int_hex = [
+    TEST_INT_HEX = (
         Test(
             "Simple int and hex",
             code="""
@@ -356,9 +356,9 @@ try:
             code=".a = 0xG;",
             sucess=False
         )
-    ]
+    )
 
-    test_char = [
+    TEST_CHAR = (
         Test(
             "Simple char",
             code="print: 'A';",
@@ -386,9 +386,9 @@ try:
             code=".a = 'AA'",
             sucess=False
         )
-    ]
+    )
 
-    advenced_value_test = [
+    ADVENCED_VALUE_TEST = (
         Test(
             "Simple str",
             code="""
@@ -485,9 +485,9 @@ try:
             code="~a = 1;",
             sucess=False
         )
-    ]
+    )
 
-    register_tests = [
+    REGISTER_TESTS = (
         Test(
             "Accumulator A test",
             code="""
@@ -533,9 +533,9 @@ try:
             code='Y = "STR";',
             sucess=False
         )
-    ]
+    )
 
-    goto_test = [
+    GOTO_TEST = (
         Test(
             "Goto test 1",
             code="""
@@ -577,9 +577,9 @@ try:
             """,
             sucess=False
         )
-    ]
+    )
 
-    tests = [
+    TESTS = (
         Test(
             "Test print",
             code='print: "PRINT TEST";',
@@ -692,9 +692,9 @@ try:
         """,
         output="OK"   
         )
-    ]
+    )
 
-    if_test = [
+    IF_TEST = (
         Test(
             "Simple if test",
             code="""
@@ -848,9 +848,9 @@ try:
             """,
             sucess=False
         )
-    ]
+    )
 
-    while_test = [      # warning in this test, because while can be infinite...
+    WHILE_TEST = (      # warning in this test, because while can be infinite...
         #Test(
         #    "While True",
         #    code="""
@@ -902,9 +902,9 @@ try:
             output="TEST1",
             timeout=5
         )
-    ]
+    )
 
-    math_test = [
+    MATH_TEST = (
         # addition test ---
         Test(
             "Simple addition test",
@@ -977,9 +977,9 @@ try:
             """,
             output="BC>B(F"
         )
-    ]
+    )
 
-    runtime_error_test = [
+    RUNTIME_ERROR_TEST = (
         Test(
             "Error keyword test",
             code="""
@@ -1017,9 +1017,9 @@ try:
             """,
             output="EI"    
         )
-    ]
+    )
 
-    modules_test = [
+    MODULES_TEST = (
         ModuleTest(
             "Simple module test",
             code_modules=[
@@ -1133,9 +1133,9 @@ try:
         #    ],
         #    sucess=False
         #)
-    ]
+    )
 
-    built_in = [
+    BUILT_IN = (
         Test(
             "asm_entry test",
             code="""
@@ -1186,12 +1186,12 @@ try:
             sucess=False,
             compile_only=True
         )
-    ]
+    )
 
-    global_tests = syntaxe_error_test + tests + math_test + runtime_error_test + modules_test + boolean_test + test_int_hex + test_char + advenced_value_test + register_tests + goto_test + if_test + while_test
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST
 
     try:
-        for test in global_tests:
+        for test in GLOBAL_TESTS:
             if isinstance(test, ModuleTest):
                 test.run_modules()
             else:
@@ -1204,7 +1204,7 @@ try:
     else:
         print(
             f"{TEST_ERROR}{Colors.BG_RED}Some tests failed!{Colors.RESET}",
-            f"{Colors.RED}Error: {error_counter}/{len(global_tests)}{Colors.RESET}",
+            f"{Colors.RED}Error: {error_counter}/{len(GLOBAL_TESTS)}{Colors.RESET}",
         )
     
 except KeyboardInterrupt:
