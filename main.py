@@ -22,6 +22,9 @@ elif "--show-lib-path" in sys.argv:
     show_path_lib()
     sys.exit(0)
 
+if "--show-licence" in sys.argv:
+    print(smart_info.LICENCE["licence"], smart_info.LICENCE["text"], sep="\n")
+    sys.exit(0)
 
 regroup_number = -1
 

@@ -20,6 +20,10 @@ from compiller_tool import smart_info
 from compiller_tool.color_tool import Colors
 from smart_compiller import compile_smarty, SmartError, CompileError
 
+if "--show-licence" in sys.argv:
+    print(smart_info.LICENCE["licence"], smart_info.LICENCE["text"], sep="\n")
+    sys.exit(0)
+
 if "--help" in sys.argv:
     print(smart_info.SMART_HELP["smart_emulator"])
     sys.exit(0)

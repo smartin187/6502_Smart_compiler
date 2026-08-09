@@ -51,6 +51,7 @@ SMART_HELP = {
 \tShow the library path: {Colors.MAGENTA}{COMPILE_EXE} --show-lib-path{Colors.RESET}
 \tGet version of Smart: {Colors.MAGENTA}{COMPILE_EXE} --version{Colors.RESET}
 \tGet help of Smart Compiller: {Colors.MAGENTA}{COMPILE_EXE} --help{Colors.RESET}
+\tGet the licence of Smart: {Colors.MAGENTA}{COMPILE_EXE} --show-licence{Colors.RESET}
 
 {Colors.BG_CYAN}GitHub:{Colors.RESET} {GIT_HUB_LINK}
 
@@ -70,6 +71,7 @@ You can run and debug your programme with emulator.
 \tRun the emulator on console (no GUI): {Colors.MAGENTA}{EMULATOR_EXE} your_programme.sma --console{Colors.RESET}
 \tGet version of Smart: {Colors.MAGENTA}{EMULATOR_EXE} --version{Colors.RESET}
 \tGet help of Smart Emulator: {Colors.MAGENTA}{EMULATOR_EXE} --help{Colors.RESET}
+\tGet the licence of Smart: {Colors.MAGENTA}{EMULATOR_EXE} --show-licence{Colors.RESET}
 
 {Colors.BG_CYAN}GitHub:{Colors.RESET} {GIT_HUB_LINK}
 
