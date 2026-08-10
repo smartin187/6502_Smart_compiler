@@ -1250,6 +1250,30 @@ try:
                 print: "OK";
             """,
             output="FAOK"
+        ),
+        Test(
+            "Recurcive function",
+            code="""
+                .n = 3;
+                .r = 1;
+
+                void factoriel{;
+                    if .n == 1 {;
+                        print: "OK";
+                        }
+                    else {;
+                        .r = .r * .n;
+                        .n = .n - 1;
+
+                        factoriel:;
+                        }
+                    
+                    }
+
+                factoriel:;
+                print: '0' + .r;
+            """,
+            output="OK6"
         )
     )
 
