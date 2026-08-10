@@ -1274,6 +1274,25 @@ try:
                 print: '0' + .r;
             """,
             output="OK6"
+        ),
+        Test(
+            "Advenced return function",
+            code="""
+                void f1{;
+                    print: "F1";
+                    return 'A';
+                }
+
+                void f2{;
+                    print: "F2";
+                    return f1:;
+                }
+
+                print: f2: + 1;
+                print: 1 + f1:;
+                print: "OK";
+            """,
+            output="F2F1BF1BOK"
         )
     )
 
