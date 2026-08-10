@@ -1522,7 +1522,7 @@ def compile_smarty(
 
     elif function_mode["function_mode"]:
         #code_compile += "4C 00 00 "    # old system
-        code_compile += "60"
+        code_compile += "60 "
     
     else:
         code_compile += "00 "
