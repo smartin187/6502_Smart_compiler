@@ -54,7 +54,7 @@ def compile_smarty(
         function_mode:dict[
             str,
             bool | str | list | dict | smart_obj.SmartFunction | None
-        ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[], "while_mode":False},
+        ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[], "while_mode":False},
         bin_outpout_file:bool=False,
         module_name:str="*", # module name is '*' if main module.
         regroup_bytes:int=-1 # for the render of code. -1 for 1 line of hex, other value for regroup bytes in lines.
@@ -1033,7 +1033,7 @@ def compile_smarty(
 
             code_if = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":"", "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
@@ -1088,7 +1088,7 @@ def compile_smarty(
 
             code_elif = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":"", "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
@@ -1127,7 +1127,7 @@ def compile_smarty(
 
             code_else = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":"", "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
@@ -1166,7 +1166,7 @@ def compile_smarty(
 
             code_while = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":"", "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
@@ -1537,7 +1537,7 @@ def compile_smarty(
 
             function_name_usr[function].code_compile_f = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":function, "global_var":smart_var, "smart_func":smart_func, "if_mode":False},
+                function_mode={"function_mode":True, "source_code":code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":smart_func, "if_mode":False},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1
             )
 
