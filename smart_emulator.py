@@ -765,6 +765,10 @@ STACK_PTR = 0xFF
 
 stack_ptr = STACK_PTR
 
+_STOP_RUN = False
+
+stop_run = _STOP_RUN
+
 def set_on_stack(value: str) -> None:
     """Set a value on the stack.
     The stack is on memort at 0x100 - 0x1FF."""
@@ -778,8 +782,9 @@ def set_on_stack(value: str) -> None:
     stack_ptr -= 1
 
     if stack_ptr < 0:
+        global stop_run
         MessageUser.show_error("Error", "Stack overflow.", detail="The stack is full. You can't push more values on the stack.\n(the stack ptr is > 0).")
-        #sys.exit(1)
+        stop_run = True
 
 def get_from_stack() -> str:
     """Get the value from the scack pointer."""
@@ -791,8 +796,9 @@ def get_from_stack() -> str:
     hex_adress = hex(adress_stack)[2:].upper().zfill(4)
 
     if stack_ptr > STACK_PTR:
+        global stop_run
         MessageUser.show_error("Error", "Stack underflow.", detail="The stack is empty. You can't pop more values from the stack.\n(the stack ptr is > 0xFF).")
-        #sys.exit(1)
+        stop_run = True
 
     return ram[hex_adress]
 
@@ -820,6 +826,9 @@ def run_smart() -> None:
     return_ardess = 0
 
     while run_step < len(code):
+
+        if stop_run:
+            break
 
         if run_step < 0:
             MessageUser.show_error("Error", "Run step before 0x400.\nRun step is on variable adress.\n", detail="This can be caused by a wrong jump or branch in the code.")
@@ -1224,6 +1233,9 @@ if __name__ == "__main__":
                 MessageUser.show_error("Error", "Error during run.", detail=f"Detail: {str(e)}")
                 error_during_run()
 
+            if stop_run:
+                error_during_run()
+
         thread_run = Thread(target=start_run, daemon=True)
         thread_run.start()
 
@@ -1237,13 +1249,14 @@ if __name__ == "__main__":
 
 def start_test(test_code:str) -> str:
     """Used by test.py for test a funcionalyty."""
-    global code, ram, accumulator, flags, run_step, end_run, output_test, no_wozm, stack_ptr
+    global code, ram, accumulator, flags, run_step, end_run, output_test, no_wozm, stack_ptr, stop_run
 
     # reset value:
     run_step = 0
     end_run = False
     no_wozm = True
     stack_ptr = STACK_PTR
+    stop_run = _STOP_RUN
 
     ram = dict(BASE_RAM)
     accumulator = dict(BASE_ACCUMULATOR)
