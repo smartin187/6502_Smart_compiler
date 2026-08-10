@@ -710,6 +710,43 @@ def set_flag_for_LD(byte_hex: str) -> None:
     flags["Z"] = 1 if v == 0 else 0
     flags["N"] = 1 if (v & 0x80) else 0
 
+STACK_PTR = 0xFF
+
+stack_ptr = STACK_PTR
+
+def set_on_stack(value: str) -> None:
+    """Set a value on the stack.
+    The stack is on memort at 0x100 - 0x1FF."""
+    global stack_ptr
+
+    adress_stack = 0x100 + stack_ptr
+    hex_adress = hex(adress_stack)[2:].upper().zfill(4)
+
+    ram[hex_adress] = value
+
+    stack_ptr -= 1
+
+    if stack_ptr < 0:
+        MessageUser.show_error("Error", "Stack overflow.", detail="The stack is full. You can't push more values on the stack.\n(the stack ptr is > 0).")
+        #sys.exit(1)
+
+def get_from_stack() -> str:
+    """Get the value from the scack pointer."""
+    global stack_ptr
+
+    stack_ptr += 1
+
+    adress_stack = 0x100 + stack_ptr
+    hex_adress = hex(adress_stack)[2:].upper().zfill(4)
+
+    if stack_ptr > STACK_PTR:
+        MessageUser.show_error("Error", "Stack underflow.", detail="The stack is empty. You can't pop more values from the stack.\n(the stack ptr is > 0xFF).")
+        #sys.exit(1)
+
+    return ram[hex_adress]
+
+    
+
 def run_smart() -> None:
     """Run smart code."""
     global code, ram, accumulator, flags, run_step, end_run
@@ -881,7 +918,12 @@ def run_smart() -> None:
                         run_step += 2
                     
                     else:
-                        return_ardess = run_step + 2
+                        return_adress = START + run_step + 1
+
+                        hex_return_adress = hex(return_adress)[2:].upper().zfill(4)
+
+                        set_on_stack(hex_return_adress[2:])
+                        set_on_stack(hex_return_adress[:2])
 
                         adress_call = int(code[run_step + 1] + code[run_step], base=16) - START + 1
 
@@ -901,7 +943,13 @@ def run_smart() -> None:
                     break
 
                 case "60":
-                    run_step = return_ardess
+                    #run_step = return_ardess
+
+                    adress = get_from_stack() + get_from_stack()    # the 2 bytes of adress
+
+                    #adress = adress[2:] + adress[:2]  # reverse the bytes
+
+                    run_step = int(adress, base=16) - START + 1
 
                 case "4C":   # goto
                     goto = code[run_step + 2] + code[run_step + 1]
@@ -1138,12 +1186,13 @@ if __name__ == "__main__":
 
 def start_test(test_code:str) -> str:
     """Used by test.py for test a funcionalyty."""
-    global code, ram, accumulator, flags, run_step, end_run, output_test, no_wozm
+    global code, ram, accumulator, flags, run_step, end_run, output_test, no_wozm, stack_ptr
 
     # reset value:
     run_step = 0
     end_run = False
     no_wozm = True
+    stack_ptr = STACK_PTR
 
     ram = dict(BASE_RAM)
     accumulator = dict(BASE_ACCUMULATOR)
