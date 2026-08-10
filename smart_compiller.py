@@ -359,9 +359,11 @@ def compile_smarty(
                     if not imediate_value(hex_value_2):     # adress value
                         asm = f"{hex_value_1}18 6D {hex_value_2[3:]}"
 
+                        #print("adress : ", hex_value_2)
 
                     else:
                         asm = f"{hex_value_1}18 69 {hex_value_2[3:]}"       #valeur imédiate
+                        #print("imadiate : ", hex_value_2)
                         
                     return asm
 
@@ -608,7 +610,7 @@ def compile_smarty(
                     else:
                         raise SmartError(f"Function '{func_name_value}' not exist.", line_conter, set_error=set_error_exception)
 
-                    text_code = f"!smart_call_func|{func_name_value}|{caller_ctx}|{adress_conter + counter_adress_value}"
+                    text_code = f"!smart_call_func|{func_name_value}|{caller_ctx}"
 
                     
                     function_replace.append(text_code)
@@ -1466,7 +1468,7 @@ def compile_smarty(
 
                 adress_conter += 3#13
 
-                text_code = f"!smart_call_func|{function_name}|{caller_ctx}|{adress_conter}"
+                text_code = f"!smart_call_func|{function_name}|{caller_ctx}"
 
                 function_replace.append(text_code)
 
@@ -1561,14 +1563,16 @@ def compile_smarty(
             for function in function_replace:
 
                 parts = function.split("|")
-                if len(parts) == 3:
+                """if len(parts) == 3:
                     function_name_tmp = parts[1]
                     caller_ctx_tmp = CALLER_MAIN
                     r_offset = int(parts[2])
                 else:
                     function_name_tmp = parts[1]
                     caller_ctx_tmp = parts[2]
-                    r_offset = int(parts[3])
+                    r_offset = int(parts[3])"""
+
+                function_name_tmp = parts[1]
 
                 adress_func = CODE_ADRESSE + function_name_usr[function_name_tmp].function_adress + 1
 
