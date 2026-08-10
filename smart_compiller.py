@@ -1559,7 +1559,6 @@ def compile_smarty(
         for i in range(2):
             for function in function_replace:
 
-                parts = function.split("|")
                 """if len(parts) == 3:
                     function_name_tmp = parts[1]
                     caller_ctx_tmp = CALLER_MAIN
@@ -1569,7 +1568,7 @@ def compile_smarty(
                     caller_ctx_tmp = parts[2]
                     r_offset = int(parts[3])"""
 
-                function_name_tmp = parts[1]
+                function_name_tmp = function.split("|")[1]
 
                 adress_func = CODE_ADRESSE + function_name_usr[function_name_tmp].function_adress + 1
 
