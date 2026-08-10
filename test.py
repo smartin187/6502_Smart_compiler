@@ -1250,6 +1250,49 @@ try:
                 print: "OK";
             """,
             output="FAOK"
+        ),
+        Test(
+            "Recurcive function",
+            code="""
+                .n = 3;
+                .r = 1;
+
+                void factoriel{;
+                    if .n == 1 {;
+                        print: "OK";
+                        }
+                    else {;
+                        .r = .r * .n;
+                        .n = .n - 1;
+
+                        factoriel:;
+                        }
+                    
+                    }
+
+                factoriel:;
+                print: '0' + .r;
+            """,
+            output="OK6"
+        ),
+        Test(
+            "Advenced return function",
+            code="""
+                void f1{;
+                    print: "F1";
+                    return 'A';
+                }
+
+                void f2{;
+                    print: "F2";
+                    return f1:;
+                }
+
+                print: f2: + 1;
+                print: 1 + f1:;
+                print: "OK";
+            """,
+            output="F2F1BF1BOK"
         )
     )
 

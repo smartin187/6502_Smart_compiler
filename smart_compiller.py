@@ -54,7 +54,7 @@ def compile_smarty(
         function_mode:dict[
             str,
             bool | str | list | dict | smart_obj.SmartFunction | None
-        ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "function_caller_ctx":"", "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[], "while_mode":False},
+        ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[], "while_mode":False},
         bin_outpout_file:bool=False,
         module_name:str="*", # module name is '*' if main module.
         regroup_bytes:int=-1 # for the render of code. -1 for 1 line of hex, other value for regroup bytes in lines.
@@ -359,9 +359,11 @@ def compile_smarty(
                     if not imediate_value(hex_value_2):     # adress value
                         asm = f"{hex_value_1}18 6D {hex_value_2[3:]}"
 
+                        #print("adress : ", hex_value_2)
 
                     else:
-                        asm = f"{hex_value_1}18 69 {hex_value_2[3:]}"       #valeur imédiate
+                        asm = f"{hex_value_1}18 69 {hex_value_2[3:]}"       # immediate value
+                        #print("imadiate : ", hex_value_2)
                         
                     return asm
 
@@ -608,9 +610,7 @@ def compile_smarty(
                     else:
                         raise SmartError(f"Function '{func_name_value}' not exist.", line_conter, set_error=set_error_exception)
 
-                    adress_conter += 13
-
-                    text_code = f"!smart_call_func|{func_name_value}|{caller_ctx}|{adress_conter + counter_adress_value}"
+                    text_code = f"!smart_call_func|{func_name_value}"
 
                     
                     function_replace.append(text_code)
@@ -629,7 +629,7 @@ def compile_smarty(
         asm_v = eval_value()
 
         if add_adress and not recursiv_value:
-            adress_conter += asm_v.count(" ")
+            adress_conter += asm_v.count(" ") + asm_v.count("!smart_call_func|") * 3
 
         return asm_v
 
@@ -826,9 +826,6 @@ def compile_smarty(
     function_replace = function_mode["global_function_replace"] if function_mode["function_mode"] else []
 
     adress_conter = 0
-
-    CALLER_MAIN = "__MAIN__"
-    caller_ctx = function_mode["function_caller_ctx"] if (function_mode["function_mode"] and len(function_mode) >= 5) else CALLER_MAIN
 
     if function_mode["function_mode"]:
         code_line = function_mode["source_code"].split("\n")
@@ -1036,11 +1033,11 @@ def compile_smarty(
 
             code_if = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
-            new_adress = code_if.count(" ") + code_if.count("!smart_call_func|") * 13 + code_if.count("!smart_tmp:goto|") * 3 - code_if.count("!smart_tmp:goto|")
+            new_adress = code_if.count(" ") + code_if.count("!smart_call_func|") * 3 + code_if.count("!smart_tmp:goto|") * 3 - code_if.count("!smart_tmp:goto|")
 
             hex_adress_if = hex(CODE_ADRESSE + adress_conter + new_adress)[2:].upper()
             hex_adress_if = "0" * (4 - len(hex_adress_if)) + hex_adress_if
@@ -1081,7 +1078,7 @@ def compile_smarty(
 
             code_compile += value_tmp
 
-            delta_branch = hex(value_tmp.count(" ") + value_tmp.count("!smart_call_func|") * 13 + 9)[2:].upper()
+            delta_branch = hex(value_tmp.count(" ") + value_tmp.count("!smart_call_func|") * 3 + 9)[2:].upper()
 
             code_compile = code_compile.replace("!smart_tmp:elif", delta_branch)
 
@@ -1091,11 +1088,11 @@ def compile_smarty(
 
             code_elif = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
-            new_adress = code_elif.count(" ") + code_elif.count("!smart_call_func|") * 13 + code_elif.count("!smart_tmp:goto|") * 3 - code_elif.count("!smart_tmp:goto|")
+            new_adress = code_elif.count(" ") + code_elif.count("!smart_call_func|") * 3 + code_elif.count("!smart_tmp:goto|") * 3 - code_elif.count("!smart_tmp:goto|")
 
             hex_adress_elif = hex(CODE_ADRESSE + adress_conter + new_adress)[2:].upper()
             hex_adress_elif = "0" * (4 - len(hex_adress_elif)) + hex_adress_elif
@@ -1130,11 +1127,11 @@ def compile_smarty(
 
             code_else = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
-            new_adress = code_else.count(" ") + code_else.count("!smart_call_func|") * 13 + code_else.count("!smart_tmp:goto|") * 3 - code_else.count("!smart_tmp:goto|")
+            new_adress = code_else.count(" ") + code_else.count("!smart_call_func|") * 3 + code_else.count("!smart_tmp:goto|") * 3 - code_else.count("!smart_tmp:goto|")
 
             hex_adress_else = hex(CODE_ADRESSE + adress_conter + new_adress)[2:].upper()
             hex_adress_else = "0" * (4 - len(hex_adress_else)) + hex_adress_else
@@ -1169,11 +1166,11 @@ def compile_smarty(
 
             code_while = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":caller_ctx, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter
             )
 
-            new_adress = code_while.count(" ") + code_while.count("!smart_call_func|") * 13 + code_while.count("!smart_tmp:goto|") * 3 - code_while.count("!smart_tmp:goto|")
+            new_adress = code_while.count(" ") + code_while.count("!smart_call_func|") * 3 + code_while.count("!smart_tmp:goto|") * 3 - code_while.count("!smart_tmp:goto|")
 
             adress_conter += new_adress
             code_compile += code_while
@@ -1466,9 +1463,9 @@ def compile_smarty(
 
                 # use a goto
 
-                adress_conter += 13
+                adress_conter += 3
 
-                text_code = f"!smart_call_func|{function_name}|{caller_ctx}|{adress_conter}"
+                text_code = f"!smart_call_func|{function_name}"
 
                 function_replace.append(text_code)
 
@@ -1512,7 +1509,7 @@ def compile_smarty(
         print(f"[{PROGRESS_BAR_CHAR['completed'] * advencement}{PROGRESS_BAR_CHAR['not_completed'] * (PROGRESS_BAR_LEN - advencement)}]", end="\r")
 
 
-# -------------------------------End compille loop----------------------------------------------
+# ------------------------------- End compille loop ----------------------------------------------
         
     if function_mode["if_mode"]:
         pass
@@ -1521,7 +1518,7 @@ def compile_smarty(
         code_compile += "4C !smart_module_goto"
 
     elif function_mode["function_mode"]:
-        code_compile += "4C 00 00 "
+        code_compile += "60 "
     
     else:
         code_compile += "00 "
@@ -1539,7 +1536,7 @@ def compile_smarty(
 
             function_name_usr[function].code_compile_f = compile_smarty(
                 make_file=False,
-                function_mode={"function_mode":True, "source_code":code, "global_function":function_name_usr, "global_function_replace":function_replace, "function_caller_ctx":function, "global_var":smart_var, "smart_func":smart_func, "if_mode":False},
+                function_mode={"function_mode":True, "source_code":code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":smart_func, "if_mode":False},
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1
             )
 
@@ -1555,21 +1552,13 @@ def compile_smarty(
             
             code_compile += code_func
 
-            adress_conter += code_func.count(" ") + 13 * code_func.count("!smart_call_func|")
+            adress_conter += code_func.count(" ") + 3 * code_func.count("!smart_call_func|")
 
         # call function
         for i in range(2):
             for function in function_replace:
 
-                parts = function.split("|")
-                if len(parts) == 3:
-                    function_name_tmp = parts[1]
-                    caller_ctx_tmp = CALLER_MAIN
-                    r_offset = int(parts[2])
-                else:
-                    function_name_tmp = parts[1]
-                    caller_ctx_tmp = parts[2]
-                    r_offset = int(parts[3])
+                function_name_tmp = function.split("|")[1]
 
                 adress_func = CODE_ADRESSE + function_name_usr[function_name_tmp].function_adress + 1
 
@@ -1577,19 +1566,7 @@ def compile_smarty(
                 hex_adress_function = "0" * (4 - len(hex_adress_function)) + hex_adress_function
                 hex_adress_function = f"{hex_adress_function[2:]} {hex_adress_function[:2]}"
 
-                func_len = function_name_usr[function_name_tmp].code_compile_f.count(" ") + 13 * function_name_usr[function_name_tmp].code_compile_f.count("!smart_call_func|")
-
-                return_aress = hex(adress_func + func_len - 1)[2:].upper()
-                return_aress = "0" * (4 - len(return_aress)) + return_aress
-
-                return_aress_2 = hex(adress_func + func_len - 2)[2:].upper()
-                return_aress_2 = "0" * (4 - len(return_aress_2)) + return_aress_2
-
-                caller_base = CODE_ADRESSE if caller_ctx_tmp == CALLER_MAIN else CODE_ADRESSE + function_name_usr[caller_ctx_tmp].function_adress + 1
-                r_adress = hex(caller_base + r_offset)[2:].upper()
-                r_adress = "0" * (4 - len(r_adress)) + r_adress
-
-                code_compile = code_compile.replace(function, f"A9 {r_adress[:2]} 8D {return_aress[2:]} {return_aress[:2]} A9 {r_adress[2:]} 8D {return_aress_2[2:]} {return_aress_2[:2]} 4C {hex_adress_function} ")
+                code_compile = code_compile.replace(function, f"20 {hex_adress_function} ")
 
                 function_name_usr[function_name_tmp].called_function = True
 

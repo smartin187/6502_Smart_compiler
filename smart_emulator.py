@@ -331,6 +331,8 @@ if GUI_MODE:        # set the button for ram and code
             if selected_index_flags is not None:
                 flags_info.selection_set(selected_index_flags)
 
+            stack_ptr_info.set(f"{stack_ptr} ({hex(stack_ptr)})")
+
             window_memory.after(100, update_memory)
 
         window_memory = tk.Toplevel(window_emulator)
@@ -469,6 +471,55 @@ if GUI_MODE:        # set the button for ram and code
 
         frame_flags.grid(column=0, row=2)
 
+        # stack ptr
+
+        frame_ptr = tk.LabelFrame(window_memory, text="Stack pointer)")
+        frame_ptr.grid(column=1, row=2)
+
+        stack_ptr_info = tk.StringVar(window_memory)
+
+        test_info_ptr = tk.Label(frame_ptr, text="The Stack pointer (SP) is an offset from 0x100.\nThe SP can be between 0x00 and 0xFF.\nThe stack is on RAM from 0x100 to 0x1FF.\nFor edit stack, edit the RAM from 0x100 to 0x1FF.")
+        test_info_ptr.pack()
+
+        label_stack_ptr = tk.Label(frame_ptr, textvariable=stack_ptr_info)
+        label_stack_ptr.pack()
+
+        def edit_stack_ptr() -> None:
+            """Open a window for edit the stack pointer value."""
+            def validate() -> None:
+                """Edit the stack pointer with the new value."""
+                global stack_ptr
+                new_value = entry_value.get().strip()
+
+                try:
+                    value = int(new_value)
+                except ValueError:
+                    MessageUser.show_error("Error", "Invalid value. Please enter an integer between 0 and 255.")
+                    return
+
+                if not 0 <= value <= 255:
+                    MessageUser.show_error("Error", "Invalid value. Please enter an integer between 0 and 255.")
+                    return
+
+                stack_ptr = value
+
+                window.destroy()
+
+            window = tk.Toplevel(window_memory)
+            window.title("Edit Stack pointer")
+
+            text_info = tk.Label(window, text="Enter the new value for the stack pointer.\nValue must be between 0 and 255.")
+            text_info.pack()
+
+            entry_value = tk.Entry(window, width=5)
+            entry_value.insert(0, str(stack_ptr))
+            entry_value.pack()
+
+            button_validate = tk.Button(window, text="Validate", command=validate)
+            button_validate.pack()
+
+        button_edit_stack_ptr = tk.Button(frame_ptr, text="Edit stack pointer", command=edit_stack_ptr)
+        button_edit_stack_ptr.pack()
 
         update_memory()
 
@@ -710,6 +761,49 @@ def set_flag_for_LD(byte_hex: str) -> None:
     flags["Z"] = 1 if v == 0 else 0
     flags["N"] = 1 if (v & 0x80) else 0
 
+STACK_PTR = 0xFF
+
+stack_ptr = STACK_PTR
+
+_STOP_RUN = False
+
+stop_run = _STOP_RUN
+
+def set_on_stack(value: str) -> None:
+    """Set a value on the stack.
+    The stack is on memort at 0x100 - 0x1FF."""
+    global stack_ptr
+
+    adress_stack = 0x100 + stack_ptr
+    hex_adress = hex(adress_stack)[2:].upper().zfill(4)
+
+    ram[hex_adress] = value
+
+    stack_ptr -= 1
+
+    if stack_ptr < 0:
+        global stop_run
+        MessageUser.show_error("Error", "Stack overflow.", detail="The stack is full. You can't push more values on the stack.\n(the stack ptr is > 0).")
+        stop_run = True
+
+def get_from_stack() -> str:
+    """Get the value from the scack pointer."""
+    global stack_ptr
+
+    stack_ptr += 1
+
+    adress_stack = 0x100 + stack_ptr
+    hex_adress = hex(adress_stack)[2:].upper().zfill(4)
+
+    if stack_ptr > STACK_PTR:
+        global stop_run
+        MessageUser.show_error("Error", "Stack underflow.", detail="The stack is empty. You can't pop more values from the stack.\n(the stack ptr is > 0xFF).")
+        stop_run = True
+
+    return ram[hex_adress]
+
+    
+
 def run_smart() -> None:
     """Run smart code."""
     global code, ram, accumulator, flags, run_step, end_run
@@ -732,6 +826,9 @@ def run_smart() -> None:
     return_ardess = 0
 
     while run_step < len(code):
+
+        if stop_run:
+            break
 
         if run_step < 0:
             MessageUser.show_error("Error", "Run step before 0x400.\nRun step is on variable adress.\n", detail="This can be caused by a wrong jump or branch in the code.")
@@ -881,7 +978,12 @@ def run_smart() -> None:
                         run_step += 2
                     
                     else:
-                        return_ardess = run_step + 2
+                        return_adress = START + run_step + 1
+
+                        hex_return_adress = hex(return_adress)[2:].upper().zfill(4)
+
+                        set_on_stack(hex_return_adress[2:])
+                        set_on_stack(hex_return_adress[:2])
 
                         adress_call = int(code[run_step + 1] + code[run_step], base=16) - START + 1
 
@@ -901,7 +1003,13 @@ def run_smart() -> None:
                     break
 
                 case "60":
-                    run_step = return_ardess
+                    #run_step = return_ardess
+
+                    adress = get_from_stack() + get_from_stack()    # the 2 bytes of adress
+
+                    #adress = adress[2:] + adress[:2]  # reverse the bytes
+
+                    run_step = int(adress, base=16) - START + 1
 
                 case "4C":   # goto
                     goto = code[run_step + 2] + code[run_step + 1]
@@ -1125,6 +1233,9 @@ if __name__ == "__main__":
                 MessageUser.show_error("Error", "Error during run.", detail=f"Detail: {str(e)}")
                 error_during_run()
 
+            if stop_run:
+                error_during_run()
+
         thread_run = Thread(target=start_run, daemon=True)
         thread_run.start()
 
@@ -1138,12 +1249,14 @@ if __name__ == "__main__":
 
 def start_test(test_code:str) -> str:
     """Used by test.py for test a funcionalyty."""
-    global code, ram, accumulator, flags, run_step, end_run, output_test, no_wozm
+    global code, ram, accumulator, flags, run_step, end_run, output_test, no_wozm, stack_ptr, stop_run
 
     # reset value:
     run_step = 0
     end_run = False
     no_wozm = True
+    stack_ptr = STACK_PTR
+    stop_run = _STOP_RUN
 
     ram = dict(BASE_RAM)
     accumulator = dict(BASE_ACCUMULATOR)
