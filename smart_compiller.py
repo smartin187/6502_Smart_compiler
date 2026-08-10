@@ -362,7 +362,7 @@ def compile_smarty(
                         #print("adress : ", hex_value_2)
 
                     else:
-                        asm = f"{hex_value_1}18 69 {hex_value_2[3:]}"       #valeur imédiate
+                        asm = f"{hex_value_1}18 69 {hex_value_2[3:]}"       # immediate value
                         #print("imadiate : ", hex_value_2)
                         
                     return asm
@@ -1509,7 +1509,7 @@ def compile_smarty(
         print(f"[{PROGRESS_BAR_CHAR['completed'] * advencement}{PROGRESS_BAR_CHAR['not_completed'] * (PROGRESS_BAR_LEN - advencement)}]", end="\r")
 
 
-# -------------------------------End compille loop----------------------------------------------
+# ------------------------------- End compille loop ----------------------------------------------
         
     if function_mode["if_mode"]:
         pass
@@ -1518,7 +1518,6 @@ def compile_smarty(
         code_compile += "4C !smart_module_goto"
 
     elif function_mode["function_mode"]:
-        #code_compile += "4C 00 00 "    # old system
         code_compile += "60 "
     
     else:
