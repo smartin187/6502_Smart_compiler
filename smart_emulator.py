@@ -331,6 +331,8 @@ if GUI_MODE:        # set the button for ram and code
             if selected_index_flags is not None:
                 flags_info.selection_set(selected_index_flags)
 
+            stack_ptr_info.set(f"{stack_ptr} ({hex(stack_ptr)})")
+
             window_memory.after(100, update_memory)
 
         window_memory = tk.Toplevel(window_emulator)
@@ -469,6 +471,55 @@ if GUI_MODE:        # set the button for ram and code
 
         frame_flags.grid(column=0, row=2)
 
+        # stack ptr
+
+        frame_ptr = tk.LabelFrame(window_memory, text="Stack pointer)")
+        frame_ptr.grid(column=1, row=2)
+
+        stack_ptr_info = tk.StringVar(window_memory)
+
+        test_info_ptr = tk.Label(frame_ptr, text="The Stack pointer (SP) is an offset from 0x100.\nThe SP can be between 0x00 and 0xFF.\nThe stack is on RAM from 0x100 to 0x1FF.\nFor edit stack, edit the RAM from 0x100 to 0x1FF.")
+        test_info_ptr.pack()
+
+        label_stack_ptr = tk.Label(frame_ptr, textvariable=stack_ptr_info)
+        label_stack_ptr.pack()
+
+        def edit_stack_ptr() -> None:
+            """Open a window for edit the stack pointer value."""
+            def validate() -> None:
+                """Edit the stack pointer with the new value."""
+                global stack_ptr
+                new_value = entry_value.get().strip()
+
+                try:
+                    value = int(new_value)
+                except ValueError:
+                    MessageUser.show_error("Error", "Invalid value. Please enter an integer between 0 and 255.")
+                    return
+
+                if not 0 <= value <= 255:
+                    MessageUser.show_error("Error", "Invalid value. Please enter an integer between 0 and 255.")
+                    return
+
+                stack_ptr = value
+
+                window.destroy()
+
+            window = tk.Toplevel(window_memory)
+            window.title("Edit Stack pointer")
+
+            text_info = tk.Label(window, text="Enter the new value for the stack pointer.\nValue must be between 0 and 255.")
+            text_info.pack()
+
+            entry_value = tk.Entry(window, width=5)
+            entry_value.insert(0, str(stack_ptr))
+            entry_value.pack()
+
+            button_validate = tk.Button(window, text="Validate", command=validate)
+            button_validate.pack()
+
+        button_edit_stack_ptr = tk.Button(frame_ptr, text="Edit stack pointer", command=edit_stack_ptr)
+        button_edit_stack_ptr.pack()
 
         update_memory()
 
