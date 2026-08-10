@@ -610,7 +610,7 @@ def compile_smarty(
                     else:
                         raise SmartError(f"Function '{func_name_value}' not exist.", line_conter, set_error=set_error_exception)
 
-                    text_code = f"!smart_call_func|{func_name_value}|{caller_ctx}"
+                    text_code = f"!smart_call_func|{func_name_value}"
 
                     
                     function_replace.append(text_code)
@@ -1466,9 +1466,9 @@ def compile_smarty(
 
                 # use a goto
 
-                adress_conter += 3#13
+                adress_conter += 3
 
-                text_code = f"!smart_call_func|{function_name}|{caller_ctx}"
+                text_code = f"!smart_call_func|{function_name}"
 
                 function_replace.append(text_code)
 
