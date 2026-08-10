@@ -1559,15 +1559,6 @@ def compile_smarty(
         for i in range(2):
             for function in function_replace:
 
-                """if len(parts) == 3:
-                    function_name_tmp = parts[1]
-                    caller_ctx_tmp = CALLER_MAIN
-                    r_offset = int(parts[2])
-                else:
-                    function_name_tmp = parts[1]
-                    caller_ctx_tmp = parts[2]
-                    r_offset = int(parts[3])"""
-
                 function_name_tmp = function.split("|")[1]
 
                 adress_func = CODE_ADRESSE + function_name_usr[function_name_tmp].function_adress + 1
@@ -1575,22 +1566,6 @@ def compile_smarty(
                 hex_adress_function = hex(adress_func)[2:].upper()
                 hex_adress_function = "0" * (4 - len(hex_adress_function)) + hex_adress_function
                 hex_adress_function = f"{hex_adress_function[2:]} {hex_adress_function[:2]}"
-
-                    # old system
-                """func_len = function_name_usr[function_name_tmp].code_compile_f.count(" ") + 13 * function_name_usr[function_name_tmp].code_compile_f.count("!smart_call_func|")
-
-                return_aress = hex(adress_func + func_len - 1)[2:].upper()
-                return_aress = "0" * (4 - len(return_aress)) + return_aress
-
-                return_aress_2 = hex(adress_func + func_len - 2)[2:].upper()
-                return_aress_2 = "0" * (4 - len(return_aress_2)) + return_aress_2
-
-                caller_base = CODE_ADRESSE if caller_ctx_tmp == CALLER_MAIN else CODE_ADRESSE + function_name_usr[caller_ctx_tmp].function_adress + 1
-                r_adress = hex(caller_base + r_offset)[2:].upper()
-                r_adress = "0" * (4 - len(r_adress)) + r_adress
-
-                code_compile = code_compile.replace(function, f"A9 {r_adress[:2]} 8D {return_aress[2:]} {return_aress[:2]} A9 {r_adress[2:]} 8D {return_aress_2[2:]} {return_aress_2[:2]} 4C {hex_adress_function} ")
-                """
 
                 code_compile = code_compile.replace(function, f"20 {hex_adress_function} ")
 
