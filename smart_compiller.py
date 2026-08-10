@@ -608,8 +608,6 @@ def compile_smarty(
                     else:
                         raise SmartError(f"Function '{func_name_value}' not exist.", line_conter, set_error=set_error_exception)
 
-                    adress_conter += 3#13
-
                     text_code = f"!smart_call_func|{func_name_value}|{caller_ctx}|{adress_conter + counter_adress_value}"
 
                     
@@ -629,7 +627,7 @@ def compile_smarty(
         asm_v = eval_value()
 
         if add_adress and not recursiv_value:
-            adress_conter += asm_v.count(" ")
+            adress_conter += asm_v.count(" ") + asm_v.count("!smart_call_func|") * 3
 
         return asm_v
 
