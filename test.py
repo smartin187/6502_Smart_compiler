@@ -535,6 +535,14 @@ try:
                 print: ~a;
             """,
             output="\r'\"\\"
+        ),
+        Test(
+            "Escape character escaped at the end of str",
+            code=r"""
+                ~a = "AA\\";
+                print: ~a;
+            """,
+            output="AA\\"
         )
     )
 
