@@ -91,8 +91,20 @@ def split_code(
 
         
         else:
-            if char == open_str and last_char != "\\":
-                on_str = False
+            if char == open_str:
+
+                before_close = code[0:i]
+
+                counter = 0
+
+                for _char in reversed(before_close):
+                    if _char == "\\":
+                        counter += 1
+                    else:
+                        break
+
+                if counter % 2 == 0:
+                    on_str = False
             
             new_element.append(char)
 

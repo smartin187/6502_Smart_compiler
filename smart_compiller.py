@@ -183,7 +183,10 @@ def compile_smarty(
         if char_type.startswith("'") and char_type.endswith("'"):
             char = char_type[1:-1]
 
-            if len(char) == 2 and char.startswith("\\"):
+            if len(char) == 2 and char == "\\\\":
+                code_ascii = ord("\\")
+
+            elif len(char) == 2 and char.startswith("\\"):
                 if char in EscapeChar.ESCAPE_CHAR:
                     code_ascii = ord(EscapeChar.ESCAPE_CHAR[char])
                 else:
