@@ -32,7 +32,7 @@ Smart comments use two slashes: `//`. Everything that follows on the same line i
 
 #### Value types
 
-There are currently two value types: a hexadecimal value and a char (a single character). There is also a third type that can only be used in the [print](#print) function: a string of characters (`str`).
+There are currently two value types: a hexadecimal value and a char (a single character).
 
 _Simple value (on 1 byte):_
 
@@ -44,7 +44,7 @@ Can be `True` or `False` (upper case in first character).
 
 This value is a 1-byte hexadecimal number, ranging from `00` to `FF`.
 
-**You need to set `0x` before:
+**You need to set `0x` before:**
 - `0x00`
 - `0x41`
 
@@ -79,6 +79,8 @@ This value is saved on 21 bytes, so the max length of a `str` of `list` is 21 ch
 It starts and ends with double quotes.
 
 Allowed characters are the same as for [`char`](#char-value).
+
+> **Only on print function**, the `str` can be longer than 21 **if the string is know at the compile time!**. For other `str`, the max length is 21.
 
 **Escape caracters**
 
@@ -436,6 +438,10 @@ For use your function:
 name_of_function:;
 ```
 
+You can do a recursive function. Smart use the stack for the recursive function. You can have a max recursive of 128 (`256/2`).
+
+> If you exced the max recursive of 128, you will have stack overflow and the program can crash.
+
 If your function is a return-function, you need the line:
 ```Smart
 void returnfonction{;
@@ -443,6 +449,8 @@ void returnfonction{;
     return 1;
 }
 ```
+
+> **Carfull**: some bug are to fix with return function !
 
 #### Runtime error
 
