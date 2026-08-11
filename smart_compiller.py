@@ -180,16 +180,11 @@ def compile_smarty(
             """Raise SmartError for error if the char value don't have 1 character."""
             raise SmartError(f"The char value `{char_type}` don't have 1 character.")
 
-        print("char_type", char_type)
-
         if char_type.startswith("'") and char_type.endswith("'"):
             char = char_type[1:-1]
 
-            print("nouveau char", char)
-
             if len(char) == 2 and char == "\\\\":
                 code_ascii = ord("\\")
-                print("ok")
 
             elif len(char) == 2 and char.startswith("\\"):
                 if char in EscapeChar.ESCAPE_CHAR:
@@ -583,8 +578,6 @@ def compile_smarty(
 
             elif value[0] == "'":
                 counter_adress_value += 2
-
-                print("--- value ---", value)
 
                 ascii_code = get_char(value)
 
