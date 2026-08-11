@@ -534,7 +534,7 @@ try:
                 ~a = "\r\'\"\\";
                 print: ~a;
             """,
-            output="\r'\"\\"
+            output="\n'\"\\"    # carfull: the \r on emulatore is replace by \n
         ),
         Test(
             "Escape character escaped at the end of str",
