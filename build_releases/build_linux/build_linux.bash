@@ -16,3 +16,4 @@ cp dist/main build_publish/linux/smart_compiler
 pyinstaller --onefile smart_emulator.py
 
 cp dist/smart_emulator build_publish/linux/smart_emulator
+
