@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# This script make the deb package for Linux, of smart compiler and smart emulator.
+
+VERSION="1.0"
+ARCH="amd64"
+
+# Make the structure
+
+mkdir -p build_publish/tmp_deb/DEBIAN/
+mkdir -p build_publish/tmp_deb/usr/bin/
+
+echo -e "Package: smart-compiler-emulator\nVersion: ${VERSION}\nSection: development\nPriority: optional\nArchitecture: ${ARCH}\nDepends:\nDescription: The Smart Compiler and Smart Emulator\n" > build_publish/tmp_deb/DEBIAN/control
+
+cp build_publish/linux/smart_compiler build_publish/tmp_deb/usr/bin/smart_compiler
+cp build_publish/linux/smart_emulator build_publish/tmp_deb/usr/bin/smart_emulator
+
+
+dpkg-deb --build build_publish/tmp_deb build_publish/smart-compiler-emulator_${VERSION}_${ARCH}.deb
