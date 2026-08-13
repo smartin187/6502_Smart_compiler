@@ -8,7 +8,7 @@ from compiller_tool.color_tool import Colors
 
 FROZEN = getattr(sys, 'frozen', False)  # if the programme is compiled by Pyinstaller
 
-SMART_VERSION = "v0.0.6"
+SMART_VERSION = "v0.0.7"
 
 ONE_LINUX = sys.platform == "linux"
 
