@@ -13,4 +13,6 @@ mkdir -p build_publish
 
 ./build_releases/build_linux/build_all_linux.bash
 
-echo "Compillation finished. Executable files are in the build_publish directory."
+./build_releases/build_wine/build_wine.bash
+
+echo "Compilation finished. Executable files are in the build_publish directory."
