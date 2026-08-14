@@ -6,6 +6,8 @@
 
 # Need wine, and Pyinstaller on wine.
 
+set -e
+
 mkdir -p build_publish/windows/
 
 # ---- build main.py ----

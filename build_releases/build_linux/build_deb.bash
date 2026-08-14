@@ -2,6 +2,8 @@
 
 # This script make the deb package for Linux, of smart compiler and smart emulator.
 
+set -e
+
 VERSION="1.0"
 ARCH="amd64"
 

@@ -2,6 +2,8 @@
 
 # This script compile all scripts in executable
 
+set -e
+
 cd ..
 
 if [ -d "build_publish" ]; then

@@ -3,6 +3,8 @@
 # For make executable binary for Linux.
 # It compile `main.py` and `smart_emulator.py`
 
+set -e
+
 mkdir -p build_publish/linux/
 
 # ---- build main.py ----
