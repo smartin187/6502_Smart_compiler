@@ -66,3 +66,27 @@ pyinstaller --version
 You need a Debian or Debian-based Linux for have `dpkg` installed.
 
 If you don't have a Debian orDebian-based, you can try a virtual machine or Docker.
+
+#### Wine
+
+For compile for Windows from Linux, you can use Wine.
+
+You need Wine installed.
+
+Moreover, you need to install Pyinstaller on Wine (and Python 3).
+
+##### Install Pyinstaller
+
+Install Python 3 on Wine, and make sure have `pip` installed.
+
+Next install Pyinstaller on Wine:
+
+```bash
+wine pip install pyinstaller
+```
+
+Verify with:
+
+```bash
+wine pyinstaller --version
+```
