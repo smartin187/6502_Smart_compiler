@@ -6,6 +6,8 @@ For compile all scripts, use the [`build_all.bash`](./build_all.bash) script.
 
 At the end you get executable files, on the directory `build_publish`.
 
+> **If you have probleme with dependencies, see [dependencies](#dependencies) section.**
+
 The most easy is `build_all.bash`, but you can use other script if you don't like to compile for all:
 
 ## Build all
@@ -28,3 +30,39 @@ If you want only the binary files (not Debian package), use the script [`build_l
 
 Run the script [`build_linux/build_deb.bash`](./build_linux/build_deb.bash) for make the Debian package.
 
+## Dependencies
+
+Run `check_dependencies.bash` for auto check the dependencies.
+
+The following dependencies are required for build the releases:
+
+- `pyinstaller` (need Python 3)
+- `dpkg-deb`, need Debian or Debian-based Linux for have `dpkg`.
+
+### Install dependencies
+
+> If a missing dependency, the script `check_dependencies.bash` can install it. Only `dpkg` can't be installed automatically...
+
+#### Pyinstaller
+
+You need before Python 3, and make sure have `pip` or `pip3` installed.
+
+For install `pyinstaller`, run the command:
+
+```bash
+pip install pyinstaller
+```
+
+> If command fail, replace `pip` by `pip3` in the command.
+
+Verify with:
+
+```bash
+pyinstaller --version
+```
+
+#### Dpkg
+
+You need a Debian or Debian-based Linux for have `dpkg` installed.
+
+If you don't have a Debian orDebian-based, you can try a virtual machine or Docker.
