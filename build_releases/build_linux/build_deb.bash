@@ -17,3 +17,5 @@ cp build_publish/linux/smart_emulator build_publish/tmp_deb/usr/bin/smart_emulat
 
 
 dpkg-deb --build build_publish/tmp_deb build_publish/linux/smart-compiler-emulator_${VERSION}_${ARCH}.deb
+
+rm -r build_publish/tmp_deb
