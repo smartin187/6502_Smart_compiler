@@ -30,6 +30,15 @@ If you want only the binary files (not Debian package), use the script [`build_l
 
 Run the script [`build_linux/build_deb.bash`](./build_linux/build_deb.bash) for make the Debian package.
 
+### Build only one Windows
+
+Use the script [`build_wine/build_wine.bash`](./build_wine/build_wine.bash) for compile all scripts for Windows, from Linux, using Wine.
+
+Run this script for make the executable files for Windows.
+
+You need Wine installed, and Pyinstaller on Wine.
+
+
 ## Dependencies
 
 Run `check_dependencies.bash` for auto check the dependencies.
