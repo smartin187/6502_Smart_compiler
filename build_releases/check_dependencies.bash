@@ -33,3 +33,21 @@ else
 fi
 
 echo "All dependencies are satisfied."
+
+# Wine
+
+if wine --version > /dev/null 2>&1; then
+    echo "wine    OK"
+else
+    echo "wine is not installed. You need to install wine to build Windows executable from Linux."
+    exit 1
+fi
+
+# pyinstaller on wine
+
+if wine pyinstaller --version > /dev/null 2>&1; then
+    echo "pyinstaller on wine    OK"
+else
+    echo "pyinstaller on wine is not installed. You need to install pyinstaller on wine to build Windows executable from Linux."
+    exit 1
+fi

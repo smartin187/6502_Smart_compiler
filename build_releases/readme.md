@@ -41,7 +41,7 @@ The following dependencies are required for build the releases:
 
 ### Install dependencies
 
-> If a missing dependency, the script `check_dependencies.bash` can install it. Only `dpkg` can't be installed automatically...
+> If a missing dependency, the script `check_dependencies.bash` can install it. `dpkg` and `wine` can't be installed automatically...
 
 #### Pyinstaller
 
