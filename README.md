@@ -530,6 +530,12 @@ Smart use RAM.
 - `0x0000` to `0x02FF`: Smart system:
 >`0x0000`: save of A (for return-function)<br>`0x0001`: value of return-function<br>`0x0002`: `01` if need to call `else bloc` (after `if`). If `0x02E9 = 01` bloc `else` or `elif` are called.<br>`0x0003`: used for math (for operator `*` and `/`).<br>`0x0004` to `0x0032`: used for string `str`.
 
+## Distribution of Smart
+
+For publish Smart, the Python script are compilled with Pyinstaller.
+
+See [build releases](./build_releases/readme.md) for more information.
+
 ## VS Code extension
 
 An extention for VS Code set a coloration for Smart language.

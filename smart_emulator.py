@@ -135,10 +135,15 @@ if __name__ == "__main__":
         button_open = tk.Button(window_start, text="Open *.sma of *.asm", command=open_smart)
         button_open.pack()
 
-        logo_smart = tk.PhotoImage(file="./img/logo_smart_small.png", width=200, height=200)
+        try:
+            image_path = "./img/logo_smart_small.png" if not smart_info.FROZEN else sys._MEIPASS + "/logo_smart_small.png"
+            
+            logo_smart = tk.PhotoImage(file=image_path, width=200, height=200)
 
-        label_logo = tk.Label(window_start, image=logo_smart)
-        label_logo.pack()
+            label_logo = tk.Label(window_start, image=logo_smart)
+            label_logo.pack()
+        except Exception as e:
+            messagebox.showwarning("Warning", "Impossible to load image `logo_smart_small.png`.", detail=f"Detail: {str(e)}")
 
         window_start.protocol("WM_DELETE_WINDOW", lambda:sys.exit(0))
 
@@ -179,9 +184,14 @@ if __name__ == "__main__":
             text_info_4 = tk.Label(window_about, text="Make with Python 3")
             text_info_4.pack()
 
-            logo = tk.PhotoImage(file="./img/logo_smart_small.png")
-            logo_label = tk.Label(window_about, image=logo)
-            logo_label.pack()
+            try:
+                image_path = "./img/logo_smart_small.png" if not smart_info.FROZEN else sys._MEIPASS + "/logo_smart_small.png"
+
+                logo = tk.PhotoImage(file=image_path)
+                logo_label = tk.Label(window_about, image=logo)
+                logo_label.pack()
+            except Exception as e:
+                messagebox.showwarning("Warning", "Impossible to load image `logo_smart_small.png`.", detail=f"Detail: {str(e)}")
 
             frame_bouton = tk.LabelFrame(window_about)
             frame_bouton.pack()
