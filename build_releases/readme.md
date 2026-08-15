@@ -6,6 +6,8 @@ For compile all scripts, use the [`build_all.bash`](./build_all.bash) script.
 
 At the end you get executable files, on the directory `build_publish`.
 
+> The script `build_all.bash` need to be run on Linux, with Debian or Debian-based. If you need only to compile for Windows from Windows, see [build only one Windows from Windows](#build-only-one-windows-from-windows) section.
+
 > **If you have probleme with dependencies, see [dependencies](#dependencies) section.**
 
 The most easy is `build_all.bash`, but you can use other script if you don't like to compile for all:
@@ -32,12 +34,27 @@ Run the script [`build_linux/build_deb.bash`](./build_linux/build_deb.bash) for 
 
 ### Build only one Windows
 
+> This script is run on Linux. If you need to compile for Windows from Windows, see [build only one Windows from Windows](#build-only-one-windows-from-windows) section.
+
 Use the script [`build_wine/build_wine.bash`](./build_wine/build_wine.bash) for compile all scripts for Windows, from Linux, using Wine.
 
 Run this script for make the executable files for Windows.
 
 You need Wine installed, and Pyinstaller on Wine.
 
+## Build only one Windows from Windows
+
+Other script can run only on Linux. But if you need only to compile for Windows from Windows, use the script [`build_on_windows/build_windows.bat`](./build_on_windows/build_windows.bat).
+
+You need to have Python 3 and Pyinstaller installed on Windows.
+
+The `bat` give the `exe` files in `build_publish\windows` directory.
+
+If you want to compile manually, the command is the same to Linux:
+
+```bash
+pyinstaller --onefile main.py
+```
 
 ## Dependencies
 

@@ -22,7 +22,7 @@ copy dist\main.exe build_publish\windows\
 
 echo Building smart_emulator.py
 
-pyinstaller --onefile smart_emulator.py
+pyinstaller --onefile --add-data "img/logo_smart_small.png;." smart_emulator.py
 
 copy dist\smart_emulator.exe build_publish\windows\
 
