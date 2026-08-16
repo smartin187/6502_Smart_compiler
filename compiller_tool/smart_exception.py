@@ -83,7 +83,9 @@ class SmartError(CompileError):
 
 class ModuleError(CompileError):
     """Exception for module (file not found, recursion error...)"""
-    def __init__(self, message:str="", recursion:bool=False, module_name:str=""):
+    def __init__(self, message:str="", recursion:bool=False, module_name:str="", no_error:bool=False):
         self.recursion = recursion
         self.module_name = module_name
-        super().__init__(message)
+
+        if not no_error:
+            super().__init__(message)

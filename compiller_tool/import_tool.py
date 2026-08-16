@@ -59,18 +59,18 @@ def get_module(path:str, start_adress:int) -> ModuleInfo:
     except RecursionError:
         raise ModuleError("Error during compiling module. Maybe a module have import it?", recursion=True, module_name=path)
 
-def import_module(file_name:str, start_adress:int) -> ModuleInfo:
+def import_module(file_name:str, start_adress:int, no_error:bool=False) -> ModuleInfo:
     """Import a module from name (path can be relative of abs)."""
     path = os.path.abspath(file_name)
 
     if not Path(path).is_file():
-        raise ModuleError(f"File '{path}' not exist!")
+        raise ModuleError(f"File '{path}' not exist!", no_error=no_error)
 
     return get_module(path, start_adress)
 
     
 
-def import_lib(file_name:str, start_adress:int) -> ModuleInfo:
+def import_lib(file_name:str, start_adress:int, no_error:bool=False) -> ModuleInfo:
     """Import a module from the library. Path is :
     Linux: /usr/lib/Smart-SmartyKit/global_lib/...
     Windows: %LOCAL_APPDATA%/Smart-SmartyKit/lib/global_lib/"""
@@ -80,11 +80,11 @@ def import_lib(file_name:str, start_adress:int) -> ModuleInfo:
     path = os.path.join(PATH_LIB["global"], file_name)
 
     if not Path(path).is_file():
-        raise ModuleError(f"File '{path}' not exist!")
+        raise ModuleError(f"File '{path}' not exist!", no_error=no_error)
 
     return get_module(path, start_adress)
 
-def import_smart(file_name:str, start_adress:int) -> ModuleInfo:
+def import_smart(file_name:str, start_adress:int, no_error:bool=False) -> ModuleInfo:
     """Import a module from the smart library. Path is :
     Linux: /usr/lib/Smart-SmartyKit/smart_lib/...
     Windows: %LOCAL_APPDATA%/Smart-SmartyKit/lib/smart_lib/"""
@@ -94,7 +94,7 @@ def import_smart(file_name:str, start_adress:int) -> ModuleInfo:
     path = os.path.join(PATH_LIB["smart"], file_name)
 
     if not Path(path).is_file():
-        raise ModuleError(f"File '{path}' not exist!")
+        raise ModuleError(f"File '{path}' not exist!", no_error=no_error)
 
     return get_module(path, start_adress)
 
@@ -102,16 +102,16 @@ def import_all(file_name:str, start_adress:int) -> ModuleInfo:
     """Import a module from all the path (file, lib, smart).
     The order is file, lib, smart."""
     try:
-        return import_module(file_name, start_adress)
+        return import_module(file_name, start_adress, no_error=True)
     except ModuleError:
         pass
 
     try:
-        return import_lib(file_name, start_adress)
+        return import_lib(file_name, start_adress, no_error=True)
     except ModuleError:
         pass
 
     try:
-        return import_smart(file_name, start_adress)
+        return import_smart(file_name, start_adress, no_error=True)
     except ModuleError:
         raise ModuleError(f"Module '{file_name}' not found in any path.")
