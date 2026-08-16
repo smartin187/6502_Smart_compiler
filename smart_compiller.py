@@ -1274,7 +1274,7 @@ def compile_smarty(
                 adress_conter += 3
 
                             
-                code_compile = code_compile.replace("! smart:break", adress_end)
+                code_compile = code_compile.replace("! smart:break", adress_for_RAM(CODE_ADRESSE + adress_conter))
                 code_compile = code_compile.replace("! smart:continue ", start_loop_for)
 
                 
