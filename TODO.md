@@ -15,6 +15,8 @@ If the task is a bug you can also add a issue on GitHub.
 - _Fix: bug with return function if the function is call in a mathematical operation (`.a = 1 + f:;`)_
 - _Fix: small bug on windows: the path of library are not join correctly: ...lib\global_lib\screen_tool/screen_tool.sma_
 - **Add function with arguments for Smart**
+- Add for loop
+- Add operator: > < and or
 - On script of build, add the library to Debian package.
 - Add constants (know at compile time), or add define.
 - Make the libraries for Smart: `math` ?, `string`, library for write in RAM/ROM ?

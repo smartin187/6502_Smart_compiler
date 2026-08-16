@@ -9,7 +9,8 @@ compile_smarty = None
 
 PATH_LIB = {
     "global":"/usr/lib/Smart-SmartyKit/global_lib/" if sys.platform == "linux" else os.path.join(os.environ["LOCALAPPDATA"], "Smart-SmartyKit\\lib\\global_lib\\"),
-    "smart":"/usr/lib/Smart-SmartyKit/smart_lib/" if sys.platform == "linux" else os.path.join(os.environ["LOCALAPPDATA"], "Smart-SmartyKit\\lib\\smart_lib\\")
+    "smart":"/usr/lib/Smart-SmartyKit/smart_lib/" if sys.platform == "linux" else os.path.join(os.environ["LOCALAPPDATA"], "Smart-SmartyKit\\lib\\smart_lib\\"),
+    "base":"/usr/lib/Smart-SmartyKit/" if sys.platform == "linux" else os.path.join(os.environ["LOCALAPPDATA"], "Smart-SmartyKit\\lib\\")
 }
 
 class ModuleInfo:

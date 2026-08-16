@@ -7,6 +7,9 @@ import threading
 import time
 import sys
 import logging
+from pathlib import Path
+
+from compiller_tool.import_tool import PATH_LIB
 
 if "--compile-debug" in sys.argv:
     sys.argv.remove("--compile-debug")
@@ -214,6 +217,33 @@ class ModuleTest(Test):
         for module in self.code_modules:
             os.remove(f"test/{module[0]}")
 
+LIB_PATH = {
+    "screen_tool": ("smart_lib/screen_tool/screen_tool.sma",),
+}
+
+def control_lib() -> bool:
+    """Return True if all library are good."""
+    if not Path(PATH_LIB["global"]).is_dir():
+        print(f"{Colors.YELLOW}Warning: missing global lib directory ({PATH_LIB['global']}). The library test will be skip.{Colors.RESET}.")
+        return False
+    elif not Path(PATH_LIB["smart"]).is_dir():
+        print(f"{Colors.YELLOW}Warning: missing Smart lib directory ({PATH_LIB['smart']}). The library test will be skip.{Colors.RESET}.")
+        return False
+
+    for lib, path in LIB_PATH.items():
+        for p in path:
+            lib_path = os.path.join(PATH_LIB["base"], p)
+
+            if sys.platform == "win32":
+                lib_path = lib_path.replace("/", "\\")
+
+            if not Path(lib_path).is_file():
+                print(f"{Colors.YELLOW}Warning: missing library file ({lib_path}), of {lib} library. The library test will be skip.{Colors.RESET}.")
+                return False
+
+    return True
+
+
 try:
 
     smart_emulator.GUI_MODE = False
@@ -223,6 +253,32 @@ try:
 
     all_ok = True
     error_counter = 0
+
+    if control_lib():
+       
+        TEST_LIB = (
+            Test(
+                "Test library import",  # test for import all library. When a new library is added, add a test for it.
+                code="""
+                    import "screen_tool/screen_tool.sma";
+
+                    print: "OK";
+                """,
+                output="OK"
+            ),
+            Test(
+                "Test screen tool",
+                code="""
+                    import "screen_tool/screen_tool.sma";
+                    screen_clean:;
+                    print: "OK";
+                """,
+                output='\n' * 24 + "OK"
+            )
+        )
+    else:
+        input("Press enter to continue...")
+        TEST_LIB = ()
 
     SYNTAXE_ERROR_TEST = (  # this test have the same class Test but for test sintaxe error.
         Test(
@@ -1357,7 +1413,7 @@ try:
         )
     )
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB
 
     try:
         for test in GLOBAL_TESTS:
