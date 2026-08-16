@@ -16,3 +16,9 @@ __pycache__/
 dist/
 build/
 build_publish/
+
+# for the Smart library
+
+!smart_lib/
+!smart_lib/*.sma
+!smart_lib/**/*.sma

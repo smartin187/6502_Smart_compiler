@@ -17,6 +17,8 @@ If the task is a bug you can also add a issue on GitHub.
 - **Add function with arguments for Smart**
 - Add constants (know at compile time), or add define.
 - Make the libraries for Smart: `math` ?, `string`, library for write in RAM/ROM ?
+- Add on test.py test for all library
+- add a function for restart programme (JMP #0400)
 - **Add string and list with size variable ?**
 - Add class object for Smart ?
 - Multi-threading for Smart ?
