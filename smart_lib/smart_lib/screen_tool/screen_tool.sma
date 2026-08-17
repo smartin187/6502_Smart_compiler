@@ -1,11 +1,5 @@
-._screen_conter = 0;
 void screen_clean{;
-    while True {;
+    for _ in |0|24|1|{;
         print: '\r';
-        ._screen_conter = ._screen_conter + 1;
-
-        if ._screen_conter == 24 {;
-            break;
-            }
-        }
     }
+}
