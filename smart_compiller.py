@@ -1202,17 +1202,23 @@ def compile_smarty(
             var_name, count = line_2.split("in", 1)
             var_name = var_name.strip()
 
-            if not good_variable_name(var_name[1:]):
-                raise SmartError(f"Invalid name for variable: '{var_name}'", line_conter)
+            if var_name == "_":     # if the for loop variable is not used
+                no_var_for = True
 
-            if len(smart_var) >= 256:
-                raise SmartError("Memory error : maximum variable are 256.", line_conter)
+            else:
+                no_var_for = False
 
-            var_name = var_name[1:]
+                if not good_variable_name(var_name[1:]):
+                    raise SmartError(f"Invalid name for variable: '{var_name}'", line_conter)
 
-            smart_var[var_name] = smart_obj.SmartVariable(var_name, adress_var)
-            adress_iterrator = adress_for_RAM(adress_var)
-            adress_var += 1
+                if len(smart_var) >= 256:
+                    raise SmartError("Memory error : maximum variable are 256.", line_conter)
+
+                var_name = var_name[1:]
+
+                smart_var[var_name] = smart_obj.SmartVariable(var_name, adress_var)
+                adress_iterrator = adress_for_RAM(adress_var)
+                adress_var += 1
 
             count = count.strip()
 
@@ -1247,8 +1253,9 @@ def compile_smarty(
                 code_compile += f"AD {adress_start_number} "   # load the start on A
                 adress_conter += 3
 
-                code_compile += f"8D {adress_iterrator} "     # save the start on the iterrator RAM
-                adress_conter += 3
+                if not no_var_for:
+                    code_compile += f"8D {adress_iterrator} "     # save the start on the iterrator RAM
+                    adress_conter += 3
 
                 code_compile += f"CD {adress_end} "     # compare with the end
                 adress_conter += 3
