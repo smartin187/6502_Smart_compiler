@@ -302,6 +302,90 @@ while 1 == .my_variable{;
 }
 ```
 
+On `while` loop, you can use [`break`](#break) and [`continue`](#continue) keyword.
+
+##### `for` loop
+
+The for loop reapet a bloc of code from a start value to an end value with a step, or iterate on an advenced value (`str` or `list`).
+
+> It the loop iterate on advenced value, the loop reapeat 21 times (the lengh of advenced value is 21).
+
+You can get the current value of the loop, or not use the current value of the loop.
+
+**Reapeat from start / end:**
+```Smart
+// if you need the current value of the loop:
+for .variable in |start|end|step|{;
+    // code
+}
+// if you don't need the current value of the loop (most speed):
+for _ in |start|end|step|{;
+    // code
+}
+```
+
+You can also set a variable or expression for start, end, and step.
+
+```Smart
+.a = 0;
+.b = 10;
+.c = 1;
+
+for .i in |.a + 1|.b * 2|.c|{;
+    print: 'A';
+}
+```
+
+**Iterate on advenced value:**
+```Smart
+~string = "ABCDEFG";
+for .char in ~string {;
+    print: .char;
+}
+```
+
+###### If start is more than end
+
+If the start value is more than the end value, **the loop is run!**.
+
+The counter is incremented by step value, and when the counter is more than 255, the counter is set to 0. Finally, the counter is incremented, and when the counter is **equal** to end value, the loop is stop.
+
+For exemple:
+
+```Smart
+for .i in |10|5|1|{;
+    print: 'A';
+}
+```
+
+The counter start to 10, is incremented to 255 and then to 0, and after is to 5.
+
+###### If the counter is never equal to end value
+
+**Carful**: if the counter is never equal to end value, the loop is infinite!
+
+```Smart
+for .i in |0|5|2|{;
+    print: 'A';
+}
+```
+
+This loop have not end!
+
+**Exemples:**
+```Smart
+// for loop with current value of the loop:
+for .i in |0|10|1|{;
+    print: '0' + .i;
+}
+// for loop without current value of the loop:
+for _ in |0|10|1|{;
+    print: 'A';
+}
+```
+
+On `for` loop, you can use [`break`](#break) and [`continue`](#continue) keyword.
+
 ##### `break`
 
 Use this keyword for go out of loop.
@@ -309,7 +393,15 @@ Use this keyword for go out of loop.
 ###### Sintaxe
 
 ```Smart
+// on while
 while True{;
+    print: 'A';
+    break;  // go out of loop.
+    print: "THIS CODE WILL NOT RUN";
+}
+
+// on for
+for .i in |0|10|1|{;
     print: 'A';
     break;  // go out of loop.
     print: "THIS CODE WILL NOT RUN";
@@ -323,11 +415,18 @@ Use this keyword for restart the loop.
 ###### Sintaxe
 
 ```Smart
+// on for:
+for .i in |0|10|1|{;
+    print: 'B';
+    continue;  // restart the loop
+    // the code after will not run
+}
+
+// on while:
 while True{;
     print: 'A';
     continue;  // restart the loop
     // the code after will not run
-
 }
 ```
 

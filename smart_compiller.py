@@ -125,6 +125,62 @@ def compile_smarty(
 
     config_exception(line_of_instruction)
 
+    def get_start_end(start_number:str, end:str, step:str, no_var_for:bool, adress_iterrator:str, advenced_value_mode:bool=False) -> str:
+        """Return the hex code for the for loop. The code used for increment counter. Return start_loop_for"""
+        nonlocal adress_conter, code_compile, adress_var, smart_var
+        for i in range(3):  # the adress for count
+            compiller_data_run.not_used_ram += 1
+            smart_var[f"NotUsedRAMFor{compiller_data_run.not_used_ram}"] = smart_obj.ReservedAdress(adress_var)
+            adress_var += 1
+
+        adress_start_number = adress_for_RAM(adress_var - 1)
+        adress_end = adress_for_RAM(adress_var - 2)
+        adress_step = adress_for_RAM(adress_var)
+
+        code_compile += set_one_A_value(step)   # load the step
+        code_compile += f"8D {adress_step} "     # save at the first RAM for step
+        adress_conter += 3
+
+        code_compile += set_one_A_value(start_number)   # load the start number
+        code_compile += f"8D {adress_start_number} "     # save at the second RAM for start number
+        adress_conter += 3
+
+        code_compile += set_one_A_value(end)   # load the end number
+        code_compile += f"8D {adress_end} "     # save at the third RAM for end number
+        adress_conter += 3
+
+        # start loop
+
+        start_loop_for = adress_for_RAM(CODE_ADRESSE + adress_conter)
+
+        code_compile += f"AD {adress_start_number} "   # load the start on A
+        adress_conter += 3
+
+        if not no_var_for:
+            code_compile += f"8D {adress_iterrator} "     # save the start on the iterrator RAM
+            adress_conter += 3
+        elif advenced_value_mode:
+            code_compile += f"AA "  # transfer the offset for itteration to X
+            adress_conter += 1
+
+        code_compile += f"CD {adress_end} "     # compare with the end
+        adress_conter += 3
+
+        code_compile += "D0 03 "  # branche if A != end
+        adress_conter += 2
+        code_compile += "4C ! smart:break "  # if not branche, exit loop.
+        adress_conter += 3
+
+        # increment start:
+        if not advenced_value_mode:
+            code_compile += f"18 6D {adress_step} 8D {adress_start_number} "     # increment the start number by step
+            adress_conter += 7
+        else:
+            code_compile += f"18 69 01 8D {adress_start_number} "     # increment the start number by 1 (because advenced value)
+            adress_conter += 6
+
+        return start_loop_for
+
     def get_str(string:str) -> str:
         """Return the str value. Add the escape char."""
 
@@ -770,6 +826,9 @@ def compile_smarty(
 
             return code_list
 
+        logging.critical(f"Error with set_on_ram_str: '{string_or_variable}'.")
+        raise SmartError(f"Unknown string or variable: '{string_or_variable}'.", line_conter)
+
 
     def good_asm(asm:str) -> bool:
         """Return True if assembly is good.
@@ -1187,6 +1246,97 @@ def compile_smarty(
 
             code_compile = code_compile.format(end_adress).replace("! smart:break", end_adress)
             code_compile = code_compile.replace("! smart:continue ", while_adress)
+
+        elif line.lstrip().startswith("for "):  # loop
+            line_2 = replace_code(line, " ", "")[3:]
+            
+            if not line_2.endswith("{"):
+                raise SmartError("On for bloc, expected '{'", line_conter)
+            else:
+                line_2 = line_2[:-1]
+
+            var_name, count = line_2.split("in", 1)
+            var_name = var_name.strip()
+
+            if var_name == "_":     # if the for loop variable is not used
+                no_var_for = True
+                adress_iterrator = None
+
+            else:
+                no_var_for = False
+
+                if not good_variable_name(var_name[1:]):
+                    raise SmartError(f"Invalid name for variable: '{var_name}'", line_conter)
+
+                if len(smart_var) >= 256:
+                    raise SmartError("Memory error : maximum variable are 256.", line_conter)
+
+                var_name = var_name[1:]
+
+                smart_var[var_name] = smart_obj.SmartVariable(var_name, adress_var)
+                adress_iterrator = adress_for_RAM(adress_var)
+                adress_var += 1
+
+            count = count.strip()
+
+            if count.startswith("|"):   # a number count
+                start_number, end, step = count[1:-1].split("|")
+
+                start_loop_for = get_start_end(start_number, end, step, no_var_for, adress_iterrator)
+
+            else:
+                count = count.replace(" ", "")
+
+                if count.startswith("[") or count.startswith('"'):
+                    raise SmartError("On for loop, need variable name, not imediate value. Please set you value in variable before the for loop...", line_conter)
+
+                if not count.startswith("~"):   # advenced variable
+                    raise SmartError("On for loop, need an advenced variable.", line_conter)
+
+                if no_var_for:
+                    raise SmartError("On for loop, need a variable for iteration of advenced value.", line_conter)
+
+                try:
+                    adress_advenced_value = smart_var[count[1:]].ram_adress
+                except KeyError:
+                    raise SmartError(f"Variable {count[1:]} was not found on for loop.", line_conter)
+
+                start_loop_for = get_start_end("0", "21", "1", True, adress_iterrator, advenced_value_mode=True)
+
+                
+                # set the simple value on the variable
+                code_compile += f"BD {adress_for_RAM(adress_advenced_value)} "      # set on A the value with offset
+                adress_conter += 3
+
+                code_compile += f"8D {adress_iterrator} "  # set on the iterrator the simple value
+                adress_conter += 3
+
+            # code on loop
+
+            bloc_code_for, bloc_line = get_bloc(line_conter, code, error_message="On for bloc")
+
+            jump_line = bloc_line - line_conter - 1
+
+            code_for = compile_smarty(
+                make_file=False,
+                function_mode={"function_mode":True, "source_code":bloc_code_for, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
+                CODE_ADRESSE=CODE_ADRESSE + adress_conter
+            )
+
+            new_adress = code_for.count(" ") + code_for.count("!smart_call_func|") * 3 + code_for.count("!smart_tmp:goto|") * 3 - code_for.count("!smart_tmp:goto|")
+
+            adress_conter += new_adress
+            code_compile += code_for
+
+            code_compile += f"4C {start_loop_for} " 
+            adress_conter += 3
+
+            code_compile = code_compile.replace("! smart:break", adress_for_RAM(CODE_ADRESSE + adress_conter))
+            code_compile = code_compile.replace("! smart:continue ", start_loop_for + " ")
+
+
+            #else:
+            #    raise NotImplementedError("Not implemented for loop.")                
         
         elif line.lstrip().startswith("break"):
             if not on_loop:

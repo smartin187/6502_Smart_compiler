@@ -965,6 +965,154 @@ try:
         )
     )
 
+    FOR_TEST = (
+        Test(
+            "Simple for test",
+            code="""
+                for .i in |0|10|1| {;
+                    print: '0' + .i;
+                }
+                print: "OK";
+            """,
+            output="0123456789OK"
+        ),
+        Test(
+            "For without counter",
+            code="""
+                for _ in |0|5|1| {;
+                    print: 'A';
+                }
+                print: "OK";        
+            """,
+            output="AAAAAOK"
+        ),
+        Test(
+            "For with break",
+            code="""
+                for .i in |0|10|1| {;
+                    print: '0' + .i;
+                    if .i == 5{;
+                        break;
+                    }
+                }
+                print: "OK";
+            """,
+            output="012345OK"
+        ),
+        Test(
+            "For with continue",
+            code="""
+                for .i in |0|10|1| {;
+                    print: '0' + .i;
+                    continue;
+                    print: "ERROR";
+                }
+                print: "OK";
+            """,
+            output="0123456789OK"
+        ),
+        Test(
+            "For with start > end",
+            code="""
+                for .i in |10|5|1| {;   // the counter go to 255 and restart to 0, and go to 5
+                    print: .i;
+                }
+                print: "OK";
+            """,
+            output="\n\n !\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_ABCDEFGHIJKLMNOPQRSTUVWXYZOK"
+        ),
+        # ---- advenced value ----
+        Test(
+            "Advenced value in for - 1",
+            code="""
+                ~string = "ABCDEFG";
+
+                for .char in ~string {;
+                    print: .char;
+                }
+
+                print: "OK";
+            """,
+            output="ABCDEFGOK"
+        ),
+        Test(
+            "Advenced value in for - 2",
+            code="""
+                ~a = "AABCDABA";
+
+                .counter = 0;
+
+                for .char in ~a {;
+                    if .char == 'A' {;
+                            .counter = .counter + 1;
+                        }
+                    }
+
+                print: "NUMBER OF A FIND IS ";
+                print: '0' + .counter;
+            """,
+            output="NUMBER OF A FIND IS 4"
+        ),
+        Test(
+            "Edit variable for iteration in for",
+            code="""
+                for .i in |0|10|1| {;
+                    .i = 'A';
+                    print: .i;
+                }
+                print: "OK";
+            """,
+            output="AAAAAAAAAAOK"
+        ),
+        Test(
+            "Edit variable for iteration in for with advenced value",
+            code="""
+                ~string = "ABCDEFG";
+                for .char in ~string {;
+                    .char = 'A';
+                    print: .char;
+                }
+            """,
+            output="A" * 21 # because the string have a length of 21
+        ),
+        # ---- error ----
+        Test(
+            "For sintax error",
+            code="""
+                for in |0|10|1| {;
+                    print: "ERROR";
+                }
+            """,
+            sucess=False
+        ),
+        Test(
+            "For with bad start end step",
+            code="""
+                for .i in |0|10|0 {;
+                    print: "ERROR";
+                }            
+            """,
+            sucess=False
+        ),
+        Test(
+            "For without block",
+            code="""
+                for .i in |0|10|1|;
+                    print: "ERROR";            
+            """,
+            sucess=False
+        ),
+        Test(
+            "Imediate advenced value in for",
+            code="""
+                for .char in "STRING" {;
+                    print: "ERROR";
+                }            
+            """,
+            sucess=False
+        )
+    )
+
     WHILE_TEST = (      # warning in this test, because while can be infinite...
         #Test(
         #    "While True",
@@ -1413,7 +1561,7 @@ try:
         )
     )
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST
 
     try:
         for test in GLOBAL_TESTS:
