@@ -770,6 +770,9 @@ def compile_smarty(
 
             return code_list
 
+        logging.critical(f"Error with set_on_ram_str: '{string_or_variable}'.")
+        raise SmartError(f"Unknown string or variable: '{string_or_variable}'.", line_conter)
+
 
     def good_asm(asm:str) -> bool:
         """Return True if assembly is good.
@@ -1199,13 +1202,16 @@ def compile_smarty(
             var_name, count = line_2.split("in", 1)
             var_name = var_name.strip()
 
-            if good_variable_name(var_name):
+            if not good_variable_name(var_name[1:]):
                 raise SmartError(f"Invalid name for variable: '{var_name}'", line_conter)
 
             if len(smart_var) >= 256:
                 raise SmartError("Memory error : maximum variable are 256.", line_conter)
 
+            var_name = var_name[1:]
+
             smart_var[var_name] = smart_obj.SmartVariable(var_name, adress_var)
+            adress_iterrator = adress_for_RAM(adress_var)
             adress_var += 1
 
             count = count.strip()
@@ -1239,6 +1245,9 @@ def compile_smarty(
                 start_loop_for = adress_for_RAM(CODE_ADRESSE + adress_conter)
 
                 code_compile += f"AD {adress_start_number} "   # load the start on A
+                adress_conter += 3
+
+                code_compile += f"8D {adress_iterrator} "     # save the start on the iterrator RAM
                 adress_conter += 3
 
                 code_compile += f"CD {adress_end} "     # compare with the end
