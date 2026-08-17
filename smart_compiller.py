@@ -125,6 +125,8 @@ def compile_smarty(
 
     config_exception(line_of_instruction)
 
+
+
     def get_str(string:str) -> str:
         """Return the str value. Add the escape char."""
 
@@ -1269,35 +1271,32 @@ def compile_smarty(
                 code_compile += f"18 6D {adress_step} 8D {adress_start_number} "     # increment the start number by step
                 adress_conter += 7
 
-                # code on loop
+            # code on loop
 
-                bloc_code_for, bloc_line = get_bloc(line_conter, code, error_message="On for bloc")
+            bloc_code_for, bloc_line = get_bloc(line_conter, code, error_message="On for bloc")
 
-                jump_line = bloc_line - line_conter - 1
+            jump_line = bloc_line - line_conter - 1
 
-                code_for = compile_smarty(
-                    make_file=False,
-                    function_mode={"function_mode":True, "source_code":bloc_code_for, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
-                    CODE_ADRESSE=CODE_ADRESSE + adress_conter
-                )
+            code_for = compile_smarty(
+                make_file=False,
+                function_mode={"function_mode":True, "source_code":bloc_code_for, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
+                CODE_ADRESSE=CODE_ADRESSE + adress_conter
+            )
 
-                new_adress = code_for.count(" ") + code_for.count("!smart_call_func|") * 3 + code_for.count("!smart_tmp:goto|") * 3 - code_for.count("!smart_tmp:goto|")
+            new_adress = code_for.count(" ") + code_for.count("!smart_call_func|") * 3 + code_for.count("!smart_tmp:goto|") * 3 - code_for.count("!smart_tmp:goto|")
 
-                adress_conter += new_adress
-                code_compile += code_for
+            adress_conter += new_adress
+            code_compile += code_for
 
-                code_compile += f"4C {start_loop_for} " 
-                adress_conter += 3
+            code_compile += f"4C {start_loop_for} " 
+            adress_conter += 3
 
-                            
-                code_compile = code_compile.replace("! smart:break", adress_for_RAM(CODE_ADRESSE + adress_conter))
-                code_compile = code_compile.replace("! smart:continue ", start_loop_for + " ")
-
-                
+            code_compile = code_compile.replace("! smart:break", adress_for_RAM(CODE_ADRESSE + adress_conter))
+            code_compile = code_compile.replace("! smart:continue ", start_loop_for + " ")
 
 
-            else:
-                raise NotImplementedError("Not implemented for loop.")                
+            #else:
+            #    raise NotImplementedError("Not implemented for loop.")                
         
         elif line.lstrip().startswith("break"):
             if not on_loop:
