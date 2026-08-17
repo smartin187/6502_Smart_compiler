@@ -125,7 +125,7 @@ def compile_smarty(
 
     config_exception(line_of_instruction)
 
-    def get_start_end(start_number:int, end:int, step:int, no_var_for:bool) -> str:
+    def get_start_end(start_number:str, end:str, step:str, no_var_for:bool, adress_iterrator:str, advenced_value_mode:bool=False) -> str:
         """Return the hex code for the for loop. The code used for increment counter. Return start_loop_for"""
         nonlocal adress_conter, code_compile, adress_var, smart_var
         for i in range(3):  # the adress for count
@@ -159,6 +159,9 @@ def compile_smarty(
         if not no_var_for:
             code_compile += f"8D {adress_iterrator} "     # save the start on the iterrator RAM
             adress_conter += 3
+        elif advenced_value_mode:
+            code_compile += f"AA "  # transfer the offset for itteration to X
+            adress_conter += 1
 
         code_compile += f"CD {adress_end} "     # compare with the end
         adress_conter += 3
@@ -169,8 +172,12 @@ def compile_smarty(
         adress_conter += 3
 
         # increment start:
-        code_compile += f"18 6D {adress_step} 8D {adress_start_number} "     # increment the start number by step
-        adress_conter += 7
+        if not advenced_value_mode:
+            code_compile += f"18 6D {adress_step} 8D {adress_start_number} "     # increment the start number by step
+            adress_conter += 7
+        else:
+            code_compile += f"18 69 01 8D {adress_start_number} "     # increment the start number by 1 (because advenced value)
+            adress_conter += 6
 
         return start_loop_for
 
@@ -1253,6 +1260,7 @@ def compile_smarty(
 
             if var_name == "_":     # if the for loop variable is not used
                 no_var_for = True
+                adress_iterrator = None
 
             else:
                 no_var_for = False
@@ -1274,7 +1282,34 @@ def compile_smarty(
             if count.startswith("|"):   # a number count
                 start_number, end, step = count[1:-1].split("|")
 
-                start_loop_for = get_start_end(start_number, end, step, no_var_for)
+                start_loop_for = get_start_end(start_number, end, step, no_var_for, adress_iterrator)
+
+            else:
+                count = count.replace(" ", "")
+
+                if count.startswith("[") or count.startswith('"'):
+                    raise SmartError("On for loop, need variable name, not imediate value. Please set you value in variable before the for loop...", line_conter)
+
+                if not count.startswith("~"):   # advenced variable
+                    raise SmartError("On for loop, need an advenced variable.", line_conter)
+
+                if no_var_for:
+                    raise SmartError("On for loop, need a variable for iteration of advenced value.", line_conter)
+
+                try:
+                    adress_advenced_value = smart_var[count[1:]].ram_adress
+                except KeyError:
+                    raise SmartError(f"Variable {count[1:]} was not found on for loop.", line_conter)
+
+                start_loop_for = get_start_end("0", "21", "1", True, adress_iterrator, advenced_value_mode=True)
+
+                
+                # set the simple value on the variable
+                code_compile += f"BD {adress_for_RAM(adress_advenced_value)} "      # set on A the value with offset
+                adress_conter += 3
+
+                code_compile += f"8D {adress_iterrator} "  # set on the iterrator the simple value
+                adress_conter += 3
 
             # code on loop
 
