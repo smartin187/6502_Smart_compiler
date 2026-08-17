@@ -1021,6 +1021,60 @@ try:
             """,
             output="\n\n !\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_ABCDEFGHIJKLMNOPQRSTUVWXYZOK"
         ),
+        # ---- advenced value ----
+        Test(
+            "Advenced value in for - 1",
+            code="""
+                ~string = "ABCDEFG";
+
+                for .char in ~string {;
+                    print: .char;
+                }
+
+                print: "OK";
+            """,
+            output="ABCDEFGOK"
+        ),
+        Test(
+            "Advenced value in for - 2",
+            code="""
+                ~a = "AABCDABA";
+
+                .counter = 0;
+
+                for .char in ~a {;
+                    if .char == 'A' {;
+                            .counter = .counter + 1;
+                        }
+                    }
+
+                print: "NUMBER OF A FIND IS ";
+                print: '0' + .counter;
+            """,
+            output="NUMBER OF A FIND IS 4"
+        ),
+        Test(
+            "Edit variable for iteration in for",
+            code="""
+                for .i in |0|10|1| {;
+                    .i = 'A';
+                    print: .i;
+                }
+                print: "OK";
+            """,
+            output="AAAAAAAAAAOK"
+        ),
+        Test(
+            "Edit variable for iteration in for with advenced value",
+            code="""
+                ~string = "ABCDEFG";
+                for .char in ~string {;
+                    .char = 'A';
+                    print: .char;
+                }
+            """,
+            output="A" * 21 # because the string have a length of 21
+        ),
         # ---- error ----
         Test(
             "For sintax error",
@@ -1045,6 +1099,15 @@ try:
             code="""
                 for .i in |0|10|1|;
                     print: "ERROR";            
+            """,
+            sucess=False
+        ),
+        Test(
+            "Imediate advenced value in for",
+            code="""
+                for .char in "STRING" {;
+                    print: "ERROR";
+                }            
             """,
             sucess=False
         )
