@@ -321,6 +321,46 @@ for _ in |start|end|step|{;
 }
 ```
 
+You can also set a variable or expression for start, end, and step.
+
+```Smart
+.a = 0;
+.b = 10;
+.c = 1;
+
+for .i in |.a + 1|.b * 2|.c|{;
+    print: 'A';
+}
+```
+
+###### If start is more than end
+
+If the start value is more than the end value, **the loop is run!**.
+
+The counter is incremented by step value, and when the counter is more than 255, the counter is set to 0. Finally, the counter is incremented, and when the counter is **equal** to end value, the loop is stop.
+
+For exemple:
+
+```Smart
+for .i in |10|5|1|{;
+    print: 'A';
+}
+```
+
+The counter start to 10, is incremented to 255 and then to 0, and after is to 5.
+
+###### If the counter is never equal to end value
+
+**Carful**: if the counter is never equal to end value, the loop is infinite!
+
+```Smart
+for .i in |0|5|2|{;
+    print: 'A';
+}
+```
+
+This loop have not end!
+
 **Exemples:**
 ```Smart
 // for loop with current value of the loop:
