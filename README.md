@@ -302,6 +302,39 @@ while 1 == .my_variable{;
 }
 ```
 
+On `while` loop, you can use [`break`](#break) and [`continue`](#continue) keyword.
+
+##### `for` loop
+
+The for loop reapet a bloc of code from a start value to an end value with a step.
+
+You can get the current value of the loop, or not use the current value of the loop.
+
+```Smart
+// if you need the current value of the loop:
+for .variable in |start|end|step|{;
+    // code
+}
+// if you don't need the current value of the loop (most speed):
+for _ in |start|end|step|{;
+    // code
+}
+```
+
+**Exemples:**
+```Smart
+// for loop with current value of the loop:
+for .i in |0|10|1|{;
+    print: '0' + .i;
+}
+// for loop without current value of the loop:
+for _ in |0|10|1|{;
+    print: 'A';
+}
+```
+
+On `for` loop, you can use [`break`](#break) and [`continue`](#continue) keyword.
+
 ##### `break`
 
 Use this keyword for go out of loop.
@@ -309,7 +342,15 @@ Use this keyword for go out of loop.
 ###### Sintaxe
 
 ```Smart
+// on while
 while True{;
+    print: 'A';
+    break;  // go out of loop.
+    print: "THIS CODE WILL NOT RUN";
+}
+
+// on for
+for .i in |0|10|1|{;
     print: 'A';
     break;  // go out of loop.
     print: "THIS CODE WILL NOT RUN";
@@ -323,11 +364,18 @@ Use this keyword for restart the loop.
 ###### Sintaxe
 
 ```Smart
+// on for:
+for .i in |0|10|1|{;
+    print: 'B';
+    continue;  // restart the loop
+    // the code after will not run
+}
+
+// on while:
 while True{;
     print: 'A';
     continue;  // restart the loop
     // the code after will not run
-
 }
 ```
 

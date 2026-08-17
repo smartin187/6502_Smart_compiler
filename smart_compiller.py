@@ -1224,7 +1224,7 @@ def compile_smarty(
 
             if count.startswith("|"):   # a number count
                 start_number, end, step = count[1:-1].split("|")
-                #print(count[1:-1].split("|"))
+
                 for i in range(3):  # the adress for count
                     compiller_data_run.not_used_ram += 1
                     smart_var[f"NotUsedRAMFor{compiller_data_run.not_used_ram}"] = smart_obj.ReservedAdress(adress_var)
