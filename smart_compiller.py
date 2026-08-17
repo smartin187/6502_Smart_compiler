@@ -125,7 +125,54 @@ def compile_smarty(
 
     config_exception(line_of_instruction)
 
+    def get_start_end(start_number:int, end:int, step:int) -> str:
+        """Return the hex code for the for loop. The code used for increment counter. Return start_loop_for"""
+        nonlocal adress_conter, code_compile, adress_var, smart_var
+        for i in range(3):  # the adress for count
+            compiller_data_run.not_used_ram += 1
+            smart_var[f"NotUsedRAMFor{compiller_data_run.not_used_ram}"] = smart_obj.ReservedAdress(adress_var)
+            adress_var += 1
 
+        adress_start_number = adress_for_RAM(adress_var - 1)
+        adress_end = adress_for_RAM(adress_var - 2)
+        adress_step = adress_for_RAM(adress_var)
+
+        code_compile += set_one_A_value(step)   # load the step
+        code_compile += f"8D {adress_step} "     # save at the first RAM for step
+        adress_conter += 3
+
+        code_compile += set_one_A_value(start_number)   # load the start number
+        code_compile += f"8D {adress_start_number} "     # save at the second RAM for start number
+        adress_conter += 3
+
+        code_compile += set_one_A_value(end)   # load the end number
+        code_compile += f"8D {adress_end} "     # save at the third RAM for end number
+        adress_conter += 3
+
+        # start loop
+
+        start_loop_for = adress_for_RAM(CODE_ADRESSE + adress_conter)
+
+        code_compile += f"AD {adress_start_number} "   # load the start on A
+        adress_conter += 3
+
+        if not no_var_for:
+            code_compile += f"8D {adress_iterrator} "     # save the start on the iterrator RAM
+            adress_conter += 3
+
+        code_compile += f"CD {adress_end} "     # compare with the end
+        adress_conter += 3
+
+        code_compile += "D0 03 "  # branche if A != end
+        adress_conter += 2
+        code_compile += "4C ! smart:break "  # if not branche, exit loop.
+        adress_conter += 3
+
+        # increment start:
+        code_compile += f"18 6D {adress_step} 8D {adress_start_number} "     # increment the start number by step
+        adress_conter += 7
+
+        return start_loop_for
 
     def get_str(string:str) -> str:
         """Return the str value. Add the escape char."""
@@ -1227,49 +1274,7 @@ def compile_smarty(
             if count.startswith("|"):   # a number count
                 start_number, end, step = count[1:-1].split("|")
 
-                for i in range(3):  # the adress for count
-                    compiller_data_run.not_used_ram += 1
-                    smart_var[f"NotUsedRAMFor{compiller_data_run.not_used_ram}"] = smart_obj.ReservedAdress(adress_var)
-                    adress_var += 1
-
-                adress_start_number = adress_for_RAM(adress_var - 1)
-                adress_end = adress_for_RAM(adress_var - 2)
-                adress_step = adress_for_RAM(adress_var)
-
-                code_compile += set_one_A_value(step)   # load the step
-                code_compile += f"8D {adress_step} "     # save at the first RAM for step
-                adress_conter += 3
-
-                code_compile += set_one_A_value(start_number)   # load the start number
-                code_compile += f"8D {adress_start_number} "     # save at the second RAM for start number
-                adress_conter += 3
-
-                code_compile += set_one_A_value(end)   # load the end number
-                code_compile += f"8D {adress_end} "     # save at the third RAM for end number
-                adress_conter += 3
-
-                # start loop
-
-                start_loop_for = adress_for_RAM(CODE_ADRESSE + adress_conter)
-
-                code_compile += f"AD {adress_start_number} "   # load the start on A
-                adress_conter += 3
-
-                if not no_var_for:
-                    code_compile += f"8D {adress_iterrator} "     # save the start on the iterrator RAM
-                    adress_conter += 3
-
-                code_compile += f"CD {adress_end} "     # compare with the end
-                adress_conter += 3
-
-                code_compile += "D0 03 "  # branche if A != end
-                adress_conter += 2
-                code_compile += "4C ! smart:break "  # if not branche, exit loop.
-                adress_conter += 3
-
-                # increment start:
-                code_compile += f"18 6D {adress_step} 8D {adress_start_number} "     # increment the start number by step
-                adress_conter += 7
+                start_loop_for = get_start_end(start_number, end, step)
 
             # code on loop
 
