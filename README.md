@@ -306,10 +306,13 @@ On `while` loop, you can use [`break`](#break) and [`continue`](#continue) keywo
 
 ##### `for` loop
 
-The for loop reapet a bloc of code from a start value to an end value with a step.
+The for loop reapet a bloc of code from a start value to an end value with a step, or iterate on an advenced value (`str` or `list`).
+
+> It the loop iterate on advenced value, the loop reapeat 21 times (the lengh of advenced value is 21).
 
 You can get the current value of the loop, or not use the current value of the loop.
 
+**Reapeat from start / end:**
 ```Smart
 // if you need the current value of the loop:
 for .variable in |start|end|step|{;
@@ -330,6 +333,14 @@ You can also set a variable or expression for start, end, and step.
 
 for .i in |.a + 1|.b * 2|.c|{;
     print: 'A';
+}
+```
+
+**Iterate on advenced value:**
+```Smart
+~string = "ABCDEFG";
+for .char in ~string {;
+    print: .char;
 }
 ```
 
