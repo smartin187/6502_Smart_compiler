@@ -521,6 +521,10 @@ It does not take any arguments.
 
 > `quit` stop the programme but not return to Woz Monitor. Use `wozm` if you want to return to Woz Monitor.
 
+###### `restart`
+
+This function restart the programme (the programme go to the first operation).
+
 ##### Build your own function
 
 You can build your own function.

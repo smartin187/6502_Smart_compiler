@@ -1537,6 +1537,15 @@ try:
             """,
             output="OK"
         ),
+        Test(
+            "restart test",
+            code="""
+                print: "OK";    // this code can't be run because infinite loop.
+                restart:;
+            """,
+            compile_only=True,
+            compile_output="0400: A9 4F 20 EF FF A9 4B 20 EF FF 4C 00 04 00 AD 11 D0 10 FB AD 10 D0 29 7F 60 "
+        ),
         # --- error ---
         Test(
             "Bad hex on asm_entry",
@@ -1558,6 +1567,11 @@ try:
             code=".a = input: 'A';",
             sucess=False,
             compile_only=True
+        ),
+        Test(
+            "Bad arg on restart",
+            code="restart: 'A';",
+            sucess=False
         )
     )
 

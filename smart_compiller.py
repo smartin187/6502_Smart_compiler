@@ -1555,6 +1555,15 @@ def compile_smarty(
                 adress_conter += 1
 
                 logging.info("Build smart fonction as asm command: quit")
+
+            elif function_name == "restart":
+                if len(function_arg) != 0:
+                    raise SmartError("Function 'restart' not take arg.", line_conter)
+                
+                code_compile += f"4C {adress_for_RAM(CODE_ADRESSE)} "
+                adress_conter += 3
+
+                logging.info("Build smart fonction as asm command: restart")
             
             elif function_name == "goto":
                 if len(function_arg) != 1:
