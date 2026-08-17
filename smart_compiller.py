@@ -125,7 +125,7 @@ def compile_smarty(
 
     config_exception(line_of_instruction)
 
-    def get_start_end(start_number:int, end:int, step:int) -> str:
+    def get_start_end(start_number:int, end:int, step:int, no_var_for:bool) -> str:
         """Return the hex code for the for loop. The code used for increment counter. Return start_loop_for"""
         nonlocal adress_conter, code_compile, adress_var, smart_var
         for i in range(3):  # the adress for count
@@ -1274,7 +1274,7 @@ def compile_smarty(
             if count.startswith("|"):   # a number count
                 start_number, end, step = count[1:-1].split("|")
 
-                start_loop_for = get_start_end(start_number, end, step)
+                start_loop_for = get_start_end(start_number, end, step, no_var_for)
 
             # code on loop
 
