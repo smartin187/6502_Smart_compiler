@@ -949,8 +949,9 @@ def compile_smarty(
             if return_line:
                 raise SmartError("On function {}, value was return before the end of function.".format(function_mode["smart_func"].name))
 
-        for define, value in compile_command.define.items():
-            line = line.replace(define, value)
+        if not line.startswith("compiletime"):
+            for define, value in compile_command.define.items():
+                line = line.replace(define, value)
 
         if line[0] in ACUMULATOR_REGISTER:
             line = replace_code(line, " ", "")

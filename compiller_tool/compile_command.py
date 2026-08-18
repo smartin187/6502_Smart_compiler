@@ -3,6 +3,7 @@
 """
 This module is for the compiletime keyword
 """
+import logging
 from compiller_tool.smart_exception import SmartError
 
 define = {}     # the define are stored in this dict
@@ -22,6 +23,9 @@ def compiletime_command(line:str) -> None:
 
         name = name.strip()
         value = value.strip()
+
+        if name in define:
+            logging.warning(f"Redefining compiletime define '{name}' from '{define[name]}' to '{value}'.")
 
         define[name] = value
 
