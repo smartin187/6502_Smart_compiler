@@ -19,7 +19,7 @@ If the task is a bug you can also add a issue on GitHub.
 - On script of build, add the library to Debian package.
 - Add constants (know at compile time), or add define.
 - Make the libraries for Smart: `math` ?, `string`, library for write in RAM/ROM ?
-- Add on test.py test for all library
 - **Add string and list with size variable ?**
 - Add class object for Smart ?
 - Multi-threading for Smart ?
+- One asm_entry, add special escape character for know the adress of the hex code. example: asm_entry: "!adress"
