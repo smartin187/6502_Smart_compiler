@@ -47,6 +47,13 @@ _NOT_USED_CALL_ELSE = 0
 
 # -------------------------------
 
+_define_dict = None
+
+def reset_define(define_dict:dict) -> None:
+    """Add the define_dict to reset_data"""
+    global _define_dict
+    _define_dict = define_dict
+
 def reset_data() -> None:
     """Reset the data.
     Used for test.py (because tests are run one after the other)."""
@@ -56,6 +63,9 @@ def reset_data() -> None:
     need_error = _NEED_ERROR
     double_space_error = _DOUBLE_SPACE_ERROR
     not_used_call_else = _NOT_USED_CALL_ELSE
+
+    # reset value of compiletime keyword
+    _define_dict.clear()
 
 # variable -------------------------------
 

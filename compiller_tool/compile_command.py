@@ -6,7 +6,11 @@ This module is for the compiletime keyword
 import logging
 from compiller_tool.smart_exception import SmartError
 
+from compiller_tool.compiller_data_run import reset_define
+
 define = {}     # the define are stored in this dict
+
+reset_define(define)
 
 def compiletime_command(line:str) -> None:
     """This function is for use the compiletime command."""
@@ -28,7 +32,6 @@ def compiletime_command(line:str) -> None:
             logging.warning(f"Redefining compiletime define '{name}' from '{define[name]}' to '{value}'.")
 
         define[name] = value
-
 
 
 
