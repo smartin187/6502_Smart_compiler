@@ -126,6 +126,41 @@ A = 'B'; // put the character B into A
 
 Registers X and Y are rarely used directly, because they are normally used for loops...
 
+#### compiletime keyword
+
+The `compiletime` keyword is used to set a action during compillation.
+
+> Actually they are only `define` on compiletime.
+
+##### `compiletime define`
+
+The `compiletime define` keyword is used to define a constant, or code at compile time. The value can't be changed at runtime.
+
+```Smart
+compiletime define MY_CONSTANT to 'A';
+
+print: MY_CONSTANT;
+
+compiletime define MY_CODE to print: "HELLO";
+
+MY_CODE;
+```
+
+> The define replace the name to the value. But the replace is not set on a line with `compiletime`...
+
+###### Redefine
+
+You can redefine a define, but you will have a warning...
+
+```Smart
+compiletime define MY_CONSTANT to 'A';
+print: MY_CONSTANT; // A
+compiletime define MY_CONSTANT to 'B'; // Warning: redefine MY_CONSTANT
+print: MY_CONSTANT; // B
+```
+
+> But the define can't be changed at runtime.
+
 #### Variables
 
 On Smart, they are 2 variables type: simple and advenced.
