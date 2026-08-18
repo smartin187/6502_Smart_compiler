@@ -20,6 +20,7 @@ from compiller_tool import compiller_data_run
 from compiller_tool import import_tool
 from compiller_tool import smart_obj
 from compiller_tool import color_tool
+from compiller_tool import compile_command
 
 from compiller_tool.asm_tool import verryfing_adress_conter_no_print, get_adress # use only for debug, not need for compilation
 
@@ -948,6 +949,9 @@ def compile_smarty(
             if return_line:
                 raise SmartError("On function {}, value was return before the end of function.".format(function_mode["smart_func"].name))
 
+        if not line.startswith("compiletime"):
+            for define, value in compile_command.define.items():
+                line = line.replace(define, value)
 
         if line[0] in ACUMULATOR_REGISTER:
             line = replace_code(line, " ", "")
@@ -1485,7 +1489,8 @@ def compile_smarty(
 
             code_compile = code_compile.replace("!smart_module_goto", new_adress_module)
             
-            
+        elif line.lstrip().startswith("compiletime "):  # a compile command
+            compile_command.compiletime_command(line)
 
         elif re.match(FUNCTION_PATTERN, line):     # function
 
@@ -1540,9 +1545,6 @@ def compile_smarty(
 
                     
                     adress_conter += 6 * smart_obj.SIZE_ADVANCED_OBJ
-
-                    
-
                 
                 logging.info("Build smart fonction as asm command: print")
 

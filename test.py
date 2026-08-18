@@ -1508,6 +1508,65 @@ try:
         )
     )
 
+    COMPILETIME_TEST = (  #test for thte compiletime keyword
+        Test(
+            "Define test",
+            code="""
+                compiletime define VALUE to 'A';
+                print: VALUE;
+            """,
+            output="A"
+        ),
+        Test(
+            "Define test for code",
+            code="""
+                compiletime define PRINT_A to print: 'A';
+                PRINT_A;
+            """,
+            output="A"
+        ),
+        Test(
+            "Redefine test",
+            code="""
+                compiletime define VALUE to 'A';
+                print: VALUE;
+                compiletime define VALUE to 'B';
+                print: VALUE;
+            """,
+            output="AB"
+        ),
+        # ---- error ----
+        Test(
+            "Excepted keyword after compiletime",
+            code="""
+                compiletime;
+                print: "ERROR";
+            """,
+            sucess=False
+        ),
+        Test(
+            "Define sintaxe error 1",
+            code="""
+                compiletime define to 'A';
+            """,
+            sucess=False
+        ),
+        Test(
+            "Define sintaxe error 2",
+            code="""
+                compiletime define VALUE 'A';
+            """,
+            sucess=False
+        ),
+        Test(
+            "Define sintaxe error 3",
+            code="""
+                compiletime define VALUE to;
+            """,
+            sucess=False
+        )
+    )
+
     BUILT_IN = (
         Test(
             "asm_entry test",
@@ -1575,7 +1634,7 @@ try:
         )
     )
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST
 
     try:
         for test in GLOBAL_TESTS:
