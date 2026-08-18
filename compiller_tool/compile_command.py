@@ -33,5 +33,8 @@ def compiletime_command(line:str) -> None:
 
         define[name] = value
 
+    else:
+        raise SmartError("Excepted keyword after 'compiletime'.")
+
 
 
