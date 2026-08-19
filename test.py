@@ -1741,6 +1741,15 @@ OK2"""
                 print: "ERROR2";
             """,
             sucess=False
+        ),
+        Test(
+            "Unknow prefix for realloc",
+            code="""
+                .a = 'A';
+                compiletime realloc .a to $b;
+                print: "ERROR";
+            """,
+            sucess=False
         )
     )
 
