@@ -80,11 +80,20 @@ def compiletime_command(line:str, smart_var:dict) -> None:
         except:
             raise SmartError("Invalid sintaxe after 'realloc': excepted oldvar to newvar.")
 
+        prefix_old = old_var.strip()[0]
+        prefix_new = new_var.strip()[0]
+
+        if prefix_old != prefix_new:
+            raise SmartError(f"Invalid variable type for realloc: '{old_var}' and '{new_var}' have different types (simple and advenced).")
+
         try:
             base_name_old = old_var.replace(" ", "")[1:]
             base_name_new = new_var.replace(" ", "")[1:]
         except:
             raise SmartError("Invalid sintaxe for name of variable in realloc.")
+
+        if len(base_name_old) == 0 or len(base_name_new) == 0:
+            raise SmartError("Invalid sintaxe for name of variable in realloc: empty variable name.")
 
         if not good_variable_name(base_name_old):
             raise SmartError(f"Invalid sintaxe '{base_name_old}' for realloc (excepted variable name).")

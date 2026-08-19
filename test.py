@@ -169,7 +169,7 @@ class Test:
                     error = True
                     error_output = str(e)
         
-        if error and self.sucess:
+        if (error and self.sucess) or (not(error) and not(self.sucess)):
             all_ok = False
             error_counter += 1
 
@@ -1536,6 +1536,7 @@ try:
             """,
             output="AB"
         ),
+        # debug mode
         Test(
             "Debug mode test",
             code="""
@@ -1574,6 +1575,49 @@ COMPILETIME DEBUG FALSE
 OK.C = 'C'
 COMPILETIME DEBUG FALSE
 OK2"""
+        ),
+        # realloc
+        Test(
+            "Simple realloc test",
+            code="""
+                .a = 'A';
+                compiletime realloc .a to .b;
+                print: .b;
+            """,
+            output="A"
+        ),
+        Test(
+            "Advenced value realloc",
+            code="""
+                ~a = "STRING";
+                compiletime realloc ~a to ~b;
+                print: ~b;
+            """,
+            output="STRING"
+        ),
+        Test(
+            "Some realloc test",
+            code="""
+                .a = 'A';
+                print: .a;
+                compiletime realloc .a to .b;
+                print: .b;
+                compiletime realloc .b to .c;
+                print: .c;
+            """,
+            output="AAA"
+        ),
+        Test(
+            "Some advenced value realloc",
+            code="""
+                ~a = "STRING";
+                print: ~a;
+                compiletime realloc ~a to ~b;
+                print: ~b;
+                compiletime realloc ~b to ~c;
+                print: ~c;
+            """,
+            output="STRINGSTRINGSTRING"
         ),
         # ---- error ----
         Test(
@@ -1620,6 +1664,81 @@ OK2"""
             code="""
                 compiletime debug a;
                 print: "ERROR";
+            """,
+            sucess=False
+        ),
+        # realloc
+        Test(
+            "compiletime realloc error 1",
+            code="""
+                compiletime realloc;
+                print: "ERROR";
+            """,
+            sucess=False
+        ),
+        Test(
+            "compiletime realloc error 2",
+            code="""
+                .a = 'A';
+                compiletime realloc .a;
+                print: "ERROR";
+            """,
+            sucess=False
+        ),
+        Test(
+            "compiletime realloc error 3",
+            code="""
+                .a = 'A';
+                compiletime realloc .a to;
+                print: "ERROR";
+            """,
+            sucess=False
+        ),
+        Test(
+            "Compiletime realloc error var not defined",
+            code="""
+                compiletime realloc .a to .b;
+                print: "ERROR";
+            """,
+            sucess=False
+        ),
+        Test(
+            "Compiletime realloc error var exist",
+            code="""
+                .a = 'A';
+                .b = 'B';
+                compiletime realloc .a to .b;
+                print: "ERROR";
+            """,
+            sucess=False
+        ),
+        Test(
+            "Compiletime realloc error same variable",
+            code="""
+                .a = 'A';
+                compiletime realloc .a to .a;
+                print: "ERROR";
+            """,
+            sucess=False
+        ),
+        Test(
+            "Compiletime invalid var name",
+            code="""
+                .a = 'A';
+                compiletime realloc .a to b;
+            """,
+            sucess=False
+        ),
+        Test(
+            "Compiletime realloc simple to advenced value error",
+            code="""
+                ~a = "STRING";
+                compiletime realloc ~a to .b;
+                print: "ERROR";
+
+                .c = 'C';
+                compiletime realloc .c to ~d;
+                print: "ERROR2";
             """,
             sucess=False
         )
