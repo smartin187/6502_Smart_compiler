@@ -34,7 +34,7 @@ SMART_PLACEHOLDER = (
 
 BASE_ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ "   # the allowed char without \n and \r
 
-ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n\r "    # the alowed char.
+ALLOW_CHAR = BASE_ALLOW_CHAR + "\n\r"
 
 # base value -------------------------------
 

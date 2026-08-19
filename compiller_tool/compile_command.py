@@ -27,12 +27,12 @@ def get_line_debug(line:str) -> str:
             else:
                 line_debug.append("?")
 
-        #clean_line = "".join(line_debug)
-
         # make hex prorgam:
         hex_programm = []
         for char in line_debug:
             hex_programm.append(f"A9 {hex(ord(char))[2:].upper()} 20 EF FF ")
+
+        hex_programm.append(f"A9 0D 20 EF FF ") # set a \r at the end
 
         return "".join(hex_programm)
     
