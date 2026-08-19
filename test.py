@@ -1710,6 +1710,8 @@ OK2"""
             f"{TEST_ERROR}{Colors.BG_RED}Some tests failed!{Colors.RESET}",
             f"{Colors.RED}Error: {error_counter}/{len(GLOBAL_TESTS)}{Colors.RESET}",
         )
+
+    print(f"\n{Colors.RED}{round(error_counter / len(GLOBAL_TESTS) * 100, 2)}%{Colors.RESET} | {Colors.GREEN}{round((len(GLOBAL_TESTS) - error_counter) / len(GLOBAL_TESTS) * 100, 2)}%{Colors.RESET}")
     
 except KeyboardInterrupt:
     print(f"\n{Colors.BG_YELLOW}Test stopped by user\nKeyboard interrupt.{Colors.RESET}")
