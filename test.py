@@ -1509,6 +1509,7 @@ try:
     )
 
     COMPILETIME_TEST = (  #test for thte compiletime keyword
+        # define
         Test(
             "Define test",
             code="""
@@ -1535,6 +1536,45 @@ try:
             """,
             output="AB"
         ),
+        Test(
+            "Debug mode test",
+            code="""
+                compiletime debug True;
+
+                .a = 'A';
+                .é = 'B';   // set a character not printable (é)
+
+                print: "OK";
+            """,
+            output=".A = 'A'\n.? = 'B'\nPRINT: \"OK\"\nOK"
+        ),
+        Test(
+            "Debug mode with remove",
+            code="""
+                compiletime debug True;
+                
+                .a = 'A';
+                ~b = "STRING";
+
+                compiletime debug False;
+
+                print: "OK";
+
+                compiletime debug True;
+
+                .c = 'C';
+
+                compiletime debug False;
+
+                print: "OK2";
+            """,
+            output=""".A = 'A'
+?B = "STRING"
+COMPILETIME DEBUG FALSE
+OK.C = 'C'
+COMPILETIME DEBUG FALSE
+OK2"""
+        ),
         # ---- error ----
         Test(
             "Excepted keyword after compiletime",
@@ -1544,6 +1584,7 @@ try:
             """,
             sucess=False
         ),
+        # define
         Test(
             "Define sintaxe error 1",
             code="""
@@ -1562,6 +1603,23 @@ try:
             "Define sintaxe error 3",
             code="""
                 compiletime define VALUE to;
+            """,
+            sucess=False
+        ),
+        # debug
+        Test(
+            "compiletime debug error 1",
+            code="""
+                compiletime debug;
+                print: "ERROR";
+            """,
+            sucess=False
+        ),
+        Test(
+            "compiletime debug error 2",
+            code="""
+                compiletime debug a;
+                print: "ERROR";
             """,
             sucess=False
         )
