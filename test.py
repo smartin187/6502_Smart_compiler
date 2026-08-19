@@ -1019,7 +1019,7 @@ try:
                 }
                 print: "OK";
             """,
-            output="\n\n !\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_ABCDEFGHIJKLMNOPQRSTUVWXYZOK"
+            output="\n\n !\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ABCDEFGHIJKLMNOPQRSTUVWXYZOK"
         ),
         # ---- advenced value ----
         Test(

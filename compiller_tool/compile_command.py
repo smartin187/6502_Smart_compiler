@@ -13,8 +13,6 @@ define = {}     # the define are stored in this dict
 
 reset_define(define)
 
-ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ " # to use only 1 module
-
 def get_line_debug(line:str) -> str:
     """Return the line for the debug if debug mode is enabled. Return '' if debug mode is disabled."""
     if compiller_data_run.debug_max:
@@ -24,7 +22,7 @@ def get_line_debug(line:str) -> str:
         line = line.upper().strip()
 
         for char in line:
-            if char in ALLOW_CHAR:
+            if char in compiller_data_run.BASE_ALLOW_CHAR:
                 line_debug.append(char)
             else:
                 line_debug.append("?")

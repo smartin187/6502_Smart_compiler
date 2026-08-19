@@ -32,6 +32,10 @@ SMART_PLACEHOLDER = (
     "!  smart_runtime_error"
 )
 
+BASE_ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ "   # the allowed char without \n and \r
+
+ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n\r "    # the alowed char.
+
 # base value -------------------------------
 
 _WARNING_ENDLINE = (False, )     # if an line not end by ; } or // in line or the last line

@@ -18,7 +18,10 @@ import webbrowser
 
 from compiller_tool import smart_info
 from compiller_tool.color_tool import Colors
+from compiller_tool.compiller_data_run import ALLOW_CHAR
+
 from smart_compiller import compile_smarty, SmartError, CompileError
+
 
 if "--show-licence" in sys.argv:
     print(smart_info.LICENCE["licence"], smart_info.LICENCE["text"], sep="\n")
@@ -234,7 +237,7 @@ if __name__ == "__main__":
 
     asm_code = code
 
-ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n\r "    # to use only 1 module
+
 START_RAM = 0
 
 if GUI_MODE:
