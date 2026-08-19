@@ -8,6 +8,7 @@ from compiller_tool.smart_exception import SmartError
 
 from compiller_tool.compiller_data_run import reset_define
 from compiller_tool import compiller_data_run
+from compiller_tool.string_tool import good_variable_name
 
 define = {}     # the define are stored in this dict
 
@@ -38,7 +39,7 @@ def get_line_debug(line:str) -> str:
     
     return ""
 
-def compiletime_command(line:str) -> None:
+def compiletime_command(line:str, smart_var:dict) -> None:
     """This function is for use the compiletime command."""
 
     line = line[len("compiletime "):].strip()
@@ -70,6 +71,38 @@ def compiletime_command(line:str) -> None:
             logging.info("Debug mode is disabled.")
         else:
             raise SmartError("Invalid compiletime command: expected 'True' or 'False' or 1 or 0 after 'debug' keyword.")
+
+    elif line.startswith("realloc "):  # realloc a variable (= rename a variable)
+        realloc_value = line[len("realloc "):].strip()
+
+        try:
+            old_var, new_var = realloc_value.split(" to ")
+        except:
+            raise SmartError("Invalid sintaxe after 'realloc': excepted oldvar to newvar.")
+
+        try:
+            base_name_old = old_var.replace(" ", "")[1:]
+            base_name_new = new_var.replace(" ", "")[1:]
+        except:
+            raise SmartError("Invalid sintaxe for name of variable in realloc.")
+
+        if not good_variable_name(base_name_old):
+            raise SmartError(f"Invalid sintaxe '{base_name_old}' for realloc (excepted variable name).")
+        elif not good_variable_name(base_name_new):
+            raise SmartError(f"Invalid sintaxe '{base_name_new}' for realloc (excepted variable name).")
+
+        if base_name_old not in smart_var:
+            raise SmartError(f"Variable '{base_name_old}' not found for realloc.")
+
+        if base_name_new == base_name_old:
+            raise SmartError(f"Variable '{base_name_new}' is the same as '{base_name_old}', you can't set a realloc.")
+
+        var_object = smart_var[base_name_old]
+
+        var_object.name = base_name_new
+
+        smart_var[base_name_new] = var_object
+        del smart_var[base_name_old]
 
     else:
         raise SmartError("Excepted keyword after 'compiletime'.")

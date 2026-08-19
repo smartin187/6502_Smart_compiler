@@ -22,6 +22,5 @@ If the task is a bug you can also add a issue on GitHub.
 - Add class object for Smart ?
 - Multi-threading for Smart ?
 - One asm_entry, add special escape character for know the adress of the hex code. example: asm_entry: "!adress"
-- Add a debug for print the line running before the run in assembly. use the compiletime for set the debug: compiletime setdebug
 - Add a realloc for variable, with compiletime (in other word rename the variable); used if the variable is not used
 - _Fix: set on stringtool.py line 211 all keyword + set test for veryfy when a variable have a name of keyword_

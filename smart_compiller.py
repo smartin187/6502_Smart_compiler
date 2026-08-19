@@ -1495,7 +1495,7 @@ def compile_smarty(
             code_compile = code_compile.replace("!smart_module_goto", new_adress_module)
             
         elif line.lstrip().startswith("compiletime "):  # a compile command
-            compile_command.compiletime_command(line)
+            compile_command.compiletime_command(line, smart_var)
 
         elif re.match(FUNCTION_PATTERN, line):     # function
 
