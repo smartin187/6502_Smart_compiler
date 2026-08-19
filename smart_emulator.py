@@ -234,7 +234,7 @@ if __name__ == "__main__":
 
     asm_code = code
 
-ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n\r "
+ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\n\r "    # to use only 1 module
 START_RAM = 0
 
 if GUI_MODE:
