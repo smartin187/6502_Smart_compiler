@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
+"""
+This module have class Colors for ANSI codes.
+"""
+
 import logging
 from os import system, name
 
 if name == "nt":
-    system("color")
+    system("color")     # replace by subprocess.run ?
 
 class Colors:
     """Class to store the color codes for terminal output."""
