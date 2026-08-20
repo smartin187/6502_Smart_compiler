@@ -17,4 +17,7 @@ mkdir -p build_publish
 
 ./build_releases/build_wine/build_wine.bash
 
+echo "Cleaning up"
+rm -r build dist
+
 echo "Compilation finished. Executable files are in the build_publish directory."
