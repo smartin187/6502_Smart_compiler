@@ -29,6 +29,6 @@ cp -a smart_lib/smart_lib/. build_publish/tmp_deb/usr/lib/Smart-SmartyKit/smart_
 
 # build package
 
-dpkg-deb --build build_publish/tmp_deb build_publish/linux/smart-compiler-emulator_${VERSION}_${ARCH}.deb
+dpkg-deb --build --root-owner-group build_publish/tmp_deb build_publish/linux/smart-compiler-emulator_${VERSION}_${ARCH}.deb
 
 rm -r build_publish/tmp_deb
