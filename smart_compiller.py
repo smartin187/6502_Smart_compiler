@@ -953,6 +953,11 @@ def compile_smarty(
             for define, value in compile_command.define.items():
                 line = line.replace(define, value)
 
+        line_debug = compile_command.get_line_debug(line)   # if the debug mode is enable, print the line before run.
+        if line_debug:
+            code_compile += line_debug
+            adress_conter += line_debug.count(" ")
+
         if line[0] in ACUMULATOR_REGISTER:
             line = replace_code(line, " ", "")
             read_line = line.split("=", 1)
@@ -1490,7 +1495,7 @@ def compile_smarty(
             code_compile = code_compile.replace("!smart_module_goto", new_adress_module)
             
         elif line.lstrip().startswith("compiletime "):  # a compile command
-            compile_command.compiletime_command(line)
+            compile_command.compiletime_command(line, smart_var)
 
         elif re.match(FUNCTION_PATTERN, line):     # function
 

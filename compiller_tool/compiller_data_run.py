@@ -32,6 +32,10 @@ SMART_PLACEHOLDER = (
     "!  smart_runtime_error"
 )
 
+BASE_ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ "   # the allowed char without \n and \r
+
+ALLOW_CHAR = BASE_ALLOW_CHAR + "\n\r"
+
 # base value -------------------------------
 
 _WARNING_ENDLINE = (False, )     # if an line not end by ; } or // in line or the last line
@@ -45,6 +49,8 @@ _DOUBLE_SPACE_ERROR = False # if an double space on code is detected.
 
 _NOT_USED_CALL_ELSE = 0
 
+_DEBUG_MAX = False  # if the debug is True, on the binary the line running is print.
+
 # -------------------------------
 
 _define_dict = None
@@ -57,12 +63,13 @@ def reset_define(define_dict:dict) -> None:
 def reset_data() -> None:
     """Reset the data.
     Used for test.py (because tests are run one after the other)."""
-    global warning_endline, not_used_ram, need_error, double_space_error, not_used_call_else
+    global warning_endline, not_used_ram, need_error, double_space_error, not_used_call_else, debug_max
     warning_endline = _WARNING_ENDLINE
     not_used_ram = _NOT_USED_RAM
     need_error = _NEED_ERROR
     double_space_error = _DOUBLE_SPACE_ERROR
     not_used_call_else = _NOT_USED_CALL_ELSE
+    debug_max = _DEBUG_MAX
 
     # reset value of compiletime keyword
     _define_dict.clear()
@@ -79,3 +86,4 @@ need_error = _NEED_ERROR
 
 double_space_error = _DOUBLE_SPACE_ERROR
 
+debug_max = _DEBUG_MAX
