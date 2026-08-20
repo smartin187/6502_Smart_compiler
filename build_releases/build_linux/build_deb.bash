@@ -5,7 +5,7 @@
 set -e
 
 VERSION="1.0"
-ARCH="arm64"
+ARCH=$(dpkg --print-architecture)
 
 # Make the structure
 
