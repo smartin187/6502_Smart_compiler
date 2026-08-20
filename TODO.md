@@ -23,3 +23,4 @@ If the task is a bug you can also add a issue on GitHub.
 - Multi-threading for Smart ?
 - One asm_entry, add special escape character for know the adress of the hex code. example: asm_entry: "!adress"
 - On test set test for veryfy when a variable have a name of keyword
+- _Fix: on help, the name of compilled (pyinstaller) smart is smart_build, not smart_compiller_
