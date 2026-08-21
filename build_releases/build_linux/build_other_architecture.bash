@@ -10,13 +10,13 @@ ARCH=$(dpkg --print-architecture)
 echo "--- Building for architecture: $ARCH ---"
 
 IMAGE_NAME=""
-COMMAND_INSTALL=""  # the command for install pyinstaller. Empty if the image smarty-builder exist.
+COMMAND_INSTALL=""  # the command for install pyinstaller. Empty if the image smart-builder exist.
 
-if sudo docker image inspect smarty-builder:latest >/dev/null 2>&1; then
-    echo "Docker image smarty-builder:latest already existe, use this image..."
-    IMAGE_NAME="smarty-builder:latest"
+if sudo docker image inspect smart-builder:latest >/dev/null 2>&1; then
+    echo "Docker image smart-builder:latest already existe, use this image..."
+    IMAGE_NAME="smart-builder:latest"
 else
-    echo -e "warning: Docker image smarty-builder:latest does not exist.\nThe build will be longer... Make the Docker image for best performance, see readme.md."
+    echo -e "warning: Docker image smart-builder:latest does not exist.\nThe build will be longer... Make the Docker image for best performance, see readme.md."
     IMAGE_NAME="python:3.12-bookworm"
     COMMAND_INSTALL="python -m pip install pyinstaller"
 fi
