@@ -8,7 +8,7 @@ cd ..
 
 if [ -d "build_publish" ]; then
     echo "Remove the old build_publish directory"
-    rm -r build_publish
+    sudo rm -r build_publish
 fi
 
 mkdir -p build_publish
