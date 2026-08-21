@@ -27,10 +27,10 @@ if [ "$ARCH" = "arm64" ]; then   # make the executable binary for amd64
         -v "$PWD":/src \
         -w /src \
         $IMAGE_NAME \
-        /bin/bash -lc "
+        /bin/sh -c "
             set -eux
             $COMMAND_INSTALL
-            bash ./build_releases/build_linux/build_linux.bash
+            sh ./build_releases/build_linux/build_linux.bash
         "
     
     # set on sudo
@@ -42,10 +42,10 @@ elif [ "$ARCH" = "amd64" ]; then   # make the executable binary for arm64
         -v "$PWD":/src \
         -w /src \
         $IMAGE_NAME \
-        /bin/bash -lc "
+        /bin/sh -c "
             set -eux
             $COMMAND_INSTALL
-            bash ./build_releases/build_linux/build_linux.bash
+            sh ./build_releases/build_linux/build_linux.bash
         "
     
     # set on sudo
