@@ -6,6 +6,8 @@ For compile all scripts, use the [`build_all.bash`](./build_all.bash) script.
 
 At the end you get executable files, on the directory `build_publish`.
 
+**If you have probleme with this script**, report a issue on GitHub.
+
 > The script `build_all.bash` need to be run on Linux, with Debian or Debian-based. If you need only to compile for Windows from Windows, see [build only one Windows from Windows](#build-only-one-windows-from-windows) section.
 
 > **If you have probleme with dependencies, see [dependencies](#dependencies) section.**
@@ -31,6 +33,22 @@ If you want only the binary files (not Debian package), use the script [`build_l
 > Warning: you need to run before the script [`build_linux/build_linux.bash`](./build_linux/build_linux.bash) for make the binary files.
 
 Run the script [`build_linux/build_deb.bash`](./build_linux/build_deb.bash) for make the Debian package.
+
+#### Build for other architecture Linux
+
+If your computer is `amd64` / `x86_64`, you can compile for `arm64` / `aarch64` architecture, and vice versa.
+
+Use the script [`build_linux/build_other_architecture.bash`](./build_linux/build_other_architecture.bash) for compile all scripts for other architecture.
+
+> This script is also run with [build_all.bash](./build_all.bash).
+
+> Carful: this script take a long time for compile.
+
+You need Docker installer.
+
+##### Speed up
+
+You can use the script [`build_docker.sh`](./build_linux/docker_build/build_docker.sh) for build an image Docker (named smart-builder). Next the script `build_other_architecture.bash` use this image for compile faster (pyinstaller is already installed on this image). This script use the image `python:3.12-bookworm` for build the image smart-builder, with the [`Dockerfile`](./build_linux/docker_build/Dockerfile) 
 
 ### Build only one Windows
 
