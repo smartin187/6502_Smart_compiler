@@ -9,29 +9,41 @@ ARCH=$(dpkg --print-architecture)
 
 echo "--- Building for architecture: $ARCH ---"
 
+IMAGE_NAME=""
+COMMAND_INSTALL=""  # the command for install pyinstaller. Empty if the image smarty-builder exist.
+
+if sudo docker image inspect smarty-builder:latest >/dev/null 2>&1; then
+    echo "Docker image smarty-builder:latest already existe, use this image..."
+    IMAGE_NAME="smarty-builder:latest"
+else
+    echo -e "warning: Docker image smarty-builder:latest does not exist.\nThe build will be longer... Make the Docker image for best performance, see readme.md."
+    IMAGE_NAME="python:3.12-bookworm"
+    COMMAND_INSTALL="python -m pip install pyinstaller"
+fi
+
 if [ "$ARCH" = "arm64" ]; then   # make the executable binary for amd64
     sudo docker run --rm \
         --platform linux/amd64 \
         -v "$PWD":/src \
         -w /src \
-        python:3.12-bookworm \
-        /bin/bash -lc '
+        $IMAGE_NAME \
+        /bin/bash -lc "
             set -eux
-            python -m pip install pyinstaller
+            $COMMAND_INSTALL
             bash ./build_releases/build_linux/build_linux.bash
-        '
+        "
 
 elif [ "$ARCH" = "amd64" ]; then   # make the executable binary for arm64
     sudo docker run --rm \
         --platform linux/arm64 \
         -v "$PWD":/src \
         -w /src \
-        python:3.12-bookworm \
-        /bin/bash -lc '
+        $IMAGE_NAME \
+        /bin/bash -lc "
             set -eux
-            python -m pip install pyinstaller
+            $COMMAND_INSTALL
             bash ./build_releases/build_linux/build_linux.bash
-        '
+        "
 else
     echo "Unsupported architecture: $ARCH, skipping build for other architecture..."
 fi
