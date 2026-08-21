@@ -32,6 +32,9 @@ if [ "$ARCH" = "arm64" ]; then   # make the executable binary for amd64
             $COMMAND_INSTALL
             bash ./build_releases/build_linux/build_linux.bash
         "
+    
+    # set on sudo
+    sudo ./build_releases/build_linux/build_deb.bash amd64
 
 elif [ "$ARCH" = "amd64" ]; then   # make the executable binary for arm64
     sudo docker run --rm \
@@ -44,6 +47,10 @@ elif [ "$ARCH" = "amd64" ]; then   # make the executable binary for arm64
             $COMMAND_INSTALL
             bash ./build_releases/build_linux/build_linux.bash
         "
+    
+    # set on sudo
+    sudo ./build_releases/build_linux/build_deb.bash arm64
+
 else
     echo "Unsupported architecture: $ARCH, skipping build for other architecture..."
 fi

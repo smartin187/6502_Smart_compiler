@@ -46,6 +46,8 @@ Use the script [`build_linux/build_other_architecture.bash`](./build_linux/build
 
 You need Docker installer.
 
+> Make also a Debian package for the other architecture.
+
 ##### Speed up
 
 You can use the script [`build_docker.sh`](./build_linux/docker_build/build_docker.sh) for build an image Docker (named smart-builder). Next the script `build_other_architecture.bash` use this image for compile faster (pyinstaller is already installed on this image). This script use the image `python:3.12-bookworm` for build the image smart-builder, with the [`Dockerfile`](./build_linux/docker_build/Dockerfile) 

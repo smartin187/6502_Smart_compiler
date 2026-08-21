@@ -2,10 +2,12 @@
 
 # This script make the deb package for Linux, of smart compiler and smart emulator.
 
+# for the architecture, you can specify it as the first argument, or it will be detected automatically.
+
 set -e
 
 VERSION="1.0"
-ARCH=$(dpkg --print-architecture)
+ARCH="${1:-$(dpkg --print-architecture)}"
 
 # Make the structure
 
