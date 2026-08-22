@@ -130,8 +130,6 @@ Registers X and Y are rarely used directly, because they are normally used for l
 
 The `compiletime` keyword is used to set a action during compillation.
 
-> Actually they are only `define` on compiletime.
-
 ##### `compiletime define`
 
 The `compiletime define` keyword is used to define a constant, or code at compile time. The value can't be changed at runtime.
@@ -160,6 +158,100 @@ print: MY_CONSTANT; // B
 ```
 
 > But the define can't be changed at runtime.
+
+#### `compiletime debug`
+
+If you have probleme with your code, you can use `compiletime debug` for print the line running at the run time.
+
+For activate the debug, set:
+
+```Smart
+compiletime debug True;
+// or
+compiletime debug 1;
+```
+
+For remove the debug, set:
+
+```Smart
+compiletime debug False;
+// or
+compiletime debug 0;
+```
+
+> **Warning**: the debug value (True, False, 1 or 0) can't be a runtime value (variable, return-function...).
+
+When debug is activated, for all lines running, the line is printed before the line is run.
+
+> On SmartyKit or Apple 1, some character are not allowed. On the line printed, if a letter is lowcase, the letter will be printed as uppercase. If the caracter can't be printed, the caracter is replaced by `?`.
+
+**Example:**
+```Smart
+compiletime debug True;
+.a = 1;
+.b = 2;
+.é = 3; // the character 'é' can't be print
+print: 'A';
+```
+
+The output will be:
+
+```
+.A = 1
+.B = 2
+.? = 3
+PRINT: 'A'
+A
+```
+
+> Note: the comment and the `;` are removed.
+
+**Carful**: the hex generated with debug activated can be big! If you can, use debug only for some lines and next set `compiletime debug False;`. Moreover, the programm will be slower...
+
+If you use the [Smart Emulator](#interpret-smart-code-emulator), you can set the speed to maximum. See [Speeding up program execution](#speeding-up-program-execution).
+
+#### `compiletime realloc`
+
+The `compiletime realloc` is used for realloc a old variable to a new variable.
+
+You can use when a variable is used in a time, but not used after. So you can realloc the variable to a new variable for save memory.
+
+See [Variables](#variables) for more information about variable.
+
+Sintaxe:
+```Smart
+.old_variable = value;
+compiletime realloc .old_variable to .new_variable;
+```
+
+For exemple:
+```Smart
+.a = 1;
+compiletime realloc .a to .b;
+.b = 'A';
+print: .b;
+```
+
+> Note: the adress of new variable is the same to old variable. So if you don't change the value of new variable, the value of old variable is used.
+
+Exemple:
+```Smart
+.a = 'A';
+compiletime realloc .a to .b;
+print: .b; // A
+```
+
+> You can't realloc a variable of a different type: simple value and advenced value.
+
+For exemple, you can't do:
+```Smart
+.simple_value = 1;
+compiletime realloc .simple_value to ~advenced_value; // ERROR
+
+~advenced_value = "HELLO";
+compiletime realloc ~advenced_value to .simple_value; // ERROR
+```
+
 
 #### Variables
 
