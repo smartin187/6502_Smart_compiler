@@ -7,8 +7,6 @@ Run Smart code one a emulator.
 
 
 import sys
-import tkinter as tk
-from tkinter import scrolledtext, messagebox, filedialog
 from time import sleep
 from pathlib import Path
 import json
@@ -40,6 +38,8 @@ if __name__ == "__main__":
         sys.argv.remove("--console")
     else:
         GUI_MODE = True
+        import tkinter as tk
+        from tkinter import scrolledtext, messagebox, filedialog
 else:
     GUI_MODE = False
 

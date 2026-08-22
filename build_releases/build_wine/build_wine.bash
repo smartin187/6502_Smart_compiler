@@ -14,10 +14,10 @@ mkdir -p build_publish/windows/
 
 wine pyinstaller --onefile main.py
 
-cp dist/main build_publish/linux/smart_compiler
+cp dist/main.exe build_publish/windows/smart_compiler.exe
 
 # ---- build smart_emulator.py ----
 
 wine pyinstaller --onefile --add-data "img/logo_smart_small.png;." smart_emulator.py
 
-cp dist/smart_emulator build_publish/linux/smart_emulator
+cp dist/smart_emulator.exe build_publish/windows/smart_emulator.exe
