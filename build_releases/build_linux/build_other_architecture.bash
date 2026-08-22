@@ -3,7 +3,8 @@
 # This script compile and package for the architecture arm64 or amd64.
 # If your computer is amd64, this script build for arm64, if you computer is arm64, this script build for amd64.
 
-# RUN THIS COMMAND BEFORE : sudo docker run --privileged --rm tonistiigi/binfmt --install amd64,arm64
+
+sudo docker run --privileged --rm tonistiigi/binfmt --install amd64,arm64
 
 ARCH=$(dpkg --print-architecture)
 
