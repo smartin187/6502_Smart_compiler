@@ -9,6 +9,15 @@ ARCH=$(dpkg --print-architecture)
 
 echo "--- Building for architecture: $ARCH ---"
 
+if [ -d "build/main_cross" ]; then
+    echo "Use the cache (main_cross) for cross compilation. In case of error, dellet the cache in build/"
+    mv build/main_cross build/main
+fi
+if [ -d "build/smart_emulator_cross" ]; then
+    echo "Use the cache (smart_emulator_cross) for cross compilation. In case of error, dellet the cache in build/"
+    mv build/smart_emulator_cross build/smart_emulator
+fi
+
 IMAGE_NAME=""
 COMMAND_INSTALL=""  # the command for install pyinstaller. Empty if the image smart-builder exist.
 
@@ -55,3 +64,7 @@ else
     echo "Unsupported architecture: $ARCH, skipping build for other architecture..."
 fi
 
+# save cache for next build
+
+mv build/main build/main_cross
+mv build/smart_emulator build/smart_emulator_cross
