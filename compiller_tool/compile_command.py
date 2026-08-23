@@ -8,7 +8,8 @@ from compiller_tool.smart_exception import SmartError
 
 from compiller_tool.compiller_data_run import reset_define
 from compiller_tool import compiller_data_run
-from compiller_tool.string_tool import good_variable_name
+from compiller_tool.string_tool import good_variable_name, get_str
+from compiller_tool.color_tool import Colors
 
 define = {}     # the define are stored in this dict
 
@@ -112,6 +113,11 @@ def compiletime_command(line:str, smart_var:dict) -> None:
 
         smart_var[base_name_new] = var_object
         del smart_var[base_name_old]
+
+    elif line.startswith("log "):  # set a log on the compiller log
+        log_str = line[len("log "):].strip()
+
+        logging.info(f"{Colors.BOLD}[Compiletime info]{Colors.RESET}: {get_str(log_str)}")
 
     else:
         raise SmartError("Excepted keyword after 'compiletime'.")
