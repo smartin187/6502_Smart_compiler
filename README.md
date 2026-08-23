@@ -632,6 +632,43 @@ Exemple:
 asm_entry: "A9 41 20 EF FF";    // display A on monitor
 ```
 
+**Replace on `asm_entry`:**
+
+You can set special sequence on `asm_entry` for get the current adress or the adress of a variable.
+
+_Current adress:_
+
+Set on the `asm_entry` the sequence `@adress` for get **the adress of first byte of hex code**.
+
+```Smart
+print: "AAA";   // this code change the current adress
+
+asm_entry: "A9 41 20 EF FF 4C @adress"; // make a infinite loop with print 'A'
+```
+
+With `@adress` sequence, you can set a offset on the adress with `+` or `-`. The sequence is `@adress+offset|` or `@adress-offset|`:
+
+```Smart
+asm_entry: "A9 41 20 EF FF 4C @adress+2|"; // make a infinite loop with print 'A' without LDA on the loop.
+```
+
+> Don't forget the `|` after the offset!
+
+
+_Adress of variable:_
+
+You can get the adress of a variable with `@var_adress`. The sequence is `@var_adress:.var|` or `@var_adress:~advenced_var|`.
+
+```Smart
+.a = 'A';
+
+asm_entry: "AD @var_adress:.a| 20 EF FF ";  // print .a
+
+~b = "HELLO";
+asm_entry: "AD @var_adress:~b| 20 EF FF ";  // print the first char of ~b
+
+```
+
 ###### `wozm` (Woz Monitor)
 
 This function stop programme and return to Woz Monitor.
