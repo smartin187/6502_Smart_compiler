@@ -30,6 +30,4 @@ def build_asm_entry(function_arg:list, line_conter:int, get_str_function) -> str
     if ((len(asm_str) % 2) != 0) or (not good_asm(asm_str)):
         raise SmartError(f"Invalid assembly entry, bad bytes was given.", line_conter)
     
-    code_tmp = " ".join(asm_str[i:i+2] for i in range(0, len(asm_str), 2)) + " "
-
-    return code_tmp
+    return " ".join(asm_str[i:i+2] for i in range(0, len(asm_str), 2)) + " "
