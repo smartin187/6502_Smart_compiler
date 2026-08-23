@@ -44,8 +44,8 @@ need_input = False
 
 PROGRESS_BAR_LEN = 25   # the len of progresse bar during compilation. Not set a big len
 PROGRESS_BAR_CHAR = {
-    "completed":f"{color_tool.Colors.BG_GREEN}#{color_tool.Colors.RESET}",
-    "not_completed":"."
+    "completed":f"{color_tool.Colors.BG_GREEN} {color_tool.Colors.RESET}",
+    "not_completed":" "
 }
 
 def compile_smarty(
