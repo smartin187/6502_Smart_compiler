@@ -12,7 +12,7 @@ import logging
 import re
 import traceback
 
-from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, EscapeChar
+from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, adress_for_RAM, EscapeChar
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool.smart_info import GIT_HUB_LINK
@@ -830,18 +830,6 @@ def compile_smarty(
 
         logging.critical(f"Error with set_on_ram_str: '{string_or_variable}'.")
         raise SmartError(f"Unknown string or variable: '{string_or_variable}'.", line_conter)
-
-
-    def adress_for_RAM(adress:int) -> str:
-        """Return the RAM adress one hex.
-        Exemple :
-        768 -> 00 03"""
-        adress_RAM = hex(adress)[2:].upper()
-
-        adress_RAM = "0" * (4 - len(adress_RAM)) + adress_RAM
-
-        adress_RAM = adress_RAM[2:] + " " + adress_RAM[:2]
-        return adress_RAM
             
     
     import_tool.config_import(compile_smarty)

@@ -309,3 +309,16 @@ def get_hex_from_int(value:int) -> str:
     hex_value = hex(value)[2:].upper().zfill(2)
 
     return hex_value
+
+
+def adress_for_RAM(adress:int) -> str:
+    """Return the RAM adress one hex.
+    Exemple :
+    768 -> 00 03"""
+    adress_RAM = hex(adress)[2:].upper()
+
+    adress_RAM = "0" * (4 - len(adress_RAM)) + adress_RAM
+
+    adress_RAM = adress_RAM[2:] + " " + adress_RAM[:2]
+    return adress_RAM
+
