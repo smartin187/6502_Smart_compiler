@@ -50,6 +50,25 @@ def build_asm_entry(function_arg:list, line_conter:int, get_str_function, adress
 
                 to_replace.append((f"@var_adress:{var_prefix}{var_name}|", adress_for_RAM(var_adress)))
 
+            elif escape_sequence.startswith("@adress+") or escape_sequence.startswith("@adress-"):
+
+                operator = escape_sequence[7]
+
+                number = escape_sequence.split(operator, 1)[1].split("|", 1)[0]
+
+                if not number.isdigit():
+                    raise SmartError(f"Invalid number `{number}` for for asm_entry.")
+
+                number_int = int(number)
+
+                if operator == "+":
+                    replace_adress = adress_conter + START_ADRESS + number_int
+                else:
+                    replace_adress = adress_conter + START_ADRESS - number_int
+
+                to_replace.append((f"@adress{operator}{number}|", adress_for_RAM(replace_adress)))
+
+
     for old, new in to_replace:
         asm_str = asm_str.replace(old, new)
 
