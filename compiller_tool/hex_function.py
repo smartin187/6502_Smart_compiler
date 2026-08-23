@@ -15,7 +15,7 @@ def good_asm(asm:str) -> bool:
             return False
     return True
 
-def build_asm_entry(function_arg:list, line_conter:int, get_str_function, adress_conter:int, START_ADRESS:int) -> str:
+def build_asm_entry(function_arg:list, line_conter:int, get_str_function, adress_conter:int, smart_var:dict, START_ADRESS:int) -> str:
     """This function return the hex for for an asm_entry function."""
     if len(function_arg) != 1:
         raise SmartError("Function asm_entry take 1 arg.", line_conter)
@@ -29,11 +29,33 @@ def build_asm_entry(function_arg:list, line_conter:int, get_str_function, adress
 
     # replace the hex value with @
 
+    to_replace = []
+
+    # do the replace for variable adress:
+    for i, char in enumerate(asm_str):
+        if char == "@":
+            escape_sequence = asm_str[i:]
+
+            if escape_sequence.startswith("@var_adress:"):
+                var_name = escape_sequence.split(":", 1)[1].split("|", 1)[0]
+
+                var_prefix = var_name[0]
+
+                var_name = var_name[1:]
+
+                if var_name not in smart_var:
+                    raise SmartError(f"Variable {var_name} not found.", line_conter)
+
+                var_adress = smart_var[var_name].ram_adress
+
+                to_replace.append((f"@var_adress:{var_prefix}{var_name}|", adress_for_RAM(var_adress)))
+
+    for old, new in to_replace:
+        asm_str = asm_str.replace(old, new)
+
     asm_str = asm_str.replace("@adress", adress_for_RAM(adress_conter + START_ADRESS))
 
     asm_str = asm_str.replace(" ", "")
-    
-    print("asm_str", asm_str)
 
     if ((len(asm_str) % 2) != 0) or (not good_asm(asm_str)):
         raise SmartError(f"Invalid assembly entry, bad bytes was given.", line_conter)
