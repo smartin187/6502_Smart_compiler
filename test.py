@@ -1765,6 +1765,25 @@ OK2"""
             output="ABOK"
         ),
         Test(
+            "asm_entry replace - adress",
+            code="""
+                print: "00000"; // change the adress of the asm_entry
+                asm_entry: "4C @adress+8| A9 41 20 EF FF "; // the 4C jump after the code for print A
+                print: "OK";
+            """,
+            output="00000OK"
+        ),
+        Test(
+            "asm_entry replace - var",
+            code="""
+                .a = '@';
+
+                asm_entry: "AD @var_adress:.a| 20 EF FF"; // print the value of .a with the adress.
+                print: "OK";
+            """,
+            output="@OK"
+        ),
+        Test(
             "quit function test",
             code="""
                 print: "OK";
@@ -1816,6 +1835,22 @@ OK2"""
         Test(
             "Bad arg on restart",
             code="restart: 'A';",
+            sucess=False
+        ),
+        Test(
+            "Bad replace on asm_entry - variable name",
+            code="""
+                asm_entry: "AD @var_adress:.a| 20 EF FF"; // the variable .a is not defined
+                print: "ERROR";
+            """,
+            sucess=False
+        ),
+        Test(
+            "Bad number on asm_entry - adress",
+            code="""
+                asm_entry: "AD @adress+error| 20 EF FF";
+                print: "ERROR";
+            """,
             sucess=False
         )
     )
