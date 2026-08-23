@@ -24,3 +24,4 @@ If the task is a bug you can also add a issue on GitHub.
 - On test set test for veryfy when a variable have a name of keyword
 - _Fix: on help, the name of compilled (pyinstaller) smart is smart_build, not smart_compiller_
 - On build script, make a archive for windows, with emulator and compiller + Smart library.
+- For all call of function get_str, string_tool.py, add the line_conter argument.
