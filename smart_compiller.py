@@ -16,6 +16,7 @@ from compiller_tool.string_tool import split_code, replace_code, in_code, good_v
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool.smart_info import GIT_HUB_LINK
+from compiller_tool.hex_function import build_asm_entry
 from compiller_tool import compiller_data_run
 from compiller_tool import import_tool
 from compiller_tool import smart_obj
@@ -831,15 +832,6 @@ def compile_smarty(
         raise SmartError(f"Unknown string or variable: '{string_or_variable}'.", line_conter)
 
 
-    def good_asm(asm:str) -> bool:
-        """Return True if assembly is good.
-        Assembly is good if char is in A-F 0-9"""
-        for char in asm:
-            if char not in "ABCDEF0123456789":
-                return False
-        return True
-
-
     def adress_for_RAM(adress:int) -> str:
         """Return the RAM adress one hex.
         Exemple :
@@ -1589,21 +1581,8 @@ def compile_smarty(
                 logging.info("Build smart fonction as asm command: goto")
             
             elif function_name == "asm_entry":
-                if len(function_arg) != 1:
-                    raise SmartError("Function asm_entry take 1 arg.", line_conter)
-                
-                asm = function_arg[0]
 
-                asm_str = get_str(asm).strip(" ").replace(" ", "")
-
-                if len(asm_str) == 0:
-                    logging.warning(f"Empty assembly entry, at line {line_conter}")
-                
-
-                if ((len(asm_str) % 2) != 0) or (not good_asm(asm_str)):
-                    raise SmartError(f"Invalid assembly entry, bad bytes was given.", line_conter)
-                
-                code_tmp = " ".join(asm_str[i:i+2] for i in range(0, len(asm_str), 2)) + " "
+                code_tmp = build_asm_entry(function_arg, line_conter, get_str)
 
                 code_compile += code_tmp
 
