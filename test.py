@@ -1619,6 +1619,15 @@ OK2"""
             """,
             output="STRINGSTRINGSTRING"
         ),
+        # log
+        Test(       # on log test, the log output can't be verrified...
+            "Compiletime log test",
+            code="""
+                compiletime log "This is a log test for compiletime";
+                print: "OK";
+            """,
+            output="OK"
+        ),
         # ---- error ----
         Test(
             "Excepted keyword after compiletime",
@@ -1748,6 +1757,21 @@ OK2"""
                 .a = 'A';
                 compiletime realloc .a to $b;
                 print: "ERROR";
+            """,
+            sucess=False
+        ),
+        # log
+        Test(
+            "Compiletime log error missing string",
+            code="""
+                compiletime log ;
+            """,
+            sucess=False
+        ),
+        Test(
+            "Compiletime log error bad value",
+            code="""
+                compiletime log error;
             """,
             sucess=False
         )
