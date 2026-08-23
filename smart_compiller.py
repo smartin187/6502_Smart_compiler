@@ -1570,7 +1570,7 @@ def compile_smarty(
             
             elif function_name == "asm_entry":
 
-                code_tmp = build_asm_entry(function_arg, line_conter, get_str)
+                code_tmp = build_asm_entry(function_arg, line_conter, get_str, adress_conter, CODE_ADRESSE)
 
                 code_compile += code_tmp
 

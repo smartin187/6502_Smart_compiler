@@ -5,6 +5,7 @@ This module have the function build_asm_entry used by the Smart built-in functio
 """
 import logging
 from compiller_tool.smart_exception import SmartError
+from compiller_tool.string_tool import adress_for_RAM
 
 def good_asm(asm:str) -> bool:
     """Return True if assembly is good.
@@ -14,7 +15,7 @@ def good_asm(asm:str) -> bool:
             return False
     return True
 
-def build_asm_entry(function_arg:list, line_conter:int, get_str_function) -> str:
+def build_asm_entry(function_arg:list, line_conter:int, get_str_function, adress_conter:int, START_ADRESS:int) -> str:
     """This function return the hex for for an asm_entry function."""
     if len(function_arg) != 1:
         raise SmartError("Function asm_entry take 1 arg.", line_conter)
@@ -25,7 +26,14 @@ def build_asm_entry(function_arg:list, line_conter:int, get_str_function) -> str
 
     if len(asm_str) == 0:
         logging.warning(f"Empty assembly entry, at line {line_conter}")
+
+    # replace the hex value with @
+
+    asm_str = asm_str.replace("@adress", adress_for_RAM(adress_conter + START_ADRESS))
+
+    asm_str = asm_str.replace(" ", "")
     
+    print("asm_str", asm_str)
 
     if ((len(asm_str) % 2) != 0) or (not good_asm(asm_str)):
         raise SmartError(f"Invalid assembly entry, bad bytes was given.", line_conter)
