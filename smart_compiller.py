@@ -12,7 +12,7 @@ import logging
 import re
 import traceback
 
-from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, adress_for_RAM, EscapeChar
+from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, adress_for_RAM, get_str, EscapeChar
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool.smart_info import GIT_HUB_LINK
@@ -182,54 +182,6 @@ def compile_smarty(
             adress_conter += 6
 
         return start_loop_for
-
-    def get_str(string:str) -> str:
-        """Return the str value. Add the escape char."""
-
-        string = string.strip()
-
-        if not string.startswith('"'):  # error if function was called in other value to str
-            raise SmartError(f"Value '{string}' is not a str value.", line_conter)
-        
-
-        str_value = ""
-        escape_char = False
-        end = False
-
-        for char in string[1:]:
-            if end: # a char is after the " for close
-                raise SmartError(f"Invalid syntaxe after str value: '{string}'", line_conter)
-            
-            if char == '"' and not escape_char:
-                end = True
-                continue
-                
-            str_value += char
-
-            if char == "\\":
-                escape_char = not escape_char
-            
-            else:
-                escape_char = False
-
-        # replace char:
-
-        str_value = str_value.replace(EscapeChar.DOUBLE_SLASH, EscapeChar.PLACE_HOLDER_SLASH)   # use a placeholder for double slash
-
-        for char in EscapeChar.ESCAPE_CHAR:
-            replace = EscapeChar.ESCAPE_CHAR[char]
-
-            str_value = str_value.replace(char, replace)
-        
-        str_value = str_value.replace(EscapeChar.PLACE_HOLDER_SLASH, "\\")
-
-
-        if len(str_value) == 0:
-            logging.warning("str value is empty!")
-        elif len(str_value) == 1:
-            logging.warning("str value have a len of 1. Please use a char value.")
-
-        return str_value
 
 
     def get_char(char_type:str) -> str:

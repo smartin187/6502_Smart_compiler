@@ -322,3 +322,51 @@ def adress_for_RAM(adress:int) -> str:
     adress_RAM = adress_RAM[2:] + " " + adress_RAM[:2]
     return adress_RAM
 
+def get_str(string:str, line_conter:int=0) -> str:
+    """Return the str value. Add the escape char."""
+
+    string = string.strip()
+
+    if not string.startswith('"'):  # error if function was called in other value to str
+        raise SmartError(f"Value '{string}' is not a str value.", line_conter)
+    
+
+    str_value = ""
+    escape_char = False
+    end = False
+
+    for char in string[1:]:
+        if end: # a char is after the " for close
+            raise SmartError(f"Invalid syntaxe after str value: '{string}'", line_conter)
+        
+        if char == '"' and not escape_char:
+            end = True
+            continue
+            
+        str_value += char
+
+        if char == "\\":
+            escape_char = not escape_char
+        
+        else:
+            escape_char = False
+
+    # replace char:
+
+    str_value = str_value.replace(EscapeChar.DOUBLE_SLASH, EscapeChar.PLACE_HOLDER_SLASH)   # use a placeholder for double slash
+
+    for char in EscapeChar.ESCAPE_CHAR:
+        replace = EscapeChar.ESCAPE_CHAR[char]
+
+        str_value = str_value.replace(char, replace)
+    
+    str_value = str_value.replace(EscapeChar.PLACE_HOLDER_SLASH, "\\")
+
+
+    if len(str_value) == 0:
+        logging.warning("str value is empty!")
+    elif len(str_value) == 1:
+        logging.warning("str value have a len of 1. Please use a char value.")
+
+    return str_value
+
