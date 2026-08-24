@@ -159,7 +159,7 @@ print: MY_CONSTANT; // B
 
 > But the define can't be changed at runtime.
 
-#### `compiletime debug`
+##### `compiletime debug`
 
 If you have probleme with your code, you can use `compiletime debug` for print the line running at the run time.
 
@@ -210,7 +210,7 @@ A
 
 If you use the [Smart Emulator](#interpret-smart-code-emulator), you can set the speed to maximum. See [Speeding up program execution](#speeding-up-program-execution).
 
-#### `compiletime realloc`
+##### `compiletime realloc`
 
 The `compiletime realloc` is used for realloc a old variable to a new variable.
 
@@ -252,6 +252,27 @@ compiletime realloc .simple_value to ~advenced_value; // ERROR
 compiletime realloc ~advenced_value to .simple_value; // ERROR
 ```
 
+##### `compiletime log`
+
+You can set a message on the log of compiller.
+
+For exemple it is helpful if you make a library and you want to give information:
+
+```Smart
+// your library
+void function{;
+    // code of function
+}
+
+.constent = 1;
+
+compiletime log "Library was successfully compiled!";
+```
+
+On the output of compiller, you will have:
+```log
+SmartCompiller INFO: [Compiletime info]: Library was successfully compiled!
+```
 
 #### Variables
 
