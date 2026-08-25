@@ -1323,12 +1323,43 @@ def compile_smarty(
             if function_mode["function_mode"]:
                 raise SmartError(f"Error with function: impossible to create new function on function.", line_conter)
 
-            func_name = line.split(" ")[1]
+            func_name = line.split(" ", 1)[1]
 
             if func_name[-1] != "{":
                 raise SmartError("On function " + func_name + ", expected '{'", line_conter)
 
             func_name = func_name[:-1]
+
+            parameters_obj = []
+
+            if ":" in func_name:    # the function have parameters
+                func_name, parameters = func_name.split(":", 1)
+                
+                parameters_list = parameters.replace(" ", "").split(",")
+            
+                for parameter in parameters_list:
+                    if parameter.startswith("."):
+                        var_name_parameter = parameter[1:]
+                        if not good_variable_name(var_name_parameter):
+                            raise SmartError(f"Invalid sintaxe, excepted a variable name: '{var_name_parameter}'.")
+                        
+                        parameter_obj = smart_obj.SmartVariable(var_name_parameter, adress_var)
+
+                        make_variable(parameter_obj)
+                        parameters_obj.append(parameter_obj)
+
+                    elif parameter.startswith("~"):
+                        var_name_parameter = parameter[1:]
+                        if not good_variable_name(var_name_parameter):
+                            raise SmartError(f"Invalid sintaxe, excepted a variable name: '{var_name_parameter}'.")
+                        
+                        parameter_obj = smart_obj.SmartStr(var_name_parameter, adress_var)
+
+                        make_variable(parameter_obj)
+                        parameters_obj.append(parameter_obj)
+                    
+                    else:
+                        raise SmartError(f"Excepted a variable name, not '{parameter}'", line_conter)
 
             if not good_variable_name(func_name):
                 raise SmartError(f"Invalid name for {func_name}", line_conter)
@@ -1337,7 +1368,7 @@ def compile_smarty(
            
             func_code, funciton_line = get_bloc(line_conter, code, error_message="On function '" + func_name + "'")
 
-            function_name_usr[func_name] = smart_obj.SmartFunction(func_name, func_code)
+            function_name_usr[func_name] = smart_obj.SmartFunction(func_name, func_code, parameters_obj)
 
             jump_line = funciton_line - line_conter - 1
 
