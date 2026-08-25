@@ -485,9 +485,7 @@ def compile_smarty(
             elif value[0] == ".":
                 variable = value[1:]
 
-                #if variable not in smart_var:
-                #    raise SmartError(f"Name error : name '{value}' is not defined.", line_conter, set_error=set_error_exception)
-                
+
                 counter_adress_value += 3
                 
 
@@ -664,9 +662,6 @@ def compile_smarty(
         if string_or_variable.startswith("~"):   # advenced variable
             var_name = string_or_variable[1:]
 
-            #if var_name not in smart_var:
-            #    raise SmartError(f"Name error : name '{var_name}' is not defined.", line_conter)
-            
             code_hex_copy = ""
 
             for i in range(smart_obj.SIZE_ADVANCED_OBJ):
