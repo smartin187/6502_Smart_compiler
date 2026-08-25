@@ -802,7 +802,7 @@ def compile_smarty(
         if len(smart_var) >= 256:
             raise SmartError(f"Smart memory is full. You can't make more 256 bytes for variables.\n{color_tool.Colors.YELLOW}You can use compiletime realloc for reuse space of a variable.{color_tool.Colors.RESET}", line_conter)
 
-        adress_var += 1
+        adress_var += 1 if not isinstance(var_obj, smart_obj.AdvancedObj) else var_obj.size
 
         smart_var[var_name] = var_obj
 
