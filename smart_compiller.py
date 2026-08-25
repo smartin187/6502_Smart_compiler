@@ -485,19 +485,19 @@ def compile_smarty(
             elif value[0] == ".":
                 variable = value[1:]
 
-                if variable not in smart_var:
-                    raise SmartError(f"Name error : name '{value}' is not defined.", line_conter, set_error=set_error_exception)
+                #if variable not in smart_var:
+                #    raise SmartError(f"Name error : name '{value}' is not defined.", line_conter, set_error=set_error_exception)
                 
                 counter_adress_value += 3
                 
 
-                return f"AD {adress_for_RAM(smart_var[variable].ram_adress)} "
+                return f"AD {adress_for_RAM(get_variable(variable).ram_adress)} "
 
             elif value[0] == "~":       # advanced variable, need index
                 try:
                     advenced_var_name = value[1:].split("[", 1)[0]
 
-                    obj_var = smart_var[advenced_var_name]
+                    obj_var = get_variable(advenced_var_name)
 
                     index_mode, index_var = obj_var.get_index(value, test_mode=test_value_mode)
 
@@ -664,13 +664,13 @@ def compile_smarty(
         if string_or_variable.startswith("~"):   # advenced variable
             var_name = string_or_variable[1:]
 
-            if var_name not in smart_var:
-                raise SmartError(f"Name error : name '{var_name}' is not defined.", line_conter)
+            #if var_name not in smart_var:
+            #    raise SmartError(f"Name error : name '{var_name}' is not defined.", line_conter)
             
             code_hex_copy = ""
 
             for i in range(smart_obj.SIZE_ADVANCED_OBJ):
-                code_hex_copy += f"AD {adress_for_RAM(smart_var[var_name].ram_adress + i)} 8D {adress_for_RAM(start_adress + i)} "
+                code_hex_copy += f"AD {adress_for_RAM(get_variable(var_name).ram_adress + i)} 8D {adress_for_RAM(start_adress + i)} "
 
             if add_adress:
                 adress_conter += 6 * smart_obj.SIZE_ADVANCED_OBJ
@@ -783,13 +783,14 @@ def compile_smarty(
         logging.critical(f"Error with set_on_ram_str: '{string_or_variable}'.")
         raise SmartError(f"Unknown string or variable: '{string_or_variable}'.", line_conter)
     
-    def get_variable(var_name:str) -> smart_obj.SmartObj:
+    def get_variable(var_name:str, special_name:bool=False) -> smart_obj.SmartObj:
         """This function return the smart variable (SmartObj) from the name of variable.
         The smart obj can be SmartVariable, SmartStr...
 
         If the variable don't exist or the name is invalid, raise SmartError.
+        If special_name=True, don't raise SmartError if name is invalid (use for reserved adress).
         """
-        if not good_variable_name(var_name):
+        if not good_variable_name(var_name) and not special_name:
             raise SmartError(f"Invalid sintaxe: '{var_name}', excepted a variable name.", line_conter)
 
         if var_name not in smart_var:
@@ -1002,16 +1003,16 @@ def compile_smarty(
 
             if not index_mode:  # set a str value on variable
                 try:
-                    code_compile += set_on_ram_str(value, smart_var[var_name].ram_adress)
+                    code_compile += set_on_ram_str(value, get_variable(var_name).ram_adress)
                 except SmartError as se:
                     raise SmartError(f"{str(se)}\t\tOn str variable (~), need str value, not `{value}`.")
 
             else:   # set a value at index:
-                index_mode_const, index_var = smart_var[var_name].get_index(line)
+                index_mode_const, index_var = get_variable(var_name).get_index(line)
                 # ^ if the index is a number literal, else it is variable or expression
 
                 if index_mode_const:
-                    code_compile += f"{set_one_A_value(value)}8D {adress_for_RAM(smart_var[var_name].ram_adress + index_var)} "
+                    code_compile += f"{set_one_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
                     adress_conter += 3
                 else:
                     code_compile += f"{set_one_A_value(index_var)}AA "     # save on X index delta
@@ -1019,7 +1020,7 @@ def compile_smarty(
 
                     code_compile += set_one_A_value(value)
                     
-                    code_compile += f"9D {adress_for_RAM(smart_var[var_name].ram_adress)} "
+                    code_compile += f"9D {adress_for_RAM(get_variable(var_name).ram_adress)} "
                     adress_conter += 3
 
 
@@ -1040,7 +1041,7 @@ def compile_smarty(
             smart_var[f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else}"] = smart_obj.ReservedAdress(adress_var)
             compiller_data_run.not_used_call_else += 1
             
-            call_else_adress = adress_for_RAM(smart_var[f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else - 1}"].adress) + " "
+            call_else_adress = adress_for_RAM(get_variable(f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else - 1}", special_name=True).adress) + " "
             
             adress_var += 1
             
@@ -1251,7 +1252,7 @@ def compile_smarty(
                     raise SmartError("On for loop, need a variable for iteration of advenced value.", line_conter)
 
                 try:
-                    adress_advenced_value = smart_var[count[1:]].ram_adress
+                    adress_advenced_value = get_variable(count[1:]).ram_adress
                 except KeyError:
                     raise SmartError(f"Variable {count[1:]} was not found on for loop.", line_conter)
 
@@ -1760,7 +1761,7 @@ def compile_smarty(
         
         logging.info("Build end.")
 
-        logging.info(f"Memory info: virtual smart memory: 256bytes, used by programme: {len(smart_var)}bytes, using {len(smart_var) / 256 * 100}% of smart virtual memory. Programme size: used {adress_conter} bytes from {hex(CODE_ADRESSE)}")
+        logging.info(f"Memory info: virtual smart memory: 256bytes, used by programme: {len(smart_var)}bytes, using {len(smart_var) / 256 * 100}% of Smart memory. Programme size: used {adress_conter} bytes from {hex(CODE_ADRESSE)}")
 
     if module_mode:
         return import_tool.ModuleInfo(code_compile, smart_var, function_name_usr)
