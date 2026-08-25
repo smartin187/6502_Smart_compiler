@@ -782,7 +782,20 @@ def compile_smarty(
 
         logging.critical(f"Error with set_on_ram_str: '{string_or_variable}'.")
         raise SmartError(f"Unknown string or variable: '{string_or_variable}'.", line_conter)
-            
+    
+    def get_variable(var_name:str) -> smart_obj.SmartObj:
+        """This function return the smart variable (SmartObj) from the name of variable.
+        The smart obj can be SmartVariable, SmartStr...
+
+        If the variable don't exist or the name is invalid, raise SmartError.
+        """
+        if not good_variable_name(var_name):
+            raise SmartError(f"Invalid sintaxe: '{var_name}', excepted a variable name.", line_conter)
+
+        if var_name not in smart_var:
+            raise SmartError(f"Name error : name '{var_name}' is not defined.", line_conter)
+        
+        return smart_var[var_name]
     
     import_tool.config_import(compile_smarty)
 
@@ -947,7 +960,7 @@ def compile_smarty(
             
             value_RAM = set_one_A_value(value)
                         
-            code_compile += f"{value_RAM}8D {adress_for_RAM(smart_var[var_name].ram_adress)} "
+            code_compile += f"{value_RAM}8D {adress_for_RAM(get_variable(var_name).ram_adress)} "
 
             adress_conter += 3
 
