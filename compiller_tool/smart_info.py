@@ -13,7 +13,7 @@ SMART_VERSION = "v0.0.7"
 ONE_LINUX = sys.platform == "linux"
 
 EXECUTABLE = {
-    "compiller":"smart_build" if ONE_LINUX else "smart_build.exe",
+    "compiller":"smart_compiler" if ONE_LINUX else "smart_compiler.exe",
     "emulator":"smart_emulator" if ONE_LINUX else "smart_emulator.exe"
 }
 
