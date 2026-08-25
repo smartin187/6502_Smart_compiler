@@ -1505,6 +1505,87 @@ try:
                 print: "OK";
             """,
             output="F2F1BF1BOK"
+        ),
+        Test(
+            "Function with parameters",
+            code="""
+                void f: .x {;
+                    print: .x;
+                }
+
+                f: 'A';
+                f: 'B';
+
+                print: "OK";
+            """,
+            output="ABOK"
+        ),
+        Test(
+            "Function with some parameters",
+            code="""
+                void f: .x, ~string, .a {;
+                    print: .x;
+                    print: ~string;
+                    print: .x + .a;
+                    print: .a + 65;
+
+                }
+
+                f: 'A', "STRING", 1;
+                f: 'B', "STRING2", 2;
+                print: "OK";
+            """,
+            output="ASTRINGBBBSTRING2DCOK"
+        ),
+        # --- error ---
+        Test(
+            "Function with bad parameters 1",
+            code="""
+                void f {;
+                    print: "ERROR";
+                }
+
+                f: 1;
+            """,
+            sucess=False
+        ),
+        Test(
+            "Function with bad parameters 2",
+            code="""
+                void f: .x {;
+                    print: "ERROR";
+                }
+
+                f:;
+            """,
+            sucess=False
+        ),
+        Test(
+            "Invalid sintaxe with parameters 1",
+            code="""
+                void f .a {;
+                    print: "ERROR";
+                }
+            """,
+            sucess=False
+        ),
+        Test(
+            "Invalid sintaxe with parameters 2",
+            code="""
+                void f: .a, {;
+                    print: "ERROR";
+                }
+            """,
+            sucess=False
+        ),
+        Test(
+            "Invalid sintaxe with parameters 3",
+            code="""
+                void f: error {;
+                    print: "ERROR";
+                }
+            """,
+            sucess=False
         )
     )
 
