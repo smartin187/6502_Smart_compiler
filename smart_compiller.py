@@ -970,7 +970,7 @@ def compile_smarty(
             except ValueError:
                 raise SmartError(f"Error with variable `{line}`: expected '='", line_conter)
 
-            if var_name.endswith("]"):#bool(re.fullmatch(r'.*\[[0-9]+\]\$', var_name)):     # a index for str value
+            if var_name.endswith("]"):     # a index for str value
 
                 var_name = var_name.split("[", 1)[0]
 
@@ -1424,7 +1424,6 @@ def compile_smarty(
 
             for var_name in import_info.variables:
                 smart_var[var_name] = import_info.variables[var_name]
-            #smart_var |= import_info.variables
             
             adress_var += len(import_info.variables)
 
