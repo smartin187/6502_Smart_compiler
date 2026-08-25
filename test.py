@@ -1537,6 +1537,21 @@ try:
             """,
             output="ASTRINGBBBSTRING2DCOK"
         ),
+        Test(
+            "Function with parameter and return",
+            code="""
+                void sum: .a, .b {;
+                    return .a + .b;
+                }
+
+                .x = sum: 'A', 1;
+                print: .x;
+                .y = sum: 2, 'B';
+                print: .y;
+                print: "OK";
+            """,
+            output="BDOK"
+        ),
         # --- error ---
         Test(
             "Function with bad parameters 1",
