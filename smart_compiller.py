@@ -132,8 +132,9 @@ def compile_smarty(
         nonlocal adress_conter, code_compile, adress_var, smart_var
         for i in range(3):  # the adress for count
             compiller_data_run.not_used_ram += 1
-            smart_var[f"NotUsedRAMFor{compiller_data_run.not_used_ram}"] = smart_obj.ReservedAdress(adress_var)
-            adress_var += 1
+            #smart_var[f"NotUsedRAMFor{compiller_data_run.not_used_ram}"] = smart_obj.ReservedAdress(adress_var)
+            #adress_var += 1
+            make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAMFor{compiller_data_run.not_used_ram}")
 
         adress_start_number = adress_for_RAM(adress_var - 1)
         adress_end = adress_for_RAM(adress_var - 2)
@@ -793,6 +794,21 @@ def compile_smarty(
         
         return smart_var[var_name]
     
+    def make_variable(var_obj:smart_obj.SmartObj, name:str | None = None) -> None:
+        """Set on smart_var a Smart object (can be SmartVariable, SmartStr...).
+        If the Smart memory is full, raise SmartError.
+        """
+        nonlocal adress_var
+        var_name = var_obj.name if name is None else name
+
+        if len(smart_var) >= 256:
+            raise SmartError(f"Smart memory is full. You can't make more 256 bytes for variables.\n{color_tool.Colors.YELLOW}You can use compiletime realloc for reuse space of a variable.{color_tool.Colors.RESET}", line_conter)
+
+        adress_var += 1
+
+        smart_var[var_name] = var_obj
+
+    
     import_tool.config_import(compile_smarty)
 
     # -----------
@@ -948,11 +964,12 @@ def compile_smarty(
                 raise SmartError(f"Bad variable name : '{var_name}'", line_conter)
 
             if var_name not in smart_var: # make new variable
-                if len(smart_var) >= 256:
-                    raise SmartError("Memory error : maximum variable are 256.", line_conter)
-                smart_var[var_name] = smart_obj.SmartVariable(var_name, adress_var)
+                #if len(smart_var) >= 256:
+                #    raise SmartError("Memory error : maximum variable are 256.", line_conter)
+                #smart_var[var_name] = smart_obj.SmartVariable(var_name, adress_var)
 
-                adress_var += 1
+                #adress_var += 1
+                make_variable(smart_obj.SmartVariable(var_name, adress_var))
             
             value_RAM = set_one_A_value(value)
                         
@@ -986,15 +1003,15 @@ def compile_smarty(
                     raise SmartError(f"Used index in undefined variable: `{var_name}`", line_conter)
 
 
-                smart_var[var_name] = smart_obj.SmartStr(var_name, adress_var)
-
-                adress_var += 1
+                #smart_var[var_name] = smart_obj.SmartStr(var_name, adress_var)
+                #adress_var += 1
+                make_variable(smart_obj.SmartStr(var_name, adress_var))
 
                 for i in range(smart_obj.SIZE_ADVANCED_OBJ - 1):
-                    smart_var[f"NotUsedRAM{i}"] = smart_obj.ReservedAdress(adress_var)
+                    #smart_var[f"NotUsedRAM{i}"] = smart_obj.ReservedAdress(adress_var)
+                    make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAM{i}")
                     compiller_data_run.not_used_ram += 1
-
-                    adress_var += 1
+                    #adress_var += 1
 
             if not index_mode:  # set a str value on variable
                 try:
@@ -1033,7 +1050,8 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
 
-            smart_var[f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else}"] = smart_obj.ReservedAdress(adress_var)
+            #smart_var[f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else}"] = smart_obj.ReservedAdress(adress_var)
+            make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else}")
             compiller_data_run.not_used_call_else += 1
             
             call_else_adress = adress_for_RAM(get_variable(f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else - 1}", special_name=True).adress) + " "
@@ -1222,10 +1240,11 @@ def compile_smarty(
                     raise SmartError("Memory error : maximum variable are 256.", line_conter)
 
                 var_name = var_name[1:]
-
-                smart_var[var_name] = smart_obj.SmartVariable(var_name, adress_var)
+                
+                #smart_var[var_name] = smart_obj.SmartVariable(var_name, adress_var)
                 adress_iterrator = adress_for_RAM(adress_var)
-                adress_var += 1
+                make_variable(smart_obj.SmartVariable(var_name, adress_var))
+                #adress_var += 1
 
             count = count.strip()
 
