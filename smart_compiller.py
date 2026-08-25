@@ -1594,6 +1594,27 @@ def compile_smarty(
                 if function_name_usr[function_name].return_value:
                     logging.warning(f"Function '{function_name}' is a return-function but was used as a function.")
 
+                # set the parameters:
+                function_parameters = function_name_usr[function_name].parameters
+                if len(function_arg) != len(function_parameters):
+                    raise SmartError(f"Function '{function_name}' take {len(function_parameters)} parameters, but {len(function_arg)} was given.", line_conter)
+                
+                for i, parameter in enumerate(function_parameters):
+                    if isinstance(parameter, smart_obj.SmartVariable):
+                        adress_parameter = parameter.ram_adress
+
+                        code_compile += set_one_A_value(function_arg[i])
+                        code_compile += f"8D {adress_for_RAM(adress_parameter)} "
+                        adress_conter += 3
+
+                    elif isinstance(parameter, smart_obj.SmartStr):
+                        adress_parameter = parameter.ram_adress
+
+                        code_compile += set_on_ram_str(function_arg[i], adress_parameter)
+
+                    else:
+                        raise SmartError(f"Uknow type of parameters for function '{function_name}'.", line_conter)
+
                 # use a goto
 
                 adress_conter += 3
