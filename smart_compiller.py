@@ -638,12 +638,8 @@ def compile_smarty(
                         
                         if isinstance(parameter, smart_obj.SmartVariable):
                             adress_parameter = parameter.ram_adress
-
-                            print("ok")
             
                             hex_code += set_one_A_value(func_arg_value_list[i], recursiv_value=True, test_value_mode=test_value_mode)
-                            print("hex_code", hex_code)
-                            #counter_adress_value += hex_code.count(" ")
 
                             hex_code += f"8D {adress_for_RAM(adress_parameter)} "
                             counter_adress_value += 3
@@ -659,8 +655,6 @@ def compile_smarty(
                     
 
                     text_code = f"!smart_call_func|{func_name_value}"
-
-                    print("text_code", text_code)
                     
                     function_replace.append(text_code)
 
@@ -679,8 +673,6 @@ def compile_smarty(
 
         if add_adress and not recursiv_value:
             adress_conter += asm_v.count(" ") + asm_v.count("!smart_call_func|") * 3
-
-        print("asm_v", asm_v)
 
         return asm_v
 
@@ -1040,12 +1032,8 @@ def compile_smarty(
                 make_variable(smart_obj.SmartVariable(var_name, adress_var))
             
             value_RAM = set_one_A_value(value)
-
-            print("value_RAM", value_RAM)
                         
             code_compile += f"{value_RAM}8D {adress_for_RAM(get_variable(var_name).ram_adress)} "
-
-            print("code_compile", code_compile)
 
             adress_conter += 3
 
@@ -1753,8 +1741,6 @@ def compile_smarty(
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1
             )
 
-        print("----- code compile 1 -----", code_compile)
-
         # set the function:
 
         for f in function_name_usr:
@@ -1768,7 +1754,6 @@ def compile_smarty(
             adress_conter += code_func.count(" ") + 3 * code_func.count("!smart_call_func|")
 
         # call function
-        print("function_replace", function_replace)
         for i in range(2):
             for function in function_replace:
 
@@ -1784,7 +1769,6 @@ def compile_smarty(
 
                 function_name_usr[function_name_tmp].called_function = True
 
-    print("----- code compile 2 -----", code_compile)
 
     if (not function_mode["function_mode"]) and (not module_mode):
         for name, f in function_name_usr.items():
