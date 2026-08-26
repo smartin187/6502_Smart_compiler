@@ -827,7 +827,7 @@ def compile_smarty(
         
         return smart_var[var_name]
     
-    def make_variable(var_obj:smart_obj.SmartObj, name:str | None = None) -> None:
+    def make_variable(var_obj:smart_obj.SmartObj, name:str | None = None, add_adress_advenced_value:bool=False) -> None:
         """Set on smart_var a Smart object (can be SmartVariable, SmartStr...).
         If the Smart memory is full, raise SmartError.
         """
@@ -835,13 +835,17 @@ def compile_smarty(
         var_name = var_obj.name if name is None else name
 
         logging.info(f"Building new Smart object: {var_name} at {hex(adress_var)}")
-        
-        if len(smart_var) >= 256:
-            raise SmartError(f"Smart memory is full. You can't make more 256 bytes for variables.\n{color_tool.Colors.YELLOW}You can use compiletime realloc for reuse space of a variable.{color_tool.Colors.RESET}", line_conter)
 
-        adress_var += 1 if not isinstance(var_obj, smart_obj.AdvancedObj) else var_obj.size
+        if add_adress_advenced_value:
+            adress_var += 1 if not isinstance(var_obj, smart_obj.AdvancedObj) else var_obj.size
+        else:
+            adress_var += 1
 
         smart_var[var_name] = var_obj
+
+        if adress_var >= compiller_data_run.MAX_VARIABLE_CREATED + compiller_data_run.START_ADRESS_VAR:
+            raise SmartError(f"Smart memory is full. You can't make more {compiller_data_run.MAX_VARIABLE_CREATED} bytes for variables.\nThe variable '{var_name}' can't be created...\n{color_tool.Colors.YELLOW}You can use compiletime realloc for reuse space of a variable.{color_tool.Colors.RESET}", line_conter)
+
 
     
     import_tool.config_import(compile_smarty)
@@ -893,7 +897,7 @@ def compile_smarty(
     last_if = False     # True if the last operation is if on Smart (for else).
 
     smart_var:dict[str, smart_obj.SmartVariable] = {} if not function_mode["function_mode"] else function_mode["global_var"]
-    adress_var = 0x300 + len(smart_var)
+    adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var)
 
     line_conter = 0
 
@@ -1423,7 +1427,7 @@ def compile_smarty(
                         
                         parameter_obj = smart_obj.SmartStr(var_name_parameter, adress_var)
 
-                        make_variable(parameter_obj)
+                        make_variable(parameter_obj, add_adress_advenced_value=True)
                         parameters_obj.append(parameter_obj)
                     
                     else:

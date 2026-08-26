@@ -36,6 +36,10 @@ BASE_ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\
 
 ALLOW_CHAR = BASE_ALLOW_CHAR + "\n\r"
 
+MAX_VARIABLE_CREATED = 256  # the maximum number of bytes for variable.
+
+START_ADRESS_VAR = 0x300
+
 # base value -------------------------------
 
 _WARNING_ENDLINE = (False, )     # if an line not end by ; } or // in line or the last line

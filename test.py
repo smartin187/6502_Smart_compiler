@@ -1986,7 +1986,52 @@ OK2"""
         )
     )
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST
+    VARIABLE_TEST = (
+        Test(
+            "Simple variable test",
+            code="""
+                .x = 1;
+                .y = 2;
+                print: '0' + .x;
+                print: '0' + .y;
+            """,
+            output="12"
+        ),
+        Test(
+            "Advenced variable test",
+            code="""
+                ~string = "STRING";
+                print: ~string;
+                print: ~string[0];
+            """,
+            output="STRINGS"
+        ),
+        Test(
+            f"{compiller_data_run.MAX_VARIABLE_CREATED - 1} variable created",
+            code="".join([f".var_{i} = 0;" for i in range(compiller_data_run.MAX_VARIABLE_CREATED - 1)]),
+            output=""
+        ),
+        # --- error ---
+        Test(
+            "Variable prefix error",
+            code="""
+                a = 1;
+            """,
+            sucess=False
+        ),
+        Test(
+            "Error max variable created",
+            code="".join([f".var_{i} = 0;" for i in range(compiller_data_run.MAX_VARIABLE_CREATED + 1)]),
+            sucess=False
+        ),
+        Test(
+            "Error max variable created with advenced variable",
+            code="".join([f"~str_{i} = \"\";" for i in range(compiller_data_run.MAX_VARIABLE_CREATED // 21)]) + "".join(f".var_{i} = 0;" for i in range(compiller_data_run.MAX_VARIABLE_CREATED % 21 + 1)),
+            sucess=False
+        )
+    )
+
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST
 
     try:
         for test in GLOBAL_TESTS:
