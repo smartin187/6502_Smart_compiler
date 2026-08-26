@@ -595,12 +595,19 @@ def compile_smarty(
 
             elif in_code(":", value):
 
-                # save A to 0x02E7 if the function is a return-function
+                # save A to SYS_ADRESS['SaveA'] if the function is a return-function
                 saver_A = f"8D {compiller_data_run.SYS_ADRESS['SaveA']}"
 
                 counter_adress_value += 3
 
                 func_name_value, func_arg_value = value.split(":", 1)
+
+                func_arg_value = func_arg_value.replace(" ", "")
+
+                if func_arg_value:
+                    func_arg_value_list = func_arg_value.split(",")
+                else:
+                    func_arg_value_list = []
 
                 if func_name_value in SmartBuiltIn.BUILT_IN_NAME_RETURN:
                     if func_name_value == "input":
@@ -620,14 +627,46 @@ def compile_smarty(
                     else:
                         raise SmartError(f"Function '{func_name_value}' not exist.", line_conter, set_error=set_error_exception)
 
+                    # set the argument:
+                    hex_code = ""
+                    
+                    function_parameters = function_name_usr[func_name_value].parameters
+                    if len(func_arg_value_list) != len(function_parameters):
+                        raise SmartError(f"Function '{func_name_value}' take {len(function_parameters)} parameters, but {len(func_arg_value_list)} was given.", line_conter)
+            
+                    for i, parameter in enumerate(function_parameters):
+                        
+                        if isinstance(parameter, smart_obj.SmartVariable):
+                            adress_parameter = parameter.ram_adress
+
+                            print("ok")
+            
+                            hex_code += set_one_A_value(func_arg_value_list[i], recursiv_value=True, test_value_mode=test_value_mode)
+                            print("hex_code", hex_code)
+                            #counter_adress_value += hex_code.count(" ")
+
+                            hex_code += f"8D {adress_for_RAM(adress_parameter)} "
+                            counter_adress_value += 3
+            
+                        elif isinstance(parameter, smart_obj.SmartStr):
+                            adress_parameter = parameter.ram_adress
+            
+                            hex_code += set_on_ram_str(func_arg_value_list[i], adress_parameter)
+            
+                        else:
+                            raise SmartError(f"Uknow type of parameters for function '{func_name_value}'.", line_conter)
+            
+                    
+
                     text_code = f"!smart_call_func|{func_name_value}"
 
+                    print("text_code", text_code)
                     
                     function_replace.append(text_code)
 
                     counter_adress_value += 3
 
-                    return saver_A + text_code + f"AD {compiller_data_run.SYS_ADRESS['ReturnValue']}"
+                    return saver_A + hex_code + text_code + f"AD {compiller_data_run.SYS_ADRESS['ReturnValue']}"
 
       
             else:
@@ -640,6 +679,8 @@ def compile_smarty(
 
         if add_adress and not recursiv_value:
             adress_conter += asm_v.count(" ") + asm_v.count("!smart_call_func|") * 3
+
+        print("asm_v", asm_v)
 
         return asm_v
 
@@ -808,10 +849,39 @@ def compile_smarty(
 
         smart_var[var_name] = var_obj
 
-        
-
     
     import_tool.config_import(compile_smarty)
+
+    def hex_parameters(function_name_usr:dict, function_name:str, function_arg:list) -> str:
+        """Return the hex code for the parameters of function."""
+        nonlocal adress_conter
+
+        hex_code = ""
+
+        function_parameters = function_name_usr[function_name].parameters
+        if len(function_arg) != len(function_parameters):
+            raise SmartError(f"Function '{function_name}' take {len(function_parameters)} parameters, but {len(function_arg)} was given.", line_conter)
+
+        for i, parameter in enumerate(function_parameters):
+            if isinstance(parameter, smart_obj.SmartVariable):
+                adress_parameter = parameter.ram_adress
+
+                hex_code += set_one_A_value(function_arg[i])
+                
+
+                hex_code += f"8D {adress_for_RAM(adress_parameter)} "
+                adress_conter += 3
+
+            elif isinstance(parameter, smart_obj.SmartStr):
+                adress_parameter = parameter.ram_adress
+
+                hex_code += set_on_ram_str(function_arg[i], adress_parameter)
+
+            else:
+                raise SmartError(f"Uknow type of parameters for function '{function_name}'.", line_conter)
+
+        return hex_code
+
 
     # -----------
 
@@ -970,8 +1040,12 @@ def compile_smarty(
                 make_variable(smart_obj.SmartVariable(var_name, adress_var))
             
             value_RAM = set_one_A_value(value)
+
+            print("value_RAM", value_RAM)
                         
             code_compile += f"{value_RAM}8D {adress_for_RAM(get_variable(var_name).ram_adress)} "
+
+            print("code_compile", code_compile)
 
             adress_conter += 3
 
@@ -1599,26 +1673,7 @@ def compile_smarty(
                     logging.warning(f"Function '{function_name}' is a return-function but was used as a function.")
 
                 # set the parameters:
-                function_parameters = function_name_usr[function_name].parameters
-                if len(function_arg) != len(function_parameters):
-                    raise SmartError(f"Function '{function_name}' take {len(function_parameters)} parameters, but {len(function_arg)} was given.", line_conter)
-                
-                for i, parameter in enumerate(function_parameters):
-                    if isinstance(parameter, smart_obj.SmartVariable):
-                        adress_parameter = parameter.ram_adress
-
-                        code_compile += set_one_A_value(function_arg[i])
-                        code_compile += f"8D {adress_for_RAM(adress_parameter)} "
-                        adress_conter += 3
-
-                    elif isinstance(parameter, smart_obj.SmartStr):
-                        adress_parameter = parameter.ram_adress
-
-                        code_compile += set_on_ram_str(function_arg[i], adress_parameter)
-
-                    else:
-                        raise SmartError(f"Uknow type of parameters for function '{function_name}'.", line_conter)
-
+                code_compile += hex_parameters(function_name_usr, function_name, function_arg)
                 # use a goto
 
                 adress_conter += 3
@@ -1698,7 +1753,7 @@ def compile_smarty(
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1
             )
 
-
+        print("----- code compile 1 -----", code_compile)
 
         # set the function:
 
@@ -1713,6 +1768,7 @@ def compile_smarty(
             adress_conter += code_func.count(" ") + 3 * code_func.count("!smart_call_func|")
 
         # call function
+        print("function_replace", function_replace)
         for i in range(2):
             for function in function_replace:
 
@@ -1727,6 +1783,8 @@ def compile_smarty(
                 code_compile = code_compile.replace(function, f"20 {hex_adress_function} ")
 
                 function_name_usr[function_name_tmp].called_function = True
+
+    print("----- code compile 2 -----", code_compile)
 
     if (not function_mode["function_mode"]) and (not module_mode):
         for name, f in function_name_usr.items():
