@@ -799,12 +799,16 @@ def compile_smarty(
         nonlocal adress_var
         var_name = var_obj.name if name is None else name
 
+        logging.info(f"Building new Smart object: {var_name} at {hex(adress_var)}")
+        
         if len(smart_var) >= 256:
             raise SmartError(f"Smart memory is full. You can't make more 256 bytes for variables.\n{color_tool.Colors.YELLOW}You can use compiletime realloc for reuse space of a variable.{color_tool.Colors.RESET}", line_conter)
 
         adress_var += 1 if not isinstance(var_obj, smart_obj.AdvancedObj) else var_obj.size
 
         smart_var[var_name] = var_obj
+
+        
 
     
     import_tool.config_import(compile_smarty)
@@ -1813,7 +1817,7 @@ def compile_smarty(
         
         logging.info("Build end.")
 
-        logging.info(f"Memory info: virtual smart memory: 256bytes, used by programme: {len(smart_var)}bytes, using {len(smart_var) / 256 * 100}% of Smart memory. Programme size: used {adress_conter} bytes from {hex(CODE_ADRESSE)}")
+        logging.info(f"Memory info: Smart memory: 256 bytes, used by programme: {len(smart_var)} bytes, using {len(smart_var) / 256 * 100}% of Smart memory. Programme size: used {adress_conter} bytes from {hex(CODE_ADRESSE)}")
 
     if module_mode:
         return import_tool.ModuleInfo(code_compile, smart_var, function_name_usr)
