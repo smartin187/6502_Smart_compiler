@@ -59,7 +59,8 @@ def compile_smarty(
         ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[], "while_mode":False},
         bin_outpout_file:bool=False,
         module_name:str="*", # module name is '*' if main module.
-        regroup_bytes:int=-1 # for the render of code. -1 for 1 line of hex, other value for regroup bytes in lines.
+        regroup_bytes:int=-1, # for the render of code. -1 for 1 line of hex, other value for regroup bytes in lines.
+        first_call:bool=False
     ) -> None:
     """Start the compile from file."""
     global line_of_instruction, code_line#, warning_endline
@@ -925,6 +926,17 @@ def compile_smarty(
             sma = open(file, "r", encoding="UTF-8")
 
             code_start = sma.read()
+
+            if first_call:
+                if code_start.startswith("#!"):
+                    logging.info("Shebang detected, skip first line.")
+                    
+                    if "\n" not in code_start:
+                        logging.warning("Shebang detected, but no new line found.")
+                        code_start = ""
+                    else:
+                        code_start = code_start.split("\n", 1)[1]
+                    
 
             sma.close()
 

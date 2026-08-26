@@ -226,7 +226,7 @@ if __name__ == "__main__":
 
     else:
         try:
-            code = compile_smarty(file=file_name, argv=[], CODE_ADRESSE=1024, make_file=False)
+            code = compile_smarty(file=file_name, argv=[], CODE_ADRESSE=1024, make_file=False, first_call=True)
         except SmartError as se:
             MessageUser.show_error("Error", "Error during compilation of the Smart code.", detail=f"Detail: {se.syntaxerror}")
             sys.exit(1)
