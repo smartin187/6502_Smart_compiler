@@ -836,8 +836,8 @@ def compile_smarty(
 
         logging.info(f"Building new Smart object: {var_name} at {hex(adress_var)}")
         
-        if len(smart_var) >= 256:
-            raise SmartError(f"Smart memory is full. You can't make more 256 bytes for variables.\n{color_tool.Colors.YELLOW}You can use compiletime realloc for reuse space of a variable.{color_tool.Colors.RESET}", line_conter)
+        if len(smart_var) >= compiller_data_run.MAX_VARIABLE_CREATED:
+            raise SmartError(f"Smart memory is full. You can't make more {compiller_data_run.MAX_VARIABLE_CREATED} bytes for variables.\n{color_tool.Colors.YELLOW}You can use compiletime realloc for reuse space of a variable.{color_tool.Colors.RESET}", line_conter)
 
         adress_var += 1 if not isinstance(var_obj, smart_obj.AdvancedObj) else var_obj.size
 
