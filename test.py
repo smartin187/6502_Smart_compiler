@@ -1495,7 +1495,8 @@ try:
                 return 1;
             }
             .x = f: "STR";
-            """
+            """,
+            output="STR"
         ),
         Test(
             "Advenced return function",

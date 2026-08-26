@@ -647,8 +647,10 @@ def compile_smarty(
                         elif isinstance(parameter, smart_obj.SmartStr):
                             adress_parameter = parameter.ram_adress
             
-                            hex_code += set_on_ram_str(func_arg_value_list[i], adress_parameter)
-            
+                            hex_code += set_on_ram_str(func_arg_value_list[i], adress_parameter, add_adress=False)
+
+                            counter_adress_value += hex_code.count(" ")
+
                         else:
                             raise SmartError(f"Uknow type of parameters for function '{func_name_value}'.", line_conter)
             
