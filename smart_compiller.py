@@ -132,8 +132,7 @@ def compile_smarty(
         nonlocal adress_conter, code_compile, adress_var, smart_var
         for i in range(3):  # the adress for count
             compiller_data_run.not_used_ram += 1
-            smart_var[f"NotUsedRAMFor{compiller_data_run.not_used_ram}"] = smart_obj.ReservedAdress(adress_var)
-            adress_var += 1
+            make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAMFor{compiller_data_run.not_used_ram}")
 
         adress_start_number = adress_for_RAM(adress_var - 1)
         adress_end = adress_for_RAM(adress_var - 2)
@@ -485,19 +484,17 @@ def compile_smarty(
             elif value[0] == ".":
                 variable = value[1:]
 
-                if variable not in smart_var:
-                    raise SmartError(f"Name error : name '{value}' is not defined.", line_conter, set_error=set_error_exception)
-                
+
                 counter_adress_value += 3
                 
 
-                return f"AD {adress_for_RAM(smart_var[variable].ram_adress)} "
+                return f"AD {adress_for_RAM(get_variable(variable).ram_adress)} "
 
             elif value[0] == "~":       # advanced variable, need index
                 try:
                     advenced_var_name = value[1:].split("[", 1)[0]
 
-                    obj_var = smart_var[advenced_var_name]
+                    obj_var = get_variable(advenced_var_name)
 
                     index_mode, index_var = obj_var.get_index(value, test_mode=test_value_mode)
 
@@ -598,12 +595,19 @@ def compile_smarty(
 
             elif in_code(":", value):
 
-                # save A to 0x02E7 if the function is a return-function
+                # save A to SYS_ADRESS['SaveA'] if the function is a return-function
                 saver_A = f"8D {compiller_data_run.SYS_ADRESS['SaveA']}"
 
                 counter_adress_value += 3
 
                 func_name_value, func_arg_value = value.split(":", 1)
+
+                func_arg_value = func_arg_value.replace(" ", "")
+
+                if func_arg_value:
+                    func_arg_value_list = func_arg_value.split(",")
+                else:
+                    func_arg_value_list = []
 
                 if func_name_value in SmartBuiltIn.BUILT_IN_NAME_RETURN:
                     if func_name_value == "input":
@@ -623,14 +627,42 @@ def compile_smarty(
                     else:
                         raise SmartError(f"Function '{func_name_value}' not exist.", line_conter, set_error=set_error_exception)
 
-                    text_code = f"!smart_call_func|{func_name_value}"
+                    # set the argument:
+                    hex_code = ""
+                    
+                    function_parameters = function_name_usr[func_name_value].parameters
+                    if len(func_arg_value_list) != len(function_parameters):
+                        raise SmartError(f"Function '{func_name_value}' take {len(function_parameters)} parameters, but {len(func_arg_value_list)} was given.", line_conter)
+            
+                    for i, parameter in enumerate(function_parameters):
+                        
+                        if isinstance(parameter, smart_obj.SmartVariable):
+                            adress_parameter = parameter.ram_adress
+            
+                            hex_code += set_one_A_value(func_arg_value_list[i], recursiv_value=True, test_value_mode=test_value_mode)
 
+                            hex_code += f"8D {adress_for_RAM(adress_parameter)} "
+                            counter_adress_value += 3
+            
+                        elif isinstance(parameter, smart_obj.SmartStr):
+                            adress_parameter = parameter.ram_adress
+            
+                            hex_code += set_on_ram_str(func_arg_value_list[i], adress_parameter, add_adress=False)
+
+                            counter_adress_value += hex_code.count(" ")
+
+                        else:
+                            raise SmartError(f"Uknow type of parameters for function '{func_name_value}'.", line_conter)
+            
+                    
+
+                    text_code = f"!smart_call_func|{func_name_value}"
                     
                     function_replace.append(text_code)
 
                     counter_adress_value += 3
 
-                    return saver_A + text_code + f"AD {compiller_data_run.SYS_ADRESS['ReturnValue']}"
+                    return saver_A + hex_code + text_code + f"AD {compiller_data_run.SYS_ADRESS['ReturnValue']}"
 
       
             else:
@@ -664,13 +696,10 @@ def compile_smarty(
         if string_or_variable.startswith("~"):   # advenced variable
             var_name = string_or_variable[1:]
 
-            if var_name not in smart_var:
-                raise SmartError(f"Name error : name '{var_name}' is not defined.", line_conter)
-            
             code_hex_copy = ""
 
             for i in range(smart_obj.SIZE_ADVANCED_OBJ):
-                code_hex_copy += f"AD {adress_for_RAM(smart_var[var_name].ram_adress + i)} 8D {adress_for_RAM(start_adress + i)} "
+                code_hex_copy += f"AD {adress_for_RAM(get_variable(var_name).ram_adress + i)} 8D {adress_for_RAM(start_adress + i)} "
 
             if add_adress:
                 adress_conter += 6 * smart_obj.SIZE_ADVANCED_OBJ
@@ -782,9 +811,71 @@ def compile_smarty(
 
         logging.critical(f"Error with set_on_ram_str: '{string_or_variable}'.")
         raise SmartError(f"Unknown string or variable: '{string_or_variable}'.", line_conter)
-            
+    
+    def get_variable(var_name:str, special_name:bool=False) -> smart_obj.SmartObj:
+        """This function return the smart variable (SmartObj) from the name of variable.
+        The smart obj can be SmartVariable, SmartStr...
+
+        If the variable don't exist or the name is invalid, raise SmartError.
+        If special_name=True, don't raise SmartError if name is invalid (use for reserved adress).
+        """
+        if not good_variable_name(var_name) and not special_name:
+            raise SmartError(f"Invalid sintaxe: '{var_name}', excepted a variable name.", line_conter)
+
+        if var_name not in smart_var:
+            raise SmartError(f"Name error : name '{var_name}' is not defined.", line_conter)
+        
+        return smart_var[var_name]
+    
+    def make_variable(var_obj:smart_obj.SmartObj, name:str | None = None) -> None:
+        """Set on smart_var a Smart object (can be SmartVariable, SmartStr...).
+        If the Smart memory is full, raise SmartError.
+        """
+        nonlocal adress_var
+        var_name = var_obj.name if name is None else name
+
+        logging.info(f"Building new Smart object: {var_name} at {hex(adress_var)}")
+        
+        if len(smart_var) >= 256:
+            raise SmartError(f"Smart memory is full. You can't make more 256 bytes for variables.\n{color_tool.Colors.YELLOW}You can use compiletime realloc for reuse space of a variable.{color_tool.Colors.RESET}", line_conter)
+
+        adress_var += 1 if not isinstance(var_obj, smart_obj.AdvancedObj) else var_obj.size
+
+        smart_var[var_name] = var_obj
+
     
     import_tool.config_import(compile_smarty)
+
+    def hex_parameters(function_name_usr:dict, function_name:str, function_arg:list) -> str:
+        """Return the hex code for the parameters of function."""
+        nonlocal adress_conter
+
+        hex_code = ""
+
+        function_parameters = function_name_usr[function_name].parameters
+        if len(function_arg) != len(function_parameters):
+            raise SmartError(f"Function '{function_name}' take {len(function_parameters)} parameters, but {len(function_arg)} was given.", line_conter)
+
+        for i, parameter in enumerate(function_parameters):
+            if isinstance(parameter, smart_obj.SmartVariable):
+                adress_parameter = parameter.ram_adress
+
+                hex_code += set_one_A_value(function_arg[i])
+                
+
+                hex_code += f"8D {adress_for_RAM(adress_parameter)} "
+                adress_conter += 3
+
+            elif isinstance(parameter, smart_obj.SmartStr):
+                adress_parameter = parameter.ram_adress
+
+                hex_code += set_on_ram_str(function_arg[i], adress_parameter)
+
+            else:
+                raise SmartError(f"Uknow type of parameters for function '{function_name}'.", line_conter)
+
+        return hex_code
+
 
     # -----------
 
@@ -939,15 +1030,12 @@ def compile_smarty(
                 raise SmartError(f"Bad variable name : '{var_name}'", line_conter)
 
             if var_name not in smart_var: # make new variable
-                if len(smart_var) >= 256:
-                    raise SmartError("Memory error : maximum variable are 256.", line_conter)
-                smart_var[var_name] = smart_obj.SmartVariable(var_name, adress_var)
 
-                adress_var += 1
+                make_variable(smart_obj.SmartVariable(var_name, adress_var))
             
             value_RAM = set_one_A_value(value)
                         
-            code_compile += f"{value_RAM}8D {adress_for_RAM(smart_var[var_name].ram_adress)} "
+            code_compile += f"{value_RAM}8D {adress_for_RAM(get_variable(var_name).ram_adress)} "
 
             adress_conter += 3
 
@@ -961,7 +1049,7 @@ def compile_smarty(
             except ValueError:
                 raise SmartError(f"Error with variable `{line}`: expected '='", line_conter)
 
-            if var_name.endswith("]"):#bool(re.fullmatch(r'.*\[[0-9]+\]\$', var_name)):     # a index for str value
+            if var_name.endswith("]"):     # a index for str value
 
                 var_name = var_name.split("[", 1)[0]
 
@@ -976,29 +1064,25 @@ def compile_smarty(
                 if index_mode:
                     raise SmartError(f"Used index in undefined variable: `{var_name}`", line_conter)
 
-
-                smart_var[var_name] = smart_obj.SmartStr(var_name, adress_var)
-
-                adress_var += 1
+                make_variable(smart_obj.SmartStr(var_name, adress_var))
 
                 for i in range(smart_obj.SIZE_ADVANCED_OBJ - 1):
-                    smart_var[f"NotUsedRAM{i}"] = smart_obj.ReservedAdress(adress_var)
+                    make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAM{i}")
                     compiller_data_run.not_used_ram += 1
 
-                    adress_var += 1
 
             if not index_mode:  # set a str value on variable
                 try:
-                    code_compile += set_on_ram_str(value, smart_var[var_name].ram_adress)
+                    code_compile += set_on_ram_str(value, get_variable(var_name).ram_adress)
                 except SmartError as se:
                     raise SmartError(f"{str(se)}\t\tOn str variable (~), need str value, not `{value}`.")
 
             else:   # set a value at index:
-                index_mode_const, index_var = smart_var[var_name].get_index(line)
+                index_mode_const, index_var = get_variable(var_name).get_index(line)
                 # ^ if the index is a number literal, else it is variable or expression
 
                 if index_mode_const:
-                    code_compile += f"{set_one_A_value(value)}8D {adress_for_RAM(smart_var[var_name].ram_adress + index_var)} "
+                    code_compile += f"{set_one_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
                     adress_conter += 3
                 else:
                     code_compile += f"{set_one_A_value(index_var)}AA "     # save on X index delta
@@ -1006,7 +1090,7 @@ def compile_smarty(
 
                     code_compile += set_one_A_value(value)
                     
-                    code_compile += f"9D {adress_for_RAM(smart_var[var_name].ram_adress)} "
+                    code_compile += f"9D {adress_for_RAM(get_variable(var_name).ram_adress)} "
                     adress_conter += 3
 
 
@@ -1024,10 +1108,10 @@ def compile_smarty(
 
             jump_line = bloc_line - line_conter - 1
 
-            smart_var[f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else}"] = smart_obj.ReservedAdress(adress_var)
+            make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else}")
             compiller_data_run.not_used_call_else += 1
             
-            call_else_adress = adress_for_RAM(smart_var[f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else - 1}"].adress) + " "
+            call_else_adress = adress_for_RAM(get_variable(f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else - 1}", special_name=True).adress) + " "
             
             adress_var += 1
             
@@ -1213,10 +1297,9 @@ def compile_smarty(
                     raise SmartError("Memory error : maximum variable are 256.", line_conter)
 
                 var_name = var_name[1:]
-
-                smart_var[var_name] = smart_obj.SmartVariable(var_name, adress_var)
+                
                 adress_iterrator = adress_for_RAM(adress_var)
-                adress_var += 1
+                make_variable(smart_obj.SmartVariable(var_name, adress_var))
 
             count = count.strip()
 
@@ -1238,7 +1321,7 @@ def compile_smarty(
                     raise SmartError("On for loop, need a variable for iteration of advenced value.", line_conter)
 
                 try:
-                    adress_advenced_value = smart_var[count[1:]].ram_adress
+                    adress_advenced_value = get_variable(count[1:]).ram_adress
                 except KeyError:
                     raise SmartError(f"Variable {count[1:]} was not found on for loop.", line_conter)
 
@@ -1308,12 +1391,43 @@ def compile_smarty(
             if function_mode["function_mode"]:
                 raise SmartError(f"Error with function: impossible to create new function on function.", line_conter)
 
-            func_name = line.split(" ")[1]
+            func_name = line.split(" ", 1)[1]
 
             if func_name[-1] != "{":
                 raise SmartError("On function " + func_name + ", expected '{'", line_conter)
 
             func_name = func_name[:-1]
+
+            parameters_obj = []
+
+            if ":" in func_name:    # the function have parameters
+                func_name, parameters = func_name.split(":", 1)
+                
+                parameters_list = parameters.replace(" ", "").split(",")
+            
+                for parameter in parameters_list:
+                    if parameter.startswith("."):
+                        var_name_parameter = parameter[1:]
+                        if not good_variable_name(var_name_parameter):
+                            raise SmartError(f"Invalid sintaxe, excepted a variable name: '{var_name_parameter}'.")
+                        
+                        parameter_obj = smart_obj.SmartVariable(var_name_parameter, adress_var)
+
+                        make_variable(parameter_obj)
+                        parameters_obj.append(parameter_obj)
+
+                    elif parameter.startswith("~"):
+                        var_name_parameter = parameter[1:]
+                        if not good_variable_name(var_name_parameter):
+                            raise SmartError(f"Invalid sintaxe, excepted a variable name: '{var_name_parameter}'.")
+                        
+                        parameter_obj = smart_obj.SmartStr(var_name_parameter, adress_var)
+
+                        make_variable(parameter_obj)
+                        parameters_obj.append(parameter_obj)
+                    
+                    else:
+                        raise SmartError(f"Excepted a variable name, not '{parameter}'", line_conter)
 
             if not good_variable_name(func_name):
                 raise SmartError(f"Invalid name for {func_name}", line_conter)
@@ -1322,7 +1436,7 @@ def compile_smarty(
            
             func_code, funciton_line = get_bloc(line_conter, code, error_message="On function '" + func_name + "'")
 
-            function_name_usr[func_name] = smart_obj.SmartFunction(func_name, func_code)
+            function_name_usr[func_name] = smart_obj.SmartFunction(func_name, func_code, parameters_obj)
 
             jump_line = funciton_line - line_conter - 1
 
@@ -1415,7 +1529,6 @@ def compile_smarty(
 
             for var_name in import_info.variables:
                 smart_var[var_name] = import_info.variables[var_name]
-            #smart_var |= import_info.variables
             
             adress_var += len(import_info.variables)
 
@@ -1549,6 +1662,8 @@ def compile_smarty(
                 if function_name_usr[function_name].return_value:
                     logging.warning(f"Function '{function_name}' is a return-function but was used as a function.")
 
+                # set the parameters:
+                code_compile += hex_parameters(function_name_usr, function_name, function_arg)
                 # use a goto
 
                 adress_conter += 3
@@ -1628,8 +1743,6 @@ def compile_smarty(
                 CODE_ADRESSE=CODE_ADRESSE + adress_conter + 1
             )
 
-
-
         # set the function:
 
         for f in function_name_usr:
@@ -1657,6 +1770,7 @@ def compile_smarty(
                 code_compile = code_compile.replace(function, f"20 {hex_adress_function} ")
 
                 function_name_usr[function_name_tmp].called_function = True
+
 
     if (not function_mode["function_mode"]) and (not module_mode):
         for name, f in function_name_usr.items():
@@ -1747,7 +1861,7 @@ def compile_smarty(
         
         logging.info("Build end.")
 
-        logging.info(f"Memory info: virtual smart memory: 256bytes, used by programme: {len(smart_var)}bytes, using {len(smart_var) / 256 * 100}% of smart virtual memory. Programme size: used {adress_conter} bytes from {hex(CODE_ADRESSE)}")
+        logging.info(f"Memory info: Smart memory: 256 bytes, used by programme: {len(smart_var)} bytes, using {len(smart_var) / 256 * 100}% of Smart memory. Programme size: used {adress_conter} bytes from {hex(CODE_ADRESSE)}")
 
     if module_mode:
         return import_tool.ModuleInfo(code_compile, smart_var, function_name_usr)

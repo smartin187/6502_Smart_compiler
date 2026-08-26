@@ -726,9 +726,27 @@ For use your function:
 name_of_function:;
 ```
 
-You can do a recursive function. Smart use the stack for the recursive function. You can have a max recursive of 128 (`256/2`).
+If your function have parameters:
+```Smart
+void f: .arg1, .arg2{;
+    // code of function
+}
 
-> If you exced the max recursive of 128, you will have stack overflow and the program can crash.
+// call of function:
+f: 1, 2;
+```
+
+A parameter of a function can also be a advenced value (`str` or `list`):
+
+```
+void f: ~arg1, ~arg2{;
+    // code of function
+}
+// call of function:
+f: "STR1", "STR2";
+```
+
+> Carful: with recursice function, the parameter of the function are shared with all call of the function.
 
 If your function is a return-function, you need the line:
 ```Smart
@@ -738,7 +756,12 @@ void returnfonction{;
 }
 ```
 
-> **Carfull**: some bug are to fix with return function !
+> **Carfull**: some bug are to fix with return function ! For exemple, don't set `.x = 1 + f:;` but you can set `.x = f: + 1;`.
+
+You can do a recursive function. Smart use the stack for the recursive function. You can have a max recursive of 128 (`256/2`).
+
+> If you exced the max recursive of 128, you will have stack overflow and the program can crash.
+
 
 #### Runtime error
 

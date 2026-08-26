@@ -1488,6 +1488,17 @@ try:
             output="OK6"
         ),
         Test(
+            "Return function with advenced value parameters",
+            code="""
+                void f: ~arg1{;
+                print: ~arg1;
+                return 1;
+            }
+            .x = f: "STR";
+            """,
+            output="STR"
+        ),
+        Test(
             "Advenced return function",
             code="""
                 void f1{;
@@ -1505,6 +1516,102 @@ try:
                 print: "OK";
             """,
             output="F2F1BF1BOK"
+        ),
+        Test(
+            "Function with parameters",
+            code="""
+                void f: .x {;
+                    print: .x;
+                }
+
+                f: 'A';
+                f: 'B';
+
+                print: "OK";
+            """,
+            output="ABOK"
+        ),
+        Test(
+            "Function with some parameters",
+            code="""
+                void f: .x, ~string, .a {;
+                    print: .x;
+                    print: ~string;
+                    print: .x + .a;
+                    print: .a + 65;
+
+                }
+
+                f: 'A', "STRING", 1;
+                f: 'B', "STRING2", 2;
+                print: "OK";
+            """,
+            output="ASTRINGBBBSTRING2DCOK"
+        ),
+        Test(
+            "Function with parameter and return",
+            code="""
+                void sum: .a, .b {;
+                    return .a + .b;
+                }
+
+                .x = sum: 'A', 1;
+                print: .x;
+                .y = sum: 2, 'B';
+                print: .y;
+                print: "OK";
+            """,
+            output="BDOK"
+        ),
+        # --- error ---
+        Test(
+            "Function with bad parameters 1",
+            code="""
+                void f {;
+                    print: "ERROR";
+                }
+
+                f: 1;
+            """,
+            sucess=False
+        ),
+        Test(
+            "Function with bad parameters 2",
+            code="""
+                void f: .x {;
+                    print: "ERROR";
+                }
+
+                f:;
+            """,
+            sucess=False
+        ),
+        Test(
+            "Invalid sintaxe with parameters 1",
+            code="""
+                void f .a {;
+                    print: "ERROR";
+                }
+            """,
+            sucess=False
+        ),
+        Test(
+            "Invalid sintaxe with parameters 2",
+            code="""
+                void f: .a, {;
+                    print: "ERROR";
+                }
+            """,
+            sucess=False
+        ),
+        Test(
+            "Invalid sintaxe with parameters 3",
+            code="""
+                void f: error {;
+                    print: "ERROR";
+                }
+            """,
+            sucess=False
         )
     )
 
