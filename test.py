@@ -1488,6 +1488,16 @@ try:
             output="OK6"
         ),
         Test(
+            "Return function with advenced value parameters",
+            code="""
+                void f: ~arg1{;
+                print: ~arg1;
+                return 1;
+            }
+            .x = f: "STR";
+            """
+        ),
+        Test(
             "Advenced return function",
             code="""
                 void f1{;
