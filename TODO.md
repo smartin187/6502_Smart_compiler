@@ -23,3 +23,4 @@ If the task is a bug you can also add a issue on GitHub.
 - For all call of function get_str, string_tool.py, add the line_conter argument.
 - refactor: for make a hex adress, use only the function `adress_for_RAM`
 - On function with parameter, add the possibility if the value of parameter change, the value of the variable given change too (pointer).
+- On build script, update the dependencies for Docker
