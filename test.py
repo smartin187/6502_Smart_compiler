@@ -346,6 +346,45 @@ try:
                 print: .comparator + '0';
             """,
             output="1000"
+        ),
+        Test(
+            "!= test",
+            code="""
+                .a = 1;
+                .b = 0;
+                .c = 2;
+
+                .comparator = .a != .b;
+                print: .comparator + '0';
+
+                .comparator = .a != .c;
+                print: .comparator + '0';
+
+                .comparator = .a != 1;
+                print: .comparator + '0';
+            """,
+            output="110"
+        ),
+        # --- error ---
+        Test(
+            "Missing value on comparator - 1",
+            code="""
+                .a = 1 ==;
+                .b = 1 >=;
+                .c = 1 <;
+                .d = 1 !=;
+            """,
+            sucess=False
+        ),
+        Test(
+            "Missing value on comparator - 2",
+            code="""
+                .a = == 1;
+                .b = >= 1;
+                .c = < 1;
+                .d = != 1;
+            """,
+            sucess=False
         )
     )
 

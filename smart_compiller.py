@@ -488,6 +488,9 @@ def compile_smarty(
                 
             elif in_code("==", value):
                 return set_branch(value, "==", "D0")
+
+            elif in_code("!=", value):
+                return set_branch(value, "!=", "F0")
             
             elif in_code(">=", value):
                 return set_branch(value, ">=", "90")
