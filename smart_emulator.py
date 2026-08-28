@@ -1082,6 +1082,28 @@ def run_smart() -> None:
                         run_step += 2 + offset
                     else:
                         run_step += 2
+                    
+                case "30":       # BMI
+                    offset = int(code[run_step + 1], base=16)
+
+                    if offset >= 0x80:
+                        offset -= 0x100
+
+                    if flags["N"] == 1:
+                        run_step += 2 + offset
+                    else:
+                        run_step += 2
+                    
+                case "10":       # BPL
+                    offset = int(code[run_step + 1], base=16)
+
+                    if offset >= 0x80:
+                        offset -= 0x100
+
+                    if flags["N"] == 0:
+                        run_step += 2 + offset
+                    else:
+                        run_step += 2
                 
                 case "F0":       # BEQ
                     offset = int(code[run_step + 1], base=16)

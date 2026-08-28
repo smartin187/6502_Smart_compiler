@@ -289,6 +289,105 @@ try:
         ) for keyword in SMART_KEYWORD
     )
 
+    TEST_COMPARATOR = (
+        Test(
+            "== test",
+            code="""
+                .a = 1;
+                .b = 1;
+                .c = 2;
+
+                .comparator = .a == .b;
+                print: .comparator + '0';
+
+                .comparator = .a == .c;
+                print: .comparator + '0';
+            """,
+            output="10"
+        ),
+        Test(
+            ">= test",
+            code="""
+                .a = 1;
+                .b = 2;
+                .c = 3;
+
+                .comparator = .a >= .b;
+                print: .comparator + '0';
+
+                .comparator = .b >= .a;
+                print: .comparator + '0';
+
+                .comparator = .c >= .b;
+                print: .comparator + '0';
+
+                .comparator = .c >= 3;
+                print: .comparator + '0';
+            """,
+            output="0111"
+        ),
+        Test(
+            "< test",
+            code="""
+                .a = 1;
+                .b = 2;
+                .c = 3;
+
+                .comparator = .a < .b;
+                print: .comparator + '0';
+
+                .comparator = .b < .a;
+                print: .comparator + '0';
+
+                .comparator = .c < .b;
+                print: .comparator + '0';
+
+                .comparator = .c < 3;
+                print: .comparator + '0';
+            """,
+            output="1000"
+        ),
+        Test(
+            "!= test",
+            code="""
+                .a = 1;
+                .b = 0;
+                .c = 2;
+
+                .comparator = .a != .b;
+                print: .comparator + '0';
+
+                .comparator = .a != .c;
+                print: .comparator + '0';
+
+                .comparator = .a != 1;
+                print: .comparator + '0';
+            """,
+            output="110"
+        ),
+        # --- error ---
+        Test(
+            "Missing value on comparator - 1",
+            code="""
+                .a = 1 ==;
+                .b = 1 >=;
+                .c = 1 <;
+                .d = 1 !=;
+            """,
+            sucess=False
+        ),
+        Test(
+            "Missing value on comparator - 2",
+            code="""
+                .a = == 1;
+                .b = >= 1;
+                .c = < 1;
+                .d = != 1;
+            """,
+            sucess=False
+        )
+    )
+
     SYNTAXE_ERROR_TEST = (  # this test have the same class Test but for test sintaxe error.
         Test(
             "Forget ';'",
@@ -2040,7 +2139,7 @@ OK2"""
         )
     )
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR
 
     try:
         for test in GLOBAL_TESTS:
