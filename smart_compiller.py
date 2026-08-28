@@ -1142,10 +1142,7 @@ def compile_smarty(
 
             new_adress = code_if.count(" ") + code_if.count("!smart_call_func|") * 3 + code_if.count("!smart_tmp:goto|") * 3 - code_if.count("!smart_tmp:goto|")
 
-            hex_adress_if = hex(CODE_ADRESSE + adress_conter + new_adress)[2:].upper()
-            hex_adress_if = "0" * (4 - len(hex_adress_if)) + hex_adress_if
-            hex_adress_if = hex_adress_if[2:] + " " + hex_adress_if[:2]
-
+            hex_adress_if = adress_for_RAM(CODE_ADRESSE + adress_conter + new_adress)
 
             code_compile = code_compile.format(hex_adress_if)
 
@@ -1197,10 +1194,7 @@ def compile_smarty(
 
             new_adress = code_elif.count(" ") + code_elif.count("!smart_call_func|") * 3 + code_elif.count("!smart_tmp:goto|") * 3 - code_elif.count("!smart_tmp:goto|")
 
-            hex_adress_elif = hex(CODE_ADRESSE + adress_conter + new_adress)[2:].upper()
-            hex_adress_elif = "0" * (4 - len(hex_adress_elif)) + hex_adress_elif
-            hex_adress_elif = hex_adress_elif[2:] + " " + hex_adress_elif[:2]
-
+            hex_adress_elif = adress_for_RAM(CODE_ADRESSE + adress_conter + new_adress)
 
             code_compile = code_compile.format(hex_adress_elif)
 
@@ -1236,10 +1230,7 @@ def compile_smarty(
 
             new_adress = code_else.count(" ") + code_else.count("!smart_call_func|") * 3 + code_else.count("!smart_tmp:goto|") * 3 - code_else.count("!smart_tmp:goto|")
 
-            hex_adress_else = hex(CODE_ADRESSE + adress_conter + new_adress)[2:].upper()
-            hex_adress_else = "0" * (4 - len(hex_adress_else)) + hex_adress_else
-            hex_adress_else = hex_adress_else[2:] + " " + hex_adress_else[:2]
-
+            hex_adress_else = adress_for_RAM(CODE_ADRESSE + adress_conter + new_adress)
 
             code_compile = code_compile.format(hex_adress_else)
 
@@ -1254,9 +1245,7 @@ def compile_smarty(
             else:
                 line_2 = line_2[:-1]
             
-            while_adress = hex(CODE_ADRESSE + adress_conter)[2:].upper()
-            while_adress = "0" * (4 - len(while_adress)) + while_adress
-            while_adress = while_adress[2:] + " " + while_adress[:2] + " "
+            while_adress = adress_for_RAM(CODE_ADRESSE + adress_conter) + " "
 
             code_compile += set_one_A_value(line_2)
 
@@ -1281,9 +1270,7 @@ def compile_smarty(
             code_compile += "4C " + while_adress
             adress_conter += 3
 
-            end_adress = hex(CODE_ADRESSE + adress_conter)[2:].upper()
-            end_adress = "0" * (4 - len(end_adress)) + end_adress
-            end_adress = end_adress[2:] + " " + end_adress[:2]
+            end_adress = adress_for_RAM(CODE_ADRESSE + adress_conter)
 
             code_compile = code_compile.format(end_adress).replace("! smart:break", end_adress)
             code_compile = code_compile.replace("! smart:continue ", while_adress)
@@ -1779,9 +1766,7 @@ def compile_smarty(
 
                 adress_func = CODE_ADRESSE + function_name_usr[function_name_tmp].function_adress + 1
 
-                hex_adress_function = hex(adress_func)[2:].upper()
-                hex_adress_function = "0" * (4 - len(hex_adress_function)) + hex_adress_function
-                hex_adress_function = f"{hex_adress_function[2:]} {hex_adress_function[:2]}"
+                hex_adress_function = adress_for_RAM(adress_func)
 
                 code_compile = code_compile.replace(function, f"20 {hex_adress_function} ")
 
