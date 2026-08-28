@@ -44,8 +44,11 @@ See https://github.com/smartin187/smartykit_compiler for more information.
 " > build_publish/windows/archive_zip/readme.txt
 
 # build zip
-zip -r Smart-Windows.zip build_publish/windows/archive_zip/
+cd build_publish/windows/
+zip -r Smart-Windows.zip archive_zip/
 
+cd ../..
 
+rm -r build_publish/windows/archive_zip/
 
 
