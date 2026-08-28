@@ -136,3 +136,20 @@ Verify with:
 ```bash
 wine pyinstaller --version
 ```
+
+#### Docker
+
+For compile for other architecture, you need Docker installed.
+
+Install with:
+
+
+```bash
+sudo apt install docker.io
+```
+
+Verify with:
+
+```bash
+docker --version
+```
