@@ -239,6 +239,9 @@ def compile_smarty(
         """Return the value for set one A.
         arg: test_value_mode: if True, not print the error message on console (but raise SmartError).
         """
+        global counter_adress_value
+        nonlocal adress_conter
+
         set_error_exception = not test_value_mode
 
         def imediate_value(value:str) -> bool:
@@ -259,8 +262,6 @@ def compile_smarty(
             """If forbiden_math is True, raise SmartError if there is a math in value."""
             if forbiden_math:
                 raise SmartError(f"Math is forbiden for this value: '{value}'", line_conter, set_error=set_error_exception)
-        global counter_adress_value
-        nonlocal adress_conter
 
         def eval_value() -> str:
             """Return asm value"""
