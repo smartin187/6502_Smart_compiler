@@ -263,7 +263,7 @@ def compile_smarty(
             if forbiden_math:
                 raise SmartError(f"Math is forbiden for this value: '{value}'", line_conter, set_error=set_error_exception)
 
-        def set_branch(value:str, operator:str) -> str:
+        def set_branch(value:str, operator:str, branche:str) -> str:
             """Return the hex code for a branch comparaison."""
             global counter_adress_value
             try:
@@ -283,7 +283,7 @@ def compile_smarty(
                         asm = f"{hex_value_1}C9 {hex_value_2[3:]}"      # imediate value
                         counter_adress_value -= 1
 
-                    asm += "D0 04 A9 01 D0 02 A9 00 "
+                    asm += f"{branche} 04 A9 01 D0 02 A9 00 "
 
                     counter_adress_value += 9
                     
@@ -487,7 +487,7 @@ def compile_smarty(
                     raise SmartError(f"Error with math '-' : '{value}'", line_conter, set_error=set_error_exception)
                 
             elif in_code("==", value):
-                return set_branch(value, "==")
+                return set_branch(value, "==", "D0")
                 
             elif value[0] == ".":
                 variable = value[1:]
