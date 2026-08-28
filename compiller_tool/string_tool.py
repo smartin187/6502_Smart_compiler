@@ -253,7 +253,7 @@ def get_char_from_str(string:str) -> list[str]:
     return result
 
 
-def get_bloc(line_conter:int, code:str, error_message:str="") -> tuple[str, int]:
+def get_bloc(line_conter:int, code:list[str], error_message:str="") -> tuple[str, int]:
     """Return the content of bloc {}
     
     error_message is the text for info about error."""

@@ -18,7 +18,7 @@ class SmartObj:
     
 class ReservedAdress(SmartObj):
     """Information about a reserved adress (adress). Used for adress for str value."""
-    def __init__(self, adress:str):
+    def __init__(self, adress:int):
         super().__init__(name="ReservedAdress")
 
         self.adress = adress
@@ -58,7 +58,7 @@ class AdvancedObj(SmartObj):
     """Information about an advanced object (str).
     Use multi-byte
     """
-    def __init__(self, name:str, adress:str, size:int=SIZE_ADVANCED_OBJ):
+    def __init__(self, name:str, adress:int, size:int=SIZE_ADVANCED_OBJ):
         super().__init__(name)
 
         self.ram_adress = adress
