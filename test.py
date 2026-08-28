@@ -10,6 +10,7 @@ import logging
 from pathlib import Path
 
 from compiller_tool.import_tool import PATH_LIB
+from compiller_tool.string_tool import SMART_KEYWORD
 
 if "--compile-debug" in sys.argv:
     sys.argv.remove("--compile-debug")
@@ -279,6 +280,14 @@ try:
     else:
         input("Press enter to continue...")
         TEST_LIB = ()
+    
+    ERROR_VARIABLE_KEYWORD = tuple(  # the test for a variable with a reserved name
+        Test(
+            f"Error set variable named {keyword}",
+            code=f".{keyword} = 1;",
+            sucess=False
+        ) for keyword in SMART_KEYWORD
+    )
 
     SYNTAXE_ERROR_TEST = (  # this test have the same class Test but for test sintaxe error.
         Test(
@@ -2031,7 +2040,7 @@ OK2"""
         )
     )
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD
 
     try:
         for test in GLOBAL_TESTS:

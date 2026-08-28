@@ -19,7 +19,6 @@ If the task is a bug you can also add a issue on GitHub.
 - **Add string and list with size variable ?**
 - Add class object for Smart ?
 - Multi-threading for Smart ?
-- On test set test for veryfy when a variable have a name of keyword
 - On build script, make a archive for windows, with emulator and compiller + Smart library.
 - For all call of function get_str, string_tool.py, add the line_conter argument.
 - refactor: for make a hex adress, use only the function `adress_for_RAM`
