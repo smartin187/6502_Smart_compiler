@@ -21,3 +21,31 @@ cp dist/main.exe build_publish/windows/smart_compiler.exe
 wine pyinstaller --onefile --add-data "img/logo_smart_small.png;." smart_emulator.py
 
 cp dist/smart_emulator.exe build_publish/windows/smart_emulator.exe
+
+# ---- build a zip file ----
+
+mkdir -p build_publish/windows/archive_zip/
+
+# copy the executable
+cp build_publish/windows/smart_compiler.exe build_publish/windows/archive_zip/
+cp build_publish/windows/smart_emulator.exe build_publish/windows/archive_zip/
+
+# copy library
+
+cp -r smart_lib/ build_publish/windows/smart_emulator.exe build_publish/windows/archive_zip/
+
+# set a readme:
+echo "Smart Compiler and Emulator for Windows
+You get smart_compiler.exe and smart_emulator.exe.
+You have also the Smart library. Please copy the directory to C:\\users\\you\\AppData\\Local\\Smart-SmartyKit\\lib\\
+
+Apache License 2.0
+See https://github.com/smartin187/smartykit_compiler for more information.
+" > build_publish/windows/archive_zip/readme.txt
+
+# build zip
+zip -r Smart-Windows.zip build_publish/windows/archive_zip/
+
+
+
+
