@@ -34,8 +34,6 @@ else
     exit 1
 fi
 
-echo "All dependencies are satisfied."
-
 # Wine
 
 if wine --version > /dev/null 2>&1; then
@@ -109,3 +107,10 @@ Restart the script for check other dependencies."
 
     exit 1
 fi
+
+
+
+
+
+
+echo "All dependencies are satisfied."
