@@ -27,7 +27,7 @@ class EscapeChar:
 def split_code(
         code:str,
         sep:str | tuple[str, ...]=(" ",),
-        string:tuple[tuple[str, str]]=(("'", "'"), ('"', '"'), ("[", "]")),
+        string:tuple[tuple[str, str], ...]=(("'", "'"), ('"', '"'), ("[", "]")),
         max_split:int=0
     ) -> list[str]:
     """Split a code, but ignore sep if it is in a str or char Smart Value.
@@ -120,7 +120,7 @@ def replace_code(
         code: str,
         old: str,
         new: str,
-        string: tuple[tuple[str, str]] = (("'", "'"), ('"', '"'), ("[", "]")),
+        string: tuple[tuple[str, str], ...] = (("'", "'"), ('"', '"'), ("[", "]")),
         max_replace: int = -1
     ) -> str:
     """Replace a substring in code, but ignore if it is in a str or char Smart Value.
@@ -171,7 +171,7 @@ def replace_code(
 def in_code(
         substring: str,
         code: str,
-        string: tuple[tuple[str, str]] = (("'", "'"), ('"', '"'), ("[", "]"))
+        string: tuple[tuple[str, str], ...] = (("'", "'"), ('"', '"'), ("[", "]"))
     ) -> bool:
     """Check if substring is in code, but ignore if it is in a str or char Smart Value.
     Similar to 'substring in code', but with string awareness.
@@ -253,7 +253,7 @@ def get_char_from_str(string:str) -> list[str]:
     return result
 
 
-def get_bloc(line_conter:int, code:str, error_message:str="") -> str:
+def get_bloc(line_conter:int, code:str, error_message:str="") -> tuple[str, int]:
     """Return the content of bloc {}
     
     error_message is the text for info about error."""

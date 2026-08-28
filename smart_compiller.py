@@ -50,7 +50,7 @@ PROGRESS_BAR_CHAR = {
 
 def compile_smarty(
         file:str="",
-        argv:list | tuple=[],
+        argv:list[str] | tuple[str]=[],
         CODE_ADRESSE:int=0x400,
         make_file:bool=True,
         function_mode:dict[
@@ -61,7 +61,7 @@ def compile_smarty(
         module_name:str="*", # module name is '*' if main module.
         regroup_bytes:int=-1, # for the render of code. -1 for 1 line of hex, other value for regroup bytes in lines.
         first_call:bool=False
-    ) -> None:
+    ) -> str:
     """Start the compile from file."""
     global line_of_instruction, code_line#, warning_endline
     logging.info("Starting compiller...")
@@ -904,7 +904,7 @@ def compile_smarty(
 
     adress_str = hex(CODE_ADRESSE)[2:].upper() + ": "
 
-    code_compile = "0" * (6 - len(adress_str)) + adress_str if not function_mode["function_mode"] else ""
+    code_compile:str = "0" * (6 - len(adress_str)) + adress_str if not function_mode["function_mode"] else ""
 
     go_to:dict[str, smart_obj.SmartGoto] = {} if not function_mode["if_mode"] else function_mode["global_goto"]
 
