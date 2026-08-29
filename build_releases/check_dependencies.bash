@@ -83,6 +83,31 @@ Restart the script for check other dependencies."
     exit 1
 fi
 
+# zip
+
+if zip --version > /dev/null 2>&1; then
+    echo "zip    OK"
+else
+    echo "zip is not installed. You need to install zip for make archive for Windows."
+    # auto install
+    read -p "Do you want to install zip? (y/n) " answer
+    
+    if [[ "$answer" == "y" ]]; then
+        if sudo apt update && sudo apt install zip; then
+            echo "zip installed successfully.
+Restart the script for check other dependencies."
+            exit 0
+        else
+            echo "Failed to install zip (command 'sudo apt update && sudo apt install zip'). Please install it manually."
+            exit 1
+        fi
+    else
+        exit 1
+    fi
+
+    exit 1
+fi
+
 # docker
 
 if docker --version > /dev/null 2>&1; then
