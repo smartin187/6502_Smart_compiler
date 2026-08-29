@@ -6,6 +6,7 @@
 set -e
 
 ARCH_DIR_DIST=$(dpkg --print-architecture)
+TAG="Linux-${ARCH_DIR_DIST}"
 
 echo -e "\033[1m---- Build for Linux $ARCH_DIR_DIST... ----\033[0m"
 
@@ -15,11 +16,11 @@ mkdir -p build_publish/linux/$ARCH_DIR_DIST/
 
 pyinstaller --onefile main.py
 
-cp dist/main build_publish/linux/$ARCH_DIR_DIST/smart_compiler
+cp dist/main build_publish/linux/$ARCH_DIR_DIST/smart_compiler_$TAG
 
 # ---- build smart_emulator.py ----
 
 pyinstaller --onefile --add-data "img/logo_smart_small.png:." smart_emulator.py
 
-cp dist/smart_emulator build_publish/linux/$ARCH_DIR_DIST/smart_emulator
+cp dist/smart_emulator build_publish/linux/$ARCH_DIR_DIST/smart_emulator_$TAG
 
