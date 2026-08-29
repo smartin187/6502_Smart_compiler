@@ -943,6 +943,8 @@ def compile_smarty(
 
             code_start = sma.read()
 
+            sma.close()
+
             if first_call:
                 if code_start.startswith("#!"):
                     logging.info("Shebang detected, skip first line.")
@@ -952,9 +954,8 @@ def compile_smarty(
                         code_start = ""
                     else:
                         code_start = code_start.split("\n", 1)[1]
-                    
-
-            sma.close()
+    
+            code_start = code_start.replace("\t", "        ")
 
             code_line = code_start.split("\n")
         except FileNotFoundError:

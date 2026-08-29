@@ -22,3 +22,5 @@ build_publish/
 !smart_lib/
 !smart_lib/*.sma
 !smart_lib/**/*.sma
+
+*.zip

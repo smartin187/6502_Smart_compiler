@@ -4,6 +4,8 @@
 
 set -e
 
+echo -e "\033[1m---- Start building... ----\033[0m"
+
 cd ..
 
 if [ -d "build_publish" ]; then
