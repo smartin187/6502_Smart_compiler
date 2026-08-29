@@ -58,7 +58,7 @@ You can use the script [`build_docker.sh`](./build_linux/docker_build/build_dock
 
 Use the script [`build_wine/build_wine.bash`](./build_wine/build_wine.bash) for compile all scripts for Windows, from Linux, using Wine.
 
-Run this script for make the executable files for Windows.
+Run this script for make the executable files for Windows, and make a zip archive with executable file and Smart library.
 
 You need Wine installed, and Pyinstaller on Wine.
 
@@ -152,4 +152,20 @@ Verify with:
 
 ```bash
 docker --version
+```
+
+#### zip
+
+For Windows, need `zip` for make a zip archive with executable file and Smart library.
+
+Install with:
+
+```bash
+sudo apt install zip
+```
+
+Verify with:
+
+```bash
+zip --version
 ```
