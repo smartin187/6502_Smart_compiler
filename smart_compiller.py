@@ -70,7 +70,7 @@ def compile_smarty(
     class SmartBuiltIn:
         """Set the built in function of Smart.
         Warning: some function are not in this class because it is assembly function (print, goto...)"""
-        
+
         input_code = "AD 11 D0 10 FB AD 10 D0 29 7F 60 "
         def smartInput() -> None:
             """Add an input function."""
@@ -81,7 +81,7 @@ def compile_smarty(
             code_compile += "20 !  smart_input"     # set 2 space on placeholder for counting adress
 
             adress_conter += 3
-        
+
         BUILT_IN_NAME_RETURN = ["input"]
         BUILT_IN_NAME_NORETURN = ["print", "quit", "goto", "asm_entry"]
 
@@ -104,7 +104,7 @@ def compile_smarty(
 
         code_compile += set_one_A_value(error_value, add_adress=add_to_adress_conter)
 
-        code_compile += "4C !  smart_runtime_error"    # set 2 space on place holder for counting adress          
+        code_compile += "4C !  smart_runtime_error"    # set 2 space on place holder for counting adress
         if add_to_adress_conter:
             adress_conter += 3
 
@@ -123,7 +123,7 @@ def compile_smarty(
 
             if nb_instruction + 1 <= nb:
                 return (line_counter + 1, code_line[line_counter-1])
-        
+
         return (line_counter +1, code_line[line_counter-1])
 
     config_exception(line_of_instruction)
@@ -205,15 +205,15 @@ def compile_smarty(
             elif len(char) == 1:
                 if char.islower():
                     raise SmartError("char canno't be lower.", line_conter)
-                
+
                 if char == "'":
                     raise SmartError(f"Error with char value `{char_type}`.")
-                
+
                 code_ascii = ord(char)
 
             else:
                 char_error()
-            
+
             code_hex = hex(code_ascii)[2:]
             code_hex = code_hex.upper()
             return code_hex
@@ -229,12 +229,12 @@ def compile_smarty(
             return False
         else:
             return True if len(code) == 2 else False
-        
+
     def control_hex(code:str) -> None:
         """If good_hex return False, raise SmartError."""
         if not good_hex(code):
             raise SmartError(f"Bad hex value '{code}'", line_conter)
-    
+
     def set_one_A_value(value:str, one_math:bool=False, recursiv_value:bool=False, forbiden_math:bool=False, test_value_mode:bool=False, add_adress:bool=True) -> str:
         """Return the value for set one A.
         arg: test_value_mode: if True, not print the error message on console (but raise SmartError).
@@ -253,7 +253,7 @@ def compile_smarty(
                 start = value.replace(" ", "")[0:2]
             except IndexError:
                 return False
-            
+
             if start == "A9":
                 return True
             return False
@@ -276,7 +276,7 @@ def compile_smarty(
                     hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
 
                     if not imediate_value(hex_value_2):
-                        
+
                         asm = f"{hex_value_1}CD {hex_value_2[3:]}"      # adress value
 
                     else:
@@ -286,9 +286,9 @@ def compile_smarty(
                     asm += f"{branche} 04 A9 01 D0 02 A9 00 "
 
                     counter_adress_value += 9
-                    
+
                     return asm
-                
+
                 elif (not is_a_simple_value(value_1)) and (not is_a_simple_value(value_2)):
 
                     # load at SaveStr (smart systeme) value 1:
@@ -310,7 +310,7 @@ def compile_smarty(
 
                     asm += hex_value_2
 
-                    
+
                     # compare with value 2
                     for i in range(smart_obj.SIZE_ADVANCED_OBJ):
                         asm += f"AD {adress_for_RAM(adress_v_1 + i)} CD {adress_for_RAM(adress_v_2 + i)} F0 03 4C !smart:adress_false "
@@ -328,7 +328,7 @@ def compile_smarty(
                     counter_adress_value += 2
 
                     return asm
-            
+
                 else:
                     raise SmartError(f"Can't compare advenced value with value: `{value}`", line_conter, set_error=set_error_exception)
 
@@ -355,7 +355,7 @@ def compile_smarty(
                     counter_adress_value += 5
 
                     value_2_tmp = set_one_A_value(value_2, one_math=True, recursiv_value=True)
-                
+
                     hex_value_2 = "A2" + value_2_tmp[2:] if value_2_tmp.startswith("A9") else "AE" + value_2_tmp[2:]
 
                     asm += hex_value_2
@@ -375,7 +375,7 @@ def compile_smarty(
 
                 except:
                     raise SmartError(f"Error with math '*' : '{value}'", line_conter, set_error=set_error_exception)
-            
+
             elif in_code("/", value):
                 control_math()
                 try:
@@ -404,11 +404,11 @@ def compile_smarty(
                         confirm_user(f"Division by 0: {value}. It make an runtime error `E/`! Continue compilation ? ", line_counter=line_conter)
 
                     hex_value_1 = set_one_A_value(value_1, one_math=True, recursiv_value=True)
-                    
+
                     asm += hex_value_1
 
-                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']}" 
-                    asm += "90 0A "    
+                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']}"
+                    asm += "90 0A "
                     counter_adress_value += 5
 
                     asm += "A2 00 E8 "    # set X to 00, and increment X on loop.
@@ -430,7 +430,7 @@ def compile_smarty(
                 except:
                     print(traceback.format_exc())
                     raise SmartError(f"Error with math '/' : '{value}'", line_conter, set_error=set_error_exception)
-            
+
 
 
             elif in_code("+", value):    # addition
@@ -441,7 +441,7 @@ def compile_smarty(
                     hex_value_1 = set_one_A_value(value_1, recursiv_value=True)
 
                     counter_adress_value += 1       # add for the OP code 18
-                
+
                     hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
 
                     if not imediate_value(hex_value_2):     # adress value
@@ -452,7 +452,7 @@ def compile_smarty(
                     else:
                         asm = f"{hex_value_1}18 69 {hex_value_2[3:]}"       # immediate value
                         #print("imadiate : ", hex_value_2)
-                        
+
                     return asm
 
                 except SmartError as se:
@@ -460,7 +460,7 @@ def compile_smarty(
 
                 except:
                     raise SmartError(f"Error with math '+' : '{value}'", line_conter, set_error=set_error_exception)
-            
+
             elif in_code("-", value):    # substraction
                 control_math()
                 try:
@@ -469,15 +469,15 @@ def compile_smarty(
                     hex_value_1 = set_one_A_value(value_1, recursiv_value=True)
 
                     counter_adress_value += 1       # add for the OP code 18
-                
+
                     hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
 
                     if not imediate_value(hex_value_2):
                         asm = f"{hex_value_1}38 ED {hex_value_2[3:]}"       # adress value
-                        
+
                     else:
                         asm = f"{hex_value_1}38 E9 {hex_value_2[3:]}"      # valeur immédiate
-                        
+
                     return asm
 
                 except SmartError as se:
@@ -485,13 +485,13 @@ def compile_smarty(
 
                 except:
                     raise SmartError(f"Error with math '-' : '{value}'", line_conter, set_error=set_error_exception)
-                
+
             elif in_code("==", value):
                 return set_branch(value, "==", "D0")
 
             elif in_code("!=", value):
                 return set_branch(value, "!=", "F0")
-            
+
             elif in_code(">=", value):
                 return set_branch(value, ">=", "90")
 
@@ -503,7 +503,7 @@ def compile_smarty(
 
 
                 counter_adress_value += 3
-                
+
 
                 return f"AD {adress_for_RAM(get_variable(variable).ram_adress)} "
 
@@ -521,9 +521,9 @@ def compile_smarty(
                         counter_adress_value += 3
 
                         return f"AD {adress_for_RAM(adress_var)} "
-                    
+
                     else:
-                        
+
                         # save A at smart sys
                         asm = f"8D {compiller_data_run.SYS_ADRESS['SaveAToIndex']}"
                         counter_adress_value += 3
@@ -556,7 +556,7 @@ def compile_smarty(
 
                         return asm
 
-            
+
                 except:
                     raise SmartError(f"Invalid value for '{value}': can't use a advenced variable for this operation.", line_conter, set_error=set_error_exception)
 
@@ -578,12 +578,12 @@ def compile_smarty(
 
 
                 return "A9 " + hex_value + " "
-            
-            
+
+
             elif value[0] in "0123456789":
                 if len(value) > 3:
                     raise SmartError(f"Invalid value: {value}", line_conter, set_error=set_error_exception)
-                
+
                 try:
                     value_int = int(value)
                 except:
@@ -606,7 +606,7 @@ def compile_smarty(
                 ascii_code = get_char(value)
 
                 return "A9 " + ("0" * (2-len(ascii_code))) + ascii_code + " "
-        
+
             elif value[0] == "\"":
                 raise SmartError(f"Smart forbiden value: '{value}'", line_conter, set_error=set_error_exception)
 
@@ -631,7 +631,7 @@ def compile_smarty(
                         SmartBuiltIn.smartInput()
                         counter_adress_value += 3
                         return ""
-                
+
                 elif func_name_value in SmartBuiltIn.BUILT_IN_NAME_NORETURN:
                     raise SmartError(f"Built in function {func_name_value} is not a return-function.", line_conter, set_error=set_error_exception)
 
@@ -646,42 +646,42 @@ def compile_smarty(
 
                     # set the argument:
                     hex_code = ""
-                    
+
                     function_parameters = function_name_usr[func_name_value].parameters
                     if len(func_arg_value_list) != len(function_parameters):
                         raise SmartError(f"Function '{func_name_value}' take {len(function_parameters)} parameters, but {len(func_arg_value_list)} was given.", line_conter)
-            
+
                     for i, parameter in enumerate(function_parameters):
-                        
+
                         if isinstance(parameter, smart_obj.SmartVariable):
                             adress_parameter = parameter.ram_adress
-            
+
                             hex_code += set_one_A_value(func_arg_value_list[i], recursiv_value=True, test_value_mode=test_value_mode)
 
                             hex_code += f"8D {adress_for_RAM(adress_parameter)} "
                             counter_adress_value += 3
-            
+
                         elif isinstance(parameter, smart_obj.SmartStr):
                             adress_parameter = parameter.ram_adress
-            
+
                             hex_code += set_on_ram_str(func_arg_value_list[i], adress_parameter, add_adress=False)
 
                             counter_adress_value += hex_code.count(" ")
 
                         else:
                             raise SmartError(f"Uknow type of parameters for function '{func_name_value}'.", line_conter)
-            
-                    
+
+
 
                     text_code = f"!smart_call_func|{func_name_value}"
-                    
+
                     function_replace.append(text_code)
 
                     counter_adress_value += 3
 
                     return saver_A + hex_code + text_code + f"AD {compiller_data_run.SYS_ADRESS['ReturnValue']}"
 
-      
+
             else:
                 raise SmartError(f"Smart value error: {value}", line_conter, set_error=set_error_exception)
 
@@ -709,7 +709,7 @@ def compile_smarty(
         nonlocal adress_conter
 
         string_or_variable = replace_code(string_or_variable, " ", "")
-        
+
         if string_or_variable.startswith("~"):   # advenced variable
             var_name = string_or_variable[1:]
 
@@ -725,7 +725,7 @@ def compile_smarty(
 
         elif string_or_variable.startswith("\""):   # str value
 
-            str_value = get_str(string_or_variable)
+            str_value = get_str(string_or_variable, line_conter)
 
 
             len_str = len(str_value)
@@ -745,15 +745,15 @@ def compile_smarty(
                 code_str += f"A9 {char_code} 8D {adress_for_RAM(start_adress)} "
 
                 start_adress += 1
-            
+
             if add_adress:
                 adress_conter += 105
-            
+
             return code_str
-        
+
         elif string_or_variable.startswith("F\""):      # F-string
-            str_value = get_str(string_or_variable[1:])
-            
+            str_value = get_str(string_or_variable[1:], line_conter)
+
             code_str = ""
 
             len_counter = 0
@@ -789,27 +789,27 @@ def compile_smarty(
 
                 start_adress += 1
                 len_counter += 1
-            
+
             if len_counter > smart_obj.SIZE_ADVANCED_OBJ:
                 raise SmartError(f"F-string too long: '{str_value}', max length is {smart_obj.SIZE_ADVANCED_OBJ}.", line_conter)
-            
+
             if add_adress:
                 adress_conter += code_str.count(" ")
-            
+
             return code_str
 
-        
+
         elif string_or_variable.startswith("["):    # list
             if not string_or_variable.endswith("]"):
                 raise SmartError(f"Sintaxe error: on '{string_or_variable}', bracket '[' was never closed", line_conter)
-    
+
             list_value = string_or_variable[1:-1].split(",")
 
             len_list = len(list_value)
 
             if len_list > smart_obj.SIZE_ADVANCED_OBJ:
                 raise SmartError(f"List too long: '{string_or_variable}', max length is {smart_obj.SIZE_ADVANCED_OBJ}.", line_conter)
-    
+
             for i in range(smart_obj.SIZE_ADVANCED_OBJ - len_list):
                 list_value.append("0")
 
@@ -828,7 +828,7 @@ def compile_smarty(
 
         logging.critical(f"Error with set_on_ram_str: '{string_or_variable}'.")
         raise SmartError(f"Unknown string or variable: '{string_or_variable}'.", line_conter)
-    
+
     def get_variable(var_name:str, special_name:bool=False) -> smart_obj.SmartObj:
         """This function return the smart variable (SmartObj) from the name of variable.
         The smart obj can be SmartVariable, SmartStr...
@@ -841,9 +841,9 @@ def compile_smarty(
 
         if var_name not in smart_var:
             raise SmartError(f"Name error : name '{var_name}' is not defined.", line_conter)
-        
+
         return smart_var[var_name]
-    
+
     def make_variable(var_obj:smart_obj.SmartObj, name:str | None = None, add_adress_advenced_value:bool=False) -> None:
         """Set on smart_var a Smart object (can be SmartVariable, SmartStr...).
         If the Smart memory is full, raise SmartError.
@@ -864,7 +864,7 @@ def compile_smarty(
             raise SmartError(f"Smart memory is full. You can't make more {compiller_data_run.MAX_VARIABLE_CREATED} bytes for variables.\nThe variable '{var_name}' can't be created...\n{color_tool.Colors.YELLOW}You can use compiletime realloc for reuse space of a variable.{color_tool.Colors.RESET}", line_conter)
 
 
-    
+
     import_tool.config_import(compile_smarty)
 
     def hex_parameters(function_name_usr:dict, function_name:str, function_arg:list) -> str:
@@ -882,7 +882,7 @@ def compile_smarty(
                 adress_parameter = parameter.ram_adress
 
                 hex_code += set_one_A_value(function_arg[i])
-                
+
 
                 hex_code += f"8D {adress_for_RAM(adress_parameter)} "
                 adress_conter += 3
@@ -948,13 +948,13 @@ def compile_smarty(
             if first_call:
                 if code_start.startswith("#!"):
                     logging.info("Shebang detected, skip first line.")
-                    
+
                     if "\n" not in code_start:
                         logging.warning("Shebang detected, but no new line found.")
                         code_start = ""
                     else:
                         code_start = code_start.split("\n", 1)[1]
-    
+
             code_start = code_start.replace("\t", "        ")
 
             code_line = code_start.split("\n")
@@ -980,7 +980,7 @@ def compile_smarty(
     for line in code_line:
         line_tmp = line.split("//")[0].strip() + "\n"
         code += line_tmp
-    
+
     code = split_code(code.replace("\n", ""), ";")
 
     logging.info("Buiilding asm")
@@ -1017,20 +1017,20 @@ def compile_smarty(
         if line[0] in ACUMULATOR_REGISTER:
             line = replace_code(line, " ", "")
             read_line = line.split("=", 1)
-            
+
 
             r = read_line[0]
 
             if len(read_line) != 2:
                 raise SmartError(f"Smart syntaxe error:\nline {line_conter}", line_conter)
-        
+
             if r == "A":
                 value_accumulator = set_one_A_value(read_line[1])
             else:
                 value_accumulator = set_one_A_value(read_line[1], forbiden_math=True)
-          
+
             code_compile += value_accumulator if r == "A" else "A2" + value_accumulator[2:] if r == "X" else "A0" + value_accumulator[2:]
-            
+
             logging.info("Build asm command: set on accumulator value")
 
         elif line[0] == "#":
@@ -1041,7 +1041,7 @@ def compile_smarty(
 
             hex_adress = hex(CODE_ADRESSE + adress_conter)[2:].upper()
 
-            
+
             hex_adress = "0" * (4-len(hex_adress)) + hex_adress
 
 
@@ -1049,9 +1049,9 @@ def compile_smarty(
 
             logging.info("Build asm command: goto")
 
-        
+
         elif line.startswith("."):      # variable
-            
+
             line = replace_code(line, " ", "")[1:]
 
             try:
@@ -1065,15 +1065,15 @@ def compile_smarty(
             if var_name not in smart_var: # make new variable
 
                 make_variable(smart_obj.SmartVariable(var_name, adress_var))
-            
+
             value_RAM = set_one_A_value(value)
-                        
+
             code_compile += f"{value_RAM}8D {adress_for_RAM(get_variable(var_name).ram_adress)} "
 
             adress_conter += 3
 
             logging.info(f"Build asm command: using RAM for variable '{var_name}'")
-        
+
         elif line.startswith("~"):      # advenced variable
             line = replace_code(line, " ", "")[1:]
 
@@ -1122,7 +1122,7 @@ def compile_smarty(
                     adress_conter += 1
 
                     code_compile += set_one_A_value(value)
-                    
+
                     code_compile += f"9D {adress_for_RAM(get_variable(var_name).ram_adress)} "
                     adress_conter += 3
 
@@ -1143,11 +1143,11 @@ def compile_smarty(
 
             make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else}")
             compiller_data_run.not_used_call_else += 1
-            
+
             call_else_adress = adress_for_RAM(get_variable(f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else - 1}", special_name=True).adress) + " "
-            
+
             adress_var += 1
-            
+
             code_compile += f"C9 00 D0 08 A9 01 8D {call_else_adress}4C {{}} A9 00 8D {call_else_adress}"
             adress_conter += 17
 
@@ -1187,7 +1187,7 @@ def compile_smarty(
             bloc_code, bloc_line = get_bloc(line_conter, code, error_message="On elif bloc")
 
             jump_line = bloc_line - line_conter - 1
-            
+
             code_compile += f"AD {call_else_adress}C9 01 D0 !smart_tmp:elif "
             adress_conter += 7
 
@@ -1222,11 +1222,11 @@ def compile_smarty(
 
             line_conter += 1    # add the line conter because continue
             continue
-        
+
         elif line.lstrip().startswith("else"):
             if not last_if:
                 raise SmartError("'else bloc' was used but 'if bloc' was not created.")
-            
+
             line_2 = replace_code(line, " ", "")[4:]
 
             if not line_2.endswith("{"):
@@ -1235,7 +1235,7 @@ def compile_smarty(
             bloc_code, bloc_line = get_bloc(line_conter, code, error_message="On else bloc")
 
             jump_line = bloc_line - line_conter - 1
-            
+
             code_compile += f"AD {call_else_adress}C9 00 D0 03 4C {{}} "
             adress_conter += 10
 
@@ -1253,7 +1253,7 @@ def compile_smarty(
 
             adress_conter += new_adress
             code_compile += code_else
-        
+
         elif line.lstrip().startswith("while"):
             line_2 = replace_code(line, " ", "")[5:]
 
@@ -1261,7 +1261,7 @@ def compile_smarty(
                 raise SmartError("On while bloc, expected '{'", line_conter)
             else:
                 line_2 = line_2[:-1]
-            
+
             while_adress = adress_for_RAM(CODE_ADRESSE + adress_conter) + " "
 
             code_compile += set_one_A_value(line_2)
@@ -1269,7 +1269,7 @@ def compile_smarty(
             bloc_code, bloc_line = get_bloc(line_conter, code, error_message="On while bloc")
 
             jump_line = bloc_line - line_conter - 1
-            
+
             code_compile += "C9 00 D0 03 4C {} "
             adress_conter += 7
 
@@ -1294,7 +1294,7 @@ def compile_smarty(
 
         elif line.lstrip().startswith("for "):  # loop
             line_2 = replace_code(line, " ", "")[3:]
-            
+
             if not line_2.endswith("{"):
                 raise SmartError("On for bloc, expected '{'", line_conter)
             else:
@@ -1317,7 +1317,7 @@ def compile_smarty(
                     raise SmartError("Memory error : maximum variable are 256.", line_conter)
 
                 var_name = var_name[1:]
-                
+
                 adress_iterrator = adress_for_RAM(adress_var)
                 make_variable(smart_obj.SmartVariable(var_name, adress_var))
 
@@ -1347,7 +1347,7 @@ def compile_smarty(
 
                 start_loop_for = get_start_end("0", "21", "1", True, adress_iterrator, advenced_value_mode=True)
 
-                
+
                 # set the simple value on the variable
                 code_compile += f"BD {adress_for_RAM(adress_advenced_value)} "      # set on A the value with offset
                 adress_conter += 3
@@ -1372,7 +1372,7 @@ def compile_smarty(
             adress_conter += new_adress
             code_compile += code_for
 
-            code_compile += f"4C {start_loop_for} " 
+            code_compile += f"4C {start_loop_for} "
             adress_conter += 3
 
             code_compile = code_compile.replace("! smart:break", adress_for_RAM(CODE_ADRESSE + adress_conter))
@@ -1380,19 +1380,19 @@ def compile_smarty(
 
 
             #else:
-            #    raise NotImplementedError("Not implemented for loop.")                
-        
+            #    raise NotImplementedError("Not implemented for loop.")
+
         elif line.lstrip().startswith("break"):
             if not on_loop:
                 raise SmartError("Error: 'break' keyword can only be used inside a loop.", line_conter)
-        
+
             code_compile += "4C ! smart:break "     # set space on placeholder for conting adress
             adress_conter += 3
-        
+
         elif line.lstrip().startswith("continue"):
             if not on_loop:
                 raise SmartError("Error: 'continue' keyword can only be used inside a loop.", line_conter)
-        
+
             code_compile += "4C ! smart:continue "     # set space on placeholder for conting adress
             adress_conter += 3
 
@@ -1422,15 +1422,15 @@ def compile_smarty(
 
             if ":" in func_name:    # the function have parameters
                 func_name, parameters = func_name.split(":", 1)
-                
+
                 parameters_list = parameters.replace(" ", "").split(",")
-            
+
                 for parameter in parameters_list:
                     if parameter.startswith("."):
                         var_name_parameter = parameter[1:]
                         if not good_variable_name(var_name_parameter):
                             raise SmartError(f"Invalid sintaxe, excepted a variable name: '{var_name_parameter}'.")
-                        
+
                         parameter_obj = smart_obj.SmartVariable(var_name_parameter, adress_var)
 
                         make_variable(parameter_obj)
@@ -1440,12 +1440,12 @@ def compile_smarty(
                         var_name_parameter = parameter[1:]
                         if not good_variable_name(var_name_parameter):
                             raise SmartError(f"Invalid sintaxe, excepted a variable name: '{var_name_parameter}'.")
-                        
+
                         parameter_obj = smart_obj.SmartStr(var_name_parameter, adress_var)
 
                         make_variable(parameter_obj, add_adress_advenced_value=True)
                         parameters_obj.append(parameter_obj)
-                    
+
                     else:
                         raise SmartError(f"Excepted a variable name, not '{parameter}'", line_conter)
 
@@ -1453,7 +1453,7 @@ def compile_smarty(
                 raise SmartError(f"Invalid name for {func_name}", line_conter)
 
             logging.debug(f"Building function '{func_name}'")
-           
+
             func_code, funciton_line = get_bloc(line_conter, code, error_message="On function '" + func_name + "'")
 
             function_name_usr[func_name] = smart_obj.SmartFunction(func_name, func_code, parameters_obj)
@@ -1461,12 +1461,12 @@ def compile_smarty(
             jump_line = funciton_line - line_conter - 1
 
             logging.debug(f"'{func_name}' has been created.")
-        
+
         elif line.lstrip().startswith("return "):        # return value
-            
+
             if not(function_mode["function_mode"]) or function_mode["if_mode"]:
                 raise SmartError("Smart syntaxe error: 'return' key word can't be used outside function.", line_conter)
-            
+
             try:
                 value_return = replace_code(line.strip().split(" ", 1)[1], " ", "")
             except:
@@ -1474,7 +1474,7 @@ def compile_smarty(
 
 
             code_compile += set_one_A_value(value_return)
-            
+
             function_mode["smart_func"].return_value = True
 
             # save new A at RAM
@@ -1493,8 +1493,8 @@ def compile_smarty(
                     raise SmartError("Can't import a module on a bloc.")
                 else:
                     raise SmartError("Can't import a module on function.", line_conter)
-            
-            
+
+
             line_import = split_code(line, " ")[1:]
 
             try:
@@ -1518,8 +1518,8 @@ def compile_smarty(
                         raise SmartError("Need a str value for path, in import.", line_conter)
                     else:
                         name_import = name_import[1:-1]
-                    
-                    
+
+
                         if type_import == '"file"':
                             import_info = import_tool.import_module(name_import, CODE_ADRESSE + adress_conter)
 
@@ -1528,10 +1528,10 @@ def compile_smarty(
 
                         elif type_import == '"smart"':
                             import_info = import_tool.import_smart(name_import, CODE_ADRESSE + adress_conter)
-                        
+
                         else:
                             raise SmartError('Unknow import type. Must be "file", "lib", "smart"')
-                    
+
             except SmartError as se:
                 raise SmartError("Error on module '{}':\n\t{}".format(name_import, (str(se)[1:-1].replace(",", "\n\t"))))
             except import_tool.ModuleError as me:
@@ -1539,7 +1539,7 @@ def compile_smarty(
                     raise CompileError(f"Compile fail: error with module, maybe a module import self... (error in {me.module_name})")
                 else:
                     raise SmartError("Error during importing module:\n" + str(me))
-                
+
             adress_delta = import_info.binary.count(" ")
 
             code_compile += import_info.binary
@@ -1549,7 +1549,7 @@ def compile_smarty(
 
             for var_name in import_info.variables:
                 smart_var[var_name] = import_info.variables[var_name]
-            
+
             adress_var += len(import_info.variables)
 
 
@@ -1558,7 +1558,7 @@ def compile_smarty(
             new_adress_module = adress_for_RAM(CODE_ADRESSE + adress_conter) + " "
 
             code_compile = code_compile.replace("!smart_module_goto", new_adress_module)
-            
+
         elif line.lstrip().startswith("compiletime "):  # a compile command
             compile_command.compiletime_command(line, smart_var)
 
@@ -1576,32 +1576,32 @@ def compile_smarty(
             if function_name == "print":
                 if len(function_arg) != 1:
                     raise SmartError("print function take 1 arg", line_conter)
-                
+
                 if function_arg[0] in ACUMULATOR_REGISTER:
                     if function_arg[0] != "A":
                         raise SmartError(f"print need 'A' registrer, not '{function_arg[0]}'", line_conter)
-                    
+
                     code_compile += "20 EF FF "
 
                     adress_conter += 3
-                
+
 
                 elif function_arg[0][0] == "\"":
                     smart_str = function_arg[0]
 
 
-                    value_str = get_str(smart_str)
+                    value_str = get_str(smart_str, line_conter)
 
                     for char in get_char_from_str(value_str):
                         code_compile += set_one_A_value(f"'{char}'") + "20 EF FF "
 
                         adress_conter += 3
-                
+
                 elif is_a_simple_value(function_arg[0]):
                     code_compile += set_one_A_value(function_arg[0])
                     code_compile += "20 EF FF "
                     adress_conter += 3
-                
+
                 elif not is_a_simple_value(function_arg[0]):    # the value is str
 
                     string_adress = get_int_adress_from_str(compiller_data_run.SYS_ADRESS["SaveStr"])
@@ -1613,16 +1613,16 @@ def compile_smarty(
                     for deltal in range(string_adress, string_adress + smart_obj.SIZE_ADVANCED_OBJ):
                         code_compile += f"AD {adress_for_RAM(deltal)} 20 EF FF "
 
-                    
+
                     adress_conter += 6 * smart_obj.SIZE_ADVANCED_OBJ
-                
+
                 logging.info("Build smart fonction as asm command: print")
 
 
             elif function_name == "quit":
                 if len(function_arg) != 0:
                     raise SmartError("Function 'quit' not take arg.", line_conter)
-                
+
                 code_compile += "00 "
                 adress_conter += 1
 
@@ -1631,16 +1631,16 @@ def compile_smarty(
             elif function_name == "restart":
                 if len(function_arg) != 0:
                     raise SmartError("Function 'restart' not take arg.", line_conter)
-                
+
                 code_compile += f"4C {adress_for_RAM(CODE_ADRESSE)} "
                 adress_conter += 3
 
                 logging.info("Build smart fonction as asm command: restart")
-            
+
             elif function_name == "goto":
                 if len(function_arg) != 1:
                     raise SmartError("Function 'goto' take 1 arg.", line_conter)
-                
+
                 name = function_arg[0]
 
                 goto_tmp = f"!smart_tmp:goto|{name}"
@@ -1652,7 +1652,7 @@ def compile_smarty(
                 adress_conter += 3
 
                 logging.info("Build smart fonction as asm command: goto")
-            
+
             elif function_name == "asm_entry":
 
                 code_tmp = build_asm_entry(function_arg, line_conter, get_str, adress_conter, smart_var, CODE_ADRESSE)
@@ -1660,10 +1660,10 @@ def compile_smarty(
                 code_compile += code_tmp
 
                 adress_conter += code_tmp.count(" ")
-            
+
             elif function_name in SmartBuiltIn.BUILT_IN_NAME_RETURN:
                 logging.warning(f"'{function_name}' function is a return-function, but was used as a function.")
-                
+
                 match function_name:
                     case "input":
                         SmartBuiltIn.smartInput()
@@ -1671,7 +1671,7 @@ def compile_smarty(
             elif function_name == "wozm":   # return to woz monitor
                 if len(function_arg) != 0:
                     raise SmartError("Function 'wozm' not take arg.", line_conter)
-                
+
                 code_compile += "4C 1F FF " # the adress of woz monitor get line
                 adress_conter += 3
 
@@ -1694,10 +1694,10 @@ def compile_smarty(
 
                 code_compile += text_code
 
-            
+
             else:
                 raise SmartError(f"Function '{function_name}' not exist.", line_conter)
-        
+
         else:
             raise SmartError("Smart invalid syntaxe", line_conter)
 
@@ -1722,7 +1722,7 @@ def compile_smarty(
     \t{color_tool.Colors.GREEN}You can report to `{GIT_HUB_LINK}`.{color_tool.Colors.RESET}
     """)
 
-            
+
             if input("Continue ? (y/N): ").lower() != "y":
                 raise CompileError("User quit: error with adress counter.")
 
@@ -1733,16 +1733,16 @@ def compile_smarty(
 
 
 # ------------------------------- End compille loop ----------------------------------------------
-        
+
     if function_mode["if_mode"]:
         pass
-    
+
     elif module_mode:
         code_compile += "4C !smart_module_goto"
 
     elif function_mode["function_mode"]:
         code_compile += "60 "
-    
+
     else:
         code_compile += "00 "
 
@@ -1770,7 +1770,7 @@ def compile_smarty(
             function_name_usr[f].function_adress = adress_conter
 
             code_func = function_name_usr[f].code_compile_f
-            
+
             code_compile += code_func
 
             adress_conter += code_func.count(" ") + 3 * code_func.count("!smart_call_func|")
@@ -1814,12 +1814,12 @@ def compile_smarty(
 
             try:
                 adress = go_to[goto_name].adress
-                    
+
             except KeyError:
                 raise SmartError(f"'{name}' is not defined for goto !", line_conter)
 
             code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
-    
+
     if compiller_data_run.need_error and not(function_mode["function_mode"]) and not(function_mode["if_mode"]):
 
         code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(code_compile.count(" ") + CODE_ADRESSE - 1) + " ") # use count intead adress_conter for not error
@@ -1827,17 +1827,17 @@ def compile_smarty(
 
         adress_conter += 4
 
-    if not function_mode["function_mode"]:      
+    if not function_mode["function_mode"]:
 
         if "!" in code_compile and not module_mode and not function_mode["if_mode"]:
             confirm_user("Error: a placeholder was not used, the compilation failed. Do you want to print the code with placeholder for debug?", error_message="Placeholder error!")
 
         if bin_outpout_file:
             code_bin = "".join(chr(int(byte, base=16)) for byte in code_compile.split(" ")[1:-1])   # code_bin can have error with UTF-8, used for print only
-            
+
             hex_bytes = [b for b in code_compile.split(" ")[1:-1] if b]     # used for file
             data = bytes(int(b, 16) for b in hex_bytes)
-            
+
         else:
             if regroup_bytes == -1:
                 code_bin = code_compile
@@ -1864,10 +1864,10 @@ def compile_smarty(
 
 
         logging.info("Build completed!")
-        
+
         if make_file:
             print(f"\n\n{code_bin}\n\n")
-            
+
             if bin_outpout_file:
                 Path(os.path.splitext(argv[1])[0] + ".bin").write_bytes(data)
                 logging.info(f"bin file saved as {os.path.splitext(argv[1])[0]}.bin")
@@ -1876,7 +1876,7 @@ def compile_smarty(
                 Path(os.path.splitext(argv[1])[0] + ".hex").write_text(code_bin, encoding="UTF-8")
 
                 logging.info(f"hex file saved as {os.path.splitext(argv[1])[0]}.hex")
-        
+
         logging.info("Build end.")
 
         logging.info(f"Memory info: Smart memory: 256 bytes, used by programme: {len(smart_var)} bytes, using {len(smart_var) / 256 * 100}% of Smart memory. Programme size: used {adress_conter} bytes from {hex(CODE_ADRESSE)}")
