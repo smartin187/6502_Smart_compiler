@@ -22,4 +22,3 @@ If the task is a bug you can also add a issue on GitHub.
 - On build script, make a archive for windows, with emulator and compiller + Smart library.
 - For all call of function get_str, string_tool.py, add the line_conter argument.
 - On function with parameter, add the possibility if the value of parameter change, the value of the variable given change too (pointer).
-- On build script, set the architecture on executable name
