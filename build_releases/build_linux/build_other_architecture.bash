@@ -3,6 +3,7 @@
 # This script compile and package for the architecture arm64 or amd64.
 # If your computer is amd64, this script build for arm64, if you computer is arm64, this script build for amd64.
 
+echo -e "\033[1m---- Build for Linux for other architecture... ----\033[0m"
 
 sudo docker run --privileged --rm tonistiigi/binfmt --install amd64,arm64
 

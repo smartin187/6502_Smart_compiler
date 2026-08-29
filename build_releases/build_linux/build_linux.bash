@@ -7,6 +7,8 @@ set -e
 
 ARCH_DIR_DIST=$(dpkg --print-architecture)
 
+echo -e "\033[1m---- Build for Linux $ARCH_DIR_DIST... ----\033[0m"
+
 mkdir -p build_publish/linux/$ARCH_DIR_DIST/
 
 # ---- build main.py ----

@@ -23,4 +23,3 @@ If the task is a bug you can also add a issue on GitHub.
 - For all call of function get_str, string_tool.py, add the line_conter argument.
 - On function with parameter, add the possibility if the value of parameter change, the value of the variable given change too (pointer).
 - On build script, set the architecture on executable name
-- On build script, set a echo between each step

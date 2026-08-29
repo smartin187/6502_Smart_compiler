@@ -6,6 +6,8 @@
 
 # Need wine, and Pyinstaller on wine.
 
+echo -e "\033[1m---- Build with Wine (build for Windows)... ----\033[0m"
+
 set -e
 
 mkdir -p build_publish/windows/

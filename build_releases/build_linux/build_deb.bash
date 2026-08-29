@@ -4,6 +4,8 @@
 
 # for the architecture, you can specify it as the first argument, or it will be detected automatically.
 
+echo -e "\033[1m---- Building Debian package (deb file)... ----\033[0m"
+
 set -e
 
 VERSION="1.0"
