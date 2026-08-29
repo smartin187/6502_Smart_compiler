@@ -19,6 +19,5 @@ If the task is a bug you can also add a issue on GitHub.
 - **Add string and list with size variable ?**
 - Add class object for Smart ?
 - Multi-threading for Smart ?
-- On build script, make a archive for windows, with emulator and compiller + Smart library.
 - For all call of function get_str, string_tool.py, add the line_conter argument.
 - On function with parameter, add the possibility if the value of parameter change, the value of the variable given change too (pointer).
