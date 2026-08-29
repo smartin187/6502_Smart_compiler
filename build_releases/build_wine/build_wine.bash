@@ -10,31 +10,34 @@ echo -e "\033[1m---- Build with Wine (build for Windows)... ----\033[0m"
 
 set -e
 
+ARCHITECTURE_WINE="x86"
+TAG_WINDOWS="Windows-$ARCHITECTURE_WINE"
+
 mkdir -p build_publish/windows/
 
 # ---- build main.py ----
 
 wine pyinstaller --onefile main.py
 
-cp dist/main.exe build_publish/windows/smart_compiler.exe
+cp dist/main.exe build_publish/windows/smart_compiler_$TAG_WINDOWS.exe
 
 # ---- build smart_emulator.py ----
 
 wine pyinstaller --onefile --add-data "img/logo_smart_small.png;." smart_emulator.py
 
-cp dist/smart_emulator.exe build_publish/windows/smart_emulator.exe
+cp dist/smart_emulator.exe build_publish/windows/smart_emulator_$TAG_WINDOWS.exe
 
 # ---- build a zip file ----
 
 mkdir -p build_publish/windows/archive_zip/
 
 # copy the executable
-cp build_publish/windows/smart_compiler.exe build_publish/windows/archive_zip/
-cp build_publish/windows/smart_emulator.exe build_publish/windows/archive_zip/
+cp build_publish/windows/smart_compiler_$TAG_WINDOWS.exe build_publish/windows/archive_zip/
+cp build_publish/windows/smart_emulator_$TAG_WINDOWS.exe build_publish/windows/archive_zip/
 
 # copy library
 
-cp -r smart_lib/ build_publish/windows/smart_emulator.exe build_publish/windows/archive_zip/
+cp -r smart_lib/ build_publish/windows/archive_zip/
 
 # set a readme:
 echo "Smart Compiler and Emulator for Windows
@@ -47,7 +50,7 @@ See https://github.com/smartin187/smartykit_compiler for more information.
 
 # build zip
 cd build_publish/windows/
-zip -r Smart-Windows.zip archive_zip/
+zip -r Smart_$TAG_WINDOWS.zip archive_zip/
 
 cd ../..
 
