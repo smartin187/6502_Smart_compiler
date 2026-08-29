@@ -26,15 +26,15 @@ cp dist/smart_emulator build_publish/linux/$ARCH_DIR_DIST/smart_emulator_$TAG
 
 # ---- build a zip file ----
 
-mkdir -p build_publish/linux/archive_zip/
+mkdir -p build_publish/linux/$ARCH_DIR_DIST/archive_zip/
 
 # copy the executable
-cp build_publish/linux/smart_compiler_$TAG build_publish/linux/archive_zip/
-cp build_publish/linux/smart_emulator_$TAG build_publish/linux/archive_zip/
+cp build_publish/linux/$ARCH_DIR_DIST/smart_compiler_$TAG build_publish/linux/$ARCH_DIR_DIST/archive_zip/
+cp build_publish/linux/$ARCH_DIR_DIST/smart_emulator_$TAG build_publish/linux/$ARCH_DIR_DIST/archive_zip/
 
 # copy library
 
-cp -r smart_lib/ build_publish/linux/archive_zip/
+cp -r smart_lib/ build_publish/linux/$ARCH_DIR_DIST/archive_zip/
 
 # set a readme:
 echo "Smart Compiler and Emulator for Windows
@@ -43,12 +43,12 @@ You have also the Smart library. Please copy the directory to /usr/lib/Smart-Sma
 
 Apache License 2.0
 See https://github.com/smartin187/smartykit_compiler for more information.
-" > build_publish/linux/archive_zip/readme.txt
+" > build_publish/linux/$ARCH_DIR_DIST/archive_zip/readme.txt
 
 # build zip
-cd build_publish/linux/
+cd build_publish/linux/$ARCH_DIR_DIST/
 zip -r Smart_$TAG.zip archive_zip/
 
-cd ../..
+cd ../../..
 
-rm -r build_publish/linux/archive_zip/
+rm -r build_publish/linux/$ARCH_DIR_DIST/archive_zip/
