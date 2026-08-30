@@ -695,6 +695,15 @@ def compile_smarty(
         if not recursiv_value:
             counter_adress_value = 0
 
+            # for return function:
+            data_function = value
+            for operator in compiller_data_run.OPERATOR:
+                data_function = data_function.replace(operator, "+")
+
+            parts = data_function.split("+")
+
+            # not implemented
+
         asm_v = eval_value()
 
         if add_adress and not recursiv_value:

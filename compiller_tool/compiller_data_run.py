@@ -40,6 +40,8 @@ MAX_VARIABLE_CREATED = 256  # the maximum number of bytes for variable.
 
 START_ADRESS_VAR = 0x300
 
+OPERATOR = ("+", "-", "*", "/", "==", "!=", ">", "<", "<=", ">=")
+
 # base value -------------------------------
 
 _WARNING_ENDLINE = (False, )     # if an line not end by ; } or // in line or the last line
