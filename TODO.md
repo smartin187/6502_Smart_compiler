@@ -19,4 +19,4 @@ If the task is a bug you can also add a issue on GitHub.
 - Add class object for Smart ?
 - Multi-threading for Smart ?
 - On function with parameter, add the possibility if the value of parameter change, the value of the variable given change too (pointer).
-- For Smart system variable, use 0 page mode + use `Y` for copy `A` ?
+- For Smart system variable, use 0 page mode
