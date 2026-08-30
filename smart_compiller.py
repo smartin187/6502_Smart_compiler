@@ -513,7 +513,7 @@ def compile_smarty(
 
                 return f"AD {adress_return} "
 
-            elif value[0] == ".":
+            elif value.startswith("."):
                 variable = value[1:]
 
 
@@ -522,7 +522,7 @@ def compile_smarty(
 
                 return f"AD {adress_for_RAM(get_variable(variable).ram_adress)} "
 
-            elif value[0] == "~":       # advanced variable, need index
+            elif value.startswith("~"):       # advanced variable, need index
                 try:
                     advenced_var_name = value[1:].split("[", 1)[0]
 
@@ -615,14 +615,14 @@ def compile_smarty(
 
                 return "A9 " + value_hex + " "
 
-            elif value[0] == "'":
+            elif value.startswith("'"):
                 counter_adress_value += 2
 
                 ascii_code = get_char(value)
 
                 return "A9 " + ("0" * (2-len(ascii_code))) + ascii_code + " "
 
-            elif value[0] == "\"":
+            elif value.startswith("\""):
                 smart_error(f"Smart forbiden value: '{value}'", set_error=set_error_exception)
 
             
