@@ -103,7 +103,7 @@ def compile_smarty(
         if add_to_adress_conter:
             address_counter += 5
 
-        code_compile += set_one_A_value(error_value, add_adress=add_to_adress_conter)
+        code_compile += set_on_A_value(error_value, add_adress=add_to_adress_conter)
 
         code_compile += "4C !  smart_runtime_error"    # set 2 space on place holder for counting adress
         if add_to_adress_conter:
@@ -147,15 +147,15 @@ def compile_smarty(
         adress_end = adress_for_RAM(adress_var - 2)
         adress_step = adress_for_RAM(adress_var)
 
-        code_compile += set_one_A_value(step)   # load the step
+        code_compile += set_on_A_value(step)   # load the step
         code_compile += f"8D {adress_step} "     # save at the first RAM for step
         address_counter += 3
 
-        code_compile += set_one_A_value(start_number)   # load the start number
+        code_compile += set_on_A_value(start_number)   # load the start number
         code_compile += f"8D {adress_start_number} "     # save at the second RAM for start number
         address_counter += 3
 
-        code_compile += set_one_A_value(end)   # load the end number
+        code_compile += set_on_A_value(end)   # load the end number
         code_compile += f"8D {adress_end} "     # save at the third RAM for end number
         address_counter += 3
 
@@ -243,7 +243,7 @@ def compile_smarty(
         if not good_hex(code):
             smart_error(f"Bad hex value '{code}'")
 
-    def set_one_A_value(value:str, one_math:bool=False, recursiv_value:bool=False, forbiden_math:bool=False, test_value_mode:bool=False, add_adress:bool=True) -> str:
+    def set_on_A_value(value:str, one_math:bool=False, recursiv_value:bool=False, forbiden_math:bool=False, test_value_mode:bool=False, add_adress:bool=True) -> str:
         """Return the value for set one A.
         arg: test_value_mode: if True, not print the error message on console (but raise SmartError).
         """
@@ -279,9 +279,9 @@ def compile_smarty(
 
                 if is_a_simple_value(value_1) and is_a_simple_value(value_2):
 
-                    hex_value_1 = set_one_A_value(value_1, one_math=True, recursiv_value=True)
+                    hex_value_1 = set_on_A_value(value_1, one_math=True, recursiv_value=True)
 
-                    hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
+                    hex_value_2 = set_on_A_value(value_2, one_math=True, recursiv_value=True)
 
                     if not imediate_value(hex_value_2):
 
@@ -357,12 +357,12 @@ def compile_smarty(
 
                     asm = ""
 
-                    hex_value_1 = set_one_A_value(value_1, recursiv_value=True)
+                    hex_value_1 = set_on_A_value(value_1, recursiv_value=True)
 
                     asm += hex_value_1 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}A9 00 "  # save value 1 on ram and set A to 00.
                     counter_adress_value += 5
 
-                    value_2_tmp = set_one_A_value(value_2, one_math=True, recursiv_value=True)
+                    value_2_tmp = set_on_A_value(value_2, one_math=True, recursiv_value=True)
 
                     hex_value_2 = "A2" + value_2_tmp[2:] if value_2_tmp.startswith("A9") else "AE" + value_2_tmp[2:]
 
@@ -391,7 +391,7 @@ def compile_smarty(
 
                     asm = ""
 
-                    hex_value_2 = set_one_A_value(value_2, recursiv_value=True)
+                    hex_value_2 = set_on_A_value(value_2, recursiv_value=True)
 
                     asm += hex_value_2 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}"  # save value 2 on ram
                     counter_adress_value += 3
@@ -411,7 +411,7 @@ def compile_smarty(
                     if hex_value_2 == "A9 00 ":       # division by 0
                         confirm_user(f"Division by 0: {value}. It make an runtime error `E/`! Continue compilation ? ", line_counter=line_counter)
 
-                    hex_value_1 = set_one_A_value(value_1, one_math=True, recursiv_value=True)
+                    hex_value_1 = set_on_A_value(value_1, one_math=True, recursiv_value=True)
 
                     asm += hex_value_1
 
@@ -446,11 +446,11 @@ def compile_smarty(
                 try:
                     value_1, value_2 = split_code(value, "+", max_split=1)
 
-                    hex_value_1 = set_one_A_value(value_1, recursiv_value=True)
+                    hex_value_1 = set_on_A_value(value_1, recursiv_value=True)
 
                     counter_adress_value += 1       # add for the OP code 18
 
-                    hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
+                    hex_value_2 = set_on_A_value(value_2, one_math=True, recursiv_value=True)
 
                     if not imediate_value(hex_value_2):     # adress value
                         asm = f"{hex_value_1}18 6D {hex_value_2[3:]}"
@@ -474,11 +474,11 @@ def compile_smarty(
                 try:
                     value_1, value_2 = split_code(value, "-", max_split=1)
 
-                    hex_value_1 = set_one_A_value(value_1, recursiv_value=True)
+                    hex_value_1 = set_on_A_value(value_1, recursiv_value=True)
 
                     counter_adress_value += 1       # add for the OP code 18
 
-                    hex_value_2 = set_one_A_value(value_2, one_math=True, recursiv_value=True)
+                    hex_value_2 = set_on_A_value(value_2, one_math=True, recursiv_value=True)
 
                     if not imediate_value(hex_value_2):
                         asm = f"{hex_value_1}38 ED {hex_value_2[3:]}"       # adress value
@@ -543,7 +543,7 @@ def compile_smarty(
                         asm = f"8D {compiller_data_run.SYS_ADRESS['SaveAToIndex']}"
                         counter_adress_value += 3
 
-                        asm += set_one_A_value(index_var, recursiv_value=True, test_value_mode=test_value_mode) + "AA "
+                        asm += set_on_A_value(index_var, recursiv_value=True, test_value_mode=test_value_mode) + "AA "
                         counter_adress_value += 1
 
                         start_adress_var = obj_var.get_adress_from_index(0)
@@ -699,7 +699,7 @@ def compile_smarty(
                             if isinstance(parameter, smart_obj.SmartVariable):
                                 adress_parameter = parameter.ram_adress
     
-                                hex_code += set_one_A_value(func_arg_value_list[i], recursiv_value=True, test_value_mode=test_value_mode)
+                                hex_code += set_on_A_value(func_arg_value_list[i], recursiv_value=True, test_value_mode=test_value_mode)
     
                                 hex_code += f"8D {adress_for_RAM(adress_parameter)} "
                                 counter_adress_value += 3
@@ -749,7 +749,7 @@ def compile_smarty(
     def is_a_simple_value(value:str) -> bool:
         """Return True if the value is a value for set on A (use 1 byte), False else (if the value is a str, use 21 bytes)."""
         try:
-            set_one_A_value(value, test_value_mode=True, add_adress=False)
+            set_on_A_value(value, test_value_mode=True, add_adress=False)
             return True
         except SmartError:
             return False
@@ -821,7 +821,7 @@ def compile_smarty(
                 if char == "{":
                     f_bloc = str_value[char_counter + 1:].split("}", 1)[0]
 
-                    code_str += set_one_A_value(f_bloc, add_adress=False) + f"8D {adress_for_RAM(start_adress)} "
+                    code_str += set_on_A_value(f_bloc, add_adress=False) + f"8D {adress_for_RAM(start_adress)} "
 
                     f_bloc_len = len(f_bloc)
                     char_counter += f_bloc_len + 2
@@ -867,7 +867,7 @@ def compile_smarty(
 
             for element in list_value:
                 element = element.strip()
-                code_list += f"{set_one_A_value(element)}8D {adress_for_RAM(start_adress)} "
+                code_list += f"{set_on_A_value(element)}8D {adress_for_RAM(start_adress)} "
 
                 start_adress += 1
 
@@ -931,7 +931,7 @@ def compile_smarty(
             if isinstance(parameter, smart_obj.SmartVariable):
                 adress_parameter = parameter.ram_adress
 
-                hex_code += set_one_A_value(function_arg[i])
+                hex_code += set_on_A_value(function_arg[i])
 
 
                 hex_code += f"8D {adress_for_RAM(adress_parameter)} "
@@ -1075,9 +1075,9 @@ def compile_smarty(
                 smart_error(f"Smart syntaxe error:\nline {line_counter}")
 
             if r == "A":
-                value_accumulator = set_one_A_value(read_line[1])
+                value_accumulator = set_on_A_value(read_line[1])
             else:
-                value_accumulator = set_one_A_value(read_line[1], forbiden_math=True)
+                value_accumulator = set_on_A_value(read_line[1], forbiden_math=True)
 
             code_compile += value_accumulator if r == "A" else "A2" + value_accumulator[2:] if r == "X" else "A0" + value_accumulator[2:]
 
@@ -1116,7 +1116,7 @@ def compile_smarty(
 
                 make_variable(smart_obj.SmartVariable(var_name, adress_var))
 
-            value_RAM = set_one_A_value(value)
+            value_RAM = set_on_A_value(value)
 
             code_compile += f"{value_RAM}8D {adress_for_RAM(get_variable(var_name).ram_adress)} "
 
@@ -1165,13 +1165,13 @@ def compile_smarty(
                 # ^ if the index is a number literal, else it is variable or expression
 
                 if index_mode_const:
-                    code_compile += f"{set_one_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
+                    code_compile += f"{set_on_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
                     address_counter += 3
                 else:
-                    code_compile += f"{set_one_A_value(index_var)}AA "     # save on X index delta
+                    code_compile += f"{set_on_A_value(index_var)}AA "     # save on X index delta
                     address_counter += 1
 
-                    code_compile += set_one_A_value(value)
+                    code_compile += set_on_A_value(value)
 
                     code_compile += f"9D {adress_for_RAM(get_variable(var_name).ram_adress)} "
                     address_counter += 3
@@ -1185,7 +1185,7 @@ def compile_smarty(
             else:
                 line_2 = line_2[:-1]
 
-            code_compile += set_one_A_value(line_2)
+            code_compile += set_on_A_value(line_2)
 
             bloc_code, bloc_line = get_bloc(line_counter, code, error_message="On if bloc")
 
@@ -1241,7 +1241,7 @@ def compile_smarty(
             code_compile += f"AD {call_else_adress}C9 01 D0 !smart_tmp:elif "
             address_counter += 7
 
-            value_tmp = set_one_A_value(line_2)
+            value_tmp = set_on_A_value(line_2)
 
             code_compile += value_tmp
 
@@ -1314,7 +1314,7 @@ def compile_smarty(
 
             while_adress = adress_for_RAM(CODE_ADRESSE + address_counter) + " "
 
-            code_compile += set_one_A_value(line_2)
+            code_compile += set_on_A_value(line_2)
 
             bloc_code, bloc_line = get_bloc(line_counter, code, error_message="On while bloc")
 
@@ -1523,7 +1523,7 @@ def compile_smarty(
                 smart_error(f"Smart syntaxe error: '{line}'")
 
 
-            code_compile += set_one_A_value(value_return)
+            code_compile += set_on_A_value(value_return)
 
             function_mode["smart_func"].return_value = True
 
@@ -1635,12 +1635,12 @@ def compile_smarty(
                     value_str = get_str(smart_str, line_counter)
 
                     for char in get_char_from_str(value_str):
-                        code_compile += set_one_A_value(f"'{char}'") + "20 EF FF "
+                        code_compile += set_on_A_value(f"'{char}'") + "20 EF FF "
 
                         address_counter += 3
 
                 elif is_a_simple_value(function_arg[0]):
-                    code_compile += set_one_A_value(function_arg[0])
+                    code_compile += set_on_A_value(function_arg[0])
                     code_compile += "20 EF FF "
                     address_counter += 3
 
