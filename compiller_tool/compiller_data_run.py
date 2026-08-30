@@ -13,7 +13,7 @@ Have:
 
 SYS_ADRESS = {
     "SaveA":"00 00 ",
-    "ReturnValue":"01 00 ",
+    #"ReturnValue":"01 00 ", # obsolette ! To remove
     #"CallElse":"02 00 ",    # obsolette ! To remove
     "MathOP":"03 00 ",
     "SaveStr":"04 00 ",     # SaveStr start at EB 00 and have a len of 21 (end at 0x19 00)

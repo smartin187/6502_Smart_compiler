@@ -641,15 +641,8 @@ def compile_smarty(
 
             parts = data_function.split("+")
 
-            print("parts", parts)
-
             for part in parts:
                 if in_code(":", part):
-                
-                    # save A to SYS_ADRESS['SaveA'] if the function is a return-function
-                    #saver_A = f"8D {compiller_data_run.SYS_ADRESS['SaveA']}"
-    
-                    #counter_adress_value += 3
     
                     func_name_value, func_arg_value = part.split(":", 1)
     
@@ -681,7 +674,6 @@ def compile_smarty(
                             value = value.replace(part, f"..{var_adress} ")
                             
                             continue
-                            #return ""
     
                     elif func_name_value in SmartBuiltIn.BUILT_IN_NAME_NORETURN:
                         smart_error(f"Built in function {func_name_value} is not a return-function.", set_error=set_error_exception)
@@ -743,10 +735,7 @@ def compile_smarty(
 
                         counter_adress_value += 3
 
-                        value = value.replace(part, f"..{var_adress} ")
-    
-                        #return call_code
-    
+                        value = value.replace(part, f"..{var_adress} ")   
                 
 
         asm_v += eval_value()
@@ -1537,14 +1526,6 @@ def compile_smarty(
             code_compile += set_one_A_value(value_return)
 
             function_mode["smart_func"].return_value = True
-
-            """# save new A at RAM
-            code_compile += f"8D {compiller_data_run.SYS_ADRESS['ReturnValue']}"
-            adress_conter += 3
-
-            # reuse the old value for A
-            code_compile += f"AD {compiller_data_run.SYS_ADRESS['SaveA']}"
-            adress_conter += 3"""
 
             return_line = True
 
