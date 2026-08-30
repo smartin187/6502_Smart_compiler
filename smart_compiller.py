@@ -132,7 +132,7 @@ def compile_smarty(
     def smart_error(msg:str, _line_conter:int=-1, set_error:bool=True) -> None:
         """Raise SmartError with the line of instruction."""
         if _line_conter == -1:
-            _line_conter = line_conter
+            _line_conter = line_counter
 
         raise SmartError(msg, _line_conter, set_error=set_error)
 
@@ -409,7 +409,7 @@ def compile_smarty(
                     asm += control_code
 
                     if hex_value_2 == "A9 00 ":       # division by 0
-                        confirm_user(f"Division by 0: {value}. It make an runtime error `E/`! Continue compilation ? ", line_counter=line_conter)
+                        confirm_user(f"Division by 0: {value}. It make an runtime error `E/`! Continue compilation ? ", line_counter=line_counter)
 
                     hex_value_1 = set_one_A_value(value_1, one_math=True, recursiv_value=True)
 
@@ -775,7 +775,7 @@ def compile_smarty(
 
         elif string_or_variable.startswith("\""):   # str value
 
-            str_value = get_str(string_or_variable, line_conter)
+            str_value = get_str(string_or_variable, line_counter)
 
 
             len_str = len(str_value)
@@ -802,7 +802,7 @@ def compile_smarty(
             return code_str
 
         elif string_or_variable.startswith("F\""):      # F-string
-            str_value = get_str(string_or_variable[1:], line_conter)
+            str_value = get_str(string_or_variable[1:], line_counter)
 
             code_str = ""
 
@@ -966,7 +966,7 @@ def compile_smarty(
     smart_var:dict[str, smart_obj.SmartVariable] = {} if not function_mode["function_mode"] else function_mode["global_var"]
     adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var)
 
-    line_conter = 0
+    line_counter = 0
 
     adress_str = hex(CODE_ADRESSE)[2:].upper() + ": "
 
@@ -1043,11 +1043,11 @@ def compile_smarty(
     for line in code:
         if jump_line:
             jump_line -= 1
-            line_conter += 1
+            line_counter += 1
             continue
 
         if line == "" or line.replace(" ", "") == "":
-            line_conter += 1
+            line_counter += 1
             logging.warning("Empty line detected.")
             continue
 
@@ -1072,7 +1072,7 @@ def compile_smarty(
             r = read_line[0]
 
             if len(read_line) != 2:
-                smart_error(f"Smart syntaxe error:\nline {line_conter}")
+                smart_error(f"Smart syntaxe error:\nline {line_counter}")
 
             if r == "A":
                 value_accumulator = set_one_A_value(read_line[1])
@@ -1187,9 +1187,9 @@ def compile_smarty(
 
             code_compile += set_one_A_value(line_2)
 
-            bloc_code, bloc_line = get_bloc(line_conter, code, error_message="On if bloc")
+            bloc_code, bloc_line = get_bloc(line_counter, code, error_message="On if bloc")
 
-            jump_line = bloc_line - line_conter - 1
+            jump_line = bloc_line - line_counter - 1
 
             make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else}")
             compiller_data_run.not_used_call_else += 1
@@ -1218,7 +1218,7 @@ def compile_smarty(
 
             last_if = True
 
-            line_conter += 1    # add the line conter because continue
+            line_counter += 1    # add the line conter because continue
             continue
 
         elif line.lstrip().startswith("elif"):
@@ -1234,9 +1234,9 @@ def compile_smarty(
                 line_2 = line_2[:-1]
 
 
-            bloc_code, bloc_line = get_bloc(line_conter, code, error_message="On elif bloc")
+            bloc_code, bloc_line = get_bloc(line_counter, code, error_message="On elif bloc")
 
-            jump_line = bloc_line - line_conter - 1
+            jump_line = bloc_line - line_counter - 1
 
             code_compile += f"AD {call_else_adress}C9 01 D0 !smart_tmp:elif "
             address_counter += 7
@@ -1270,7 +1270,7 @@ def compile_smarty(
 
             last_if = True
 
-            line_conter += 1    # add the line conter because continue
+            line_counter += 1    # add the line conter because continue
             continue
 
         elif line.lstrip().startswith("else"):
@@ -1282,9 +1282,9 @@ def compile_smarty(
             if not line_2.endswith("{"):
                 smart_error("On else bloc, expected '{'")
 
-            bloc_code, bloc_line = get_bloc(line_conter, code, error_message="On else bloc")
+            bloc_code, bloc_line = get_bloc(line_counter, code, error_message="On else bloc")
 
-            jump_line = bloc_line - line_conter - 1
+            jump_line = bloc_line - line_counter - 1
 
             code_compile += f"AD {call_else_adress}C9 00 D0 03 4C {{}} "
             address_counter += 10
@@ -1316,9 +1316,9 @@ def compile_smarty(
 
             code_compile += set_one_A_value(line_2)
 
-            bloc_code, bloc_line = get_bloc(line_conter, code, error_message="On while bloc")
+            bloc_code, bloc_line = get_bloc(line_counter, code, error_message="On while bloc")
 
-            jump_line = bloc_line - line_conter - 1
+            jump_line = bloc_line - line_counter - 1
 
             code_compile += "C9 00 D0 03 4C {} "
             address_counter += 7
@@ -1407,9 +1407,9 @@ def compile_smarty(
 
             # code on loop
 
-            bloc_code_for, bloc_line = get_bloc(line_conter, code, error_message="On for bloc")
+            bloc_code_for, bloc_line = get_bloc(line_counter, code, error_message="On for bloc")
 
-            jump_line = bloc_line - line_conter - 1
+            jump_line = bloc_line - line_counter - 1
 
             code_for = compile_smarty(
                 make_file=False,
@@ -1504,11 +1504,11 @@ def compile_smarty(
 
             logging.debug(f"Building function '{func_name}'")
 
-            func_code, funciton_line = get_bloc(line_conter, code, error_message="On function '" + func_name + "'")
+            func_code, funciton_line = get_bloc(line_counter, code, error_message="On function '" + func_name + "'")
 
             function_name_usr[func_name] = smart_obj.SmartFunction(func_name, func_code, parameters_obj)
 
-            jump_line = funciton_line - line_conter - 1
+            jump_line = funciton_line - line_counter - 1
 
             logging.debug(f"'{func_name}' has been created.")
 
@@ -1632,7 +1632,7 @@ def compile_smarty(
                     smart_str = function_arg[0]
 
 
-                    value_str = get_str(smart_str, line_conter)
+                    value_str = get_str(smart_str, line_counter)
 
                     for char in get_char_from_str(value_str):
                         code_compile += set_one_A_value(f"'{char}'") + "20 EF FF "
@@ -1697,7 +1697,7 @@ def compile_smarty(
 
             elif function_name == "asm_entry":
 
-                code_tmp = build_asm_entry(function_arg, line_conter, get_str, address_counter, smart_var, CODE_ADRESSE)
+                code_tmp = build_asm_entry(function_arg, line_counter, get_str, address_counter, smart_var, CODE_ADRESSE)
 
                 code_compile += code_tmp
 
@@ -1743,7 +1743,7 @@ def compile_smarty(
         else:
             smart_error("Smart invalid syntaxe")
 
-        line_conter += 1
+        line_counter += 1
 
         last_if = False
 
@@ -1770,7 +1770,7 @@ def compile_smarty(
 
 
         # progress bar
-        advencement = int(line_conter / len(code) * PROGRESS_BAR_LEN)
+        advencement = int(line_counter / len(code) * PROGRESS_BAR_LEN)
         print(f"[{PROGRESS_BAR_CHAR['completed'] * advencement}{PROGRESS_BAR_CHAR['not_completed'] * (PROGRESS_BAR_LEN - advencement)}]", end="\r")
 
 
