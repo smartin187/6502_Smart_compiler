@@ -12,7 +12,7 @@ Have:
 # constent -------------------------------
 
 SYS_ADRESS = {
-    "SaveA":"00 00 ",
+    #"SaveA":"00 00 ",       # obsollette ! To remove
     #"ReturnValue":"01 00 ", # obsolette ! To remove
     #"CallElse":"02 00 ",    # obsolette ! To remove
     "MathOP":"03 00 ",
