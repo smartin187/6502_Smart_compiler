@@ -72,15 +72,16 @@ def compile_smarty(
         Warning: some function are not in this class because it is assembly function (print, goto...)"""
 
         input_code = "AD 11 D0 10 FB AD 10 D0 29 7F 60 "
-        def smartInput() -> None:
-            """Add an input function."""
+        def smartInput() -> tuple[str, int]:
+            """Add an input function. return a tuple with hex code and len of hex code."""
             global need_input
-            nonlocal code_compile, adress_conter
+            #nonlocal code_compile, adress_conter
             need_input = True
 
-            code_compile += "20 !  smart_input"     # set 2 space on placeholder for counting adress
+            #code_compile += "20 !  smart_input"     # set 2 space on placeholder for counting adress
 
-            adress_conter += 3
+            #adress_conter += 3
+            return "20 !  smart_input", 3
 
         BUILT_IN_NAME_RETURN = ["input"]
         BUILT_IN_NAME_NORETURN = ["print", "quit", "goto", "asm_entry"]
@@ -661,8 +662,23 @@ def compile_smarty(
     
                     if func_name_value in SmartBuiltIn.BUILT_IN_NAME_RETURN:
                         if func_name_value == "input":
-                            SmartBuiltIn.smartInput()
+                            hex_code_input, delta_adress = SmartBuiltIn.smartInput()
+                            counter_adress_value += delta_adress
+                            asm_v += hex_code_input
+
+
+                            # save on RAM value return:
+                            compiller_data_run.not_used_ram += 1
+                            var_obj = smart_obj.SmartVariable(f"!smart_return_value{compiller_data_run.not_used_ram}", adress_var)
+                            var_adress = var_obj.ram_adress
+
+                            make_variable(var_obj)
+
+                            asm_v += f"8D {adress_for_RAM(var_adress)} "
+
                             counter_adress_value += 3
+
+                            value = value.replace(part, f"..{var_adress} ")
                             
                             continue
                             #return ""
