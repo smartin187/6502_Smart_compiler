@@ -828,7 +828,7 @@ try:
         Test(
             "Input test",
             code=".i = input:;print: .i;",
-            compile_output="0400: 20 0D 04 8D 00 03 AD 00 03 20 EF FF 00 AD 11 D0 10 FB AD 10 D0 29 7F 60 ",
+            compile_output="0400: 20 13 04 8D 01 03 AD 01 03 8D 00 03 AD 00 03 20 EF FF 00 AD 11 D0 10 FB AD 10 D0 29 7F 60 ",
             compile_only=True,
         ),
         Test(
