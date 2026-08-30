@@ -21,4 +21,3 @@ If the task is a bug you can also add a issue on GitHub.
 - For all call of function get_str, string_tool.py, add the line_conter argument.
 - On function with parameter, add the possibility if the value of parameter change, the value of the variable given change too (pointer).
 - For Smart system variable, use 0 page mode + use `Y` for copy `A` ?
-- On set_one_A_value, replace value[0] by value.statswith...
