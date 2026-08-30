@@ -243,7 +243,7 @@ def compile_smarty(
         if not good_hex(code):
             smart_error(f"Bad hex value '{code}'")
 
-    def set_on_A_value(value:str, one_math:bool=False, recursiv_value:bool=False, forbiden_math:bool=False, test_value_mode:bool=False, add_adress:bool=True) -> str:
+    def set_on_A_value(value:str, recursiv_value:bool=False, forbiden_math:bool=False, test_value_mode:bool=False, add_adress:bool=True) -> str:
         """Return the value for set one A.
         arg: test_value_mode: if True, not print the error message on console (but raise SmartError).
         """
@@ -279,9 +279,9 @@ def compile_smarty(
 
                 if is_a_simple_value(value_1) and is_a_simple_value(value_2):
 
-                    hex_value_1 = set_on_A_value(value_1, one_math=True, recursiv_value=True)
+                    hex_value_1 = set_on_A_value(value_1, recursiv_value=True)
 
-                    hex_value_2 = set_on_A_value(value_2, one_math=True, recursiv_value=True)
+                    hex_value_2 = set_on_A_value(value_2, recursiv_value=True)
 
                     if not imediate_value(hex_value_2):
 
@@ -362,7 +362,7 @@ def compile_smarty(
                     asm += hex_value_1 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}A9 00 "  # save value 1 on ram and set A to 00.
                     counter_adress_value += 5
 
-                    value_2_tmp = set_on_A_value(value_2, one_math=True, recursiv_value=True)
+                    value_2_tmp = set_on_A_value(value_2, recursiv_value=True)
 
                     hex_value_2 = "A2" + value_2_tmp[2:] if value_2_tmp.startswith("A9") else "AE" + value_2_tmp[2:]
 
@@ -411,7 +411,7 @@ def compile_smarty(
                     if hex_value_2 == "A9 00 ":       # division by 0
                         confirm_user(f"Division by 0: {value}. It make an runtime error `E/`! Continue compilation ? ", line_counter=line_counter)
 
-                    hex_value_1 = set_on_A_value(value_1, one_math=True, recursiv_value=True)
+                    hex_value_1 = set_on_A_value(value_1, recursiv_value=True)
 
                     asm += hex_value_1
 
@@ -450,7 +450,7 @@ def compile_smarty(
 
                     counter_adress_value += 1       # add for the OP code 18
 
-                    hex_value_2 = set_on_A_value(value_2, one_math=True, recursiv_value=True)
+                    hex_value_2 = set_on_A_value(value_2, recursiv_value=True)
 
                     if not imediate_value(hex_value_2):     # adress value
                         asm = f"{hex_value_1}18 6D {hex_value_2[3:]}"
@@ -478,7 +478,7 @@ def compile_smarty(
 
                     counter_adress_value += 1       # add for the OP code 18
 
-                    hex_value_2 = set_on_A_value(value_2, one_math=True, recursiv_value=True)
+                    hex_value_2 = set_on_A_value(value_2, recursiv_value=True)
 
                     if not imediate_value(hex_value_2):
                         asm = f"{hex_value_1}38 ED {hex_value_2[3:]}"       # adress value
