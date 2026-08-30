@@ -12,7 +12,6 @@ If the task is a bug you can also add a issue on GitHub.
 
 ## Tasks
 
-- _Fix: bug with return function if the function is call in a mathematical operation (`.a = 1 + f:;`)_
 - _Fix: small bug on windows: the path of library are not join correctly: ...lib\global_lib\screen_tool/screen_tool.sma_
 - Add operator: `modulo`, `^`... Add comparator: `and` `or` `>` `<=`
 - Make the libraries for Smart: `math` ?, `string`, library for write in RAM/ROM ?
