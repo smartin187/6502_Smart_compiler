@@ -39,7 +39,7 @@ class SmartFunction(SmartObj):
 
 class SmartVariable(SmartObj):
     """Information about a variable (name and adress on RAM)."""
-    def __init__(self, name:str, ram_adress:str):
+    def __init__(self, name:str, ram_adress):
         super().__init__(name)
 
         self.ram_adress = ram_adress

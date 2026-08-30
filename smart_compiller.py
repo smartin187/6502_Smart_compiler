@@ -504,6 +504,13 @@ def compile_smarty(
 
             elif in_code("<", value):
                 return set_branch(value, "<", "10")
+            
+            elif value.startswith(".."):   # a value from return function
+                adress_return = adress_for_RAM(int(value[2:-1]))
+
+                counter_adress_value += 3
+
+                return f"AD {adress_return} "
 
             elif value[0] == ".":
                 variable = value[1:]
@@ -617,80 +624,11 @@ def compile_smarty(
             elif value[0] == "\"":
                 smart_error(f"Smart forbiden value: '{value}'", set_error=set_error_exception)
 
-            elif in_code(":", value):
-
-                # save A to SYS_ADRESS['SaveA'] if the function is a return-function
-                saver_A = f"8D {compiller_data_run.SYS_ADRESS['SaveA']}"
-
-                counter_adress_value += 3
-
-                func_name_value, func_arg_value = value.split(":", 1)
-
-                func_arg_value = func_arg_value.replace(" ", "")
-
-                if func_arg_value:
-                    func_arg_value_list = func_arg_value.split(",")
-                else:
-                    func_arg_value_list = []
-
-                if func_name_value in SmartBuiltIn.BUILT_IN_NAME_RETURN:
-                    if func_name_value == "input":
-                        SmartBuiltIn.smartInput()
-                        counter_adress_value += 3
-                        return ""
-
-                elif func_name_value in SmartBuiltIn.BUILT_IN_NAME_NORETURN:
-                    smart_error(f"Built in function {func_name_value} is not a return-function.", set_error=set_error_exception)
-
-                else:
-
-                    if func_name_value in function_name_usr:
-                        if not function_name_usr[func_name_value].return_value:
-                            smart_error(f"Function '{func_name_value}' is not a return-function.", set_error=set_error_exception)
-
-                    else:
-                        smart_error(f"Function '{func_name_value}' not exist.", set_error=set_error_exception)
-
-                    # set the argument:
-                    hex_code = ""
-
-                    function_parameters = function_name_usr[func_name_value].parameters
-                    if len(func_arg_value_list) != len(function_parameters):
-                        smart_error(f"Function '{func_name_value}' take {len(function_parameters)} parameters, but {len(func_arg_value_list)} was given.")
-
-                    for i, parameter in enumerate(function_parameters):
-
-                        if isinstance(parameter, smart_obj.SmartVariable):
-                            adress_parameter = parameter.ram_adress
-
-                            hex_code += set_one_A_value(func_arg_value_list[i], recursiv_value=True, test_value_mode=test_value_mode)
-
-                            hex_code += f"8D {adress_for_RAM(adress_parameter)} "
-                            counter_adress_value += 3
-
-                        elif isinstance(parameter, smart_obj.SmartStr):
-                            adress_parameter = parameter.ram_adress
-
-                            hex_code += set_on_ram_str(func_arg_value_list[i], adress_parameter, add_adress=False)
-
-                            counter_adress_value += hex_code.count(" ")
-
-                        else:
-                            smart_error(f"Uknow type of parameters for function '{func_name_value}'.")
-
-
-
-                    text_code = f"!smart_call_func|{func_name_value}"
-
-                    function_replace.append(text_code)
-
-                    counter_adress_value += 3
-
-                    return saver_A + hex_code + text_code + f"AD {compiller_data_run.SYS_ADRESS['ReturnValue']}"
-
-
+            
             else:
                 smart_error(f"Smart value error: {value}", set_error=set_error_exception)
+
+        asm_v = ""
 
         if not recursiv_value:
             counter_adress_value = 0
@@ -702,9 +640,100 @@ def compile_smarty(
 
             parts = data_function.split("+")
 
-            # not implemented
+            print("parts", parts)
 
-        asm_v = eval_value()
+            for part in parts:
+                if in_code(":", part):
+                
+                    # save A to SYS_ADRESS['SaveA'] if the function is a return-function
+                    #saver_A = f"8D {compiller_data_run.SYS_ADRESS['SaveA']}"
+    
+                    #counter_adress_value += 3
+    
+                    func_name_value, func_arg_value = part.split(":", 1)
+    
+                    func_arg_value = func_arg_value.replace(" ", "")
+    
+                    if func_arg_value:
+                        func_arg_value_list = func_arg_value.split(",")
+                    else:
+                        func_arg_value_list = []
+    
+                    if func_name_value in SmartBuiltIn.BUILT_IN_NAME_RETURN:
+                        if func_name_value == "input":
+                            SmartBuiltIn.smartInput()
+                            counter_adress_value += 3
+                            
+                            continue
+                            #return ""
+    
+                    elif func_name_value in SmartBuiltIn.BUILT_IN_NAME_NORETURN:
+                        smart_error(f"Built in function {func_name_value} is not a return-function.", set_error=set_error_exception)
+    
+                    else:
+    
+                        if func_name_value in function_name_usr:
+                            if not function_name_usr[func_name_value].return_value:
+                                smart_error(f"Function '{func_name_value}' is not a return-function.", set_error=set_error_exception)
+    
+                        else:
+                            smart_error(f"Function '{func_name_value}' not exist.", set_error=set_error_exception)
+    
+                        # set the argument:
+                        hex_code = ""
+    
+                        function_parameters = function_name_usr[func_name_value].parameters
+                        if len(func_arg_value_list) != len(function_parameters):
+                            smart_error(f"Function '{func_name_value}' take {len(function_parameters)} parameters, but {len(func_arg_value_list)} was given.")
+    
+                        for i, parameter in enumerate(function_parameters):
+    
+                            if isinstance(parameter, smart_obj.SmartVariable):
+                                adress_parameter = parameter.ram_adress
+    
+                                hex_code += set_one_A_value(func_arg_value_list[i], recursiv_value=True, test_value_mode=test_value_mode)
+    
+                                hex_code += f"8D {adress_for_RAM(adress_parameter)} "
+                                counter_adress_value += 3
+    
+                            elif isinstance(parameter, smart_obj.SmartStr):
+                                adress_parameter = parameter.ram_adress
+    
+                                hex_code += set_on_ram_str(func_arg_value_list[i], adress_parameter, add_adress=False)
+    
+                                counter_adress_value += hex_code.count(" ")
+    
+                            else:
+                                smart_error(f"Uknow type of parameters for function '{func_name_value}'.")
+    
+    
+    
+                        text_code = f"!smart_call_func|{func_name_value}"
+    
+                        function_replace.append(text_code)
+    
+                        counter_adress_value += 3
+
+                        asm_v += hex_code + text_code
+
+                        # save on RAM value return:
+                        compiller_data_run.not_used_ram += 1
+                        var_obj = smart_obj.SmartVariable(f"!smart_return_value{compiller_data_run.not_used_ram}", adress_var)
+                        var_adress = var_obj.ram_adress
+
+                        make_variable(var_obj)
+
+                        asm_v += f"8D {adress_for_RAM(var_adress)} "
+
+                        counter_adress_value += 3
+
+                        value = value.replace(part, f"..{var_adress} ")
+    
+                        #return call_code
+    
+                
+
+        asm_v += eval_value()
 
         if add_adress and not recursiv_value:
             adress_conter += asm_v.count(" ") + asm_v.count("!smart_call_func|") * 3
@@ -1493,13 +1522,13 @@ def compile_smarty(
 
             function_mode["smart_func"].return_value = True
 
-            # save new A at RAM
+            """# save new A at RAM
             code_compile += f"8D {compiller_data_run.SYS_ADRESS['ReturnValue']}"
             adress_conter += 3
 
             # reuse the old value for A
             code_compile += f"AD {compiller_data_run.SYS_ADRESS['SaveA']}"
-            adress_conter += 3
+            adress_conter += 3"""
 
             return_line = True
 
