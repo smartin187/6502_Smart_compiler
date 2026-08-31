@@ -1570,10 +1570,6 @@ def compile_smarty(
             code_compile = code_compile.replace("! smart:break", adress_for_RAM(CODE_ADRESSE + address_counter))
             code_compile = code_compile.replace("! smart:continue ", start_loop_for + " ")
 
-
-            #else:
-            #    raise NotImplementedError("Not implemented for loop.")
-
         elif line.lstrip().startswith("break"):
             if not on_loop:
                 smart_error("Error: 'break' keyword can only be used inside a loop.")
@@ -1935,7 +1931,6 @@ def compile_smarty(
         # progress bar
         advencement = int(line_counter / len(code) * PROGRESS_BAR_LEN)
         print(f"[{PROGRESS_BAR_CHAR['completed'] * advencement}{PROGRESS_BAR_CHAR['not_completed'] * (PROGRESS_BAR_LEN - advencement)}]", end="\r")
-
 
     # ------------------------------- End compille loop ----------------------------------------------
 
