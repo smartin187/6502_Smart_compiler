@@ -60,7 +60,8 @@ def compile_smarty(
         bin_outpout_file:bool=False,
         module_name:str="*", # module name is '*' if main module.
         regroup_bytes:int=-1, # for the render of code. -1 for 1 line of hex, other value for regroup bytes in lines.
-        first_call:bool=False
+        first_call:bool=False,
+        try_mode:bool=False
     ) -> str:
     """Start the compile from file."""
     global line_of_instruction, code_line#, warning_endline
@@ -95,21 +96,30 @@ def compile_smarty(
         Add to adress conter if the argument is True
         """
         nonlocal address_counter
-        code_compile = ""
+        if try_mode:
+            code_compile = "!  smart_error_try "
+            if add_to_adress_conter:
+                address_counter += 3
 
-        compiller_data_run.need_error = set_need_error
+            return code_compile
 
-        code_compile += "A9 45 20 EF FF "     # print E
-        if add_to_adress_conter:
-            address_counter += 5
+        else:
+            
+            code_compile = ""
 
-        code_compile += set_on_A_value(error_value, add_adress=add_to_adress_conter)
+            compiller_data_run.need_error = set_need_error
 
-        code_compile += "4C !  smart_runtime_error"    # set 2 space on place holder for counting adress
-        if add_to_adress_conter:
-            address_counter += 3
+            code_compile += "A9 45 20 EF FF "     # print E
+            if add_to_adress_conter:
+                address_counter += 5
 
-        return code_compile
+            code_compile += set_on_A_value(error_value, add_adress=add_to_adress_conter)
+
+            code_compile += "4C !  smart_runtime_error"    # set 2 space on place holder for counting adress
+            if add_to_adress_conter:
+                address_counter += 3
+
+            return code_compile
 
     def line_of_instruction(nb_instruction:int) -> tuple[int, str]:
         """Return the number of line and the line of the instruction."""
@@ -1304,6 +1314,57 @@ def compile_smarty(
             address_counter += new_adress
             code_compile += code_else
 
+        elif line.lstrip().startswith("try"):
+            line = line.replace(" ", "")
+            if not line.endswith("{"):
+                smart_error("On try bloc, '{' excepted.")
+            
+            bloc_code, bloc_line = get_bloc(line_counter, code, error_message="On try bloc")
+
+            jump_line = bloc_line - line_counter - 1
+
+            code_try = compile_smarty(
+                make_file=False,
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                try_mode=True
+            )
+
+            new_adress = code_try.count(" ") + code_try.count("!smart_call_func|") * 3 + code_try.count("!smart_tmp:goto|") * 3 - code_try.count("!smart_tmp:goto|")
+
+            address_counter += new_adress
+
+            adress_except = adress_for_RAM(CODE_ADRESSE + address_counter + 3)  # + 3 because after try bloc JMP
+
+            code_try = code_try.replace("!  smart_error_try ", f"4C {adress_except} ")
+
+            code_try += f"4C ! smart_end_try "
+            address_counter += 3
+
+            code_compile += code_try
+        
+        elif line.lstrip().startswith("except"):
+            line = line.replace(" ", "")
+            if not line.endswith("{"):
+                smart_error("On except bloc, '{' excepted.")
+            
+            bloc_code, bloc_line = get_bloc(line_counter, code, error_message="On except bloc")
+
+            jump_line = bloc_line - line_counter - 1
+
+            code_except = compile_smarty(
+                make_file=False,
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
+                CODE_ADRESSE=CODE_ADRESSE + address_counter
+            )
+
+            new_adress = code_except.count(" ") + code_except.count("!smart_call_func|") * 3 + code_except.count("!smart_tmp:goto|") * 3 - code_except.count("!smart_tmp:goto|")
+
+            address_counter += new_adress
+            code_compile += code_except
+            code_compile = code_compile.replace("! smart_end_try ", adress_for_RAM(CODE_ADRESSE + address_counter) + " ")
+            
+
         elif line.lstrip().startswith("while"):
             line_2 = replace_code(line, " ", "")[5:]
 
@@ -1452,8 +1513,6 @@ def compile_smarty(
 
             except IndexError:
                 smart_error(f"Expected value after `error`: '{line}'")
-
-            #verryfing_adress_conter(adress_conter, code_compile)
 
             code_compile += make_error(error_value)
 
