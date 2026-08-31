@@ -1024,8 +1024,14 @@ def run_smart() -> None:
 
                     run_step = int(adress, base=16) - START + 1
 
-                case "4C":   # goto
-                    goto = code[run_step + 2] + code[run_step + 1]
+                case "4C" | "6C":   # JMP
+                    if run == "4C":
+                        goto = code[run_step + 2] + code[run_step + 1]
+                    else:
+                        goto_ptr = code[run_step + 2] + code[run_step + 1]
+                        goto_1 = ram[goto_ptr]
+                        goto_2 = ram[hex(int(goto_ptr, base=16) + 1)[2:].upper().zfill(4)]
+                        goto = goto_2 + goto_1
 
                     if goto == "FF1F":  # routine Get Line of woz monitor
                         if not no_wozm:

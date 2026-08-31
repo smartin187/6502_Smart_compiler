@@ -62,7 +62,8 @@ def compile_smarty(
         module_name:str="*", # module name is '*' if main module.
         regroup_bytes:int=-1, # for the render of code. -1 for 1 line of hex, other value for regroup bytes in lines.
         first_call:bool=False,
-        try_mode:bool=False
+        try_mode:bool=False,
+        thread_mode:list[bool, str, bool, bool]=[False, "", False, False]
     ) -> str:
     """Start the compile from file."""
     global line_of_instruction, code_line#, warning_endline
@@ -77,12 +78,7 @@ def compile_smarty(
         def smartInput() -> tuple[str, int]:
             """Add an input function. return a tuple with hex code and len of hex code."""
             global need_input
-            #nonlocal code_compile, adress_conter
             need_input = True
-
-            #code_compile += "20 !  smart_input"     # set 2 space on placeholder for counting adress
-
-            #adress_conter += 3
             return "20 !  smart_input", 3
 
         BUILT_IN_NAME_RETURN = ["input"]
@@ -1232,7 +1228,8 @@ def compile_smarty(
             code_if = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                thread_mode=thread_mode
             )
 
             new_adress = code_if.count(" ") + code_if.count("!smart_call_func|") * 3 + code_if.count("!smart_tmp:goto|") * 3 - code_if.count("!smart_tmp:goto|")
@@ -1284,7 +1281,8 @@ def compile_smarty(
             code_elif = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                thread_mode=thread_mode
             )
 
             new_adress = code_elif.count(" ") + code_elif.count("!smart_call_func|") * 3 + code_elif.count("!smart_tmp:goto|") * 3 - code_elif.count("!smart_tmp:goto|")
@@ -1320,7 +1318,8 @@ def compile_smarty(
             code_else = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                thread_mode=thread_mode
             )
 
             new_adress = code_else.count(" ") + code_else.count("!smart_call_func|") * 3 + code_else.count("!smart_tmp:goto|") * 3 - code_else.count("!smart_tmp:goto|")
@@ -1345,7 +1344,8 @@ def compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter,
-                try_mode=True
+                try_mode=True,
+                thread_mode=thread_mode
             )
 
             new_adress = code_try.count(" ") + code_try.count("!smart_call_func|") * 3 + code_try.count("!smart_tmp:goto|") * 3 - code_try.count("!smart_tmp:goto|")
@@ -1381,7 +1381,8 @@ def compile_smarty(
             code_except = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                thread_mode=thread_mode
             )
 
             new_adress = code_except.count(" ") + code_except.count("!smart_call_func|") * 3 + code_except.count("!smart_tmp:goto|") * 3 - code_except.count("!smart_tmp:goto|")
@@ -1390,6 +1391,58 @@ def compile_smarty(
             code_compile += code_except
             code_compile = code_compile.replace("! smart_end_try ", adress_for_RAM(CODE_ADRESSE + address_counter) + " ")
             
+        elif line.lstrip().startswith("thread"):
+
+            line = line.strip()
+            line = line.replace(" ", "")
+            line = line[len("thread"):]
+
+            line = line.replace(" ", "")
+            if not line.endswith("{"):
+                smart_error("On thread bloc, '{' excepted.")
+            
+            line = line[:-1]
+
+            shared_stack_mode = False  # if true, the 2 thread can call function but the with beetween the thread don't active
+            if line.replace(" ", "") == "stack":
+
+                shared_stack_mode = True
+                
+                 #   smart_error(f"Uknow option '{options}' on thread.")
+
+            if thread_mode[0]:
+                smart_error("Thread error: you can't have more 2 threads.")
+
+            bloc_code, bloc_line = get_bloc(line_counter, code, error_message="On thread bloc")
+
+            jump_line = bloc_line - line_counter - 1
+
+            code_thread = compile_smarty(
+                make_file=False,
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
+                CODE_ADRESSE=CODE_ADRESSE + address_counter + 10,
+                thread_mode=[True, "second", True, shared_stack_mode]
+            )
+
+            # on the main ptr, set a first adress
+            code_compile += f"A9 !smart_adress_main_thread_1 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_1']} "  # first byte
+            code_compile += f"A9 !smart_adress_main_thread_2 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_2']} "  # second byte
+            address_counter += 10
+
+            new_adress = code_thread.count(" ") + code_thread.count("!smart_call_func|") * 3 + code_thread.count("!smart_tmp:goto|") * 3 - code_thread.count("!smart_tmp:goto|")
+
+            address_counter += new_adress
+            code_compile += code_thread
+
+            thread_mode[0] = True
+            thread_mode[1] = "main"
+            thread_mode[2] = False
+
+            main_adress_1, main_adress_2 = adress_for_RAM(CODE_ADRESSE + address_counter).split(" ")
+            code_compile = code_compile.replace("!smart_adress_main_thread_1", main_adress_1)
+            code_compile = code_compile.replace("!smart_adress_main_thread_2", main_adress_2)
+
+
 
         elif line.lstrip().startswith("while"):
             line_2 = replace_code(line, " ", "")[5:]
@@ -1413,7 +1466,8 @@ def compile_smarty(
             code_while = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                thread_mode=thread_mode
             )
 
             new_adress = code_while.count(" ") + code_while.count("!smart_call_func|") * 3 + code_while.count("!smart_tmp:goto|") * 3 - code_while.count("!smart_tmp:goto|")
@@ -1501,7 +1555,8 @@ def compile_smarty(
             code_for = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code_for, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                thread_mode=thread_mode
             )
 
             new_adress = code_for.count(" ") + code_for.count("!smart_call_func|") * 3 + code_for.count("!smart_tmp:goto|") * 3 - code_for.count("!smart_tmp:goto|")
@@ -1514,10 +1569,6 @@ def compile_smarty(
 
             code_compile = code_compile.replace("! smart:break", adress_for_RAM(CODE_ADRESSE + address_counter))
             code_compile = code_compile.replace("! smart:continue ", start_loop_for + " ")
-
-
-            #else:
-            #    raise NotImplementedError("Not implemented for loop.")
 
         elif line.lstrip().startswith("break"):
             if not on_loop:
@@ -1806,6 +1857,9 @@ def compile_smarty(
 
             elif function_name in function_name_usr:
 
+                if thread_mode[0] and thread_mode[1] != "main" and not(thread_mode[3]):
+                    smart_error("Can't call a function on second thread: the shared stack mode is not enlabel.")
+
                 if function_name_usr[function_name].return_value:
                     logging.warning(f"Function '{function_name}' is a return-function but was used as a function.")
 
@@ -1834,6 +1888,24 @@ def compile_smarty(
 
         after_try_bloc = control_except(after_try_bloc, on_try_bloc, line_counter)
 
+        # --- thread ---
+
+        if thread_mode[0]:
+            if thread_mode[2]:
+                # save the adress of next operation
+                next_operation_adress_1, next_operation_adress_2 = adress_for_RAM(CODE_ADRESSE + address_counter + 13).split(" ")
+                code_compile += f"A9 {next_operation_adress_1} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if thread_mode[1] == 'main' else 'second_thread_ptr_1']} " # first byte of adress
+                code_compile += f"A9 {next_operation_adress_2} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_2' if thread_mode[1] == 'main' else 'second_thread_ptr_2']} " # second byte of adress
+
+                address_counter += 10
+
+                # go to the other thread
+                code_compile += f"6C {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if not thread_mode[1] == 'main' else 'second_thread_ptr_1']} "
+                address_counter += 3
+            
+            else:
+                thread_mode[2] = True
+
         if not(compiller_data_run.double_space_error) and not verryfing_adress_conter_no_print(address_counter, code_compile):
 
             compiller_data_run.double_space_error = True
@@ -1859,7 +1931,6 @@ def compile_smarty(
         # progress bar
         advencement = int(line_counter / len(code) * PROGRESS_BAR_LEN)
         print(f"[{PROGRESS_BAR_CHAR['completed'] * advencement}{PROGRESS_BAR_CHAR['not_completed'] * (PROGRESS_BAR_LEN - advencement)}]", end="\r")
-
 
     # ------------------------------- End compille loop ----------------------------------------------
 
@@ -1888,10 +1959,13 @@ def compile_smarty(
 
             smart_func = function_name_usr[function]
 
+            function_thread_mode = thread_mode if thread_mode[3] else [False, "", False, False]
+
             function_name_usr[function].code_compile_f = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":smart_func, "if_mode":False},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter + 1
+                CODE_ADRESSE=CODE_ADRESSE + address_counter + 1,
+                thread_mode=function_thread_mode
             )
 
         # set the function:

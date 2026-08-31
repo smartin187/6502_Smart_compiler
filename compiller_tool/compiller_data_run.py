@@ -12,13 +12,15 @@ Have:
 # constent -------------------------------
 
 SYS_ADRESS = {
-    #"SaveA":"00 00 ",       # obsollette ! To remove
-    #"ReturnValue":"01 00 ", # obsolette ! To remove
+    "main_thread_ptr_1": "00 00", # the pointer of main thread operation (used only on threading mode).
+    "main_thread_ptr_2": "01 00", # the second byte of ptr
     #"CallElse":"02 00 ",    # obsolette ! To remove
     "MathOP":"03 00 ",
     "SaveStr":"04 00 ",     # SaveStr start at EB 00 and have a len of 21 (end at 0x19 00)
     "SaveStrCMP":"19 00 ",  # SaveStrCMP start at 0x19 00 and have a len of 21 (end at 0x32 00) - Used to save a str for compare (if, ==...)
     "SaveAToIndex":"32 00 ",   # SaveAToIndex start at 0x32 00
+    "second_thread_ptr_1": "48 00", # the pointer of second thread operation (used only on thread mode).
+    "second_thread_ptr_2": "49 00" # the second byte of ptr
 }
 
 SMART_ERRORS = {     # the code error for Smart

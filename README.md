@@ -818,6 +818,90 @@ except{;
 
 > Warning: if you call a function for `try` bloc, and this function have a runtime error, the program don't go to the `except` bloc...
 
+#### Multi-threading
+
+> Carful: this funcionality is in developpement. Some bug will be fix...
+
+You can have multi-threading with Smart.
+
+You can have only the main thread and a second thread.
+
+Sintaxe:
+
+```Smart
+thread{;
+    // code of second thread
+}
+
+// main thread
+```
+
+When the thread is declared, it start.
+
+For exemple:
+
+```Smart
+thread{;
+    while True{;
+        print: "WAITING...\r";
+    }
+}
+for .i in |0|10|1|{;
+    print: .i + '0';
+}
+```
+
+By default, the second thread can't call a function: the second thread don't have a stack. Only main thread can call function. But you can set the shared stack mode:
+
+```Smart
+void f{;
+    print: "FUNCTION F\r";
+}
+
+void g{;
+    print: "FUNCTION G\r";
+}
+
+thread stack{;
+    while True{;
+        f:;
+    }
+}
+
+while True{;
+    g:;
+}
+```
+
+With shared stack, the second thread can call a function. **But when a thread call a function, the other thread are stopped.** When the function is finished, the other thread restart.
+
+So you can use the shared stack mode, but use fast time function...
+
+
+##### Performance
+
+The performances of the multi-threading are not good on MOS6502. A lot of processor time is used for swith threads.
+
+Moreover, the binary code can be very big.
+
+> Use multi-threading only if you need it.
+
+###### Processor time (aproximative)
+
+**No multi-threading**:
+- 100% of processor (1MHz) for main thread
+
+**Multi-threading**:
+
+> For manage thread, need `16` time for all Smart operation (line of code and call function).
+
+> A Smart operation: very variable, on average `8` time. Can be more if the operation have string.
+
+_Aproximative processor time:_
+- ~ 70% (0,7MHz) for manage thread
+- ~ 15% (0,15MHz) for main thread
+- ~ 15% (0,15MHz) for second thread
+
 ## Compile Smart code
 
 Once you have your code, the first option is to compile it so it can run on a Smarty Kit (code is theoretically compatible with an Apple 1).
