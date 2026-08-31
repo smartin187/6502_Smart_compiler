@@ -2231,6 +2231,30 @@ OK2"""
             """,
             output="TRYEXCEPTEE"
         ),
+        Test(
+            "Try except block on try excpet",
+            code="""
+                try{;
+                    print: '1';
+                    try{;
+                        print: '2';
+                        error 'E';
+                        }
+                    except{;
+                        print: '3';
+                        }
+                    print: '4';
+                    error 'E';
+                    }
+
+                except{;
+                    print: '5';
+                    }
+
+                print: '6';
+            """,
+            output="123456"
+        ),
         # --- error ---
         Test(
             "Try without bloc",
