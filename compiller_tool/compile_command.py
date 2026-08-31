@@ -29,7 +29,7 @@ def get_line_debug(line:str) -> str:
             else:
                 line_debug.append("?")
 
-        # make hex prorgam:
+        # make hex program:
         hex_programm = []
         for char in line_debug:
             hex_programm.append(f"A9 {hex(ord(char))[2:].upper()} 20 EF FF ")
@@ -37,11 +37,11 @@ def get_line_debug(line:str) -> str:
         hex_programm.append(f"A9 0D 20 EF FF ") # set a \r at the end
 
         return "".join(hex_programm)
-    
+
     return ""
 
 def compiletime_command(line:str, smart_var:dict) -> None:
-    """This function is for use the compiletime command."""
+    """This function is used to process the compiletime command."""
 
     line = line[len("compiletime "):].strip()
 

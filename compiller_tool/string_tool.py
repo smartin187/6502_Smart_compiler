@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This module have function for operation with string.
+This module has functions for operations with strings.
 Function:
 - split_code
 - replace_code
@@ -9,7 +9,7 @@ Function:
 - good_variable_name
 - EscapeChar
 
-Constent:
+Content:
 - SMART_KEYWORD (dict)
 """
 import logging
@@ -17,7 +17,7 @@ from compiller_tool.color_tool import Colors
 from compiller_tool.smart_exception import SmartError
 
 class EscapeChar:
-    """The escape char for str and char value."""
+    """The escape characters for str and char values."""
     ESCAPE_CHAR = {"\\r":"\r", "\\\"":"\"", "\\'":"'"}        # the escape characters for str and char (\r...)
     DOUBLE_SLASH = "\\\\"
     PLACE_HOLDER_SLASH = "`smart_double_slash"                  # set ` because this character is not used in str / char value.
@@ -30,10 +30,10 @@ def split_code(
         string:tuple[tuple[str, str], ...]=(("'", "'"), ('"', '"'), ("[", "]")),
         max_split:int=0
     ) -> list[str]:
-    """Split a code, but ignore sep if it is in a str or char Smart Value.
-    arg max for set the max split. If max=0, no limit of split."""
+    """Split code, but ignore sep if it is in a str or char Smart Value.
+    The arg max sets the max split. If max=0, there is no limit to the split."""
     def char_is_sep(i:int) -> bool | str:
-        """Return the sep if char is in sep, False else."""
+        """Return the sep if char is in sep, False otherwise."""
         for s in sep:
             if code[i:i+len(s)] == s:
                 return s
@@ -43,7 +43,7 @@ def split_code(
 
     if code == "":
         return []
-    
+
     on_str = False
     open_str = ""
 
@@ -89,7 +89,7 @@ def split_code(
             else:
                 new_element.append(char)
 
-        
+
         else:
             if char == open_str:
 
@@ -105,14 +105,14 @@ def split_code(
 
                 if counter % 2 == 0:
                     on_str = False
-            
+
             new_element.append(char)
 
             last_char = char
-    
+
     if new_element != []:
         split.append("".join(new_element))
-    
+
     return split
 
 
@@ -124,20 +124,20 @@ def replace_code(
         max_replace: int = -1
     ) -> str:
     """Replace a substring in code, but ignore if it is in a str or char Smart Value.
-    arg count for set the max replacements. If count=-1, no limit of replacements."""
+    The arg count sets the max replacements. If count=-1, there is no limit to the replacements."""
 
     if code == "" or old == "":
         return code
-    
+
     on_str = False
     open_str = ""
     result = []
     i = 0
     replacements = 0
-    
+
     while i < len(code):
         char = code[i]
-        
+
         if not on_str:
             for open_quote, close_quote in string:
                 if char == open_quote:
@@ -161,10 +161,10 @@ def replace_code(
         else:
             if char == open_str:
                 on_str = False
-            
+
             result.append(char)
             i += 1
-    
+
     return "".join(result)
 
 
@@ -179,14 +179,14 @@ def in_code(
 
     if code == "" or substring == "":
         return False
-    
+
     on_str = False
     open_str = ""
     i = 0
-    
+
     while i < len(code):
         char = code[i]
-        
+
         if not on_str:
             for open_quote, close_quote in string:
                 if char == open_quote:
@@ -201,20 +201,20 @@ def in_code(
         else:
             if char == open_str:
                 on_str = False
-            
+
             i += 1
-    
+
     return False
 
-counter_adress_value = 0        # the relative adress used by set_one_A_value. Be carful with this value.
+counter_adress_value = 0        # the relative address used by set_one_A_value. Be careful with this value.
 
 SMART_KEYWORD = ("void", "if", "elif", "else", "while", "break", "continue", "error", "for", "compiletime", "import")
 
 def good_variable_name(name:str) -> bool:
-        """Return True if the name of variable is good, False else.
-        An variable name can have :
-        - Any letter lower (a-z). Special letter (éèëù...) are accepted.
-        - Any number 0-9
+        """Return True if the name of the variable is good, False otherwise.
+        A variable name can have:
+        - Any lowercase letter (a-z). Special letters (éèëù...) are accepted.
+        - Any digit 0-9
         - underscore _"""
 
         if name in SMART_KEYWORD:
@@ -230,7 +230,7 @@ def good_variable_name(name:str) -> bool:
         return True
 
 def get_char_from_str(string:str) -> list[str]:
-    """Return a list of int, the ascii code of char on the string, if the char is \r, \", \', the element of list have it."""        
+    """Return a list of the characters of the string. If the char is \r, \", \', the element of the list has the escaped form."""
     result = []
 
     counter = 0
@@ -241,7 +241,7 @@ def get_char_from_str(string:str) -> list[str]:
 
         if char == "'":
             result.append("\\'")
-        
+
         elif char == "\"":
             result.append('\\"')
 
@@ -254,9 +254,9 @@ def get_char_from_str(string:str) -> list[str]:
 
 
 def get_bloc(line_conter:int, code:list[str], error_message:str="") -> tuple[str, int]:
-    """Return the content of bloc {}
-    
-    error_message is the text for info about error."""
+    """Return the content of block {}
+
+    error_message is the text used for info about the error."""
     # get the code of function:
 
     funciton_line = line_conter + 1
@@ -293,27 +293,27 @@ def get_bloc(line_conter:int, code:list[str], error_message:str="") -> tuple[str
 
     except IndexError:
         raise SmartError(error_message + ", brackets '{' was never closed.", line_conter)
-    
+
     return func_code, funciton_line
 
 def get_int_adress_from_str(string:str) -> int:
-    """Return the int value of adress from a str. The str adress is in hex and in little endian (example: 00 04 for 0x0400)"""
+    """Return the int value of the address from a str. The str address is in hex and in little endian (example: 00 04 for 0x0400)"""
     string = string.replace(" ", "")
     if len(string) != 4:
         raise ValueError(f"Adress str must have 4 char, not {len(string)} char.")
-    
+
     return int(string[2:4] + string[0:2], 16)
 
 def get_hex_from_int(value:int) -> str:
-    """Return the hex value of int, on 2 character (1 byte)."""
+    """Return the hex value of int, on 2 characters (1 byte)."""
     hex_value = hex(value)[2:].upper().zfill(2)
 
     return hex_value
 
 
 def adress_for_RAM(adress:int) -> str:
-    """Return the RAM adress one hex.
-    Exemple :
+    """Return the RAM address in hex.
+    Example:
     768 -> 00 03"""
     adress_RAM = hex(adress)[2:].upper()
 
@@ -327,9 +327,9 @@ def get_str(string:str, line_conter:int=0) -> str:
 
     string = string.strip()
 
-    if not string.startswith('"'):  # error if function was called in other value to str
+    if not string.startswith('"'):  # error if the function was called on a value other than a str
         raise SmartError(f"Value '{string}' is not a str value.", line_conter)
-    
+
 
     str_value = ""
     escape_char = False
@@ -338,16 +338,16 @@ def get_str(string:str, line_conter:int=0) -> str:
     for char in string[1:]:
         if end: # a char is after the " for close
             raise SmartError(f"Invalid syntaxe after str value: '{string}'", line_conter)
-        
+
         if char == '"' and not escape_char:
             end = True
             continue
-            
+
         str_value += char
 
         if char == "\\":
             escape_char = not escape_char
-        
+
         else:
             escape_char = False
 
@@ -359,7 +359,7 @@ def get_str(string:str, line_conter:int=0) -> str:
         replace = EscapeChar.ESCAPE_CHAR[char]
 
         str_value = str_value.replace(char, replace)
-    
+
     str_value = str_value.replace(EscapeChar.PLACE_HOLDER_SLASH, "\\")
 
 

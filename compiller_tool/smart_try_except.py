@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """
-This module have function for try except of Smart.
+This module has functions for try/except in Smart.
 """
 
 from compiller_tool.smart_exception import SmartError
 
 def control_except(after_try_bloc: bool, on_try_bloc: bool, line_counter:int) -> int:
     """
-    This function is for test if a except bloc is after a try bloc.
+    This function is used to test if an except block follows a try block.
     """
     if after_try_bloc:
         after_try_bloc = False
@@ -19,5 +19,5 @@ def control_except(after_try_bloc: bool, on_try_bloc: bool, line_counter:int) ->
 
     return after_try_bloc
 
-    
+
 
