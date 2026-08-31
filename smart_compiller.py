@@ -1233,7 +1233,8 @@ def compile_smarty(
             code_if = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                thread_mode=thread_mode
             )
 
             new_adress = code_if.count(" ") + code_if.count("!smart_call_func|") * 3 + code_if.count("!smart_tmp:goto|") * 3 - code_if.count("!smart_tmp:goto|")
@@ -1285,7 +1286,8 @@ def compile_smarty(
             code_elif = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                thread_mode=thread_mode
             )
 
             new_adress = code_elif.count(" ") + code_elif.count("!smart_call_func|") * 3 + code_elif.count("!smart_tmp:goto|") * 3 - code_elif.count("!smart_tmp:goto|")
@@ -1321,7 +1323,8 @@ def compile_smarty(
             code_else = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                thread_mode=thread_mode
             )
 
             new_adress = code_else.count(" ") + code_else.count("!smart_call_func|") * 3 + code_else.count("!smart_tmp:goto|") * 3 - code_else.count("!smart_tmp:goto|")
@@ -1346,7 +1349,8 @@ def compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter,
-                try_mode=True
+                try_mode=True,
+                thread_mode=thread_mode
             )
 
             new_adress = code_try.count(" ") + code_try.count("!smart_call_func|") * 3 + code_try.count("!smart_tmp:goto|") * 3 - code_try.count("!smart_tmp:goto|")
@@ -1382,7 +1386,8 @@ def compile_smarty(
             code_except = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                thread_mode=thread_mode
             )
 
             new_adress = code_except.count(" ") + code_except.count("!smart_call_func|") * 3 + code_except.count("!smart_tmp:goto|") * 3 - code_except.count("!smart_tmp:goto|")
@@ -1450,7 +1455,8 @@ def compile_smarty(
             code_while = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                thread_mode=thread_mode
             )
 
             new_adress = code_while.count(" ") + code_while.count("!smart_call_func|") * 3 + code_while.count("!smart_tmp:goto|") * 3 - code_while.count("!smart_tmp:goto|")
@@ -1538,7 +1544,8 @@ def compile_smarty(
             code_for = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code_for, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                thread_mode=thread_mode
             )
 
             new_adress = code_for.count(" ") + code_for.count("!smart_call_func|") * 3 + code_for.count("!smart_tmp:goto|") * 3 - code_for.count("!smart_tmp:goto|")
@@ -1946,7 +1953,8 @@ def compile_smarty(
             function_name_usr[function].code_compile_f = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":smart_func, "if_mode":False},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter + 1
+                CODE_ADRESSE=CODE_ADRESSE + address_counter + 1,
+                thread_mode=thread_mode
             )
 
         # set the function:
