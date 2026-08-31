@@ -2,7 +2,7 @@
 
 """
 The Smart emulator (for Apple1/SmartyKit 6502).
-Run Smart code one a emulator.
+Run Smart code on an emulator.
 """
 
 
@@ -53,12 +53,12 @@ if GUI_MODE:
 else:
     normal_speed = "Normal"
 
-no_wozm = False     # used on the test: if true, no message box if the programme return for woz monitor
+no_wozm = False     # used during testing: if true, no message box is shown if the program returns to the Woz monitor
 
 class MessageUser:
-    """Message for the user. Can be graphic message if GUI_MODE else on the console."""
+    """Message for the user. Can be a graphic message if GUI_MODE else on the console."""
     def show_message_user(type_message:str, title:str, message:str, detail:str="") -> None:
-        """Show a message for user. If GUI_MODE is True, use messagebox, else, print on console."""
+        """Show a message for the user. If GUI_MODE is True, use messagebox, else, print on console."""
         if GUI_MODE:
             match type_message:
                 case "error":
@@ -76,15 +76,15 @@ class MessageUser:
             input(f"{head}: {Colors.BOLD}{message}{Colors.RESET}\n{detail}\n{Colors.GREEN}Press enter to continue...{Colors.RESET}")
 
     def show_error(title:str, message:str, detail:str="") -> None:
-        """Show an error message for user. If GUI_MODE is True, use messagebox, else, print on console."""
+        """Show an error message for the user. If GUI_MODE is True, use messagebox, else, print on console."""
         MessageUser.show_message_user("error", title, message, detail)
 
     def show_warning(title:str, message:str, detail:str="") -> None:
-        """Show a warning message for user. If GUI_MODE is True, use messagebox, else, print on console."""
+        """Show a warning message for the user. If GUI_MODE is True, use messagebox, else, print on console."""
         MessageUser.show_message_user("warning", title, message, detail)
 
     def show_info(title:str, message:str, detail:str="") -> None:
-        """Show an info message for user. If GUI_MODE is True, use messagebox, else, print on console."""
+        """Show an info message for the user. If GUI_MODE is True, use messagebox, else, print on console."""
         MessageUser.show_message_user("info", title, message, detail)
 
 on_test = False
@@ -93,7 +93,7 @@ open_from_asm = False
 output_test = ""    # used only on test mode
 
 def control_adress(address: int, type_jump: str) -> None:
-    """If the adress is outside the programme, set a warning to user and stop the programme."""
+    """If the address is outside the program, show a warning to the user and stop the program."""
     if address >= len(code):
         MessageUser.show_error("Error", "Address is outside the programme.", detail=f"Caused by a {type_jump} instruction.\nAdress outside: {hex(address + 0x400).upper()}")
 
@@ -103,7 +103,7 @@ if __name__ == "__main__":
         file_name = ""
         code = ""
         def open_smart() -> None:
-            """Use filedialoge for open a file."""
+            """Use filedialog to open a file."""
             global file_name, code, open_from_asm
 
             path = filedialog.askopenfilename(defaultextension="sma", filetypes=[("Smart source code", "*.sma"), ("Assembly", "*.asm")])
@@ -265,8 +265,8 @@ if GUI_MODE:
     frame_option.pack()
 
 def print_on_text(text:str, sys_message:bool=False, error:bool=False) -> None:
-    """Insert on the scolledtext the text.
-    If error = True, use tag for set the text one red."""
+    """Insert the text into the scrolledtext.
+    If error = True, use a tag to set the text to red."""
     global output_test
     text = text.replace("\r", "\n")
 
@@ -291,7 +291,7 @@ def print_on_text(text:str, sys_message:bool=False, error:bool=False) -> None:
 
 if GUI_MODE:        # set the button for ram and code
     def see_memory() -> None:
-        """Open a window for see the memory (RAM, accumulator, carry_flag)."""
+        """Open a window to see the memory (RAM, accumulator, carry_flag)."""
         def update_memory() -> None:
             """Update the listbox for memory"""
             # RAM
@@ -357,7 +357,7 @@ if GUI_MODE:        # set the button for ram and code
         frame_RAM = tk.LabelFrame(window_memory, text="RAM")
 
         def edit_ram(event:tk.Event) -> None:
-            """Open a window for edit the RAM value."""
+            """Open a window to edit the RAM value."""
             def validate() -> None:
                 """Edit RAM with the new value."""
                 new_value = entry_value.get()
@@ -385,7 +385,7 @@ if GUI_MODE:        # set the button for ram and code
             button_validate.pack()
 
         def edit_accumulator(event:tk.Event) -> None:
-            """Open a window for edit the accumulator value."""
+            """Open a window to edit the accumulator value."""
             def validate() -> None:
                 """Edit accumulator with the new value."""
                 new_value = entry_value.get()
@@ -442,7 +442,7 @@ if GUI_MODE:        # set the button for ram and code
         frame_flags = tk.LabelFrame(window_memory, text="Flags (6502)")
 
         def edit_flag(event:tk.Event) -> None:
-            """Open a window for edit the flag value."""
+            """Open a window to edit the flag value."""
             def validate() -> None:
                 """Edit flag with the new value."""
                 new_value = entry_value.get()
@@ -498,7 +498,7 @@ if GUI_MODE:        # set the button for ram and code
         label_stack_ptr.pack()
 
         def edit_stack_ptr() -> None:
-            """Open a window for edit the stack pointer value."""
+            """Open a window to edit the stack pointer value."""
             def validate() -> None:
                 """Edit the stack pointer with the new value."""
                 global stack_ptr
@@ -543,7 +543,7 @@ if GUI_MODE:        # set the button for ram and code
     one_pause = False
 
     def window_code() -> None:
-        """Open a window for see the code and see the step."""
+        """Open a window to see the code and see the step."""
         def update_code() -> None:
             """Update the listbox for code"""
             string_run.set(f"Adress running: 0x{hex(0x400 + run_step)[2:].upper() if not end_run else 'End of code'}")
@@ -594,7 +594,7 @@ if GUI_MODE:        # set the button for ram and code
         scrollbar_code.config(command=list_code.yview)
 
         def edit_code(event:tk.Event) -> None:
-            """Open a window for edit the code."""
+            """Open a window to edit the code."""
             def validate() -> None:
                 """Edit code with the new value."""
                 new_value = entry_value.get()
@@ -668,7 +668,7 @@ if GUI_MODE:        # set the button for ram and code
         entry_goto.grid(column=0, row=0)
 
         def goto_adress() -> None:
-            """Go to the step of the code with the adress in entry_goto."""
+            """Go to the step of the code with the address in entry_goto."""
             global run_step
 
             if end_run:
@@ -696,7 +696,7 @@ if GUI_MODE:        # set the button for ram and code
 
 
     def emulator_setting() -> None:
-        """Open a window for the setting of emulator"""
+        """Open a window for the emulator settings"""
         def close_setting() -> None:
             """Destroy the window and set setting."""
             global normal_speed
@@ -726,7 +726,7 @@ if GUI_MODE:        # set the button for ram and code
     button_setting.grid(column=2, row=0)
 
     def pressed_key(event:tk.Event) -> str:
-        """When a key are pressed, set ad D010 and D011 adress the key."""
+        """When a key is pressed, set it at address D010 and D011."""
         char = event.char.upper()
 
         if char not in ALLOW_CHAR:
@@ -784,7 +784,7 @@ stop_run = _STOP_RUN
 
 def set_on_stack(value: str) -> None:
     """Set a value on the stack.
-    The stack is on memort at 0x100 - 0x1FF."""
+    The stack is in memory at 0x100 - 0x1FF."""
     global stack_ptr
 
     adress_stack = 0x100 + stack_ptr
@@ -800,7 +800,7 @@ def set_on_stack(value: str) -> None:
         stop_run = True
 
 def get_from_stack() -> str:
-    """Get the value from the scack pointer."""
+    """Get the value from the stack pointer."""
     global stack_ptr
 
     stack_ptr += 1
@@ -911,7 +911,7 @@ def run_smart() -> None:
                     else:
                         adress = code[run_step + 2] + code[run_step + 1]
 
-                    if 0x300 <= int(adress, base=16) >= 0x400:    # write one the programme
+                    if 0x300 <= int(adress, base=16) >= 0x400:    # write on the program
                         try:
                             code[int(adress, base=16) - START + 1] = accumulator["A"]
                         except:
@@ -1018,7 +1018,7 @@ def run_smart() -> None:
                 case "60":
                     #run_step = return_ardess
 
-                    adress = get_from_stack() + get_from_stack()    # the 2 bytes of adress
+                    adress = get_from_stack() + get_from_stack()    # the 2 bytes of address
 
                     #adress = adress[2:] + adress[:2]  # reverse the bytes
 
@@ -1289,7 +1289,7 @@ if __name__ == "__main__":
 
 
 def start_test(test_code:str) -> str:
-    """Used by test.py for test a funcionalyty."""
+    """Used by test.py to test a functionality."""
     global code, ram, accumulator, flags, run_step, end_run, output_test, no_wozm, stack_ptr, stop_run
 
     # reset value:
