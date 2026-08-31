@@ -1844,7 +1844,11 @@ def compile_smarty(
 
                 match function_name:
                     case "input":
-                        SmartBuiltIn.smartInput()
+                        hex_code_input, adress_delta = SmartBuiltIn.smartInput()
+
+                        code_compile += hex_code_input
+
+                        address_counter += adress_delta
 
             elif function_name == "wozm":   # return to woz monitor
                 if len(function_arg) != 0:

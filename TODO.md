@@ -22,4 +22,3 @@ If the task is a bug you can also add a issue on GitHub.
 - Add for variable: `.x++` (use X with increment X) and `.x += ...`.
 - Better threading: fix some probleme to fix with no shared stack + add some test
 - Add with `compiletime` keyword a stop thread: stop the second thread and run only on main thrad.
-- _Fix probleme with input when use as no return function: the input function is not call_
