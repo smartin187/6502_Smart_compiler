@@ -20,3 +20,4 @@ If the task is a bug you can also add a issue on GitHub.
 - Multi-threading for Smart ?
 - On function with parameter, add the possibility if the value of parameter change, the value of the variable given change too (pointer).
 - For Smart system variable, use 0 page mode
+- Add for variable: `.x++` (use X with increment X) and `.x += ...`.
