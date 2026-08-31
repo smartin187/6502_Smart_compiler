@@ -17,7 +17,6 @@ If the task is a bug you can also add a issue on GitHub.
 - Make the libraries for Smart: `math` ?, `string`, library for write in RAM/ROM ?
 - **Add string and list with size variable ?**
 - Add class object for Smart ?
-- Multi-threading for Smart ?
 - On function with parameter, add the possibility if the value of parameter change, the value of the variable given change too (pointer).
 - For Smart system variable, use 0 page mode
 - Add for variable: `.x++` (use X with increment X) and `.x += ...`.
