@@ -1047,6 +1047,8 @@ def compile_smarty(
     if code_start.replace(" ", "").replace("\n", "").replace("\t", "") == "":
         logging.warning("Smart file is empty!")
 
+    on_try_bloc = False
+
     for line in code:
         if jump_line:
             jump_line -= 1
@@ -1356,12 +1358,19 @@ def compile_smarty(
             address_counter += 3
 
             code_compile += code_try
+
+            on_try_bloc = True
         
         elif line.lstrip().startswith("except"):
             line = line.replace(" ", "")
             if not line.endswith("{"):
                 smart_error("On except bloc, '{' excepted.")
-            
+
+            if not on_try_bloc:
+                smart_error("'except bloc' was used but 'try bloc' was not created.")
+
+            on_try_bloc = False
+
             bloc_code, bloc_line = get_bloc(line_counter, code, error_message="On except bloc")
 
             jump_line = bloc_line - line_counter - 1
