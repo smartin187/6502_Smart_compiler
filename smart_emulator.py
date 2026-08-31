@@ -1032,7 +1032,6 @@ def run_smart() -> None:
                         goto_1 = ram[goto_ptr]
                         goto_2 = ram[hex(int(goto_ptr, base=16) + 1)[2:].upper().zfill(4)]
                         goto = goto_2 + goto_1
-                        print("goto", goto)
 
                     if goto == "FF1F":  # routine Get Line of woz monitor
                         if not no_wozm:
