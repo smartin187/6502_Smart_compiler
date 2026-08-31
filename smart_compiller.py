@@ -559,7 +559,7 @@ def compile_smarty(
 
                         # test index out of range on runtime error
                         test_index = "C9 15 "    # CMP #0x15
-                        counter_adress_value += 3 # 2 ??
+                        counter_adress_value += 2
 
                         test_index += "90 !smart:len_error_index "     # branch if index > 21
                         counter_adress_value += 2
