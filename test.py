@@ -2346,6 +2346,23 @@ OK2"""
                 print: "ERROR";
             """,
             sucess=False
+        ),
+        Test(
+            "Sintaxe error on thread - 1",
+            code="""
+                thread;
+                print: "ERROR";
+            """,
+            sucess=False
+        ),
+        Test(
+            "Sintaxe error on thread - 2",
+            code="""
+                thread uknow_option{;
+                    print: "ERROR";
+                }
+            """,
+            sucess=False
         )
     )
 
