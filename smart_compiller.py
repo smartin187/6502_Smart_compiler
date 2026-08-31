@@ -63,7 +63,7 @@ def compile_smarty(
         regroup_bytes:int=-1, # for the render of code. -1 for 1 line of hex, other value for regroup bytes in lines.
         first_call:bool=False,
         try_mode:bool=False,
-        thread_mode:list[bool, str, bool]=[False, "", False]
+        thread_mode:list[bool, str, bool, bool]=[False, "", False, False]
     ) -> str:
     """Start the compile from file."""
     global line_of_instruction, code_line#, warning_endline
@@ -1398,9 +1398,22 @@ def compile_smarty(
             
         elif line.lstrip().startswith("thread"):
 
+            line = line.strip()
+            line = line.replace(" ", "")
+            line = line[len("thread"):]
+
             line = line.replace(" ", "")
             if not line.endswith("{"):
                 smart_error("On thread bloc, '{' excepted.")
+            
+            line = line[:-1]
+
+            shared_stack_mode = False  # if true, the 2 thread can call function but the with beetween the thread don't active
+            if line.replace(" ", "") == "stack":
+
+                shared_stack_mode = True
+                
+                 #   smart_error(f"Uknow option '{options}' on thread.")
 
             if thread_mode[0]:
                 smart_error("Thread error: you can't have more 2 threads.")
@@ -1413,7 +1426,7 @@ def compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter + 10,
-                thread_mode=[True, "second", True]
+                thread_mode=[True, "second", True, shared_stack_mode]
             )
 
             # on the main ptr, set a first adress
@@ -1852,6 +1865,9 @@ def compile_smarty(
                 logging.info("Build smart function with use Woz monitor: wozm")
 
             elif function_name in function_name_usr:
+
+                if thread_mode[0] and thread_mode[1] != "main" and not(thread_mode[3]):
+                    smart_error("Can't call a function on second thread: the shared stack mode is not enlabel.")
 
                 if function_name_usr[function_name].return_value:
                     logging.warning(f"Function '{function_name}' is a return-function but was used as a function.")
