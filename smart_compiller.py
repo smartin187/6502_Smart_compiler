@@ -465,11 +465,8 @@ def compile_smarty(
                     if not imediate_value(hex_value_2):     # adress value
                         asm = f"{hex_value_1}18 6D {hex_value_2[3:]}"
 
-                        #print("adress : ", hex_value_2)
-
                     else:
                         asm = f"{hex_value_1}18 69 {hex_value_2[3:]}"       # immediate value
-                        #print("imadiate : ", hex_value_2)
 
                     return asm
 
