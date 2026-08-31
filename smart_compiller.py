@@ -17,6 +17,7 @@ from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool.smart_info import GIT_HUB_LINK
 from compiller_tool.hex_function import build_asm_entry
+from compiller_tool.smart_try_except import control_except
 from compiller_tool import compiller_data_run
 from compiller_tool import import_tool
 from compiller_tool import smart_obj
@@ -1048,6 +1049,7 @@ def compile_smarty(
         logging.warning("Smart file is empty!")
 
     on_try_bloc = False
+    after_try_bloc = False
 
     for line in code:
         if jump_line:
@@ -1360,6 +1362,7 @@ def compile_smarty(
             code_compile += code_try
 
             on_try_bloc = True
+            after_try_bloc = True
         
         elif line.lstrip().startswith("except"):
             line = line.replace(" ", "")
@@ -1829,6 +1832,8 @@ def compile_smarty(
 
         last_if = False
 
+        after_try_bloc = control_except(after_try_bloc, on_try_bloc, line_counter)
+
         if not(compiller_data_run.double_space_error) and not verryfing_adress_conter_no_print(address_counter, code_compile):
 
             compiller_data_run.double_space_error = True
@@ -1856,7 +1861,9 @@ def compile_smarty(
         print(f"[{PROGRESS_BAR_CHAR['completed'] * advencement}{PROGRESS_BAR_CHAR['not_completed'] * (PROGRESS_BAR_LEN - advencement)}]", end="\r")
 
 
-# ------------------------------- End compille loop ----------------------------------------------
+    # ------------------------------- End compille loop ----------------------------------------------
+
+    control_except(after_try_bloc, on_try_bloc, line_counter)
 
     if function_mode["if_mode"]:
         pass
