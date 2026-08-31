@@ -1408,6 +1408,11 @@ def compile_smarty(
                 thread_mode=[True, "second"]
             )
 
+            # on the main ptr, set a first adress
+            code_compile += f"A9 !smart_adress_main_thread_1 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_1']} "  # first byte
+            code_compile += f"A9 !smart_adress_main_thread_2 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_2']} "  # second byte
+            address_counter += 10
+
             new_adress = code_thread.count(" ") + code_thread.count("!smart_call_func|") * 3 + code_thread.count("!smart_tmp:goto|") * 3 - code_thread.count("!smart_tmp:goto|")
 
             address_counter += new_adress
@@ -1415,6 +1420,11 @@ def compile_smarty(
 
             thread_mode[0] = True
             thread_mode[1] = "main"
+
+            main_adress_1, main_adress_2 = adress_for_RAM(CODE_ADRESSE + address_counter).split(" ")
+            code_compile = code_compile.replace("!smart_adress_main_thread_1", main_adress_1)
+            code_compile = code_compile.replace("!smart_adress_main_thread_2", main_adress_2)
+
 
 
         elif line.lstrip().startswith("while"):
