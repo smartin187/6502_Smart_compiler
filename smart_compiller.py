@@ -78,12 +78,7 @@ def compile_smarty(
         def smartInput() -> tuple[str, int]:
             """Add an input function. return a tuple with hex code and len of hex code."""
             global need_input
-            #nonlocal code_compile, adress_conter
             need_input = True
-
-            #code_compile += "20 !  smart_input"     # set 2 space on placeholder for counting adress
-
-            #adress_conter += 3
             return "20 !  smart_input", 3
 
         BUILT_IN_NAME_RETURN = ["input"]
