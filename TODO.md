@@ -20,3 +20,5 @@ If the task is a bug you can also add a issue on GitHub.
 - On function with parameter, add the possibility if the value of parameter change, the value of the variable given change too (pointer).
 - For Smart system variable, use 0 page mode
 - Add for variable: `.x++` (use X with increment X) and `.x += ...`.
+- Better threading: fix some probleme to fix with no shared stack + add some test
+- _Fix probleme with input when use as no return function: the input function is not call_
