@@ -2151,7 +2151,7 @@ OK2"""
         print(f"{Colors.BG_YELLOW}{st}{Colors.RESET}")
 
     if all_ok:
-        print(f"{TEST_OK}{Colors.BG_GREEN}All tests without error!{Colors.RESET}")
+        print(f"{TEST_OK}{Colors.BG_GREEN}All tests without error!{Colors.RESET}\n({len(GLOBAL_TESTS)} tests run).")
     else:
         print(
             f"{TEST_ERROR}{Colors.BG_RED}Some tests failed!{Colors.RESET}",
