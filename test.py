@@ -2139,7 +2139,119 @@ OK2"""
         )
     )
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR
+    TRY_TEST = (   # the test for try/except bloc
+        Test(
+            "Simple try test",
+            code="""
+                try{;
+                    print: "TRY BLOCK";
+                    error 'E';
+                    print: "ERROR";
+                }
+                except{;
+                    print: "EXCEPT BLOCK";
+                }
+                print: "END";
+            """,
+            output="TRY BLOCKEXCEPT BLOCKEND"
+        ),
+        Test(
+            "Try block without error",
+            code="""
+                try{;
+                    print: "TRY BLOCK";
+                }
+                except{;
+                    print: "EXCEPT BLOCK";
+                }
+            """,
+            output="TRY BLOCK"
+        ),
+        Test(
+            "Try catch index error - 1",
+            code="""
+                .index = 30;
+                ~str = "AAA";
+                try{;
+                    print: ~str[.index];
+                    print: "ERROR";
+                }
+                except{;
+                    print: "EXCEPT BLOCK";
+                }
+                print: "END";
+            """,
+            output="EXCEPT BLOCKEND"
+        ),
+        Test(
+            "Try catch index error - 2",
+            code="""
+                .index = 30;
+                ~str = "AAA";
+                try{;
+                    ~str[.index] = 'A';
+                    print: "ERROR";
+                }
+                except{;
+                    print: "EXCEPT BLOCK";
+                }
+                print: "END";
+            """,
+            output="EXCEPT BLOCKEND"
+        ),
+        Test(
+            "Try catch divition by 0",
+            code="""
+                .a = 0;
+                try{;
+                    print: "TRY BLOCK";
+                    .a = 10 / .a;
+                    print: "ERROR";
+                }
+                except{;
+                    print: "EXCEPT BLOCK";
+                }
+                print: "END";
+            """,
+            output="TRY BLOCKEXCEPT BLOCKEND"
+        ),
+        Test(
+            "Error on except bloc",
+            code="""
+                try{;
+                    print: "TRY";
+                    error 'E';
+                }
+                except{;
+                    print: "EXCEPT";
+                    error 'E';
+                }
+                print: "ERROR";
+            """,
+            output="TRYEXCEPTEE"
+        ),
+        # --- error ---
+        Test(
+            "Try without bloc",
+            code="""
+                try;
+                print: "ERROR";
+            """,
+            sucess=False
+        ),
+        Test(
+            "Except without bloc",
+            code="""
+                try{;
+                    print: "TRY";
+                }
+                except;
+            """,
+            sucess=False
+        )
+    )
+
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST
 
     try:
         for test in GLOBAL_TESTS:
