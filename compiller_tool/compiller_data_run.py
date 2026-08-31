@@ -29,7 +29,8 @@ SMART_ERRORS = {     # the code error for Smart
 # placeholder with double space
 SMART_PLACEHOLDER = (
     "!  smart_input",
-    "!  smart_runtime_error"
+    "!  smart_runtime_error",
+    "!  smart_error_try"
 )
 
 BASE_ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ "   # the allowed char without \n and \r
