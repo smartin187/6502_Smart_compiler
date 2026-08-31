@@ -765,7 +765,7 @@ You can do a recursive function. Smart use the stack for the recursive function.
 
 #### Runtime error
 
-You can set a runtime error with keyword `error`. Next keyword you set a error code (can be `char`, `hex`, `int`).
+You can set a runtime error with keyword `error`. The value after `error` is the error code (can be `char`, `hex`, `int`).
 
 ```Smart
 error 'A'; // the error code is 'A'
@@ -790,6 +790,33 @@ They are built-in runtime error for some operation:
 - error `'I'`: index out of range (for advanced variables)
 
 _Please do not use this error code for your runtime error: you can't know what error is it..._
+
+##### `try` `except` block
+
+You can catch a runtime error with a `try` `except` block. When a error occured on `try`, the program go to the `except` block.
+
+```Smart
+try{;
+    // code
+}
+except{;
+    // code
+}
+```
+
+For exemple:
+```Smart
+try{;
+    print: "TRY BLOCK";
+    error '1';
+    print: "THIS CODE WILL NOT RUN";
+}
+except{;
+    print: "EXCEPT BLOCK";
+}
+```
+
+> Warning: if you call a function for `try` bloc, and this function have a runtime error, the program don't go to the `except` bloc...
 
 ## Compile Smart code
 
