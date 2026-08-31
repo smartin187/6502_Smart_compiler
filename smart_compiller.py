@@ -63,7 +63,7 @@ def compile_smarty(
         regroup_bytes:int=-1, # for the render of code. -1 for 1 line of hex, other value for regroup bytes in lines.
         first_call:bool=False,
         try_mode:bool=False,
-        thread_mode:list[bool, str]=[False, ""]
+        thread_mode:list[bool, str, bool]=[False, "", False]
     ) -> str:
     """Start the compile from file."""
     global line_of_instruction, code_line#, warning_endline
@@ -1405,7 +1405,7 @@ def compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter + 10,
-                thread_mode=[True, "second"]
+                thread_mode=[True, "second", True]
             )
 
             # on the main ptr, set a first adress
@@ -1420,6 +1420,7 @@ def compile_smarty(
 
             thread_mode[0] = True
             thread_mode[1] = "main"
+            thread_mode[2] = False
 
             main_adress_1, main_adress_2 = adress_for_RAM(CODE_ADRESSE + address_counter).split(" ")
             code_compile = code_compile.replace("!smart_adress_main_thread_1", main_adress_1)
@@ -1873,16 +1874,20 @@ def compile_smarty(
         # --- thread ---
 
         if thread_mode[0]:
-            # save the adress of next operation
-            next_operation_adress_1, next_operation_adress_2 = adress_for_RAM(CODE_ADRESSE + address_counter + 13).split(" ")
-            code_compile += f"A9 {next_operation_adress_1} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if thread_mode[1] == 'main' else 'second_thread_ptr_1']} " # first byte of adress
-            code_compile += f"A9 {next_operation_adress_2} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_2' if thread_mode[1] == 'main' else 'second_thread_ptr_2']} " # second byte of adress
+            if thread_mode[2]:
+                # save the adress of next operation
+                next_operation_adress_1, next_operation_adress_2 = adress_for_RAM(CODE_ADRESSE + address_counter + 13).split(" ")
+                code_compile += f"A9 {next_operation_adress_1} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if thread_mode[1] == 'main' else 'second_thread_ptr_1']} " # first byte of adress
+                code_compile += f"A9 {next_operation_adress_2} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_2' if thread_mode[1] == 'main' else 'second_thread_ptr_2']} " # second byte of adress
 
-            address_counter += 10
+                address_counter += 10
 
-            # go to the other thread
-            code_compile += f"6C {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if not thread_mode[1] == 'main' else 'second_thread_ptr_1']} "
-            address_counter += 3
+                # go to the other thread
+                code_compile += f"6C {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if not thread_mode[1] == 'main' else 'second_thread_ptr_1']} "
+                address_counter += 3
+            
+            else:
+                thread_mode[2] = True
 
         if not(compiller_data_run.double_space_error) and not verryfing_adress_conter_no_print(address_counter, code_compile):
 
