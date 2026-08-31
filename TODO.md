@@ -1,18 +1,18 @@
 # To Do
 
-The futures feature of Smart, or fix bugs.
+The future features of Smart, or fix bugs.
 
 If the task is a fix, the text is _italic_.
 
-If the task is a important feature, the text is **bold**.
+If the task is an important feature, the text is **bold**.
 
-The task with `?` is task that is not sure if it will be implemented.
+The task with `?` is a task that is not sure if it will be implemented.
 
-If the task is a bug you can also add a issue on GitHub.
+If the task is a bug you can also add an issue on GitHub.
 
 ## Tasks
 
-- _Fix: small bug on windows: the path of library are not join correctly: ...lib\global_lib\screen_tool/screen_tool.sma_
+- _Fix: small bug on windows: the path of the library is not joined correctly: ...lib\global_lib\screen_tool/screen_tool.sma_
 - Add operator: `modulo`, `^`... Add comparator: `and` `or` `>` `<=`
 - Make the libraries for Smart: `math` ?, `string`, library for write in RAM/ROM ?
 - **Add string and list with size variable ?**
@@ -20,5 +20,5 @@ If the task is a bug you can also add a issue on GitHub.
 - On function with parameter, add the possibility if the value of parameter change, the value of the variable given change too (pointer).
 - For Smart system variable, use 0 page mode
 - Add for variable: `.x++` (use X with increment X) and `.x += ...`.
-- Better threading: fix some probleme to fix with no shared stack + add some test
-- Add with `compiletime` keyword a stop thread: stop the second thread and run only on main thrad.
+- Better threading: fix some problems with no shared stack + add some tests
+- Add with `compiletime` keyword a stop thread: stop the second thread and run only on main thread.
