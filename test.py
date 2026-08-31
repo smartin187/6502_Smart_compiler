@@ -57,7 +57,7 @@ class OutputError(TestError):
     pass
 
 class TimeOut:
-    """For the time out on test. Help full on while or goto."""
+    """For the time out on test. Helpful on while or goto."""
     def __init__(self, timeout:int):
         """Start the timeout, with a `timeout` in second.
         raise a TimeoutError if time is out."""
@@ -68,7 +68,7 @@ class TimeOut:
 
         self.timer = threading.Thread(target=self.control_time, daemon=True)
         self.timer.start()
-        
+
     def control_time(self):
         """Check if the time is out."""
         while not self.end:
@@ -97,7 +97,7 @@ class Test:
         self.compile_output = compile_output
         self.sucess = sucess
         self.timeout = timeout
-    
+
     def show_test(self, start_compilation:bool=True) -> None:
         """Print the detail of test"""
         print(
@@ -140,11 +140,11 @@ class Test:
             error = True
             compilation_error = True
             error_output = str(se)
-        
+
         except Exception as e:
             error = True
             error_output = "Smart Emulator error: " + str(e)
-        
+
         else:
             if not self.compile_only:
                 try:
@@ -168,7 +168,7 @@ class Test:
                 except Exception as e:
                     error = True
                     error_output = str(e)
-        
+
         if (error and self.sucess) or (not(error) and not(self.sucess)):
             all_ok = False
             error_counter += 1
@@ -185,11 +185,11 @@ class Test:
 
             if reply.lower() == "n":
                 raise StopTest("Test stopped by user")
-        
+
             print(end="\n"*10)
-        
+
         else:
-            
+
             print(f"{ERASE_PROGRESSBAR}{TEST_OK}{Colors.BG_GREEN}Test OK{Colors.RESET}", end="\n"*10)
 
 class ModuleTest(Test):
@@ -197,7 +197,7 @@ class ModuleTest(Test):
     def __init__(self, name:str, code_modules:list[tuple[str, str]], output:str="", compile_output:str="", compile_only:bool=False, sucess:bool=True):
         super().__init__(name, code_modules[0][1], output, compile_output, compile_only, sucess)
 
-        self.code_modules = code_modules[1:]    # get all module excepted main module
+        self.code_modules = code_modules[1:]    # get all modules except main module
 
     '''def show_module_test(self) -> None:
         """Print the detail of module test"""
@@ -206,12 +206,12 @@ class ModuleTest(Test):
 
     def run_modules(self) -> None:
         """This function make all module and run test.
-        Next dellet the modules."""
+        Next delete the modules."""
 
         for module in self.code_modules:
             with open(f"test/{module[0]}", "w") as f:
                 f.write(module[1])
-        
+
         self.run()
 
         for module in self.code_modules:
@@ -255,7 +255,7 @@ try:
     error_counter = 0
 
     if control_lib():
-       
+
         TEST_LIB = (
             Test(
                 "Test library import",  # test for import all library. When a new library is added, add a test for it.
@@ -299,7 +299,7 @@ try:
     else:
         input("Press enter to continue...")
         TEST_LIB = ()
-    
+
     ERROR_VARIABLE_KEYWORD = tuple(  # the test for a variable with a reserved name
         Test(
             f"Error set variable named {keyword}",
@@ -407,7 +407,7 @@ try:
         )
     )
 
-    SYNTAXE_ERROR_TEST = (  # this test have the same class Test but for test sintaxe error.
+    SYNTAXE_ERROR_TEST = (  # this test have the same class Test but for test syntax error.
         Test(
             "Forget ';'",
             code='print: "TEST"\nprint: "ERROR"',
@@ -552,13 +552,13 @@ try:
             code="""
                 .a = 'A';
                 print: .a;
-                
+
                 .b = 'B';
                 print: .b;
             """,
             output="AB"
         ),
-        # ----- error 
+        # ----- error
         Test(
             "Char not autorize",
             code=".a = 'a'",
@@ -686,7 +686,7 @@ try:
                 .d = '\\';
                 print: .d;
 
-                .e = '"';   // not a escpae char but for test
+                .e = '"';   // not a escape char but for test
                 print: .e;
             """,
             output="\n'\"\\\""
@@ -706,8 +706,8 @@ try:
                 ~d = "DD\\DD";
                 print: ~d;
 
-                ~e = "EE'EE";   // not a escpae char but for test
-                print: ~e;            
+                ~e = "EE'EE";   // not a escape char but for test
+                print: ~e;
             """,
             output="AA\nAABB'BBCC\"CCDD\\DDEE'EE"
         ),
@@ -717,7 +717,7 @@ try:
                 ~a = "\r\'\"\\";
                 print: ~a;
             """,
-            output="\n'\"\\"    # carfull: the \r on emulatore is replace by \n
+            output="\n'\"\\"    # careful: the \r on emulator is replace by \n
         ),
         Test(
             "Escape character escaped at the end of str",
@@ -793,7 +793,7 @@ try:
             code="""
                 goto: label;
 
-                // this code are succeptible to move adress
+                // this code are susceptible to move address
                 if True{;
                     print: "ERROR";
                 }
@@ -804,9 +804,9 @@ try:
                 while False{;
                     print: 'E';
                 }
-                
-                #label;    
-                print: "GOTO TEST 2";        
+
+                #label;
+                print: "GOTO TEST 2";
             """,
             output="GOTO TEST 2"
         ),
@@ -932,7 +932,7 @@ try:
             quit:;
             print: 'E';
         """,
-        output="OK"   
+        output="OK"
         )
     )
 
@@ -1039,8 +1039,8 @@ try:
             "Advenced structure condition",
             code="""
                 .a = True;
-                .b = False;    
-            
+                .b = False;
+
                 if True{;
                     print: "OK";
 
@@ -1109,7 +1109,7 @@ try:
                 for _ in |0|5|1| {;
                     print: 'A';
                 }
-                print: "OK";        
+                print: "OK";
             """,
             output="AAAAAOK"
         ),
@@ -1217,7 +1217,7 @@ try:
             code="""
                 for .i in |0|10|0 {;
                     print: "ERROR";
-                }            
+                }
             """,
             sucess=False
         ),
@@ -1225,7 +1225,7 @@ try:
             "For without block",
             code="""
                 for .i in |0|10|1|;
-                    print: "ERROR";            
+                    print: "ERROR";
             """,
             sucess=False
         ),
@@ -1234,7 +1234,7 @@ try:
             code="""
                 for .char in "STRING" {;
                     print: "ERROR";
-                }            
+                }
             """,
             sucess=False
         )
@@ -1260,7 +1260,7 @@ try:
                     if .i == 5{;
                         .loop = False;
                     }
-                    print: '0' + .i;    
+                    print: '0' + .i;
                 }
             """,
             output="12345",
@@ -1405,7 +1405,7 @@ try:
                 ~str = "TEST";
                 print: ~str[.index];
             """,
-            output="EI"    
+            output="EI"
         )
     )
 
@@ -1445,7 +1445,7 @@ try:
                     void function{;
                         print: "FUNCTION TEST";
                     }
-                    
+
                     .var1 = 'A';
                     ~var2 = "STRING";
                     """
@@ -1507,7 +1507,7 @@ try:
                 ),
                 (
                     "module_error.sma",
-                    'print: "ERROR' # error sintaxe the the error
+                    'print: "ERROR' # intentional syntax error
                 )
             ],
             sucess=False
@@ -1561,7 +1561,7 @@ try:
                     print: "F1";
                     f2:;
                 }
-                
+
                 void f2{;
                     print: "F2";
                     f3:;
@@ -1606,7 +1606,7 @@ try:
 
                         factoriel:;
                         }
-                    
+
                     }
 
                 factoriel:;
@@ -1787,7 +1787,7 @@ try:
             "Debug mode with remove",
             code="""
                 compiletime debug True;
-                
+
                 .a = 'A';
                 ~b = "STRING";
 
@@ -2025,7 +2025,7 @@ OK2"""
         Test(
             "asm_entry replace - adress",
             code="""
-                print: "00000"; // change the adress of the asm_entry
+                print: "00000"; // change the address of the asm_entry
                 asm_entry: "4C @adress+8| A9 41 20 EF FF "; // the 4C jump after the code for print A
                 print: "OK";
             """,
@@ -2036,7 +2036,7 @@ OK2"""
             code="""
                 .a = '@';
 
-                asm_entry: "AD @var_adress:.a| 20 EF FF"; // print the value of .a with the adress.
+                asm_entry: "AD @var_adress:.a| 20 EF FF"; // print the value of .a with the address.
                 print: "OK";
             """,
             output="@OK"
@@ -2359,7 +2359,7 @@ OK2"""
                 void f{;
                     print: "FUNCTION";
                 }
-            
+
                 thread{;
                     f:;
                 }
@@ -2406,7 +2406,7 @@ OK2"""
         )
 
     print(f"\n{Colors.RED}{round(error_counter / len(GLOBAL_TESTS) * 100, 2)}%{Colors.RESET} | {Colors.GREEN}{round((len(GLOBAL_TESTS) - error_counter) / len(GLOBAL_TESTS) * 100, 2)}%{Colors.RESET}")
-    
+
 except KeyboardInterrupt:
     print(f"\n{Colors.BG_YELLOW}Test stopped by user\nKeyboard interrupt.{Colors.RESET}")
 
