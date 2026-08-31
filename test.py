@@ -130,7 +130,7 @@ class Test:
             self.code_compile = compile_smarty("test/test.sma", make_file=False, thread_mode = [False, "", False, False])
 
             if "  " in self.code_compile:
-                raise OutputError(f"{Colors.RED}Double space on output. Risk of erorr with adress counting...{Colors.RESET}")
+                raise OutputError(f"{Colors.RED}Double space on output. Risk of error with address counting...{Colors.RESET}")
 
             if self.code_compile != self.compile_output:
                 if self.compile_only:
@@ -433,13 +433,13 @@ try:
             sucess=False
         ),
         Test(
-            "Sintaxe error after str",
+            "Syntax error after str",
             code='print: "HELLO" error',
             compile_only=True,
             sucess=False
         ),
         Test(
-            "Sintaxe error after char",
+            "Syntax error after char",
             code="print: 'A' error",
             compile_only=True,
             sucess=False
@@ -471,7 +471,7 @@ try:
             output="1010"
         ),
         Test(
-            "Boolean comparaison",
+            "Boolean comparison",
             code="""
                 .a = True;
                 .b = False;
@@ -659,12 +659,12 @@ try:
         ),
         # ---- error ----
         Test(
-            "Str not in advenced var",
+            "Str not in advanced var",
             code='.a = "STRING";',
             sucess=False
         ),
         Test(
-            "Simple value in advenced var",
+            "Simple value in advanced var",
             code="~a = 1;",
             sucess=False
         )
@@ -789,7 +789,7 @@ try:
             output="GOTO TEST 1"
         ),
         Test(
-            "Advenced Goto test",
+            "Advanced Goto test",
             code="""
                 goto: label;
 
@@ -1036,7 +1036,7 @@ try:
             output="OKOK2"
         ),
         Test(
-            "Advenced structure condition",
+            "Advanced structure condition",
             code="""
                 .a = True;
                 .b = False;
@@ -1150,7 +1150,7 @@ try:
         ),
         # ---- advenced value ----
         Test(
-            "Advenced value in for - 1",
+            "Advanced value in for - 1",
             code="""
                 ~string = "ABCDEFG";
 
@@ -1163,7 +1163,7 @@ try:
             output="ABCDEFGOK"
         ),
         Test(
-            "Advenced value in for - 2",
+            "Advanced value in for - 2",
             code="""
                 ~a = "AABCDABA";
 
@@ -1192,7 +1192,7 @@ try:
             output="AAAAAAAAAAOK"
         ),
         Test(
-            "Edit variable for iteration in for with advenced value",
+            "Edit variable for iteration in for with advanced value",
             code="""
                 ~string = "ABCDEFG";
                 for .char in ~string {;
@@ -1204,7 +1204,7 @@ try:
         ),
         # ---- error ----
         Test(
-            "For sintax error",
+            "For syntax error",
             code="""
                 for in |0|10|1| {;
                     print: "ERROR";
@@ -1230,7 +1230,7 @@ try:
             sucess=False
         ),
         Test(
-            "Imediate advenced value in for",
+            "Immediate advanced value in for",
             code="""
                 for .char in "STRING" {;
                     print: "ERROR";
@@ -1591,7 +1591,7 @@ try:
             output="FAOK"
         ),
         Test(
-            "Recurcive function",
+            "Recursive function",
             code="""
                 .n = 3;
                 .r = 1;
@@ -1615,7 +1615,7 @@ try:
             output="OK6"
         ),
         Test(
-            "Return function with advenced value parameters",
+            "Return function with advanced value parameters",
             code="""
                 void f: ~arg1{;
                 print: ~arg1;
@@ -1626,7 +1626,7 @@ try:
             output="STR"
         ),
         Test(
-            "Advenced return function",
+            "Advanced return function",
             code="""
                 void f1{;
                     print: "F1";
@@ -1714,7 +1714,7 @@ try:
             sucess=False
         ),
         Test(
-            "Invalid sintaxe with parameters 1",
+            "Invalid syntax with parameters 1",
             code="""
                 void f .a {;
                     print: "ERROR";
@@ -1723,7 +1723,7 @@ try:
             sucess=False
         ),
         Test(
-            "Invalid sintaxe with parameters 2",
+            "Invalid syntax with parameters 2",
             code="""
                 void f: .a, {;
                     print: "ERROR";
@@ -1732,7 +1732,7 @@ try:
             sucess=False
         ),
         Test(
-            "Invalid sintaxe with parameters 3",
+            "Invalid syntax with parameters 3",
             code="""
                 void f: error {;
                     print: "ERROR";
@@ -1821,7 +1821,7 @@ OK2"""
             output="A"
         ),
         Test(
-            "Advenced value realloc",
+            "Advanced value realloc",
             code="""
                 ~a = "STRING";
                 compiletime realloc ~a to ~b;
@@ -1842,7 +1842,7 @@ OK2"""
             output="AAA"
         ),
         Test(
-            "Some advenced value realloc",
+            "Some advanced value realloc",
             code="""
                 ~a = "STRING";
                 print: ~a;
@@ -1864,7 +1864,7 @@ OK2"""
         ),
         # ---- error ----
         Test(
-            "Excepted keyword after compiletime",
+            "Expected keyword after compiletime",
             code="""
                 compiletime;
                 print: "ERROR";
@@ -1873,21 +1873,21 @@ OK2"""
         ),
         # define
         Test(
-            "Define sintaxe error 1",
+            "Define syntax error 1",
             code="""
                 compiletime define to 'A';
             """,
             sucess=False
         ),
         Test(
-            "Define sintaxe error 2",
+            "Define syntax error 2",
             code="""
                 compiletime define VALUE 'A';
             """,
             sucess=False
         ),
         Test(
-            "Define sintaxe error 3",
+            "Define syntax error 3",
             code="""
                 compiletime define VALUE to;
             """,
@@ -1973,7 +1973,7 @@ OK2"""
             sucess=False
         ),
         Test(
-            "Compiletime realloc simple to advenced value error",
+            "Compiletime realloc simple to advanced value error",
             code="""
                 ~a = "STRING";
                 compiletime realloc ~a to .b;
@@ -2023,7 +2023,7 @@ OK2"""
             output="ABOK"
         ),
         Test(
-            "asm_entry replace - adress",
+            "asm_entry replace - address",
             code="""
                 print: "00000"; // change the address of the asm_entry
                 asm_entry: "4C @adress+8| A9 41 20 EF FF "; // the 4C jump after the code for print A
@@ -2104,7 +2104,7 @@ OK2"""
             sucess=False
         ),
         Test(
-            "Bad number on asm_entry - adress",
+            "Bad number on asm_entry - address",
             code="""
                 asm_entry: "AD @adress+error| 20 EF FF";
                 print: "ERROR";
@@ -2125,7 +2125,7 @@ OK2"""
             output="12"
         ),
         Test(
-            "Advenced variable test",
+            "Advanced variable test",
             code="""
                 ~string = "STRING";
                 print: ~string;
@@ -2152,7 +2152,7 @@ OK2"""
             sucess=False
         ),
         Test(
-            "Error max variable created with advenced variable",
+            "Error max variable created with advanced variable",
             code="".join([f"~str_{i} = \"\";" for i in range(compiller_data_run.MAX_VARIABLE_CREATED // 21)]) + "".join(f".var_{i} = 0;" for i in range(compiller_data_run.MAX_VARIABLE_CREATED % 21 + 1)),
             sucess=False
         )
@@ -2235,7 +2235,7 @@ OK2"""
             output="TRY BLOCKEXCEPT BLOCKEND"
         ),
         Test(
-            "Error on except bloc",
+            "Error on except block",
             code="""
                 try{;
                     print: "TRY";
@@ -2250,7 +2250,7 @@ OK2"""
             output="TRYEXCEPTEE"
         ),
         Test(
-            "Try except block on try excpet",
+            "Try except block on try except",
             code="""
                 try{;
                     print: '1';
@@ -2275,7 +2275,7 @@ OK2"""
         ),
         # --- error ---
         Test(
-            "Try without bloc",
+            "Try without block",
             code="""
                 try;
                 print: "ERROR";
@@ -2283,7 +2283,7 @@ OK2"""
             sucess=False
         ),
         Test(
-            "Except without bloc",
+            "Except without block",
             code="""
                 try{;
                     print: "TRY";
@@ -2368,7 +2368,7 @@ OK2"""
             sucess=False
         ),
         Test(
-            "Sintaxe error on thread - 1",
+            "Syntax error on thread - 1",
             code="""
                 thread;
                 print: "ERROR";
@@ -2376,7 +2376,7 @@ OK2"""
             sucess=False
         ),
         Test(
-            "Sintaxe error on thread - 2",
+            "Syntax error on thread - 2",
             code="""
                 thread uknow_option{;
                     print: "ERROR";
@@ -2412,7 +2412,7 @@ except KeyboardInterrupt:
 
 except Exception as e:
     print(
-        f"{Colors.BG_RED}An error occured during test: {e}{Colors.RESET}",
+        f"{Colors.BG_RED}An error occurred during test: {e}{Colors.RESET}",
         traceback.format_exc(),
         sep="\n"
     )
