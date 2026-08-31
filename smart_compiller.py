@@ -62,7 +62,8 @@ def compile_smarty(
         module_name:str="*", # module name is '*' if main module.
         regroup_bytes:int=-1, # for the render of code. -1 for 1 line of hex, other value for regroup bytes in lines.
         first_call:bool=False,
-        try_mode:bool=False
+        try_mode:bool=False,
+        thread_mode:list[bool, str]=[False, ""]
     ) -> str:
     """Start the compile from file."""
     global line_of_instruction, code_line#, warning_endline
@@ -1390,6 +1391,31 @@ def compile_smarty(
             code_compile += code_except
             code_compile = code_compile.replace("! smart_end_try ", adress_for_RAM(CODE_ADRESSE + address_counter) + " ")
             
+        elif line.lstrip().startswith("thread"):
+
+            line = line.replace(" ", "")
+            if not line.endswith("{"):
+                smart_error("On thread bloc, '{' excepted.")
+
+            bloc_code, bloc_line = get_bloc(line_counter, code, error_message="On thread bloc")
+
+            jump_line = bloc_line - line_counter - 1
+
+            code_thread = compile_smarty(
+                make_file=False,
+                function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                thread_mode=[True, "second"]
+            )
+
+            new_adress = code_thread.count(" ") + code_thread.count("!smart_call_func|") * 3 + code_thread.count("!smart_tmp:goto|") * 3 - code_thread.count("!smart_tmp:goto|")
+
+            address_counter += new_adress
+            code_compile += code_thread
+
+            thread_mode[0] = True
+            thread_mode[1] = "main"
+
 
         elif line.lstrip().startswith("while"):
             line_2 = replace_code(line, " ", "")[5:]
@@ -1833,6 +1859,20 @@ def compile_smarty(
         last_if = False
 
         after_try_bloc = control_except(after_try_bloc, on_try_bloc, line_counter)
+
+        # --- thread ---
+
+        if thread_mode[0]:
+            # save the adress of next operation
+            next_operation_adress_1, next_operation_adress_2 = adress_for_RAM(CODE_ADRESSE + address_counter + 13).split(" ")
+            code_compile += f"A9 {next_operation_adress_1} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if thread_mode[1] == 'main' else 'second_thread_ptr_1']} " # first byte of adress
+            code_compile += f"A9 {next_operation_adress_2} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_2' if thread_mode[1] == 'main' else 'second_thread_ptr_2']} " # second byte of adress
+
+            address_counter += 10
+
+            # go to the other thread
+            code_compile += f"6C {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if not thread_mode[1] == 'main' else 'second_thread_ptr_1']} "
+            address_counter += 3
 
         if not(compiller_data_run.double_space_error) and not verryfing_adress_conter_no_print(address_counter, code_compile):
 
