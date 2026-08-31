@@ -1404,7 +1404,7 @@ def compile_smarty(
             code_thread = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter,
+                CODE_ADRESSE=CODE_ADRESSE + address_counter + 10,
                 thread_mode=[True, "second"]
             )
 
