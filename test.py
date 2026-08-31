@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 This programme is for test all functionalities of smart.
 """
@@ -2246,6 +2247,24 @@ OK2"""
                     print: "TRY";
                 }
                 except;
+            """,
+            sucess=False
+        ),
+        Test(
+            "Try missing except",
+            code="""
+                try{;
+                    print: "TRY";
+                }
+            """,
+            sucess=False
+        ),
+        Test(
+            "Except missing try",
+            code="""
+                except{;
+                    print: "EXCEPT";
+                }
             """,
             sucess=False
         )
