@@ -57,7 +57,7 @@ class OutputError(TestError):
     pass
 
 class TimeOut:
-    """For the time out on test. Help full on while or goto."""
+    """For the time out on test. Helpful on while or goto."""
     def __init__(self, timeout:int):
         """Start the timeout, with a `timeout` in second.
         raise a TimeoutError if time is out."""
@@ -68,7 +68,7 @@ class TimeOut:
 
         self.timer = threading.Thread(target=self.control_time, daemon=True)
         self.timer.start()
-        
+
     def control_time(self):
         """Check if the time is out."""
         while not self.end:
@@ -97,7 +97,7 @@ class Test:
         self.compile_output = compile_output
         self.sucess = sucess
         self.timeout = timeout
-    
+
     def show_test(self, start_compilation:bool=True) -> None:
         """Print the detail of test"""
         print(
@@ -130,7 +130,7 @@ class Test:
             self.code_compile = compile_smarty("test/test.sma", make_file=False, thread_mode = [False, "", False, False])
 
             if "  " in self.code_compile:
-                raise OutputError(f"{Colors.RED}Double space on output. Risk of erorr with adress counting...{Colors.RESET}")
+                raise OutputError(f"{Colors.RED}Double space on output. Risk of error with address counting...{Colors.RESET}")
 
             if self.code_compile != self.compile_output:
                 if self.compile_only:
@@ -140,11 +140,11 @@ class Test:
             error = True
             compilation_error = True
             error_output = str(se)
-        
+
         except Exception as e:
             error = True
             error_output = "Smart Emulator error: " + str(e)
-        
+
         else:
             if not self.compile_only:
                 try:
@@ -168,7 +168,7 @@ class Test:
                 except Exception as e:
                     error = True
                     error_output = str(e)
-        
+
         if (error and self.sucess) or (not(error) and not(self.sucess)):
             all_ok = False
             error_counter += 1
@@ -185,11 +185,11 @@ class Test:
 
             if reply.lower() == "n":
                 raise StopTest("Test stopped by user")
-        
+
             print(end="\n"*10)
-        
+
         else:
-            
+
             print(f"{ERASE_PROGRESSBAR}{TEST_OK}{Colors.BG_GREEN}Test OK{Colors.RESET}", end="\n"*10)
 
 class ModuleTest(Test):
@@ -197,7 +197,7 @@ class ModuleTest(Test):
     def __init__(self, name:str, code_modules:list[tuple[str, str]], output:str="", compile_output:str="", compile_only:bool=False, sucess:bool=True):
         super().__init__(name, code_modules[0][1], output, compile_output, compile_only, sucess)
 
-        self.code_modules = code_modules[1:]    # get all module excepted main module
+        self.code_modules = code_modules[1:]    # get all modules except main module
 
     '''def show_module_test(self) -> None:
         """Print the detail of module test"""
@@ -206,12 +206,12 @@ class ModuleTest(Test):
 
     def run_modules(self) -> None:
         """This function make all module and run test.
-        Next dellet the modules."""
+        Next delete the modules."""
 
         for module in self.code_modules:
             with open(f"test/{module[0]}", "w") as f:
                 f.write(module[1])
-        
+
         self.run()
 
         for module in self.code_modules:
@@ -255,7 +255,7 @@ try:
     error_counter = 0
 
     if control_lib():
-       
+
         TEST_LIB = (
             Test(
                 "Test library import",  # test for import all library. When a new library is added, add a test for it.
@@ -299,7 +299,7 @@ try:
     else:
         input("Press enter to continue...")
         TEST_LIB = ()
-    
+
     ERROR_VARIABLE_KEYWORD = tuple(  # the test for a variable with a reserved name
         Test(
             f"Error set variable named {keyword}",
@@ -407,7 +407,7 @@ try:
         )
     )
 
-    SYNTAXE_ERROR_TEST = (  # this test have the same class Test but for test sintaxe error.
+    SYNTAXE_ERROR_TEST = (  # this test have the same class Test but for test syntax error.
         Test(
             "Forget ';'",
             code='print: "TEST"\nprint: "ERROR"',
@@ -433,13 +433,13 @@ try:
             sucess=False
         ),
         Test(
-            "Sintaxe error after str",
+            "Syntax error after str",
             code='print: "HELLO" error',
             compile_only=True,
             sucess=False
         ),
         Test(
-            "Sintaxe error after char",
+            "Syntax error after char",
             code="print: 'A' error",
             compile_only=True,
             sucess=False
@@ -471,7 +471,7 @@ try:
             output="1010"
         ),
         Test(
-            "Boolean comparaison",
+            "Boolean comparison",
             code="""
                 .a = True;
                 .b = False;
@@ -552,13 +552,13 @@ try:
             code="""
                 .a = 'A';
                 print: .a;
-                
+
                 .b = 'B';
                 print: .b;
             """,
             output="AB"
         ),
-        # ----- error 
+        # ----- error
         Test(
             "Char not autorize",
             code=".a = 'a'",
@@ -659,12 +659,12 @@ try:
         ),
         # ---- error ----
         Test(
-            "Str not in advenced var",
+            "Str not in advanced var",
             code='.a = "STRING";',
             sucess=False
         ),
         Test(
-            "Simple value in advenced var",
+            "Simple value in advanced var",
             code="~a = 1;",
             sucess=False
         )
@@ -686,7 +686,7 @@ try:
                 .d = '\\';
                 print: .d;
 
-                .e = '"';   // not a escpae char but for test
+                .e = '"';   // not a escape char but for test
                 print: .e;
             """,
             output="\n'\"\\\""
@@ -706,8 +706,8 @@ try:
                 ~d = "DD\\DD";
                 print: ~d;
 
-                ~e = "EE'EE";   // not a escpae char but for test
-                print: ~e;            
+                ~e = "EE'EE";   // not a escape char but for test
+                print: ~e;
             """,
             output="AA\nAABB'BBCC\"CCDD\\DDEE'EE"
         ),
@@ -717,7 +717,7 @@ try:
                 ~a = "\r\'\"\\";
                 print: ~a;
             """,
-            output="\n'\"\\"    # carfull: the \r on emulatore is replace by \n
+            output="\n'\"\\"    # careful: the \r on emulator is replace by \n
         ),
         Test(
             "Escape character escaped at the end of str",
@@ -789,11 +789,11 @@ try:
             output="GOTO TEST 1"
         ),
         Test(
-            "Advenced Goto test",
+            "Advanced Goto test",
             code="""
                 goto: label;
 
-                // this code are succeptible to move adress
+                // this code are susceptible to move address
                 if True{;
                     print: "ERROR";
                 }
@@ -804,9 +804,9 @@ try:
                 while False{;
                     print: 'E';
                 }
-                
-                #label;    
-                print: "GOTO TEST 2";        
+
+                #label;
+                print: "GOTO TEST 2";
             """,
             output="GOTO TEST 2"
         ),
@@ -932,7 +932,7 @@ try:
             quit:;
             print: 'E';
         """,
-        output="OK"   
+        output="OK"
         )
     )
 
@@ -1036,11 +1036,11 @@ try:
             output="OKOK2"
         ),
         Test(
-            "Advenced structure condition",
+            "Advanced structure condition",
             code="""
                 .a = True;
-                .b = False;    
-            
+                .b = False;
+
                 if True{;
                     print: "OK";
 
@@ -1109,7 +1109,7 @@ try:
                 for _ in |0|5|1| {;
                     print: 'A';
                 }
-                print: "OK";        
+                print: "OK";
             """,
             output="AAAAAOK"
         ),
@@ -1150,7 +1150,7 @@ try:
         ),
         # ---- advenced value ----
         Test(
-            "Advenced value in for - 1",
+            "Advanced value in for - 1",
             code="""
                 ~string = "ABCDEFG";
 
@@ -1163,7 +1163,7 @@ try:
             output="ABCDEFGOK"
         ),
         Test(
-            "Advenced value in for - 2",
+            "Advanced value in for - 2",
             code="""
                 ~a = "AABCDABA";
 
@@ -1192,7 +1192,7 @@ try:
             output="AAAAAAAAAAOK"
         ),
         Test(
-            "Edit variable for iteration in for with advenced value",
+            "Edit variable for iteration in for with advanced value",
             code="""
                 ~string = "ABCDEFG";
                 for .char in ~string {;
@@ -1204,7 +1204,7 @@ try:
         ),
         # ---- error ----
         Test(
-            "For sintax error",
+            "For syntax error",
             code="""
                 for in |0|10|1| {;
                     print: "ERROR";
@@ -1217,7 +1217,7 @@ try:
             code="""
                 for .i in |0|10|0 {;
                     print: "ERROR";
-                }            
+                }
             """,
             sucess=False
         ),
@@ -1225,16 +1225,16 @@ try:
             "For without block",
             code="""
                 for .i in |0|10|1|;
-                    print: "ERROR";            
+                    print: "ERROR";
             """,
             sucess=False
         ),
         Test(
-            "Imediate advenced value in for",
+            "Immediate advanced value in for",
             code="""
                 for .char in "STRING" {;
                     print: "ERROR";
-                }            
+                }
             """,
             sucess=False
         )
@@ -1260,7 +1260,7 @@ try:
                     if .i == 5{;
                         .loop = False;
                     }
-                    print: '0' + .i;    
+                    print: '0' + .i;
                 }
             """,
             output="12345",
@@ -1405,7 +1405,7 @@ try:
                 ~str = "TEST";
                 print: ~str[.index];
             """,
-            output="EI"    
+            output="EI"
         )
     )
 
@@ -1445,7 +1445,7 @@ try:
                     void function{;
                         print: "FUNCTION TEST";
                     }
-                    
+
                     .var1 = 'A';
                     ~var2 = "STRING";
                     """
@@ -1507,7 +1507,7 @@ try:
                 ),
                 (
                     "module_error.sma",
-                    'print: "ERROR' # error sintaxe the the error
+                    'print: "ERROR' # intentional syntax error
                 )
             ],
             sucess=False
@@ -1561,7 +1561,7 @@ try:
                     print: "F1";
                     f2:;
                 }
-                
+
                 void f2{;
                     print: "F2";
                     f3:;
@@ -1591,7 +1591,7 @@ try:
             output="FAOK"
         ),
         Test(
-            "Recurcive function",
+            "Recursive function",
             code="""
                 .n = 3;
                 .r = 1;
@@ -1606,7 +1606,7 @@ try:
 
                         factoriel:;
                         }
-                    
+
                     }
 
                 factoriel:;
@@ -1615,7 +1615,7 @@ try:
             output="OK6"
         ),
         Test(
-            "Return function with advenced value parameters",
+            "Return function with advanced value parameters",
             code="""
                 void f: ~arg1{;
                 print: ~arg1;
@@ -1626,7 +1626,7 @@ try:
             output="STR"
         ),
         Test(
-            "Advenced return function",
+            "Advanced return function",
             code="""
                 void f1{;
                     print: "F1";
@@ -1714,7 +1714,7 @@ try:
             sucess=False
         ),
         Test(
-            "Invalid sintaxe with parameters 1",
+            "Invalid syntax with parameters 1",
             code="""
                 void f .a {;
                     print: "ERROR";
@@ -1723,7 +1723,7 @@ try:
             sucess=False
         ),
         Test(
-            "Invalid sintaxe with parameters 2",
+            "Invalid syntax with parameters 2",
             code="""
                 void f: .a, {;
                     print: "ERROR";
@@ -1732,7 +1732,7 @@ try:
             sucess=False
         ),
         Test(
-            "Invalid sintaxe with parameters 3",
+            "Invalid syntax with parameters 3",
             code="""
                 void f: error {;
                     print: "ERROR";
@@ -1787,7 +1787,7 @@ try:
             "Debug mode with remove",
             code="""
                 compiletime debug True;
-                
+
                 .a = 'A';
                 ~b = "STRING";
 
@@ -1821,7 +1821,7 @@ OK2"""
             output="A"
         ),
         Test(
-            "Advenced value realloc",
+            "Advanced value realloc",
             code="""
                 ~a = "STRING";
                 compiletime realloc ~a to ~b;
@@ -1842,7 +1842,7 @@ OK2"""
             output="AAA"
         ),
         Test(
-            "Some advenced value realloc",
+            "Some advanced value realloc",
             code="""
                 ~a = "STRING";
                 print: ~a;
@@ -1864,7 +1864,7 @@ OK2"""
         ),
         # ---- error ----
         Test(
-            "Excepted keyword after compiletime",
+            "Expected keyword after compiletime",
             code="""
                 compiletime;
                 print: "ERROR";
@@ -1873,21 +1873,21 @@ OK2"""
         ),
         # define
         Test(
-            "Define sintaxe error 1",
+            "Define syntax error 1",
             code="""
                 compiletime define to 'A';
             """,
             sucess=False
         ),
         Test(
-            "Define sintaxe error 2",
+            "Define syntax error 2",
             code="""
                 compiletime define VALUE 'A';
             """,
             sucess=False
         ),
         Test(
-            "Define sintaxe error 3",
+            "Define syntax error 3",
             code="""
                 compiletime define VALUE to;
             """,
@@ -1973,7 +1973,7 @@ OK2"""
             sucess=False
         ),
         Test(
-            "Compiletime realloc simple to advenced value error",
+            "Compiletime realloc simple to advanced value error",
             code="""
                 ~a = "STRING";
                 compiletime realloc ~a to .b;
@@ -2023,9 +2023,9 @@ OK2"""
             output="ABOK"
         ),
         Test(
-            "asm_entry replace - adress",
+            "asm_entry replace - address",
             code="""
-                print: "00000"; // change the adress of the asm_entry
+                print: "00000"; // change the address of the asm_entry
                 asm_entry: "4C @adress+8| A9 41 20 EF FF "; // the 4C jump after the code for print A
                 print: "OK";
             """,
@@ -2036,7 +2036,7 @@ OK2"""
             code="""
                 .a = '@';
 
-                asm_entry: "AD @var_adress:.a| 20 EF FF"; // print the value of .a with the adress.
+                asm_entry: "AD @var_adress:.a| 20 EF FF"; // print the value of .a with the address.
                 print: "OK";
             """,
             output="@OK"
@@ -2104,7 +2104,7 @@ OK2"""
             sucess=False
         ),
         Test(
-            "Bad number on asm_entry - adress",
+            "Bad number on asm_entry - address",
             code="""
                 asm_entry: "AD @adress+error| 20 EF FF";
                 print: "ERROR";
@@ -2125,7 +2125,7 @@ OK2"""
             output="12"
         ),
         Test(
-            "Advenced variable test",
+            "Advanced variable test",
             code="""
                 ~string = "STRING";
                 print: ~string;
@@ -2152,7 +2152,7 @@ OK2"""
             sucess=False
         ),
         Test(
-            "Error max variable created with advenced variable",
+            "Error max variable created with advanced variable",
             code="".join([f"~str_{i} = \"\";" for i in range(compiller_data_run.MAX_VARIABLE_CREATED // 21)]) + "".join(f".var_{i} = 0;" for i in range(compiller_data_run.MAX_VARIABLE_CREATED % 21 + 1)),
             sucess=False
         )
@@ -2235,7 +2235,7 @@ OK2"""
             output="TRY BLOCKEXCEPT BLOCKEND"
         ),
         Test(
-            "Error on except bloc",
+            "Error on except block",
             code="""
                 try{;
                     print: "TRY";
@@ -2250,7 +2250,7 @@ OK2"""
             output="TRYEXCEPTEE"
         ),
         Test(
-            "Try except block on try excpet",
+            "Try except block on try except",
             code="""
                 try{;
                     print: '1';
@@ -2275,7 +2275,7 @@ OK2"""
         ),
         # --- error ---
         Test(
-            "Try without bloc",
+            "Try without block",
             code="""
                 try;
                 print: "ERROR";
@@ -2283,7 +2283,7 @@ OK2"""
             sucess=False
         ),
         Test(
-            "Except without bloc",
+            "Except without block",
             code="""
                 try{;
                     print: "TRY";
@@ -2359,7 +2359,7 @@ OK2"""
                 void f{;
                     print: "FUNCTION";
                 }
-            
+
                 thread{;
                     f:;
                 }
@@ -2368,7 +2368,7 @@ OK2"""
             sucess=False
         ),
         Test(
-            "Sintaxe error on thread - 1",
+            "Syntax error on thread - 1",
             code="""
                 thread;
                 print: "ERROR";
@@ -2376,7 +2376,7 @@ OK2"""
             sucess=False
         ),
         Test(
-            "Sintaxe error on thread - 2",
+            "Syntax error on thread - 2",
             code="""
                 thread uknow_option{;
                     print: "ERROR";
@@ -2406,13 +2406,13 @@ OK2"""
         )
 
     print(f"\n{Colors.RED}{round(error_counter / len(GLOBAL_TESTS) * 100, 2)}%{Colors.RESET} | {Colors.GREEN}{round((len(GLOBAL_TESTS) - error_counter) / len(GLOBAL_TESTS) * 100, 2)}%{Colors.RESET}")
-    
+
 except KeyboardInterrupt:
     print(f"\n{Colors.BG_YELLOW}Test stopped by user\nKeyboard interrupt.{Colors.RESET}")
 
 except Exception as e:
     print(
-        f"{Colors.BG_RED}An error occured during test: {e}{Colors.RESET}",
+        f"{Colors.BG_RED}An error occurred during test: {e}{Colors.RESET}",
         traceback.format_exc(),
         sep="\n"
     )

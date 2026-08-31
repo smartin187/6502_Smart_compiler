@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This module have the Smart object class:
+This module has the Smart object classes:
 - SmartObj
 - SmartFunction
 - SmartVariable
@@ -15,9 +15,9 @@ from compiller_tool.smart_exception import SmartError
 class SmartObj:
     def __init__(self, name:str):
         self.name = name
-    
+
 class ReservedAdress(SmartObj):
-    """Information about a reserved adress (adress). Used for adress for str value."""
+    """Information about a reserved address. Used for the address of str values."""
     def __init__(self, adress:int):
         super().__init__(name="ReservedAdress")
 
@@ -26,9 +26,9 @@ class ReservedAdress(SmartObj):
 class SmartFunction(SmartObj):
     """Information about a smart function."""
     def __init__(self, name:str, func_code:str, parameters:list[str]):
-        """Set the attibute of the function."""
+        """Set the attributes of the function."""
         super().__init__(name)
-        
+
         self.source_code_function = func_code
         self.code_compile_f = ""
         self.function_adress = 0
@@ -38,7 +38,7 @@ class SmartFunction(SmartObj):
         self.called_function = False    # if False at the end of build, the function was never called
 
 class SmartVariable(SmartObj):
-    """Information about a variable (name and adress on RAM)."""
+    """Information about a variable (name and address on RAM)."""
     def __init__(self, name:str, ram_adress):
         super().__init__(name)
 
@@ -46,7 +46,7 @@ class SmartVariable(SmartObj):
 
 
 class SmartGoto(SmartObj):
-    """Information about a goto (name and adress)."""
+    """Information about a goto (name and address)."""
     def __init__(self, name:str, adress:str):
         super().__init__(name)
 
@@ -56,7 +56,7 @@ SIZE_ADVANCED_OBJ = 0x15
 
 class AdvancedObj(SmartObj):
     """Information about an advanced object (str).
-    Use multi-byte
+    Uses multiple bytes.
     """
     def __init__(self, name:str, adress:int, size:int=SIZE_ADVANCED_OBJ):
         super().__init__(name)
@@ -65,15 +65,15 @@ class AdvancedObj(SmartObj):
         self.size = size
 
 class SmartStr(AdvancedObj):
-    """Information about a string (name and adress)."""
+    """Information about a string (name and address)."""
     def __init__(self, name:str, adress:str):
         super().__init__(name, adress)
-    
+
 
     def get_index(self, line:str, test_mode:bool=False) -> tuple[bool, int | str]:
         """Return the index from the line.
         Return: tuple[
-            bool: if the value is an literal value (True) or a variable / expression (False),
+            bool: if the value is a literal value (True) or a variable / expression (False),
             int | str: the index (int) or the variable / expression (str)
         ]
         """
@@ -92,12 +92,12 @@ class SmartStr(AdvancedObj):
 
         elif index < -SIZE_ADVANCED_OBJ:
             raise SmartError(f"Index out of range for '{line.split('=')[0]}', min index is {-SIZE_ADVANCED_OBJ}.", set_error=not test_mode)
-    
+
         if index < 0:
             index = SIZE_ADVANCED_OBJ + index
-        
+
         return True, index
 
     def get_adress_from_index(self, index:int) -> str:
-        """Return the adress of the character at the given index."""
+        """Return the address of the character at the given index."""
         return self.ram_adress + index

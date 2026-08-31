@@ -16,12 +16,12 @@ PATH_LIB = {
 }
 
 class ModuleInfo:
-    """A class used from compile_smarty for get the variable and function name + binary code."""
+    """A class used by compile_smarty to get the variable and function names + binary code."""
     def __init__(self, binary:str, variable:dict, function:dict):
         self.binary = binary
         self.variables = variable
         self.function = function
-    
+
 def show_path_lib() -> None:
     """Show the path for the global and smart lib."""
     print(f"{Colors.GREEN}Lib path (for import from lib and smart):{Colors.RESET}",
@@ -41,7 +41,7 @@ def control_lib() -> None:
 
 
 def config_import(_compile_smarty) -> None:
-    """Get dependence from smart_compiller.py"""
+    """Get the dependency from smart_compiller.py"""
     global compile_smarty
     compile_smarty = _compile_smarty
 
@@ -58,12 +58,12 @@ def get_module(path:str, start_adress:int) -> ModuleInfo:
         module_info.binary = module_info.binary.split(":")[1].lstrip()
 
         return module_info
-    
+
     except RecursionError:
         raise ModuleError("Error during compiling module. Maybe a module have import it?", recursion=True, module_name=path)
 
 def import_module(file_name:str, start_adress:int, no_error:bool=False) -> ModuleInfo:
-    """Import a module from name (path can be relative of abs)."""
+    """Import a module from name (path can be relative or absolute)."""
     path = os.path.abspath(file_name)
 
     if not Path(path).is_file():
@@ -71,7 +71,7 @@ def import_module(file_name:str, start_adress:int, no_error:bool=False) -> Modul
 
     return get_module(path, start_adress)
 
-    
+
 
 def import_lib(file_name:str, start_adress:int, no_error:bool=False) -> ModuleInfo:
     """Import a module from the library. Path is :
@@ -102,7 +102,7 @@ def import_smart(file_name:str, start_adress:int, no_error:bool=False) -> Module
     return get_module(path, start_adress)
 
 def import_all(file_name:str, start_adress:int) -> ModuleInfo:
-    """Import a module from all the path (file, lib, smart).
+    """Import a module from all the paths (file, lib, smart).
     The order is file, lib, smart."""
     try:
         return import_module(file_name, start_adress, no_error=True)

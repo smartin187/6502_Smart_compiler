@@ -12,9 +12,9 @@ import "screen_tool/screen_tool.sma";
 
 ### Clear screen
 
-The function `screen_clean` clears the screen. It print 24 carrings returns.
+The function `screen_clean` clears the screen. It prints 24 carriage returns.
 
-For use:
+To use:
 
 ```Smart
 screen_clean:;

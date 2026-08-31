@@ -50,7 +50,7 @@ This value is a 1-byte hexadecimal number, ranging from `00` to `FF`.
 
 ##### `int` value
 
-This value is beetween 0 and 255.
+This value is between 0 and 255.
 
 
 ##### `char` value
@@ -82,16 +82,16 @@ Allowed characters are the same as for [`char`](#char-value).
 
 > **Only on print function**, the `str` can be longer than 21 **if the string is know at the compile time!**. For other `str`, the max length is 21.
 
-**Escape caracters**
+**Escape characters**
 
-One `str`, you have escape caracters.
+One `str`, you have escape characters.
 
-- `\r`: carring return
+- `\r`: carriage return
 - `\"`: for have a `"`
 
 ###### F-string
 
-F-string is a mode for add simple value incide a `str` value.
+F-string is a mode for add simple value inside a `str` value.
 
 F-string start with `F` and have `{}` for add a simple value.
 
@@ -128,7 +128,7 @@ Registers X and Y are rarely used directly, because they are normally used for l
 
 #### compiletime keyword
 
-The `compiletime` keyword is used to set a action during compillation.
+The `compiletime` keyword is used to set a action during compilation.
 
 ##### `compiletime define`
 
@@ -161,7 +161,7 @@ print: MY_CONSTANT; // B
 
 ##### `compiletime debug`
 
-If you have probleme with your code, you can use `compiletime debug` for print the line running at the run time.
+If you have problem with your code, you can use `compiletime debug` for print the line running at the run time.
 
 For activate the debug, set:
 
@@ -183,7 +183,7 @@ compiletime debug 0;
 
 When debug is activated, for all lines running, the line is printed before the line is run.
 
-> On SmartyKit or Apple 1, some character are not allowed. On the line printed, if a letter is lowcase, the letter will be printed as uppercase. If the caracter can't be printed, the caracter is replaced by `?`.
+> On SmartyKit or Apple 1, some character are not allowed. On the line printed, if a letter is lowercase, the letter will be printed as uppercase. If the character can't be printed, the character is replaced by `?`.
 
 **Example:**
 ```Smart
@@ -206,7 +206,7 @@ A
 
 > Note: the comment and the `;` are removed.
 
-**Carful**: the hex generated with debug activated can be big! If you can, use debug only for some lines and next set `compiletime debug False;`. Moreover, the programm will be slower...
+**Careful**: the hex generated with debug activated can be big! If you can, use debug only for some lines and next set `compiletime debug False;`. Moreover, the program will be slower...
 
 If you use the [Smart Emulator](#interpret-smart-code-emulator), you can set the speed to maximum. See [Speeding up program execution](#speeding-up-program-execution).
 
@@ -218,13 +218,13 @@ You can use when a variable is used in a time, but not used after. So you can re
 
 See [Variables](#variables) for more information about variable.
 
-Sintaxe:
+Syntax:
 ```Smart
 .old_variable = value;
 compiletime realloc .old_variable to .new_variable;
 ```
 
-For exemple:
+For example:
 ```Smart
 .a = 1;
 compiletime realloc .a to .b;
@@ -232,18 +232,18 @@ compiletime realloc .a to .b;
 print: .b;
 ```
 
-> Note: the adress of new variable is the same to old variable. So if you don't change the value of new variable, the value of old variable is used.
+> Note: the address of new variable is the same to old variable. So if you don't change the value of new variable, the value of old variable is used.
 
-Exemple:
+Example:
 ```Smart
 .a = 'A';
 compiletime realloc .a to .b;
 print: .b; // A
 ```
 
-> You can't realloc a variable of a different type: simple value and advenced value.
+> You can't realloc a variable of a different type: simple value and advanced value.
 
-For exemple, you can't do:
+For example, you can't do:
 ```Smart
 .simple_value = 1;
 compiletime realloc .simple_value to ~advenced_value; // ERROR
@@ -254,9 +254,9 @@ compiletime realloc ~advenced_value to .simple_value; // ERROR
 
 ##### `compiletime log`
 
-You can set a message on the log of compiller.
+You can set a message on the log of compiler.
 
-For exemple it is helpful if you make a library and you want to give information:
+For example it is helpful if you make a library and you want to give information:
 
 ```Smart
 // your library
@@ -269,20 +269,20 @@ void function{;
 compiletime log "Library was successfully compiled!";
 ```
 
-On the output of compiller, you will have:
+On the output of compiler, you will have:
 ```log
 SmartCompiller INFO: [Compiletime info]: Library was successfully compiled!
 ```
 
 #### Variables
 
-On Smart, they are 2 variables type: simple and advenced.
+On Smart, they are 2 variables type: simple and advanced.
 
 Simple variable can be used for [`bool` value](#bool-value), [`hex` value](#hex-value), [`int` value](#int-value), and [`char` value](#char-value).
 
-Advenced value can be used for [`str` value](#str-string-of-char).
+Advanced value can be used for [`str` value](#str-string-of-char).
 
->Carful: advenced value need a lot of memory!
+>Careful: advanced value need a lot of memory!
 
 ##### Simple variable
 
@@ -297,7 +297,7 @@ Variable names can contain lowercase letters, digits, and underscores `_`. A lea
 
 To use the value of a variable (for example, in a function), write the variable name (including the leading dot).
 
-##### Advenced variable
+##### Advanced variable
 
 The syntax is `~variable_name = "VALUE";`.
 
@@ -305,7 +305,7 @@ Variable names can contain lowercase letters, digits, and underscores `_`. A lea
 
 To use the value of a variable (for example, in a function), write the variable name (including the leading tilde).
 
->Carful: advenced variable canno't be used for some operation (like math operation...).
+>Careful: advanced variable cannot be used for some operation (like math operation...).
 
 ###### Indexing on advanced variable (`list` or `str`)
 
@@ -333,7 +333,7 @@ You can then use [`goto`](#goto).
 
 #### Operator
 
-Operator are the mathematic operator and logic operator.
+Operator are the mathematical operator and logic operator.
 
 For all operator, all value are accepted. If the value is a char, the value used is the ASCII code.
 
@@ -377,7 +377,7 @@ Compare 2 value, return True if value are equal False else.
 
 #### Condition
 
-You can use a conditionnal bloc with `if`.
+You can use a conditional block with `if`.
 
 ```Smart
 if condition{;
@@ -385,9 +385,9 @@ if condition{;
 }
 ```
 
-The condition is a value (int, char, boolean value...). If the value is not `0`, the bloc is run.
+The condition is a value (int, char, boolean value...). If the value is not `0`, the block is run.
 
-Then an `if` bloc, you can set a `elif` bloc. This condition is verifed if the condition of `if` bloc is `False`.
+Then an `if` block, you can set a `elif` block. This condition is verified if the condition of `if` block is `False`.
 
 ```Smart
 if False{;
@@ -398,9 +398,9 @@ elif True{;
 }
 ```
 
->You can have several `elif` bloc.
+>You can have several `elif` block.
 
-Then an `if` or `elif` bloc, you can set a `else` bloc:
+Then an `if` or `elif` block, you can set a `else` block:
 
 ```Smart
 if False{;
@@ -411,7 +411,7 @@ else{;
 }
 ```
 
-##### Exemple
+##### Example
 
 ```Smart
 if True == True{;
@@ -437,7 +437,7 @@ This loop is runing as long as the condition is `True`.
 
 If you set `True` on the condition, you have an infinity loop.
 
-###### Sintaxe
+###### Syntax
 
 ```Smart
 while True{;
@@ -454,13 +454,13 @@ On `while` loop, you can use [`break`](#break) and [`continue`](#continue) keywo
 
 ##### `for` loop
 
-The for loop reapet a bloc of code from a start value to an end value with a step, or iterate on an advenced value (`str` or `list`).
+The for loop repeats a block of code from a start value to an end value with a step, or iterate on an advanced value (`str` or `list`).
 
-> It the loop iterate on advenced value, the loop reapeat 21 times (the lengh of advenced value is 21).
+> It the loop iterate on advanced value, the loop repeats 21 times (the length of advanced value is 21).
 
 You can get the current value of the loop, or not use the current value of the loop.
 
-**Reapeat from start / end:**
+**Repeat from start / end:**
 ```Smart
 // if you need the current value of the loop:
 for .variable in |start|end|step|{;
@@ -484,7 +484,7 @@ for .i in |.a + 1|.b * 2|.c|{;
 }
 ```
 
-**Iterate on advenced value:**
+**Iterate on advanced value:**
 ```Smart
 ~string = "ABCDEFG";
 for .char in ~string {;
@@ -498,7 +498,7 @@ If the start value is more than the end value, **the loop is run!**.
 
 The counter is incremented by step value, and when the counter is more than 255, the counter is set to 0. Finally, the counter is incremented, and when the counter is **equal** to end value, the loop is stop.
 
-For exemple:
+For example:
 
 ```Smart
 for .i in |10|5|1|{;
@@ -510,7 +510,7 @@ The counter start to 10, is incremented to 255 and then to 0, and after is to 5.
 
 ###### If the counter is never equal to end value
 
-**Carful**: if the counter is never equal to end value, the loop is infinite!
+**Careful**: if the counter is never equal to end value, the loop is infinite!
 
 ```Smart
 for .i in |0|5|2|{;
@@ -520,7 +520,7 @@ for .i in |0|5|2|{;
 
 This loop have not end!
 
-**Exemples:**
+**Examples:**
 ```Smart
 // for loop with current value of the loop:
 for .i in |0|10|1|{;
@@ -538,7 +538,7 @@ On `for` loop, you can use [`break`](#break) and [`continue`](#continue) keyword
 
 Use this keyword for go out of loop.
 
-###### Sintaxe
+###### Syntax
 
 ```Smart
 // on while
@@ -560,7 +560,7 @@ for .i in |0|10|1|{;
 
 Use this keyword for restart the loop.
 
-###### Sintaxe
+###### Syntax
 
 ```Smart
 // on for:
@@ -644,22 +644,22 @@ goto: loop;
 
 ###### `asm_entry`
 
-Use this functtion for enter assembly code for MOS 6502.
+Use this function for enter assembly code for MOS 6502.
 
 **Warning:** if you use the [Smart Emulator](#interpret-smart-code-emulator), `asm_entry` can cause errors...
 
-Exemple:
+Example:
 ```Smart
 asm_entry: "A9 41 20 EF FF";    // display A on monitor
 ```
 
 **Replace on `asm_entry`:**
 
-You can set special sequence on `asm_entry` for get the current adress or the adress of a variable.
+You can set special sequence on `asm_entry` for get the current address or the address of a variable.
 
-_Current adress:_
+_Current address:_
 
-Set on the `asm_entry` the sequence `@adress` for get **the adress of first byte of hex code**.
+Set on the `asm_entry` the sequence `@adress` for get **the address of first byte of hex code**.
 
 ```Smart
 print: "AAA";   // this code change the current adress
@@ -667,7 +667,7 @@ print: "AAA";   // this code change the current adress
 asm_entry: "A9 41 20 EF FF 4C @adress"; // make a infinite loop with print 'A'
 ```
 
-With `@adress` sequence, you can set a offset on the adress with `+` or `-`. The sequence is `@adress+offset|` or `@adress-offset|`:
+With `@adress` sequence, you can set a offset on the address with `+` or `-`. The sequence is `@adress+offset|` or `@adress-offset|`:
 
 ```Smart
 asm_entry: "A9 41 20 EF FF 4C @adress+2|"; // make a infinite loop with print 'A' without LDA on the loop.
@@ -676,9 +676,9 @@ asm_entry: "A9 41 20 EF FF 4C @adress+2|"; // make a infinite loop with print 'A
 > Don't forget the `|` after the offset!
 
 
-_Adress of variable:_
+_Address of variable:_
 
-You can get the adress of a variable with `@var_adress`. The sequence is `@var_adress:.var|` or `@var_adress:~advenced_var|`.
+You can get the address of a variable with `@var_adress`. The sequence is `@var_adress:.var|` or `@var_adress:~advenced_var|`.
 
 ```Smart
 .a = 'A';
@@ -692,7 +692,7 @@ asm_entry: "AD @var_adress:~b| 20 EF FF ";  // print the first char of ~b
 
 ###### `wozm` (Woz Monitor)
 
-This function stop programme and return to Woz Monitor.
+This function stop program and return to Woz Monitor.
 
 This function go to `FF1F`, the Woz Monitor `GETLINE`.
 
@@ -704,17 +704,17 @@ This function exits the program.
 
 It does not take any arguments.
 
-> `quit` stop the programme but not return to Woz Monitor. Use `wozm` if you want to return to Woz Monitor.
+> `quit` stop the program but not return to Woz Monitor. Use `wozm` if you want to return to Woz Monitor.
 
 ###### `restart`
 
-This function restart the programme (the programme go to the first operation).
+This function restart the program (the program go to the first operation).
 
 ##### Build your own function
 
 You can build your own function.
 
-The syntaxe is:
+The syntax is:
 ```Smart
 void name_of_function{;
     // function code
@@ -736,7 +736,7 @@ void f: .arg1, .arg2{;
 f: 1, 2;
 ```
 
-A parameter of a function can also be a advenced value (`str` or `list`):
+A parameter of a function can also be a advanced value (`str` or `list`):
 
 ```
 void f: ~arg1, ~arg2{;
@@ -746,7 +746,7 @@ void f: ~arg1, ~arg2{;
 f: "STR1", "STR2";
 ```
 
-> Carful: with recursice function, the parameter of the function are shared with all call of the function.
+> Careful: with recursive function, the parameter of the function are shared with all call of the function.
 
 If your function is a return-function, you need the line:
 ```Smart
@@ -756,11 +756,11 @@ void returnfonction{;
 }
 ```
 
-> **Carfull**: some bug are to fix with return function ! For exemple, don't set `.x = 1 + f:;` but you can set `.x = f: + 1;`.
+> **Careful**: some bug are to fix with return function ! For example, don't set `.x = 1 + f:;` but you can set `.x = f: + 1;`.
 
 You can do a recursive function. Smart use the stack for the recursive function. You can have a max recursive of 128 (`256/2`).
 
-> If you exced the max recursive of 128, you will have stack overflow and the program can crash.
+> If you exceed the max recursive of 128, you will have stack overflow and the program can crash.
 
 
 #### Runtime error
@@ -773,7 +773,7 @@ error 'A'; // the error code is 'A'
 
 If an runtime error is set, the program displays `E` and next the error code.
 
->**The error code is display as ASCII code.** If your error code is `65` the error code is `A`.
+>**The error code is displayed as ASCII code.** If your error code is `65` the error code is `A`.
 
 >Warning: if the ASCII code can't be display by SmartyKit, the runtime error print only `E`.
 
@@ -793,7 +793,7 @@ _Please do not use this error code for your runtime error: you can't know what e
 
 ##### `try` `except` block
 
-You can catch a runtime error with a `try` `except` block. When a error occured on `try`, the program go to the `except` block.
+You can catch a runtime error with a `try` `except` block. When a error occurred on `try`, the program go to the `except` block.
 
 ```Smart
 try{;
@@ -804,7 +804,7 @@ except{;
 }
 ```
 
-For exemple:
+For example:
 ```Smart
 try{;
     print: "TRY BLOCK";
@@ -816,17 +816,17 @@ except{;
 }
 ```
 
-> Warning: if you call a function for `try` bloc, and this function have a runtime error, the program don't go to the `except` bloc...
+> Warning: if you call a function for `try` block, and this function have a runtime error, the program don't go to the `except` block...
 
 #### Multi-threading
 
-> Carful: this funcionality is in developpement. Some bug will be fix...
+> Careful: this functionality is in development. Some bug will be fix...
 
 You can have multi-threading with Smart.
 
 You can have only the main thread and a second thread.
 
-Sintaxe:
+Syntax:
 
 ```Smart
 thread{;
@@ -838,7 +838,7 @@ thread{;
 
 When the thread is declared, it start.
 
-For exemple:
+For example:
 
 ```Smart
 thread{;
@@ -880,13 +880,13 @@ So you can use the shared stack mode, but use fast time function...
 
 ##### Performance
 
-The performances of the multi-threading are not good on MOS6502. A lot of processor time is used for swith threads.
+The performances of the multi-threading are not good on MOS6502. A lot of processor time is used for switch threads.
 
 Moreover, the binary code can be very big.
 
 > Use multi-threading only if you need it.
 
-###### Processor time (aproximative)
+###### Processor time (approximate)
 
 **No multi-threading**:
 - 100% of processor (1MHz) for main thread
@@ -897,7 +897,7 @@ Moreover, the binary code can be very big.
 
 > A Smart operation: very variable, on average `8` time. Can be more if the operation have string.
 
-_Aproximative processor time:_
+_Approximate processor time:_
 - ~ 70% (0,7MHz) for manage thread
 - ~ 15% (0,15MHz) for main thread
 - ~ 15% (0,15MHz) for second thread
@@ -950,18 +950,18 @@ On a Smarty Kit, execution speed is slow. With the interpreter, you can increase
 Smart use RAM.
 - `0x0300` to `0x0400`: variables
 - `0x0000` to `0x02FF`: Smart system:
->`0x0000`: save of A (for return-function)<br>`0x0001`: value of return-function<br>`0x0002`: `01` if need to call `else bloc` (after `if`). If `0x02E9 = 01` bloc `else` or `elif` are called.<br>`0x0003`: used for math (for operator `*` and `/`).<br>`0x0004` to `0x0032`: used for string `str`.
+>`0x0000`: save of A (for return-function)<br>`0x0001`: value of return-function<br>`0x0002`: `01` if need to call `else block` (after `if`). If `0x02E9 = 01` block `else` or `elif` are called.<br>`0x0003`: used for math (for operator `*` and `/`).<br>`0x0004` to `0x0032`: used for string `str`.
 
 ## Distribution of Smart
 
-For publish Smart, the Python script are compilled with Pyinstaller.
+For publish Smart, the Python script are compiled with Pyinstaller.
 
 See [build releases](./build_releases/readme.md) for more information.
 
 ## VS Code extension
 
-An extention for VS Code set a coloration for Smart language.
+An extension for VS Code set a coloration for Smart language.
 
-Go to the reposytory: [smart_smartykit_vscode_extension-cpmpr](https://github.com/smartin187/smart_smartykit_vscode_extension-cpmpr).
+Go to the repository: [smart_smartykit_vscode_extension-cpmpr](https://github.com/smartin187/smart_smartykit_vscode_extension-cpmpr).
 
 

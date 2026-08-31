@@ -1,29 +1,29 @@
 # -*- coding: utf-8 -*-
 
 """
-Have data during the compilation.
-Have constantes for the adress.
+Has data during the compilation.
+Has constants for the address.
 
-Have:
-- warning_endline: tuple for know if they are a warning if a line not end with ';'.
-- the number of adress reserved for str value.
+Has:
+- warning_endline: tuple to know if there is a warning if a line does not end with ';'.
+- the number of addresses reserved for str values.
 """
 
 # constent -------------------------------
 
 SYS_ADRESS = {
-    "main_thread_ptr_1": "00 00", # the pointer of main thread operation (used only on threading mode).
+    "main_thread_ptr_1": "00 00", # the pointer of main thread operation (used only in threading mode).
     "main_thread_ptr_2": "01 00", # the second byte of ptr
-    #"CallElse":"02 00 ",    # obsolette ! To remove
+    #"CallElse":"02 00 ",    # obsolete ! To remove
     "MathOP":"03 00 ",
-    "SaveStr":"04 00 ",     # SaveStr start at EB 00 and have a len of 21 (end at 0x19 00)
-    "SaveStrCMP":"19 00 ",  # SaveStrCMP start at 0x19 00 and have a len of 21 (end at 0x32 00) - Used to save a str for compare (if, ==...)
-    "SaveAToIndex":"32 00 ",   # SaveAToIndex start at 0x32 00
-    "second_thread_ptr_1": "48 00", # the pointer of second thread operation (used only on thread mode).
+    "SaveStr":"04 00 ",     # SaveStr starts at EB 00 and has a length of 21 (end at 0x19 00)
+    "SaveStrCMP":"19 00 ",  # SaveStrCMP starts at 0x19 00 and has a length of 21 (end at 0x32 00) - Used to save a str for compare (if, ==...)
+    "SaveAToIndex":"32 00 ",   # SaveAToIndex starts at 0x32 00
+    "second_thread_ptr_1": "48 00", # the pointer of second thread operation (used only in thread mode).
     "second_thread_ptr_2": "49 00" # the second byte of ptr
 }
 
-SMART_ERRORS = {     # the code error for Smart
+SMART_ERRORS = {     # the error codes for Smart
     "Index out of range": "I",
     "Division by zero": "/"
 }
@@ -35,11 +35,11 @@ SMART_PLACEHOLDER = (
     "!  smart_error_try"
 )
 
-BASE_ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ "   # the allowed char without \n and \r
+BASE_ALLOW_CHAR = "!\"#$%'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ "   # the allowed chars without \n and \r
 
 ALLOW_CHAR = BASE_ALLOW_CHAR + "\n\r"
 
-MAX_VARIABLE_CREATED = 256  # the maximum number of bytes for variable.
+MAX_VARIABLE_CREATED = 256  # the maximum number of bytes for variables.
 
 START_ADRESS_VAR = 0x300
 
@@ -47,18 +47,18 @@ OPERATOR = ("+", "-", "*", "/", "==", "!=", ">", "<", "<=", ">=")
 
 # base value -------------------------------
 
-_WARNING_ENDLINE = (False, )     # if an line not end by ; } or // in line or the last line
+_WARNING_ENDLINE = (False, )     # if a line does not end by ; } or // in the line or the last line
 # format: [0]: warning end line ; [1] : line of error ; [2]: module of error ('*' if main module)
 
-_NOT_USED_RAM = 0    # the number of not used RAM for str value
+_NOT_USED_RAM = 0    # the number of unused RAM bytes for str values
 
-_NEED_ERROR = False   # if need runtime error
+_NEED_ERROR = False   # if a runtime error is needed
 
-_DOUBLE_SPACE_ERROR = False # if an double space on code is detected.
+_DOUBLE_SPACE_ERROR = False # if a double space in the code is detected.
 
 _NOT_USED_CALL_ELSE = 0
 
-_DEBUG_MAX = False  # if the debug is True, on the binary the line running is print.
+_DEBUG_MAX = False  # if debug is True, the running line is printed in the binary.
 
 # -------------------------------
 

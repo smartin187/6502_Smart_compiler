@@ -29,7 +29,7 @@ def get_line_debug(line:str) -> str:
             else:
                 line_debug.append("?")
 
-        # make hex prorgam:
+        # make hex program:
         hex_programm = []
         for char in line_debug:
             hex_programm.append(f"A9 {hex(ord(char))[2:].upper()} 20 EF FF ")
@@ -37,11 +37,11 @@ def get_line_debug(line:str) -> str:
         hex_programm.append(f"A9 0D 20 EF FF ") # set a \r at the end
 
         return "".join(hex_programm)
-    
+
     return ""
 
 def compiletime_command(line:str, smart_var:dict) -> None:
-    """This function is for use the compiletime command."""
+    """This function is used to process the compiletime command."""
 
     line = line[len("compiletime "):].strip()
 
@@ -79,27 +79,27 @@ def compiletime_command(line:str, smart_var:dict) -> None:
         try:
             old_var, new_var = realloc_value.split(" to ")
         except:
-            raise SmartError("Invalid sintaxe after 'realloc': excepted oldvar to newvar.")
+            raise SmartError("Invalid syntax after 'realloc': expected oldvar to newvar.")
 
         prefix_old = old_var.strip()[0]
         prefix_new = new_var.strip()[0]
 
         if prefix_old != prefix_new:
-            raise SmartError(f"Invalid variable type for realloc: '{old_var}' and '{new_var}' have different types (simple and advenced).")
+            raise SmartError(f"Invalid variable type for realloc: '{old_var}' and '{new_var}' have different types (simple and advanced).")
 
         try:
             base_name_old = old_var.replace(" ", "")[1:]
             base_name_new = new_var.replace(" ", "")[1:]
         except:
-            raise SmartError("Invalid sintaxe for name of variable in realloc.")
+            raise SmartError("Invalid syntax for name of variable in realloc.")
 
         if len(base_name_old) == 0 or len(base_name_new) == 0:
-            raise SmartError("Invalid sintaxe for name of variable in realloc: empty variable name.")
+            raise SmartError("Invalid syntax for name of variable in realloc: empty variable name.")
 
         if not good_variable_name(base_name_old):
-            raise SmartError(f"Invalid sintaxe '{base_name_old}' for realloc (excepted variable name).")
+            raise SmartError(f"Invalid syntax '{base_name_old}' for realloc (expected variable name).")
         elif not good_variable_name(base_name_new):
-            raise SmartError(f"Invalid sintaxe '{base_name_new}' for realloc (excepted variable name).")
+            raise SmartError(f"Invalid syntax '{base_name_new}' for realloc (expected variable name).")
 
         if base_name_old not in smart_var:
             raise SmartError(f"Variable '{base_name_old}' not found for realloc.")
@@ -120,7 +120,7 @@ def compiletime_command(line:str, smart_var:dict) -> None:
         logging.info(f"{Colors.BOLD}[Compiletime info]{Colors.RESET}: {get_str(log_str)}")
 
     else:
-        raise SmartError("Excepted keyword after 'compiletime'.")
+        raise SmartError("Expected keyword after 'compiletime'.")
 
 
 
