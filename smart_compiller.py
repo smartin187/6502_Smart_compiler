@@ -1969,11 +1969,13 @@ def compile_smarty(
 
             smart_func = function_name_usr[function]
 
+            function_thread_mode = thread_mode if thread_mode[3] else [False, "", False, False]
+
             function_name_usr[function].code_compile_f = compile_smarty(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":smart_func, "if_mode":False},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter + 1,
-                thread_mode=thread_mode
+                thread_mode=function_thread_mode
             )
 
         # set the function:
