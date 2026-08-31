@@ -69,7 +69,7 @@ class MessageUser:
                     messagebox.showinfo(title, message, detail=detail)
 
                 case _:
-                    raise ValueError(f"Internal value error on smart emulator: unknow type_message {type_message}. Contact the developer if the probleme persists.")
+                    raise ValueError(f"Internal value error on smart emulator: unknown type_message {type_message}. Contact the developer if the problem persists.")
 
         else:
             head = f"{Colors.RED}Error{Colors.RESET}" if type_message == "error" else f"{Colors.YELLOW}Warning{Colors.RESET}" if type_message == "warning" else f"{Colors.BLUE}Info{Colors.RESET}" if type_message == "info" else ""
@@ -95,7 +95,7 @@ output_test = ""    # used only on test mode
 def control_adress(address: int, type_jump: str) -> None:
     """If the address is outside the program, show a warning to the user and stop the program."""
     if address >= len(code):
-        MessageUser.show_error("Error", "Address is outside the programme.", detail=f"Caused by a {type_jump} instruction.\nAdress outside: {hex(address + 0x400).upper()}")
+        MessageUser.show_error("Error", "Address is outside the programme.", detail=f"Caused by a {type_jump} instruction.\nAddress outside: {hex(address + 0x400).upper()}")
 
 
 if __name__ == "__main__":
@@ -125,17 +125,17 @@ if __name__ == "__main__":
 
 
                 else:
-                    MessageUser.show_error("Error", f"Unknow file type {file_type}.")
+                    MessageUser.show_error("Error", f"Unknown file type {file_type}.")
 
                 window_start.destroy()
 
         window_start = tk.Tk()
         window_start.title("Smart emulator")
 
-        text_info = tk.Label(window_start, text="Open a Smart code source (*.sma) or open a Assembly (*.asm).\nCarful: with assembly, the emulator can have error...")
+        text_info = tk.Label(window_start, text="Open a Smart code source (*.sma) or open an Assembly (*.asm).\nCareful: with assembly, the emulator can have errors...")
         text_info.pack()
 
-        button_open = tk.Button(window_start, text="Open *.sma of *.asm", command=open_smart)
+        button_open = tk.Button(window_start, text="Open *.sma or *.asm", command=open_smart)
         button_open.pack()
 
         try:
@@ -304,7 +304,7 @@ if GUI_MODE:        # set the button for ram and code
 
             new_ram = (f"{adress}       {ram[adress]}" for adress in ram)
 
-            RAM_info.insert(0, "Adress    Value")
+            RAM_info.insert(0, "Address    Value")
 
             for adress in new_ram:
                 RAM_info.insert(tk.END, adress)
@@ -351,7 +351,7 @@ if GUI_MODE:        # set the button for ram and code
         window_memory = tk.Toplevel(window_emulator)
         window_memory.title("Memory")
 
-        text_info = tk.Label(window_memory, text="Information about memory.\nYou can edit memory with double click on the value.\nCarful: editing memory can cause errors.")
+        text_info = tk.Label(window_memory, text="Information about memory.\nYou can edit memory with double click on the value.\nCareful: editing memory can cause errors.")
         text_info.grid(column=0, row=0, columnspan=3)
 
         frame_RAM = tk.LabelFrame(window_memory, text="RAM")
@@ -375,7 +375,7 @@ if GUI_MODE:        # set the button for ram and code
             window.title("Edit RAM")
 
 
-            text_info = tk.Label(window, text=f"Enter the new value for the RAM.\nCarful: editing memory can cause errors.\nAdress : {hex(adress)}")
+            text_info = tk.Label(window, text=f"Enter the new value for the RAM.\nCareful: editing memory can cause errors.\nAddress: {hex(adress)}")
             text_info.pack()
 
             entry_value = tk.Entry(window, width=5)
@@ -408,7 +408,7 @@ if GUI_MODE:        # set the button for ram and code
             window = tk.Toplevel(window_memory)
             window.title("Edit Accumulator")
 
-            text_info = tk.Label(window, text=f"Enter the new value for the {acc_name} accumulator.\nCarful: editing memory can cause errors.")
+            text_info = tk.Label(window, text=f"Enter the new value for the {acc_name} accumulator.\nCareful: editing memory can cause errors.")
             text_info.pack()
 
             entry_value = tk.Entry(window, width=5)
@@ -486,12 +486,12 @@ if GUI_MODE:        # set the button for ram and code
 
         # stack ptr
 
-        frame_ptr = tk.LabelFrame(window_memory, text="Stack pointer)")
+        frame_ptr = tk.LabelFrame(window_memory, text="Stack pointer")
         frame_ptr.grid(column=1, row=2)
 
         stack_ptr_info = tk.StringVar(window_memory)
 
-        test_info_ptr = tk.Label(frame_ptr, text="The Stack pointer (SP) is an offset from 0x100.\nThe SP can be between 0x00 and 0xFF.\nThe stack is on RAM from 0x100 to 0x1FF.\nFor edit stack, edit the RAM from 0x100 to 0x1FF.")
+        test_info_ptr = tk.Label(frame_ptr, text="The Stack pointer (SP) is an offset from 0x100.\nThe SP can be between 0x00 and 0xFF.\nThe stack is on RAM from 0x100 to 0x1FF.\nTo edit the stack, edit the RAM from 0x100 to 0x1FF.")
         test_info_ptr.pack()
 
         label_stack_ptr = tk.Label(frame_ptr, textvariable=stack_ptr_info)
@@ -546,7 +546,7 @@ if GUI_MODE:        # set the button for ram and code
         """Open a window to see the code and see the step."""
         def update_code() -> None:
             """Update the listbox for code"""
-            string_run.set(f"Adress running: 0x{hex(0x400 + run_step)[2:].upper() if not end_run else 'End of code'}")
+            string_run.set(f"Address running: 0x{hex(0x400 + run_step)[2:].upper() if not end_run else 'End of code'}")
 
             pos_listbox = list_code.yview()[0]
             selection = list_code.curselection()
@@ -556,7 +556,7 @@ if GUI_MODE:        # set the button for ram and code
 
             adress_conter = 0
 
-            list_code.insert(0, "Adress    Code")
+            list_code.insert(0, "Address    Code")
 
             for i in code[1:]:
                 list_code.insert(tk.END, f"{hex(0x400 + adress_conter)}      {i}")
@@ -575,7 +575,7 @@ if GUI_MODE:        # set the button for ram and code
         window_code = tk.Toplevel(window_emulator)
         window_code.title("See code")
 
-        text_info = tk.Label(window_code, text="See code\nDouble click on a line for edit the code.\nCarful: editing code can cause errors.")
+        text_info = tk.Label(window_code, text="See code\nDouble click on a line to edit the code.\nCareful: editing code can cause errors.")
         text_info.pack()
 
         string_run = tk.StringVar(window_code, value="")
@@ -622,7 +622,7 @@ if GUI_MODE:        # set the button for ram and code
             window = tk.Toplevel(window_code)
             window.title("Edit code")
 
-            text_info = tk.Label(window, text=f"Enter the new value for the code.\nCarful: editing code can cause errors.\nAdress : {hex(0x400 + code_index)}")
+            text_info = tk.Label(window, text=f"Enter the new value for the code.\nCareful: editing code can cause errors.\nAddress: {hex(0x400 + code_index)}")
             text_info.pack()
 
             entry_value = tk.Entry(window, width=5)
@@ -658,7 +658,7 @@ if GUI_MODE:        # set the button for ram and code
         frame_goto = tk.LabelFrame(frame_setting, text="Go to")
         frame_goto.grid(column=1, row=0)
 
-        text_goto = tk.Label(frame_goto, text="Enter the adress to go (hexadecimal):")
+        text_goto = tk.Label(frame_goto, text="Enter the address to go to (hexadecimal):")
         text_goto.pack()
 
         frame_entry = tk.Frame(frame_goto)
@@ -672,7 +672,7 @@ if GUI_MODE:        # set the button for ram and code
             global run_step
 
             if end_run:
-                MessageUser.show_error("Error", "The code is already run. You can't go to an adress.")
+                MessageUser.show_error("Error", "The code is already run. You can't go to an address.")
                 return
 
             try:
@@ -684,7 +684,7 @@ if GUI_MODE:        # set the button for ram and code
             if 0x400 <= adress < 0x400 + len(code) - 1:
                 run_step = adress - 0x400 + 1
             else:
-                MessageUser.show_error("Error", f"Invalid adress. Please enter a hexadecimal value between {hex(0x400)} and {hex(0x400 + len(code) - 1)}.")
+                MessageUser.show_error("Error", f"Invalid address. Please enter a hexadecimal value between {hex(0x400)} and {hex(0x400 + len(code) - 1)}.")
 
 
 
@@ -844,7 +844,7 @@ def run_smart() -> None:
             break
 
         if run_step < 0:
-            MessageUser.show_error("Error", "Run step before 0x400.\nRun step is on variable adress.\n", detail="This can be caused by a wrong jump or branch in the code.")
+            MessageUser.show_error("Error", "Run step before 0x400.\nRun step is on variable address.\n", detail="This can be caused by a wrong jump or branch in the code.")
             run_fail = True
             break
 
@@ -915,7 +915,7 @@ def run_smart() -> None:
                         try:
                             code[int(adress, base=16) - START + 1] = accumulator["A"]
                         except:
-                            MessageUser.show_error("Error", "Write on unknow adress.", detail="Detail: {}".format(hex(0x400 + int(adress, base=16) - START + 1)).upper())
+                            MessageUser.show_error("Error", "Write on unknown address.", detail="Detail: {}".format(hex(0x400 + int(adress, base=16) - START + 1)).upper())
                             run_fail = True
                             break
                     else:
@@ -1001,7 +1001,7 @@ def run_smart() -> None:
                         adress_call = int(code[run_step + 1] + code[run_step], base=16) - START + 1
 
                         if adress_call + 0x400 >= 0x400 + len(code):
-                            MessageUser.show_error("Error", "Unknow adress for call.", detail=f"On JSR (jump to subroutine), the adress is outside the programme.\nAdress outside: {hex(adress_call + 0x400).upper()}")
+                            MessageUser.show_error("Error", "Unknown address for call.", detail=f"On JSR (jump to subroutine), the address is outside the programme.\nAddress outside: {hex(adress_call + 0x400).upper()}")
                             run_fail = True
                             break
 
@@ -1035,7 +1035,7 @@ def run_smart() -> None:
 
                     if goto == "FF1F":  # routine Get Line of woz monitor
                         if not no_wozm:
-                            MessageUser.show_warning("Warning", "The code jump to the routine Get Line of Woz monitor.", detail="The programme have retourned to Woz monitor.\nThe emulator are stopping...")
+                            MessageUser.show_warning("Warning", "The code jumps to the routine Get Line of Woz monitor.", detail="The programme has returned to Woz monitor.\nThe emulator is stopping...")
                         break
 
                     run_step = int(goto, base=16) - START + 1
@@ -1203,7 +1203,7 @@ def run_smart() -> None:
                     run_step += 2
 
                 case _:
-                    MessageUser.show_error("Error", f"Unknow assembly : {run}, at {run_step} step.")
+                    MessageUser.show_error("Error", f"Unknown assembly : {run}, at {run_step} step.")
                     run_fail = True
                     break
 
@@ -1263,11 +1263,11 @@ if __name__ == "__main__":
             try:
                 run_smart()
             except IndexError:
-                MessageUser.show_error("Error", "Error with adress.")
+                MessageUser.show_error("Error", "Error with address.")
                 error_during_run()
 
             except KeyError as e:
-                MessageUser.show_error("Error", "Unknow adress RAM", detail=f"Adress: 0x{str(e)[1:-1]}")
+                MessageUser.show_error("Error", "Unknown address RAM", detail=f"Address: 0x{str(e)[1:-1]}")
                 error_during_run()
 
             except Exception as e:
