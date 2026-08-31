@@ -559,7 +559,7 @@ def compile_smarty(
 
                         # test index out of range on runtime error
                         test_index = "C9 15 "    # CMP #0x15
-                        counter_adress_value += 3
+                        counter_adress_value += 3 # 2 ??
 
                         test_index += "90 !smart:len_error_index "     # branch if index > 21
                         counter_adress_value += 2
@@ -1177,6 +1177,23 @@ def compile_smarty(
                 else:
                     code_compile += f"{set_on_A_value(index_var)}AA "     # save on X index delta
                     address_counter += 1
+
+                    # -------- control index for runtime error
+                    test_index = "C9 15 "    # CMP #0x15
+                    address_counter += 2
+
+                    test_index += "90 !smart:len_error_index "     # branch if index > 21
+                    address_counter += 2
+
+                    error_code = make_error("'I'", add_to_adress_conter=False)
+                    test_index = test_index.replace("!smart:len_error_index", get_hex_from_int(error_code.count(" ")))
+
+                    test_index += error_code
+                    address_counter += error_code.count(" ")
+
+                    code_compile += test_index
+
+                    # --------
 
                     code_compile += set_on_A_value(value)
 
