@@ -260,12 +260,17 @@ try:
             Test(
                 "Test library import",  # test for import all library. When a new library is added, add a test for it.
                 code="""
+                    // --- screen tool ---
                     import "screen_tool/screen_tool.sma";
+
+                    // --- string library ---
+                    import "string/convert.sma";
 
                     print: "OK";
                 """,
                 output="OK"
             ),
+            # --- screen tool ---
             Test(
                 "Test screen tool",
                 code="""
@@ -274,6 +279,21 @@ try:
                     print: "OK";
                 """,
                 output='\n' * 24 + "OK"
+            ),
+            # --- string library ---
+            Test(
+                "Test convert",
+                code="""
+                    import "string/convert.sma";
+                    .a = int_to_char: 1;
+                    print: .a;
+
+                    .b = char_to_int: '1';
+                    if .b == 1{;
+                        print: "OK";
+                    }
+                """,
+                output="1OK"
             )
         )
     else:
