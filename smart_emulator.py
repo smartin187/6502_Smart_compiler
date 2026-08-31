@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-A Smart emulator.
+The Smart emulator (for Apple1/SmartyKit 6502).
 Run Smart code one a emulator.
 """
 
@@ -70,7 +70,7 @@ class MessageUser:
 
                 case _:
                     raise ValueError(f"Internal value error on smart emulator: unknow type_message {type_message}. Contact the developer if the probleme persists.")
-            
+
         else:
             head = f"{Colors.RED}Error{Colors.RESET}" if type_message == "error" else f"{Colors.YELLOW}Warning{Colors.RESET}" if type_message == "warning" else f"{Colors.BLUE}Info{Colors.RESET}" if type_message == "info" else ""
             input(f"{head}: {Colors.BOLD}{message}{Colors.RESET}\n{detail}\n{Colors.GREEN}Press enter to continue...{Colors.RESET}")
@@ -82,7 +82,7 @@ class MessageUser:
     def show_warning(title:str, message:str, detail:str="") -> None:
         """Show a warning message for user. If GUI_MODE is True, use messagebox, else, print on console."""
         MessageUser.show_message_user("warning", title, message, detail)
-    
+
     def show_info(title:str, message:str, detail:str="") -> None:
         """Show an info message for user. If GUI_MODE is True, use messagebox, else, print on console."""
         MessageUser.show_message_user("info", title, message, detail)
@@ -96,7 +96,7 @@ def control_adress(address: int, type_jump: str) -> None:
     """If the adress is outside the programme, set a warning to user and stop the programme."""
     if address >= len(code):
         MessageUser.show_error("Error", "Address is outside the programme.", detail=f"Caused by a {type_jump} instruction.\nAdress outside: {hex(address + 0x400).upper()}")
-        
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2 and GUI_MODE:
@@ -126,7 +126,7 @@ if __name__ == "__main__":
 
                 else:
                     MessageUser.show_error("Error", f"Unknow file type {file_type}.")
-                
+
                 window_start.destroy()
 
         window_start = tk.Tk()
@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
         try:
             image_path = "./img/logo_smart_small.png" if not smart_info.FROZEN else sys._MEIPASS + "/logo_smart_small.png"
-            
+
             logo_smart = tk.PhotoImage(file=image_path, width=200, height=200)
 
             label_logo = tk.Label(window_start, image=logo_smart)
@@ -214,7 +214,7 @@ if __name__ == "__main__":
         button_about.pack()
 
         window_start.mainloop()
-        
+
 
     else:
         file_name = sys.argv[1]
@@ -296,7 +296,7 @@ if GUI_MODE:        # set the button for ram and code
             """Update the listbox for memory"""
             # RAM
             pos_listbox = RAM_info.yview()[0]
-            
+
             selection = RAM_info.curselection()
             selected_index = selection[0] if selection else None
 
@@ -308,37 +308,37 @@ if GUI_MODE:        # set the button for ram and code
 
             for adress in new_ram:
                 RAM_info.insert(tk.END, adress)
-            
+
             RAM_info.yview_moveto(pos_listbox)
 
             if selected_index is not None:
                 RAM_info.selection_set(selected_index)
-            
+
             # accumulator
 
             selection_acc = accumulator_info.curselection()
             selected_index_acc = selection_acc[0] if selection_acc else None
 
             accumulator_info.delete(0, tk.END)
-            
+
             for ac in ("ACCUMULATOR    Value", f"A     " + accumulator["A"], f"X     " + accumulator["X"], f"Y     " + accumulator["Y"]):
                 accumulator_info.insert(tk.END, ac)
-            
+
             if selected_index_acc is not None:
                 accumulator_info.selection_set(selected_index_acc)
 
             # flags
             pos_listbox_flags = flags_info.yview()[0]
-            
+
             selection_flags = flags_info.curselection()
             selected_index_flags = selection_flags[0] if selection_flags else None
 
             flags_info.delete(0, tk.END)
-            
+
             flags_info.insert(0, "Flag    Value")
             for flag_name, flag_value in flags.items():
                 flags_info.insert(tk.END, f"{flag_name} = {flag_value}")
-            
+
             flags_info.yview_moveto(pos_listbox_flags)
 
             if selected_index_flags is not None:
@@ -365,7 +365,7 @@ if GUI_MODE:        # set the button for ram and code
                 if len(new_value) != 2 or not all(c in "0123456789abcdefABCDEF" for c in new_value):
                     MessageUser.show_error("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
                     return
-                
+
                 ram[("0" * (4 - len(hex(adress)[2:]))) + hex(adress)[2:].upper()] = new_value.upper()
 
                 window.destroy()
@@ -393,10 +393,10 @@ if GUI_MODE:        # set the button for ram and code
                 if len(new_value) != 2 or not all(c in "0123456789abcdefABCDEF" for c in new_value):
                     MessageUser.show_error("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
                     return
-                
+
                 acc_index = accumulator_info.curselection()[0] - 1
                 acc_keys = ["A", "X", "Y"]
-                
+
                 accumulator[acc_keys[acc_index]] = new_value.upper()
 
                 window.destroy()
@@ -404,7 +404,7 @@ if GUI_MODE:        # set the button for ram and code
             acc_index = accumulator_info.curselection()[0] - 1
             acc_keys = ["A", "X", "Y"]
             acc_name = acc_keys[acc_index]
-            
+
             window = tk.Toplevel(window_memory)
             window.title("Edit Accumulator")
 
@@ -450,10 +450,10 @@ if GUI_MODE:        # set the button for ram and code
                 if new_value not in ["0", "1"]:
                     MessageUser.show_error("Error", "Invalid value. Please enter 0 or 1.")
                     return
-                
+
                 flag_index = flags_info.curselection()[0] - 1
                 flag_keys = list(flags.keys())
-                
+
                 flags[flag_keys[flag_index]] = int(new_value)
 
                 window.destroy()
@@ -461,7 +461,7 @@ if GUI_MODE:        # set the button for ram and code
             flag_index = flags_info.curselection()[0] - 1
             flag_keys = list(flags.keys())
             flag_name = flag_keys[flag_index]
-            
+
             window = tk.Toplevel(window_memory)
             window.title("Edit Flag")
 
@@ -561,7 +561,7 @@ if GUI_MODE:        # set the button for ram and code
             for i in code[1:]:
                 list_code.insert(tk.END, f"{hex(0x400 + adress_conter)}      {i}")
                 adress_conter += 1
-            
+
             list_code.yview_moveto(pos_listbox)
 
             if 0 <= run_step < list_code.size():
@@ -602,13 +602,13 @@ if GUI_MODE:        # set the button for ram and code
                 if len(new_value) != 2 or not all(c in "0123456789abcdefABCDEF" for c in new_value):
                     MessageUser.show_error("Error", "Invalid value. Please enter a hexadecimal value with 2 characters.")
                     return
-                
+
                 code_index = list_code.curselection()[0] - 1
 
                 if code_index < 0:
                     MessageUser.show_error("Error", "You can't edit this line.")
                     return
-                
+
                 code[code_index + 1] = new_value.upper()
 
                 window.destroy()
@@ -618,7 +618,7 @@ if GUI_MODE:        # set the button for ram and code
             if code_index < 0:
                 MessageUser.show_error("Error", "You can't edit this line.")
                 return
-            
+
             window = tk.Toplevel(window_code)
             window.title("Edit code")
 
@@ -627,11 +627,11 @@ if GUI_MODE:        # set the button for ram and code
 
             entry_value = tk.Entry(window, width=5)
             entry_value.pack()
-            
+
 
             button_validate = tk.Button(window, text="Validate", command=validate)
             button_validate.pack()
-        
+
         list_code.bind("<Double-Button-1>", edit_code)
 
         update_code()
@@ -680,13 +680,13 @@ if GUI_MODE:        # set the button for ram and code
             except ValueError:
                 MessageUser.show_error("Error", "Invalid hexadecimal value. Please enter a valid hexadecimal number.")
                 return
-            
+
             if 0x400 <= adress < 0x400 + len(code) - 1:
                 run_step = adress - 0x400 + 1
             else:
                 MessageUser.show_error("Error", f"Invalid adress. Please enter a hexadecimal value between {hex(0x400)} and {hex(0x400 + len(code) - 1)}.")
-            
-            
+
+
 
         button_goto = tk.Button(frame_entry, text="Go", command=goto_adress)
         button_goto.grid(column=1, row=0)
@@ -701,7 +701,7 @@ if GUI_MODE:        # set the button for ram and code
             """Destroy the window and set setting."""
             global normal_speed
             normal_speed = var_speed.get()
-            
+
             window_setting.destroy()
 
         window_setting = tk.Toplevel(window_emulator)
@@ -728,7 +728,7 @@ if GUI_MODE:        # set the button for ram and code
     def pressed_key(event:tk.Event) -> str:
         """When a key are pressed, set ad D010 and D011 adress the key."""
         char = event.char.upper()
-        
+
         if char not in ALLOW_CHAR:
             return "break"
         try:
@@ -815,7 +815,7 @@ def get_from_stack() -> str:
 
     return ram[hex_adress]
 
-    
+
 
 def run_smart() -> None:
     """Run smart code."""
@@ -853,18 +853,18 @@ def run_smart() -> None:
         if one_pause:
             sleep(0.1)
             continue
-        
+
         if " ".join(code[run_step:run_step + 7]) == "10 FB AD 10 D0 29 7F":     # special code:
             if GUI_MODE:
                 var_info_run.set("The programme is waiting for a key...")
                 while ram["D011"] == "00":
                     sleep(0.1)        # wait for a key
-                
+
                 var_info_run.set("")
-                
+
                 ram["D011"] = "00"
                 accumulator["A"] = ram["D010"]
-            
+
             else:
                 sys.stdout.write(Colors.BG_GREEN)
                 key = input()
@@ -875,7 +875,7 @@ def run_smart() -> None:
 
                 if len(key) != 1:
                     MessageUser.show_error("Error", "You must enter a single character.")
-                
+
                 accumulator["A"] = hex(ord(key))[2:].upper().zfill(2)
 
 
@@ -888,17 +888,17 @@ def run_smart() -> None:
                     accumulator["A"] = code[run_step + 1]
                     run_step += 2
                     set_flag_for_LD(accumulator["A"])
-                
+
                 case "A2" | "AE":
                     accumulator["X"] = code[run_step + 1] if run == "A2" else ram[code[run_step + 2] + code[run_step + 1]]
                     run_step += 2 if run == "A2" else 3
                     set_flag_for_LD(accumulator["X"])
-                
+
                 case "A0":
                     accumulator["Y"] = code[run_step + 1]
                     run_step += 2
                     set_flag_for_LD(accumulator["Y"])
-                
+
                 case "8D" | "9D":
 
                     if run == "9D":
@@ -922,18 +922,18 @@ def run_smart() -> None:
                         ram[adress] = accumulator["A"]
 
                     run_step += 3
-                
+
                 case "B0":  # BCS
                     offset = int(code[run_step + 1], base=16)
                     if offset >= 0x80:
                         offset -= 0x100
-                    
+
                     if flags["C"] == 1:
                         run_step += 2 + offset
                     else:
                         run_step += 2
 
-                
+
                 case "E9" | "ED":   # subtract
                     if run == "E9":
                         value = code[run_step + 1]
@@ -949,26 +949,26 @@ def run_smart() -> None:
                         new_A += 256
                     else:
                         flags["C"] = 1
-                    
+
                     flags["Z"] = 1 if new_A == 0 else 0
                     flags["N"] = 1 if new_A & 0x80 else 0
 
                     accumulator["A"] = hex(new_A)[2:].upper().zfill(2)
 
                     run_step += 2 if run == "E9" else 3
-                
+
                 case "38":
                     flags["C"] = 1
 
                     run_step += 1
 
                 case "AD" | "BD":
-                    
+
                     if run == "BD":
                         offset_lda = int(accumulator["X"], base=16)
                     else:
                         offset_lda = 0
-                    
+
                     base_adress = code[run_step + 2] + code[run_step + 1]
 
                     offset_adress = int(base_adress, base=16) + offset_lda
@@ -981,7 +981,7 @@ def run_smart() -> None:
                     set_flag_for_LD(accumulator["A"])
 
                     run_step += 3
-                
+
                 case "20":
                     run_step += 1
 
@@ -989,7 +989,7 @@ def run_smart() -> None:
                         print_on_text(chr(int(accumulator["A"], base=16)))
 
                         run_step += 2
-                    
+
                     else:
                         return_adress = START + run_step + 1
 
@@ -1010,7 +1010,7 @@ def run_smart() -> None:
                 case "AA":  # transfer A to X
                     accumulator["X"] = accumulator["A"]
                     run_step += 1
-                
+
 
                 case "00":
                     break
@@ -1041,12 +1041,12 @@ def run_smart() -> None:
                     run_step = int(goto, base=16) - START + 1
 
                     control_adress(run_step, "JMP (jump)")
-                
+
                 case "18":
                     flags["C"] = 0
 
                     run_step += 1
-                
+
                 case "69":
                     add = code[run_step + 1]
 
@@ -1088,7 +1088,7 @@ def run_smart() -> None:
                         run_step += 2 + offset
                     else:
                         run_step += 2
-                    
+
                 case "30":       # BMI
                     offset = int(code[run_step + 1], base=16)
 
@@ -1099,7 +1099,7 @@ def run_smart() -> None:
                         run_step += 2 + offset
                     else:
                         run_step += 2
-                    
+
                 case "10":       # BPL
                     offset = int(code[run_step + 1], base=16)
 
@@ -1110,24 +1110,24 @@ def run_smart() -> None:
                         run_step += 2 + offset
                     else:
                         run_step += 2
-                
+
                 case "F0":       # BEQ
                     offset = int(code[run_step + 1], base=16)
 
                     if offset >= 0x80:
                         offset -= 0x100
 
-                        
+
                     if flags["Z"] == 1:
                         run_step += 2 + offset
                     else:
                         run_step += 2
-                    
+
                 case "90":       # BCC
                     offset = int(code[run_step + 1], base=16)
                     if offset >= 0x80:
                         offset -= 0x100
-                    
+
                     if flags["C"] == 0:
                         run_step += 2 + offset
                     else:
@@ -1135,7 +1135,7 @@ def run_smart() -> None:
 
                 case "6D":
                     RAM_adress = code[run_step + 2] + code[run_step + 1]
-                    
+
 
                     add = ram[RAM_adress]
 
@@ -1155,7 +1155,7 @@ def run_smart() -> None:
                     accumulator["A"] = hex(new_A)[2:].upper().zfill(2)
 
                     run_step += 3
-                
+
                 case "CA":
                     accumulator["X"] = hex((int(accumulator["X"], base=16) - 1) % 256)[2:].upper().zfill(2)
 
@@ -1163,7 +1163,7 @@ def run_smart() -> None:
                     flags["N"] = 1 if int(accumulator["X"], base=16) & 0x80 else 0
 
                     run_step += 1
-                
+
                 case "88":
                     accumulator["Y"] = hex((int(accumulator["Y"], base=16) - 1) % 256)[2:].upper().zfill(2)
 
@@ -1171,7 +1171,7 @@ def run_smart() -> None:
                     flags["N"] = 1 if int(accumulator["Y"], base=16) & 0x80 else 0
 
                     run_step += 1
-                
+
                 case "E8":
                     accumulator["X"] = hex((int(accumulator["X"], base=16) + 1) % 256)[2:].upper().zfill(2)
 
@@ -1179,7 +1179,7 @@ def run_smart() -> None:
                     flags["N"] = 1 if int(accumulator["X"], base=16) & 0x80 else 0
 
                     run_step += 1
-                
+
                 case "C8":
                     accumulator["Y"] = hex((int(accumulator["Y"], base=16) + 1) % 256)[2:].upper().zfill(2)
 
@@ -1192,7 +1192,7 @@ def run_smart() -> None:
                     accumulator["A"] = accumulator["X"]
 
                     run_step += 1
-                
+
                 case "E0":
                     value = code[run_step + 1]
 
@@ -1206,14 +1206,14 @@ def run_smart() -> None:
                     MessageUser.show_error("Error", f"Unknow assembly : {run}, at {run_step} step.")
                     run_fail = True
                     break
-            
+
 
 
         if normal_speed == "1Mhz":
             sleep(0.0025)
         elif normal_speed == "Debug":
             sleep(1.5)
-    
+
     end_run = True
 
     print_on_text("\n\nEnd of run", True)
@@ -1265,7 +1265,7 @@ if __name__ == "__main__":
             except IndexError:
                 MessageUser.show_error("Error", "Error with adress.")
                 error_during_run()
-            
+
             except KeyError as e:
                 MessageUser.show_error("Error", "Unknow adress RAM", detail=f"Adress: 0x{str(e)[1:-1]}")
                 error_during_run()
@@ -1285,7 +1285,7 @@ if __name__ == "__main__":
 
     else:
         run_smart()
-    
+
 
 
 def start_test(test_code:str) -> str:
