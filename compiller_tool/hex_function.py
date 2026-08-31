@@ -57,7 +57,7 @@ def build_asm_entry(function_arg:list, line_conter:int, get_str_function, adress
                 number = escape_sequence.split(operator, 1)[1].split("|", 1)[0]
 
                 if not number.isdigit():
-                    raise SmartError(f"Invalid number `{number}` for for asm_entry.")
+                    raise SmartError(f"Invalid number `{number}` for asm_entry.")
 
                 number_int = int(number)
 

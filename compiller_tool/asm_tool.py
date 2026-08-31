@@ -40,18 +40,18 @@ def verryfing_adress_conter(adress_conter:int, code_compile:str, not_print:bool=
         if double_space != 0:
 
             if not not_print:
-                print(color_tool.Colors.RED, "verryfing_adress_conter: error. code_compile have double space.", color_tool.Colors.RESET)
+                print(color_tool.Colors.RED, "verifying_adress_conter: error. code_compile have double space.", color_tool.Colors.RESET)
 
             return None
 
     if adress_conter != normal_adress:
         if not not_print:
-            print(color_tool.Colors.RED, "verryfing_adress_conter: error. Normal adress:", normal_adress, "\nadress_conter:", adress_conter, color_tool.Colors.RESET)
+            print(color_tool.Colors.RED, "verifying_adress_conter: error. Normal adress:", normal_adress, "\nadress_conter:", adress_conter, color_tool.Colors.RESET)
         return False
 
     else:
         if not not_print:
-            print(color_tool.Colors.GREEN, "verryfing_adress_conter: adress_conter is good.", color_tool.Colors.RESET)
+            print(color_tool.Colors.GREEN, "verifying_adress_conter: adress_conter is good.", color_tool.Colors.RESET)
 
     return True
 

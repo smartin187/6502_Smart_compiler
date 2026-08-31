@@ -337,7 +337,7 @@ def get_str(string:str, line_conter:int=0) -> str:
 
     for char in string[1:]:
         if end: # a char is after the " for close
-            raise SmartError(f"Invalid syntaxe after str value: '{string}'", line_conter)
+            raise SmartError(f"Invalid syntax after str value: '{string}'", line_conter)
 
         if char == '"' and not escape_char:
             end = True

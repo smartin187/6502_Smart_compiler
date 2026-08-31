@@ -45,7 +45,7 @@ def confirm_user(log_message:str, error_reply:str="N", defaut:str="N", error_mes
         pass
 
     else:
-        print("Unknow reply!")
+        print("Unknown reply!")
         confirm_user(log_message, error_reply, error_message, line_counter)
 
 class CompileError(Exception):

@@ -62,7 +62,7 @@ See also the Smart Emulator: {Colors.MAGENTA}{EMULATOR_EXE} --help{Colors.RESET}
 You can run and debug your programme with emulator.
 
 {Colors.BG_CYAN}Help:{Colors.RESET}
-\tOpen emulator (with a graphical interface): {Colors.MAGENTA}{EMULATOR_EXE}{Colors.RESET}\t\t{Colors.YELLOW}With GUI, you can open a hex file ({Colors.BOLD}compilled Smart recommended{Colors.RESET}{Colors.YELLOW}).{Colors.RESET}
+\tOpen emulator (with a graphical interface): {Colors.MAGENTA}{EMULATOR_EXE}{Colors.RESET}\t\t{Colors.YELLOW}With GUI, you can open a hex file ({Colors.BOLD}compiled Smart recommended{Colors.RESET}{Colors.YELLOW}).{Colors.RESET}
 \tRun your programme: {Colors.MAGENTA}{EMULATOR_EXE} your_programme.sma{Colors.RESET}
 
 {Colors.BG_CYAN}FLAGS:{Colors.RESET}
