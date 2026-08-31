@@ -1402,6 +1402,9 @@ def compile_smarty(
             if not line.endswith("{"):
                 smart_error("On thread bloc, '{' excepted.")
 
+            if thread_mode[0]:
+                smart_error("Thread error: you can't have more 2 threads.")
+
             bloc_code, bloc_line = get_bloc(line_counter, code, error_message="On thread bloc")
 
             jump_line = bloc_line - line_counter - 1
