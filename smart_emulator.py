@@ -1016,12 +1016,7 @@ def run_smart() -> None:
                     break
 
                 case "60":
-                    #run_step = return_ardess
-
                     adress = get_from_stack() + get_from_stack()    # the 2 bytes of address
-
-                    #adress = adress[2:] + adress[:2]  # reverse the bytes
-
                     run_step = int(adress, base=16) - START + 1
 
                 case "4C" | "6C":   # JMP
