@@ -951,6 +951,39 @@ def compile_smarty(
 
         return hex_code
 
+    def increment_decrement_var(line:str, offset_mode:dict[str, bool | str]={"offset":False, "offset_value":""}) -> None:
+        """Add to code_compile the hex code for increment or decrment a variable:
+        .x++;
+        .x--;
+        """
+        nonlocal code_compile, address_counter
+        var_name = line[:-2]
+        
+        operator = line[-1]
+
+        if not good_variable_name(var_name):
+            smart_error(f"Syntaxe error: excepted a variable name, not '{var_name}'")
+
+        adress_var_increment = get_variable(var_name).ram_adress
+
+        if offset_mode["offset"]:
+            try:
+                adress_var_increment += int(offset_mode["offset_value"])
+            except ValueError:
+                print(offset_mode["offset_value"])
+                smart_error(f"Not implemented yet: index need to be constent for increment.")
+
+        increment_adress = adress_for_RAM(adress_var_increment)
+
+        code_compile += f"AE {increment_adress} " # LDX adress
+        address_counter += 3
+
+        code_compile += "E8 " if operator == "+" else "CA " # increment or decrement X
+        address_counter += 1
+
+        code_compile += f"8E {increment_adress} "  # store X (save at variable adress)
+        address_counter += 3
+
 
     # -----------
 
@@ -1111,33 +1144,48 @@ def compile_smarty(
 
             line = replace_code(line, " ", "")[1:]
 
-            try:
-                var_name, value = line.split("=", 1)
-            except ValueError:
-                smart_error(f"Error with variable `{line}`: expected '='")
+            if line.endswith("++") or line.endswith("--"): # ------
+                increment_decrement_var(line)
+                
 
-            if not good_variable_name(var_name):
-                smart_error(f"Bad variable name : '{var_name}'")
+            else:
 
-            if var_name not in smart_var: # make new variable
+                try:
+                    var_name, value = line.split("=", 1)
+                except ValueError:
+                    smart_error(f"Error with variable `{line}`: expected '='")
 
-                make_variable(smart_obj.SmartVariable(var_name, adress_var))
+                if not good_variable_name(var_name):
+                    smart_error(f"Bad variable name : '{var_name}'")
 
-            value_RAM = set_on_A_value(value)
+                if var_name not in smart_var: # make new variable
 
-            code_compile += f"{value_RAM}8D {adress_for_RAM(get_variable(var_name).ram_adress)} "
+                    make_variable(smart_obj.SmartVariable(var_name, adress_var))
 
-            address_counter += 3
+                value_RAM = set_on_A_value(value)
 
-            logging.info(f"Build asm command: using RAM for variable '{var_name}'")
+                code_compile += f"{value_RAM}8D {adress_for_RAM(get_variable(var_name).ram_adress)} "
+
+                address_counter += 3
+
+                logging.info(f"Build asm command: using RAM for variable '{var_name}'")
 
         elif line.startswith("~"):      # advanced variable
             line = replace_code(line, " ", "")[1:]
 
-            try:
-                var_name, value = line.split("=", 1)
-            except ValueError:
-                smart_error(f"Error with variable `{line}`: expected '='")
+            if line.endswith("++") or line.endswith("--"):
+                operator_increment = line[-2:]
+                increment_mode = True
+                var_name = line[:-2]
+            else:
+                increment_mode = False
+
+                try:
+                    var_name, value = line.split("=", 1)
+                except ValueError:
+                    smart_error(f"Error with variable `{line}`: expected '='")
+                
+
 
             if var_name.endswith("]"):     # an index for str value
 
@@ -1146,6 +1194,9 @@ def compile_smarty(
                 index_mode = True
             else:
                 index_mode = False
+
+                if increment_mode:
+                    smart_error(f"Invalid syntax: can't increment or decrement a str variable.")
 
             if not good_variable_name(var_name):
                 smart_error(f"Bad variable name : '{var_name}'")
@@ -1171,34 +1222,38 @@ def compile_smarty(
                 index_mode_const, index_var = get_variable(var_name).get_index(line)
                 # ^ if the index is a number literal, otherwise it is a variable or expression
 
-                if index_mode_const:
-                    code_compile += f"{set_on_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
-                    address_counter += 3
+                if increment_mode:
+                    increment_decrement_var(var_name + operator_increment, {"offset":True, "offset_value":index_var[:-2]})
                 else:
-                    code_compile += f"{set_on_A_value(index_var)}AA "     # save on X index delta
-                    address_counter += 1
+                    
+                    if index_mode_const:
+                        code_compile += f"{set_on_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
+                        address_counter += 3
+                    else:
+                        code_compile += f"{set_on_A_value(index_var)}AA "     # save on X index delta
+                        address_counter += 1
 
-                    # -------- control index for runtime error
-                    test_index = "C9 15 "    # CMP #0x15
-                    address_counter += 2
+                        # -------- control index for runtime error
+                        test_index = "C9 15 "    # CMP #0x15
+                        address_counter += 2
 
-                    test_index += "90 !smart:len_error_index "     # branch if index > 21
-                    address_counter += 2
+                        test_index += "90 !smart:len_error_index "     # branch if index > 21
+                        address_counter += 2
 
-                    error_code = make_error("'I'", add_to_adress_conter=False)
-                    test_index = test_index.replace("!smart:len_error_index", get_hex_from_int(error_code.count(" ")))
+                        error_code = make_error("'I'", add_to_adress_conter=False)
+                        test_index = test_index.replace("!smart:len_error_index", get_hex_from_int(error_code.count(" ")))
 
-                    test_index += error_code
-                    address_counter += error_code.count(" ")
+                        test_index += error_code
+                        address_counter += error_code.count(" ")
 
-                    code_compile += test_index
+                        code_compile += test_index
 
-                    # --------
+                        # --------
 
-                    code_compile += set_on_A_value(value)
+                        code_compile += set_on_A_value(value)
 
-                    code_compile += f"9D {adress_for_RAM(get_variable(var_name).ram_adress)} "
-                    address_counter += 3
+                        code_compile += f"9D {adress_for_RAM(get_variable(var_name).ram_adress)} "
+                        address_counter += 3
 
 
         elif line.lstrip().startswith("if"):

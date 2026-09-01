@@ -1016,12 +1016,7 @@ def run_smart() -> None:
                     break
 
                 case "60":
-                    #run_step = return_ardess
-
                     adress = get_from_stack() + get_from_stack()    # the 2 bytes of address
-
-                    #adress = adress[2:] + adress[:2]  # reverse the bytes
-
                     run_step = int(adress, base=16) - START + 1
 
                 case "4C" | "6C":   # JMP
@@ -1066,6 +1061,13 @@ def run_smart() -> None:
                     accumulator["A"] = hex(new_A)[2:].upper().zfill(2)
 
                     run_step += 2
+
+                case "8E":   # store X
+                    adress = code[run_step + 2] + code[run_step + 1]
+
+                    ram[adress] = accumulator["X"]
+
+                    run_step += 3
 
                 case "C9" | "CD":       # compare A
                     value = code[run_step + 1] if run == "C9" else ram[code[run_step + 2] + code[run_step + 1]]
