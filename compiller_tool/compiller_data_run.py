@@ -53,6 +53,13 @@ PROGRESS_BAR_CHAR = {
     "not_completed":" "
 }
 
+class EscapeChar:
+    """The escape characters for str and char values."""
+    ESCAPE_CHAR = {"\\r":"\r", "\\\"":"\"", "\\'":"'"}        # the escape characters for str and char (\r...)
+    DOUBLE_SLASH = "\\\\"
+    PLACE_HOLDER_SLASH = "`smart_double_slash"                  # set ` because this character is not used in str / char value.
+
+
 # base value -------------------------------
 
 _WARNING_ENDLINE = (False, )     # if a line does not end by ; } or // in the line or the last line

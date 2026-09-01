@@ -15,14 +15,7 @@ Content:
 import logging
 from compiller_tool.color_tool import Colors
 from compiller_tool.smart_exception import SmartError
-
-class EscapeChar:
-    """The escape characters for str and char values."""
-    ESCAPE_CHAR = {"\\r":"\r", "\\\"":"\"", "\\'":"'"}        # the escape characters for str and char (\r...)
-    DOUBLE_SLASH = "\\\\"
-    PLACE_HOLDER_SLASH = "`smart_double_slash"                  # set ` because this character is not used in str / char value.
-
-
+from compiller_tool.compiller_data_run import EscapeChar
 
 def split_code(
         code:str,
