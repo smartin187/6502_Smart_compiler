@@ -22,3 +22,4 @@ If the task is a bug you can also add an issue on GitHub.
 - Add for variable: `.x++` (use X with increment X) and `.x += ...`.
 - Better threading: fix some problems with no shared stack + add some tests
 - Add with `compiletime` keyword a stop thread: stop the second thread and run only on main thread.
+- Set a refactor: make some modules for set smart_compiller.py smaller.
