@@ -951,7 +951,7 @@ def compile_smarty(
 
         return hex_code
 
-    def increment_decrement_var(line:str) -> None:
+    def increment_decrement_var(line:str, offset_mode:dict[str, bool | str]={"offset":False, "offset_value":""}) -> None:
         """Add to code_compile the hex code for increment or decrment a variable:
         .x++;
         .x--;
@@ -963,8 +963,17 @@ def compile_smarty(
 
         if not good_variable_name(var_name):
             smart_error(f"Syntaxe error: excepted a variable name, not '{var_name}'")
-    
-        increment_adress = adress_for_RAM(get_variable(var_name).ram_adress)
+
+        adress_var_increment = get_variable(var_name).ram_adress
+
+        if offset_mode["offset"]:
+            try:
+                adress_var_increment += int(offset_mode["offset_value"])
+            except ValueError:
+                print(offset_mode["offset_value"])
+                smart_error(f"Not implemented yet: index need to be constent for increment.")
+
+        increment_adress = adress_for_RAM(adress_var_increment)
 
         code_compile += f"AE {increment_adress} " # LDX adress
         address_counter += 3
@@ -1210,12 +1219,13 @@ def compile_smarty(
                     smart_error(f"{str(se)}\t\tOn str variable (~), need str value, not `{value}`.")
 
             else:   # set a value at index:
-                if increment_mode:
-                    increment_decrement_var(var_name + operator_increment)
-                else:
-                    index_mode_const, index_var = get_variable(var_name).get_index(line)
-                    # ^ if the index is a number literal, otherwise it is a variable or expression
+                index_mode_const, index_var = get_variable(var_name).get_index(line)
+                # ^ if the index is a number literal, otherwise it is a variable or expression
 
+                if increment_mode:
+                    increment_decrement_var(var_name + operator_increment, {"offset":True, "offset_value":index_var[:-2]})
+                else:
+                    
                     if index_mode_const:
                         code_compile += f"{set_on_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
                         address_counter += 3
