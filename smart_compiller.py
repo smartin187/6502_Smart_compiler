@@ -951,6 +951,30 @@ def compile_smarty(
 
         return hex_code
 
+    def increment_decrement_var(line:str) -> None:
+        """Add to code_compile the hex code for increment or decrment a variable:
+        .x++;
+        .x--;
+        """
+        nonlocal code_compile, address_counter
+        var_name = line[:-2]
+        
+        operator = line[-1]
+
+        if not good_variable_name(var_name):
+            smart_error(f"Syntaxe error: excepted a variable name, not '{var_name}'")
+    
+        increment_adress = adress_for_RAM(get_variable(var_name).ram_adress)
+
+        code_compile += f"AE {increment_adress} " # LDX adress
+        address_counter += 3
+
+        code_compile += "E8 " if operator == "+" else "CA " # increment or decrement X
+        address_counter += 1
+
+        code_compile += f"8E {increment_adress} "  # store X (save at variable adress)
+        address_counter += 3
+
 
     # -----------
 
@@ -1111,24 +1135,8 @@ def compile_smarty(
 
             line = replace_code(line, " ", "")[1:]
 
-            if line.endswith("++") or line.endswith("--"):
-                var_name = line[:-2]
-
-                operator = line[-1]
-
-                if not good_variable_name(var_name):
-                    smart_error(f"Syntaxe error: excepted a variable name, not '{var_name}'")
-            
-                increment_adress = adress_for_RAM(get_variable(var_name).ram_adress)
-
-                code_compile += f"AE {increment_adress} " # LDX adress
-                address_counter += 3
-
-                code_compile += "E8 " if operator == "+" else "CA " # increment or decrement X
-                address_counter += 1
-
-                code_compile += f"8E {increment_adress} "  # store X (save at variable adress)
-                address_counter += 3
+            if line.endswith("++") or line.endswith("--"): # ------
+                increment_decrement_var(line)
                 
 
             else:
