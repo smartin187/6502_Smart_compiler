@@ -47,7 +47,7 @@ START_ADRESS_VAR = 0x300
 
 OPERATOR = ("+", "-", "*", "/", "==", "!=", ">", "<", "<=", ">=")
 
-PROGRESS_BAR_LEN = 25   # the length of the progress bar during compilation. Do not set a large value  
+PROGRESS_BAR_LEN = 25   # the length of the progress bar during compilation. Do not set a large value
 PROGRESS_BAR_CHAR = {
     "completed":f"{color_tool.Colors.BG_GREEN} {color_tool.Colors.RESET}",
     "not_completed":" "

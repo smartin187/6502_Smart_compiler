@@ -90,7 +90,7 @@ def build_asm_entry(function_arg:list, line_conter:int, get_str_function, adress
     return " ".join(asm_str[i:i+2] for i in range(0, len(asm_str), 2)) + " "
 
 
-def make_error(error_value:str, try_mode:bool, set_need_error:bool=True, add_to_adress_conter:bool=True) -> tuple[str, int]:  
+def make_error(error_value:str, try_mode:bool, set_need_error:bool=True, add_to_adress_conter:bool=True) -> tuple[str, int]:
     """
     Return a tuple with the op code for the runtime error and adress_conter.
     Return hex code.

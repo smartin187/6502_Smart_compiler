@@ -856,7 +856,7 @@ def compile_smart(
         """
         nonlocal code_compile, address_counter
         var_name = line[:-2]
-        
+
         operator = line[-1]
 
         if not good_variable_name(var_name):
@@ -1044,7 +1044,7 @@ def compile_smart(
 
             if line.endswith("++") or line.endswith("--"): # ------
                 increment_decrement_var(line)
-                
+
 
             else:
 
@@ -1082,7 +1082,7 @@ def compile_smart(
                     var_name, value = line.split("=", 1)
                 except ValueError:
                     smart_error(f"Error with variable `{line}`: expected '='")
-                
+
 
 
             if var_name.endswith("]"):     # an index for str value
@@ -1123,7 +1123,7 @@ def compile_smart(
                 if increment_mode:
                     increment_decrement_var(var_name + operator_increment, {"offset":True, "offset_value":index_var[:-2]})
                 else:
-                    
+
                     if index_mode_const:
                         code_compile += f"{set_on_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
                         address_counter += 3

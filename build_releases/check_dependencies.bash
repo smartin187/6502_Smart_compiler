@@ -42,7 +42,7 @@ else
     echo "wine is not installed. You need to install wine to build Windows executable from Linux."
     # auto install
     read -p "Do you want to install wine? (y/n) " answer
-    
+
     if [[ "$answer" == "y" ]]; then
         if sudo apt update && sudo apt install wine; then
             echo "wine installed successfully.
@@ -66,7 +66,7 @@ else
     echo "pyinstaller on wine is not installed. You need to install pyinstaller on wine to build Windows executable from Linux."
     # auto install
     read -p "Do you want to install pyinstaller on wine? (y/n) " answer
-    
+
     if [[ "$answer" == "y" ]]; then
         if wine pip install pyinstaller; then
             echo "pyinstaller on wine installed successfully.
@@ -91,7 +91,7 @@ else
     echo "zip is not installed. You need to install zip for make archive for Windows."
     # auto install
     read -p "Do you want to install zip? (y/n) " answer
-    
+
     if [[ "$answer" == "y" ]]; then
         if sudo apt update && sudo apt install zip; then
             echo "zip installed successfully.
@@ -116,7 +116,7 @@ else
     echo "Docker is not installed. You need to install Docker to build for other architectures for Linux."
     # auto install
     read -p "Do you want to install Docker? (y/n) " answer
-    
+
     if [[ "$answer" == "y" ]]; then
         if sudo apt update && sudo apt install docker.io; then
             echo "Docker installed successfully.

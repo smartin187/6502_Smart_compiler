@@ -43,7 +43,7 @@ if [ "$ARCH" = "arm64" ]; then   # make the executable binary for amd64
             $COMMAND_INSTALL
             sh ./build_releases/build_linux/build_linux.bash
         "
-    
+
     # set on sudo
     sudo ./build_releases/build_linux/build_deb.bash amd64
 
@@ -58,7 +58,7 @@ elif [ "$ARCH" = "amd64" ]; then   # make the executable binary for arm64
             $COMMAND_INSTALL
             sh ./build_releases/build_linux/build_linux.bash
         "
-    
+
     # set on sudo
     sudo ./build_releases/build_linux/build_deb.bash arm64
 
