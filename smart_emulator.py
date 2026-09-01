@@ -1062,6 +1062,13 @@ def run_smart() -> None:
 
                     run_step += 2
 
+                case "8E":   # store X
+                    adress = code[run_step + 2] + code[run_step + 1]
+
+                    ram[adress] = accumulator["X"]
+
+                    run_step += 3
+
                 case "C9" | "CD":       # compare A
                     value = code[run_step + 1] if run == "C9" else ram[code[run_step + 2] + code[run_step + 1]]
 
