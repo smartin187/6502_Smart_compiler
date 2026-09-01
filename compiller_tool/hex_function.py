@@ -123,3 +123,17 @@ def make_error(error_value:str, try_mode:bool, set_need_error:bool=True, add_to_
             address_counter += 3
 
         return code_compile, address_counter
+
+def imediate_value(value:str) -> bool:
+    """Return True if the value is an immediate value, False otherwise.
+    A9 41 : immediate value (LDA #41)
+    AD 00 04 : address value (LDA $0400)
+    """
+    try:
+        start = value.replace(" ", "")[0:2]
+    except IndexError:
+        return False
+
+    if start == "A9":
+        return True
+    return False

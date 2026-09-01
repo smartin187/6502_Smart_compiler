@@ -16,7 +16,7 @@ from compiller_tool.string_tool import split_code, replace_code, in_code, good_v
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool.smart_info import GIT_HUB_LINK
-from compiller_tool.hex_function import build_asm_entry, config_hex_function, make_error
+from compiller_tool.hex_function import build_asm_entry, config_hex_function, make_error, imediate_value
 from compiller_tool.smart_try_except import control_except
 from compiller_tool.compiller_data_run import PROGRESS_BAR_LEN, PROGRESS_BAR_CHAR
 from compiller_tool import compiller_data_run
@@ -169,20 +169,6 @@ def compile_smart(
         nonlocal address_counter
 
         set_error_exception = not test_value_mode
-
-        def imediate_value(value:str) -> bool:
-            """Return True if the value is an immediate value, False otherwise.
-            A9 41 : immediate value (LDA #41)
-            AD 00 04 : address value (LDA $0400)
-            """
-            try:
-                start = value.replace(" ", "")[0:2]
-            except IndexError:
-                return False
-
-            if start == "A9":
-                return True
-            return False
 
         def control_math() -> None:
             """If forbiden_math is True, raise SmartError if there is math in the value."""
