@@ -19,7 +19,8 @@ If the task is a bug you can also add an issue on GitHub.
 - Add class object for Smart ?
 - On function with parameter, add the possibility if the value of parameter change, the value of the variable given change too (pointer).
 - For Smart system variable, use 0 page mode
-- Add for variable: `.x++` (use X with increment X) and `.x += ...`.
+- Add for variable: `.x += ...`.
+- Add on increment/decrement on advenced value the index on runtime value: `.x = 1;~str="";~str[.x]++;`
 - Better threading: fix some problems with no shared stack + add some tests
 - Add with `compiletime` keyword a stop thread: stop the second thread and run only on main thread.
 - Set a refactor: make some modules for set smart_compiller.py smaller.
