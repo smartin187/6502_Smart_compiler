@@ -1,4 +1,4 @@
-# Smart Compiler
+# 6502 Smart Compiler
 
 ![Logo](./img/logo_smart_small.png)
 
