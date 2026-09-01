@@ -18,7 +18,7 @@ from compiller_tool import smart_info
 from compiller_tool.color_tool import Colors
 from compiller_tool.compiller_data_run import ALLOW_CHAR
 
-from smart_compiller import compile_smarty, SmartError, CompileError
+from smart_compiller import compile_smart, SmartError, CompileError
 
 
 if "--show-licence" in sys.argv:
@@ -226,7 +226,7 @@ if __name__ == "__main__":
 
     else:
         try:
-            code = compile_smarty(file=file_name, argv=[], CODE_ADRESSE=1024, make_file=False, first_call=True)
+            code = compile_smart(file=file_name, argv=[], CODE_ADRESSE=1024, make_file=False, first_call=True)
         except SmartError as se:
             MessageUser.show_error("Error", "Error during compilation of the Smart code.", detail=f"Detail: {se.syntaxerror}")
             sys.exit(1)

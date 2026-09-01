@@ -31,7 +31,7 @@ else:
     )
 
 import smart_emulator
-from smart_compiller import compile_smarty
+from smart_compiller import compile_smart
 from compiller_tool import compiller_data_run
 from compiller_tool.color_tool import Colors
 from compiller_tool.smart_exception import SmartError
@@ -127,7 +127,7 @@ class Test:
         compilation_error = False
 
         try:
-            self.code_compile = compile_smarty("test/test.sma", make_file=False, thread_mode = [False, "", False, False])
+            self.code_compile = compile_smart("test/test.sma", make_file=False, thread_mode = [False, "", False, False])
 
             if "  " in self.code_compile:
                 raise OutputError(f"{Colors.RED}Double space on output. Risk of error with address counting...{Colors.RESET}")

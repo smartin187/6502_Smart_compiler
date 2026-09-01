@@ -49,7 +49,7 @@ PROGRESS_BAR_CHAR = {
     "not_completed":" "
 }
 
-def compile_smarty(
+def compile_smart(
         file:str="",
         argv:list[str] | tuple[str]=[],
         CODE_ADRESSE:int=0x400,
@@ -919,7 +919,7 @@ def compile_smarty(
 
 
 
-    import_tool.config_import(compile_smarty)
+    import_tool.config_import(compile_smart)
 
     def hex_parameters(function_name_usr:dict, function_name:str, function_arg:list) -> str:
         """Return the hex code for the parameters of the function."""
@@ -1280,7 +1280,7 @@ def compile_smarty(
             code_compile += f"C9 00 D0 08 A9 01 8D {call_else_adress}4C {{}} A9 00 8D {call_else_adress}"
             address_counter += 17
 
-            code_if = compile_smarty(
+            code_if = compile_smart(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter,
@@ -1333,7 +1333,7 @@ def compile_smarty(
 
             address_counter += 17
 
-            code_elif = compile_smarty(
+            code_elif = compile_smart(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter,
@@ -1370,7 +1370,7 @@ def compile_smarty(
             code_compile += f"AD {call_else_adress}C9 00 D0 03 4C {{}} "
             address_counter += 10
 
-            code_else = compile_smarty(
+            code_else = compile_smart(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter,
@@ -1395,7 +1395,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_counter - 1
 
-            code_try = compile_smarty(
+            code_try = compile_smart(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter,
@@ -1433,7 +1433,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_counter - 1
 
-            code_except = compile_smarty(
+            code_except = compile_smart(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter,
@@ -1472,7 +1472,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_counter - 1
 
-            code_thread = compile_smarty(
+            code_thread = compile_smart(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":function_mode["while_mode"] if "while_mode" in function_mode else False},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter + 10,
@@ -1518,7 +1518,7 @@ def compile_smarty(
             code_compile += "C9 00 D0 03 4C {} "
             address_counter += 7
 
-            code_while = compile_smarty(
+            code_while = compile_smart(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter,
@@ -1607,7 +1607,7 @@ def compile_smarty(
 
             jump_line = bloc_line - line_counter - 1
 
-            code_for = compile_smarty(
+            code_for = compile_smart(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":bloc_code_for, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":None, "if_mode":True, "global_goto":go_to, "goto_replace":go_to_replace, "while_mode":True},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter,
@@ -2020,7 +2020,7 @@ def compile_smarty(
 
             function_thread_mode = thread_mode if thread_mode[3] else [False, "", False, False]
 
-            function_name_usr[function].code_compile_f = compile_smarty(
+            function_name_usr[function].code_compile_f = compile_smart(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":smart_func, "if_mode":False},
                 CODE_ADRESSE=CODE_ADRESSE + address_counter + 1,

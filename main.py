@@ -6,7 +6,7 @@ Main module of Smart compiller.
 
 import sys
 import traceback
-from smart_compiller import SmartError, CompileError, compile_smarty
+from smart_compiller import SmartError, CompileError, compile_smart
 import logging
 
 from compiller_tool import smart_info
@@ -59,7 +59,7 @@ if len(sys.argv) == 1:
     sys.exit(1)
 
 try:
-    compile_smarty(sys.argv[1], sys.argv, CODE_ADRESSE, bin_outpout_file=bin_file, regroup_bytes=regroup_number, first_call=True)
+    compile_smart(sys.argv[1], sys.argv, CODE_ADRESSE, bin_outpout_file=bin_file, regroup_bytes=regroup_number, first_call=True)
 except SmartError:
     sys.exit(1)
 
