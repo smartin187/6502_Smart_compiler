@@ -1164,10 +1164,19 @@ def compile_smarty(
         elif line.startswith("~"):      # advanced variable
             line = replace_code(line, " ", "")[1:]
 
-            try:
-                var_name, value = line.split("=", 1)
-            except ValueError:
-                smart_error(f"Error with variable `{line}`: expected '='")
+            if line.endswith("++") or line.endswith("--"):
+                operator_increment = line[-2:]
+                increment_mode = True
+                var_name = line[:-2]
+            else:
+                increment_mode = False
+
+                try:
+                    var_name, value = line.split("=", 1)
+                except ValueError:
+                    smart_error(f"Error with variable `{line}`: expected '='")
+                
+
 
             if var_name.endswith("]"):     # an index for str value
 
@@ -1176,6 +1185,9 @@ def compile_smarty(
                 index_mode = True
             else:
                 index_mode = False
+
+                if increment_mode:
+                    smart_error(f"Invalid syntax: can't increment or decrement a str variable.")
 
             if not good_variable_name(var_name):
                 smart_error(f"Bad variable name : '{var_name}'")
@@ -1198,37 +1210,40 @@ def compile_smarty(
                     smart_error(f"{str(se)}\t\tOn str variable (~), need str value, not `{value}`.")
 
             else:   # set a value at index:
-                index_mode_const, index_var = get_variable(var_name).get_index(line)
-                # ^ if the index is a number literal, otherwise it is a variable or expression
-
-                if index_mode_const:
-                    code_compile += f"{set_on_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
-                    address_counter += 3
+                if increment_mode:
+                    increment_decrement_var(var_name + operator_increment)
                 else:
-                    code_compile += f"{set_on_A_value(index_var)}AA "     # save on X index delta
-                    address_counter += 1
+                    index_mode_const, index_var = get_variable(var_name).get_index(line)
+                    # ^ if the index is a number literal, otherwise it is a variable or expression
 
-                    # -------- control index for runtime error
-                    test_index = "C9 15 "    # CMP #0x15
-                    address_counter += 2
+                    if index_mode_const:
+                        code_compile += f"{set_on_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
+                        address_counter += 3
+                    else:
+                        code_compile += f"{set_on_A_value(index_var)}AA "     # save on X index delta
+                        address_counter += 1
 
-                    test_index += "90 !smart:len_error_index "     # branch if index > 21
-                    address_counter += 2
+                        # -------- control index for runtime error
+                        test_index = "C9 15 "    # CMP #0x15
+                        address_counter += 2
 
-                    error_code = make_error("'I'", add_to_adress_conter=False)
-                    test_index = test_index.replace("!smart:len_error_index", get_hex_from_int(error_code.count(" ")))
+                        test_index += "90 !smart:len_error_index "     # branch if index > 21
+                        address_counter += 2
 
-                    test_index += error_code
-                    address_counter += error_code.count(" ")
+                        error_code = make_error("'I'", add_to_adress_conter=False)
+                        test_index = test_index.replace("!smart:len_error_index", get_hex_from_int(error_code.count(" ")))
 
-                    code_compile += test_index
+                        test_index += error_code
+                        address_counter += error_code.count(" ")
 
-                    # --------
+                        code_compile += test_index
 
-                    code_compile += set_on_A_value(value)
+                        # --------
 
-                    code_compile += f"9D {adress_for_RAM(get_variable(var_name).ram_adress)} "
-                    address_counter += 3
+                        code_compile += set_on_A_value(value)
+
+                        code_compile += f"9D {adress_for_RAM(get_variable(var_name).ram_adress)} "
+                        address_counter += 3
 
 
         elif line.lstrip().startswith("if"):
