@@ -12,7 +12,7 @@ import logging
 import re
 import traceback
 
-from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, adress_for_RAM, get_str, EscapeChar
+from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, adress_for_RAM, get_str, get_char
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool.smart_info import GIT_HUB_LINK
@@ -162,43 +162,7 @@ def compile_smart(
         return start_loop_for
 
 
-    def get_char(char_type:str) -> str:
-        """Return the char value of Smart."""
-        def char_error() -> None:
-            """Raise SmartError if the char value doesn't have exactly 1 character."""
-            smart_error(f"The char value `{char_type}` don't have 1 character.")
-
-        if char_type.startswith("'") and char_type.endswith("'"):
-            char = char_type[1:-1]
-
-            if len(char) == 2 and char == "\\\\":
-                code_ascii = ord("\\")
-
-            elif len(char) == 2 and char.startswith("\\"):
-                if char in EscapeChar.ESCAPE_CHAR:
-                    code_ascii = ord(EscapeChar.ESCAPE_CHAR[char])
-                else:
-                    char_error()
-
-            elif len(char) == 1:
-                if char.islower():
-                    smart_error("char cannot be lower.")
-
-                if char == "'":
-                    smart_error(f"Error with char value `{char_type}`.")
-
-                code_ascii = ord(char)
-
-            else:
-                char_error()
-
-            code_hex = hex(code_ascii)[2:]
-            code_hex = code_hex.upper()
-            return code_hex
-
-        else:
-            smart_error(f"The char value (`{char_type}`) was never closed.")
-
+    
     def good_hex(code:str) -> bool:
         """Return True if the hex value is good, False otherwise."""
         try:

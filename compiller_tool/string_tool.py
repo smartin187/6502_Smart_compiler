@@ -370,3 +370,39 @@ def get_str(string:str, line_conter:int=0) -> str:
 
     return str_value
 
+def get_char(char_type:str) -> str:
+    """Return the char value of Smart."""
+    def char_error() -> None:
+        """Raise SmartError if the char value doesn't have exactly 1 character."""
+        raise SmartError(f"The char value `{char_type}` don't have 1 character.")
+
+    if char_type.startswith("'") and char_type.endswith("'"):
+        char = char_type[1:-1]
+
+        if len(char) == 2 and char == "\\\\":
+            code_ascii = ord("\\")
+
+        elif len(char) == 2 and char.startswith("\\"):
+            if char in EscapeChar.ESCAPE_CHAR:
+                code_ascii = ord(EscapeChar.ESCAPE_CHAR[char])
+            else:
+                char_error()
+
+        elif len(char) == 1:
+            if char.islower():
+                raise SmartError("char cannot be lower.")
+
+            if char == "'":
+                raise SmartError(f"Error with char value `{char_type}`.")
+
+            code_ascii = ord(char)
+
+        else:
+            char_error()
+
+        code_hex = hex(code_ascii)[2:]
+        code_hex = code_hex.upper()
+        return code_hex
+
+    else:
+        raise SmartError(f"The char value (`{char_type}`) was never closed.")
