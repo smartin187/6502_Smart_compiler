@@ -1111,25 +1111,47 @@ def compile_smarty(
 
             line = replace_code(line, " ", "")[1:]
 
-            try:
-                var_name, value = line.split("=", 1)
-            except ValueError:
-                smart_error(f"Error with variable `{line}`: expected '='")
+            if line.endswith("++") or line.endswith("--"):
+                var_name = line[:-2]
 
-            if not good_variable_name(var_name):
-                smart_error(f"Bad variable name : '{var_name}'")
+                operator = line[-1]
 
-            if var_name not in smart_var: # make new variable
+                if not good_variable_name(var_name):
+                    smart_error(f"Syntaxe error: excepted a variable name, not '{var_name}'")
+            
+                increment_adress = adress_for_RAM(get_variable(var_name).ram_adress)
 
-                make_variable(smart_obj.SmartVariable(var_name, adress_var))
+                code_compile += f"AE {increment_adress} " # LDX adress
+                address_counter += 3
 
-            value_RAM = set_on_A_value(value)
+                code_compile += "E8 " if operator == "+" else "CA " # increment or decrement X
+                address_counter += 1
 
-            code_compile += f"{value_RAM}8D {adress_for_RAM(get_variable(var_name).ram_adress)} "
+                code_compile += f"8E {increment_adress} "  # store X (save at variable adress)
+                address_counter += 3
+                
 
-            address_counter += 3
+            else:
 
-            logging.info(f"Build asm command: using RAM for variable '{var_name}'")
+                try:
+                    var_name, value = line.split("=", 1)
+                except ValueError:
+                    smart_error(f"Error with variable `{line}`: expected '='")
+
+                if not good_variable_name(var_name):
+                    smart_error(f"Bad variable name : '{var_name}'")
+
+                if var_name not in smart_var: # make new variable
+
+                    make_variable(smart_obj.SmartVariable(var_name, adress_var))
+
+                value_RAM = set_on_A_value(value)
+
+                code_compile += f"{value_RAM}8D {adress_for_RAM(get_variable(var_name).ram_adress)} "
+
+                address_counter += 3
+
+                logging.info(f"Build asm command: using RAM for variable '{var_name}'")
 
         elif line.startswith("~"):      # advanced variable
             line = replace_code(line, " ", "")[1:]
