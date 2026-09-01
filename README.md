@@ -320,6 +320,32 @@ You can also change value of an index on advanced variable:
 ~var[index] = 'A';
 ```
 
+#### Increment and decrement variable
+
+You can set `++` or `--` after a variable for increment or decrement the variable.
+
+```Smart
+.my_variable = 1;
+.my_variable++; // increment .my_variable to 2
+.my_variable--; // decrement .my_variable to 1
+```
+
+You can increment or decrement on a simple variable or on an index of advanced variable (`list` or `str`).
+
+> **Actually, the runtime value for index for increment or decrement is not implemented...**
+
+```Smart
+~str = "AAA";
+~str[0]++; // increment the first char of ~str to 'B'
+print: ~str; // print "BAA"
+```
+
+But you can't set a runtime value for index for increment/decrement:
+```Smart
+.x = 0;
+~str = "AAA";
+~str[.x]++; // error
+```
 
 #### Labels (anchors)
 
