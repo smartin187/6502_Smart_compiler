@@ -984,6 +984,16 @@ For publish Smart, the Python script are compiled with Pyinstaller.
 
 See [build releases](./build_releases/readme.md) for more information.
 
+See also [licence](#licence) for distribut Smart.
+
+## Licence
+
+Copyright (c) 2026 smartin178
+
+**Apache License, Version 2.0**
+
+> See [LICENCE](./LICENCE)
+
 ## VS Code extension
 
 An extension for VS Code set a coloration for Smart language.
