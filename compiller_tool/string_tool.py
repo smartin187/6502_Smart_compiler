@@ -15,14 +15,7 @@ Content:
 import logging
 from compiller_tool.color_tool import Colors
 from compiller_tool.smart_exception import SmartError
-
-class EscapeChar:
-    """The escape characters for str and char values."""
-    ESCAPE_CHAR = {"\\r":"\r", "\\\"":"\"", "\\'":"'"}        # the escape characters for str and char (\r...)
-    DOUBLE_SLASH = "\\\\"
-    PLACE_HOLDER_SLASH = "`smart_double_slash"                  # set ` because this character is not used in str / char value.
-
-
+from compiller_tool.compiller_data_run import EscapeChar
 
 def split_code(
         code:str,
@@ -369,4 +362,55 @@ def get_str(string:str, line_conter:int=0) -> str:
         logging.warning("str value have a len of 1. Please use a char value.")
 
     return str_value
+
+def get_char(char_type:str) -> str:
+    """Return the char value of Smart."""
+    def char_error() -> None:
+        """Raise SmartError if the char value doesn't have exactly 1 character."""
+        raise SmartError(f"The char value `{char_type}` don't have 1 character.")
+
+    if char_type.startswith("'") and char_type.endswith("'"):
+        char = char_type[1:-1]
+
+        if len(char) == 2 and char == "\\\\":
+            code_ascii = ord("\\")
+
+        elif len(char) == 2 and char.startswith("\\"):
+            if char in EscapeChar.ESCAPE_CHAR:
+                code_ascii = ord(EscapeChar.ESCAPE_CHAR[char])
+            else:
+                char_error()
+
+        elif len(char) == 1:
+            if char.islower():
+                raise SmartError("char cannot be lower.")
+
+            if char == "'":
+                raise SmartError(f"Error with char value `{char_type}`.")
+
+            code_ascii = ord(char)
+
+        else:
+            char_error()
+
+        code_hex = hex(code_ascii)[2:]
+        code_hex = code_hex.upper()
+        return code_hex
+
+    else:
+        raise SmartError(f"The char value (`{char_type}`) was never closed.")
+
+def good_hex(code:str) -> bool:
+    """Return True if the hex value is good, False else."""
+    try:
+        int(code, base=16)
+    except:
+        return False
+    else:
+        return True if len(code) == 2 else False
+
+def control_hex(code:str) -> None:
+    """If good_hex returns False, raise SmartError."""
+    if not good_hex(code):
+        raise SmartError(f"Bad hex value '{code}'")
 

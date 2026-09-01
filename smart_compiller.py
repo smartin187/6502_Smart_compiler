@@ -12,12 +12,13 @@ import logging
 import re
 import traceback
 
-from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, adress_for_RAM, get_str, EscapeChar
+from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, adress_for_RAM, get_str, get_char, control_hex
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool.smart_info import GIT_HUB_LINK
-from compiller_tool.hex_function import build_asm_entry
+from compiller_tool.hex_function import build_asm_entry, config_hex_function, make_error, imediate_value
 from compiller_tool.smart_try_except import control_except
+from compiller_tool.compiller_data_run import PROGRESS_BAR_LEN, PROGRESS_BAR_CHAR
 from compiller_tool import compiller_data_run
 from compiller_tool import import_tool
 from compiller_tool import smart_obj
@@ -43,12 +44,6 @@ line_of_instruction = None
 
 need_input = False
 
-PROGRESS_BAR_LEN = 25   # the length of the progress bar during compilation. Do not set a large value
-PROGRESS_BAR_CHAR = {
-    "completed":f"{color_tool.Colors.BG_GREEN} {color_tool.Colors.RESET}",
-    "not_completed":" "
-}
-
 def compile_smart(
         file:str="",
         argv:list[str] | tuple[str]=[],
@@ -66,7 +61,7 @@ def compile_smart(
         thread_mode:list[bool, str, bool, bool]=[False, "", False, False]
     ) -> str:
     """Start compiling from a file."""
-    global line_of_instruction, code_line#, warning_endline
+    global line_of_instruction, code_line
     logging.info("Starting compiller...")
 
     module_mode = module_name != "*"
@@ -86,38 +81,6 @@ def compile_smart(
 
         BUILT_IN_NAME = BUILT_IN_NAME_RETURN + BUILT_IN_NAME_NORETURN
 
-    def make_error(error_value:str, set_need_error:bool=True, add_to_adress_conter:bool=True) -> str:
-        """
-        Return the op code for the runtime error.
-        Return hex code.
-        Add to address counter if the argument is True
-        """
-        nonlocal address_counter
-        if try_mode:
-            code_compile = "!  smart_error_try "
-            if add_to_adress_conter:
-                address_counter += 3
-
-            return code_compile
-
-        else:
-
-            code_compile = ""
-
-            compiller_data_run.need_error = set_need_error
-
-            code_compile += "A9 45 20 EF FF "     # print E
-            if add_to_adress_conter:
-                address_counter += 5
-
-            code_compile += set_on_A_value(error_value, add_adress=add_to_adress_conter)
-
-            code_compile += "4C !  smart_runtime_error"    # set 2 spaces on placeholder for counting address
-            if add_to_adress_conter:
-                address_counter += 3
-
-            return code_compile
-
     def line_of_instruction(nb_instruction:int) -> tuple[int, str]:
         """Return the line number and the content of the instruction."""
         nb = 0
@@ -132,7 +95,7 @@ def compile_smart(
             if nb_instruction + 1 <= nb:
                 return (line_counter + 1, code_line[line_counter-1])
 
-        return (line_counter +1, code_line[line_counter-1])
+        return (line_counter + 1, code_line[line_counter-1])
 
     config_exception(line_of_instruction)
 
@@ -198,58 +161,6 @@ def compile_smart(
 
         return start_loop_for
 
-
-    def get_char(char_type:str) -> str:
-        """Return the char value of Smart."""
-        def char_error() -> None:
-            """Raise SmartError if the char value doesn't have exactly 1 character."""
-            smart_error(f"The char value `{char_type}` don't have 1 character.")
-
-        if char_type.startswith("'") and char_type.endswith("'"):
-            char = char_type[1:-1]
-
-            if len(char) == 2 and char == "\\\\":
-                code_ascii = ord("\\")
-
-            elif len(char) == 2 and char.startswith("\\"):
-                if char in EscapeChar.ESCAPE_CHAR:
-                    code_ascii = ord(EscapeChar.ESCAPE_CHAR[char])
-                else:
-                    char_error()
-
-            elif len(char) == 1:
-                if char.islower():
-                    smart_error("char cannot be lower.")
-
-                if char == "'":
-                    smart_error(f"Error with char value `{char_type}`.")
-
-                code_ascii = ord(char)
-
-            else:
-                char_error()
-
-            code_hex = hex(code_ascii)[2:]
-            code_hex = code_hex.upper()
-            return code_hex
-
-        else:
-            smart_error(f"The char value (`{char_type}`) was never closed.")
-
-    def good_hex(code:str) -> bool:
-        """Return True if the hex value is good, False otherwise."""
-        try:
-            int(code, base=16)
-        except:
-            return False
-        else:
-            return True if len(code) == 2 else False
-
-    def control_hex(code:str) -> None:
-        """If good_hex returns False, raise SmartError."""
-        if not good_hex(code):
-            smart_error(f"Bad hex value '{code}'")
-
     def set_on_A_value(value:str, recursiv_value:bool=False, forbiden_math:bool=False, test_value_mode:bool=False, add_adress:bool=True) -> str:
         """Return the value for set one A.
         arg: test_value_mode: if True, not print the error message on console (but raise SmartError).
@@ -258,20 +169,6 @@ def compile_smart(
         nonlocal address_counter
 
         set_error_exception = not test_value_mode
-
-        def imediate_value(value:str) -> bool:
-            """Return True if the value is an immediate value, False otherwise.
-            A9 41 : immediate value (LDA #41)
-            AD 00 04 : address value (LDA $0400)
-            """
-            try:
-                start = value.replace(" ", "")[0:2]
-            except IndexError:
-                return False
-
-            if start == "A9":
-                return True
-            return False
 
         def control_math() -> None:
             """If forbiden_math is True, raise SmartError if there is math in the value."""
@@ -405,7 +302,7 @@ def compile_smart(
 
                     # control division by 0
 
-                    error_code = make_error("'/'", add_to_adress_conter=False)
+                    error_code, _ = make_error("'/'", try_mode, add_to_adress_conter=False)
 
                     control_code = "C9 00 D0 !smart:len_error {}".format(error_code)
 
@@ -561,7 +458,7 @@ def compile_smart(
                         test_index += "90 !smart:len_error_index "     # branch if index > 21
                         counter_adress_value += 2
 
-                        error_code = make_error("'I'", add_to_adress_conter=False)
+                        error_code, _ = make_error("'I'", try_mode, add_to_adress_conter=False)
                         test_index = test_index.replace("!smart:len_error_index", get_hex_from_int(error_code.count(" ")))
 
                         test_index += error_code
@@ -920,6 +817,7 @@ def compile_smart(
 
 
     import_tool.config_import(compile_smart)
+    config_hex_function(set_on_A_value)
 
     def hex_parameters(function_name_usr:dict, function_name:str, function_arg:list) -> str:
         """Return the hex code for the parameters of the function."""
@@ -958,7 +856,7 @@ def compile_smart(
         """
         nonlocal code_compile, address_counter
         var_name = line[:-2]
-        
+
         operator = line[-1]
 
         if not good_variable_name(var_name):
@@ -1146,7 +1044,7 @@ def compile_smart(
 
             if line.endswith("++") or line.endswith("--"): # ------
                 increment_decrement_var(line)
-                
+
 
             else:
 
@@ -1184,7 +1082,7 @@ def compile_smart(
                     var_name, value = line.split("=", 1)
                 except ValueError:
                     smart_error(f"Error with variable `{line}`: expected '='")
-                
+
 
 
             if var_name.endswith("]"):     # an index for str value
@@ -1225,7 +1123,7 @@ def compile_smart(
                 if increment_mode:
                     increment_decrement_var(var_name + operator_increment, {"offset":True, "offset_value":index_var[:-2]})
                 else:
-                    
+
                     if index_mode_const:
                         code_compile += f"{set_on_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
                         address_counter += 3
@@ -1240,7 +1138,7 @@ def compile_smart(
                         test_index += "90 !smart:len_error_index "     # branch if index > 21
                         address_counter += 2
 
-                        error_code = make_error("'I'", add_to_adress_conter=False)
+                        error_code, _ = make_error("'I'", try_mode, add_to_adress_conter=False)
                         test_index = test_index.replace("!smart:len_error_index", get_hex_from_int(error_code.count(" ")))
 
                         test_index += error_code
@@ -1646,7 +1544,10 @@ def compile_smart(
             except IndexError:
                 smart_error(f"Expected value after `error`: '{line}'")
 
-            code_compile += make_error(error_value)
+            hex_code_error, len_code_error = make_error(error_value, try_mode)
+
+            code_compile += hex_code_error
+            address_counter += len_code_error
 
         elif line.lstrip().startswith("void"):      # make function
             if function_mode["function_mode"]:

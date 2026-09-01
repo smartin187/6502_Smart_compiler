@@ -42,7 +42,7 @@ for arg in sys.argv:
 
         sys.argv.remove(arg)
         break
-        
+
 
 CODE_ADRESSE = 1024
 
