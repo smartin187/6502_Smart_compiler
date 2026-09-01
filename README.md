@@ -788,6 +788,40 @@ You can do a recursive function. Smart use the stack for the recursive function.
 
 > If you exceed the max recursive of 128, you will have stack overflow and the program can crash.
 
+#### import modules
+
+Smart can import a module. When you import it, you get the function and variable of module.
+
+Use `import` keyword for import a module.
+
+```Smart
+import "module_name.sma";
+```
+
+The file "module_name.sma" is searched in 3 paths:
+- The relative path were the compiller is run (the current path)
+- The path of global library: on Linux: `/usr/lib/Smart-SmartyKit/global_lib/`, on Windows: `C:\users\you\AppData\Local\Smart-SmartyKit\lib\global_lib\`
+- The path of Smart library: on Linux: `/usr/lib/Smart-SmartyKit/smart_lib/`, on Windows: `C:\users\you\AppData\Local\Smart-SmartyKit\lib\smart_lib\`
+
+You can search a module only on a path, use the keyword `from`:
+```Smart
+import "module_name.sma" from "lib"; // the global library
+import "module_name.sma" from "smart"; // the Smart library
+import "module_name.sma" from "file"; // search only on the current path
+```
+
+##### Standard modules
+
+Smart have some standard modules.
+
+On the GitHub repository, the modules are in `./smart_lib/`. See the [`readme.md` for library](./smart_lib/readme.md).
+
+For use this library, please copy it to the path for Smart library and global library.
+
+
+If you like to add a standard module for Smart, you can set a pull request. See the [add your library to project](#add-your-library-to-project) for more information.
+
+
 
 #### Runtime error
 
@@ -985,6 +1019,10 @@ For publish Smart, the Python script are compiled with Pyinstaller.
 See [build releases](./build_releases/readme.md) for more information.
 
 See also [licence](#licence) for distribut Smart.
+
+## Add your library to project
+
+Smart have some standard library. If you like, you can make a new library and do a pull request at the GitHub repository. See the [documentation for library](./smart_lib/readme.md) for more information.
 
 ## Licence
 
