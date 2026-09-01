@@ -12,7 +12,7 @@ import logging
 import re
 import traceback
 
-from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, adress_for_RAM, get_str, get_char
+from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, adress_for_RAM, get_str, get_char, control_hex
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool.smart_info import GIT_HUB_LINK
@@ -160,22 +160,6 @@ def compile_smart(
             address_counter += 6
 
         return start_loop_for
-
-
-    
-    def good_hex(code:str) -> bool:
-        """Return True if the hex value is good, False otherwise."""
-        try:
-            int(code, base=16)
-        except:
-            return False
-        else:
-            return True if len(code) == 2 else False
-
-    def control_hex(code:str) -> None:
-        """If good_hex returns False, raise SmartError."""
-        if not good_hex(code):
-            smart_error(f"Bad hex value '{code}'")
 
     def set_on_A_value(value:str, recursiv_value:bool=False, forbiden_math:bool=False, test_value_mode:bool=False, add_adress:bool=True) -> str:
         """Return the value for set one A.

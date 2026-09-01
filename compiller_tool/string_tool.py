@@ -406,3 +406,18 @@ def get_char(char_type:str) -> str:
 
     else:
         raise SmartError(f"The char value (`{char_type}`) was never closed.")
+
+def good_hex(code:str) -> bool:
+    """Return True if the hex value is good, False else."""
+    try:
+        int(code, base=16)
+    except:
+        return False
+    else:
+        return True if len(code) == 2 else False
+
+def control_hex(code:str) -> None:
+    """If good_hex returns False, raise SmartError."""
+    if not good_hex(code):
+        raise SmartError(f"Bad hex value '{code}'")
+
