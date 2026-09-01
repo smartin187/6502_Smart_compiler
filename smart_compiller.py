@@ -16,7 +16,7 @@ from compiller_tool.string_tool import split_code, replace_code, in_code, good_v
 from compiller_tool.color_tool import ColoredFormatter
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool.smart_info import GIT_HUB_LINK
-from compiller_tool.hex_function import build_asm_entry
+from compiller_tool.hex_function import build_asm_entry, config_hex_function, make_error
 from compiller_tool.smart_try_except import control_except
 from compiller_tool.compiller_data_run import PROGRESS_BAR_LEN, PROGRESS_BAR_CHAR
 from compiller_tool import compiller_data_run
@@ -80,38 +80,6 @@ def compile_smart(
         BUILT_IN_NAME_NORETURN = ["print", "quit", "goto", "asm_entry"]
 
         BUILT_IN_NAME = BUILT_IN_NAME_RETURN + BUILT_IN_NAME_NORETURN
-
-    def make_error(error_value:str, set_need_error:bool=True, add_to_adress_conter:bool=True) -> str:
-        """
-        Return the op code for the runtime error.
-        Return hex code.
-        Add to address counter if the argument is True
-        """
-        nonlocal address_counter
-        if try_mode:
-            code_compile = "!  smart_error_try "
-            if add_to_adress_conter:
-                address_counter += 3
-
-            return code_compile
-
-        else:
-
-            code_compile = ""
-
-            compiller_data_run.need_error = set_need_error
-
-            code_compile += "A9 45 20 EF FF "     # print E
-            if add_to_adress_conter:
-                address_counter += 5
-
-            code_compile += set_on_A_value(error_value, add_adress=add_to_adress_conter)
-
-            code_compile += "4C !  smart_runtime_error"    # set 2 spaces on placeholder for counting address
-            if add_to_adress_conter:
-                address_counter += 3
-
-            return code_compile
 
     def line_of_instruction(nb_instruction:int) -> tuple[int, str]:
         """Return the line number and the content of the instruction."""
@@ -400,7 +368,7 @@ def compile_smart(
 
                     # control division by 0
 
-                    error_code = make_error("'/'", add_to_adress_conter=False)
+                    error_code, _ = make_error("'/'", try_mode, add_to_adress_conter=False)
 
                     control_code = "C9 00 D0 !smart:len_error {}".format(error_code)
 
@@ -556,7 +524,7 @@ def compile_smart(
                         test_index += "90 !smart:len_error_index "     # branch if index > 21
                         counter_adress_value += 2
 
-                        error_code = make_error("'I'", add_to_adress_conter=False)
+                        error_code, _ = make_error("'I'", try_mode, add_to_adress_conter=False)
                         test_index = test_index.replace("!smart:len_error_index", get_hex_from_int(error_code.count(" ")))
 
                         test_index += error_code
@@ -915,6 +883,7 @@ def compile_smart(
 
 
     import_tool.config_import(compile_smart)
+    config_hex_function(set_on_A_value)
 
     def hex_parameters(function_name_usr:dict, function_name:str, function_arg:list) -> str:
         """Return the hex code for the parameters of the function."""
@@ -1235,7 +1204,7 @@ def compile_smart(
                         test_index += "90 !smart:len_error_index "     # branch if index > 21
                         address_counter += 2
 
-                        error_code = make_error("'I'", add_to_adress_conter=False)
+                        error_code, _ = make_error("'I'", try_mode, add_to_adress_conter=False)
                         test_index = test_index.replace("!smart:len_error_index", get_hex_from_int(error_code.count(" ")))
 
                         test_index += error_code
@@ -1641,7 +1610,10 @@ def compile_smart(
             except IndexError:
                 smart_error(f"Expected value after `error`: '{line}'")
 
-            code_compile += make_error(error_value)
+            hex_code_error, len_code_error = make_error(error_value, try_mode)
+
+            code_compile += hex_code_error
+            address_counter += len_code_error
 
         elif line.lstrip().startswith("void"):      # make function
             if function_mode["function_mode"]:

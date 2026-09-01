@@ -6,6 +6,14 @@ This module has the function build_asm_entry used by the Smart built-in function
 import logging
 from compiller_tool.smart_exception import SmartError
 from compiller_tool.string_tool import adress_for_RAM
+from compiller_tool import compiller_data_run
+
+set_on_A_value = None
+
+def config_hex_function(_set_on_A_value) -> None:
+    """Add for hex_function.py the function set_on_A_value."""
+    global set_on_A_value
+    set_on_A_value = _set_on_A_value
 
 def good_asm(asm:str) -> bool:
     """Return True if assembly is valid.
@@ -80,3 +88,38 @@ def build_asm_entry(function_arg:list, line_conter:int, get_str_function, adress
         raise SmartError(f"Invalid assembly entry, bad bytes was given.", line_conter)
 
     return " ".join(asm_str[i:i+2] for i in range(0, len(asm_str), 2)) + " "
+
+
+def make_error(error_value:str, try_mode:bool, set_need_error:bool=True, add_to_adress_conter:bool=True) -> tuple[str, int]:  
+    """
+    Return a tuple with the op code for the runtime error and adress_conter.
+    Return hex code.
+    Add to address counter if the argument is True
+    """
+    #nonlocal address_counter
+    address_counter = 0 # the lenght of hex code
+
+    if try_mode:
+        code_compile = "!  smart_error_try "
+        if add_to_adress_conter:
+            address_counter += 3
+
+        return code_compile, address_counter
+
+    else:
+
+        code_compile = ""
+
+        compiller_data_run.need_error = set_need_error
+
+        code_compile += "A9 45 20 EF FF "     # print E
+        if add_to_adress_conter:
+            address_counter += 5
+
+        code_compile += set_on_A_value(error_value, add_adress=add_to_adress_conter)
+
+        code_compile += "4C !  smart_runtime_error"    # set 2 spaces on placeholder for counting address
+        if add_to_adress_conter:
+            address_counter += 3
+
+        return code_compile, address_counter
