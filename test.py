@@ -339,11 +339,47 @@ try:
             """,
             output="9"
         ),
+        Test(
+            "Increment / decrement in advenced variable",
+            code="""
+                ~str = "AB";
+                ~str[0]++;
+                print: ~str[0];
+                ~str[0]--;
+                print: ~str[0];
+
+                ~str[1]--;
+                print: ~str[1];
+                ~str[1]++;
+                print: ~str[1];
+            """,
+            output="BAAB"
+        ),
         # --- error ---
         Test(
             "Sintaxe error on increment",
             code="""
                 .++;
+            """,
+            sucess=False
+        ),
+        Test(
+            "Increment/decrement advenced value",
+            code="""
+                ~str = "AAAA";
+                ~str--;
+                ~str++;
+            """,
+            sucess=False
+        ),
+        Test(
+            "Increment/decrement advenced value on runtime index", # this test is actually sucess=False because not implemented. Succetible to change if the functionalyty is implemented.
+            code="""
+                .index = 1;
+                ~str = "AAA";
+                ~str[.index]++;
+                ~str[.index]--;
+                print: ~str;
             """,
             sucess=False
         )
