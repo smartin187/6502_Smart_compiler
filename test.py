@@ -308,6 +308,47 @@ try:
         ) for keyword in SMART_KEYWORD
     )
 
+    INCREMENT_DECREMENT = (
+        Test(
+            "Simple increment",
+            code="""
+                .a = 0;
+                .a++;
+                print: .a + '0';
+            """,
+            output="1"
+        ),
+        Test(
+            "Simple decrement",
+            code="""
+                .a = 10;
+                .a--;
+                print: .a + '0';
+            """,
+            output="9"
+        ),
+        Test(
+            "Advenced decrement increment",
+            code="""
+                .i = 11;
+                .i--;
+                .i--;
+                .i--;
+                .i++;
+                print: .i + '0';            
+            """,
+            output="9"
+        ),
+        # --- error ---
+        Test(
+            "Sintaxe error on increment",
+            code="""
+                .++;
+            """,
+            sucess=False
+        )
+    )
+
     TEST_COMPARATOR = (
         Test(
             "== test",
@@ -2386,7 +2427,7 @@ OK2"""
         )
     )
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST + THREAD_TEST
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST + THREAD_TEST + INCREMENT_DECREMENT
 
     try:
         for test in GLOBAL_TESTS:
