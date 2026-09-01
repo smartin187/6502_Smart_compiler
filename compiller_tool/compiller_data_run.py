@@ -9,6 +9,8 @@ Has:
 - the number of addresses reserved for str values.
 """
 
+from compiller_tool import color_tool
+
 # constent -------------------------------
 
 SYS_ADRESS = {
@@ -44,6 +46,12 @@ MAX_VARIABLE_CREATED = 256  # the maximum number of bytes for variables.
 START_ADRESS_VAR = 0x300
 
 OPERATOR = ("+", "-", "*", "/", "==", "!=", ">", "<", "<=", ">=")
+
+PROGRESS_BAR_LEN = 25   # the length of the progress bar during compilation. Do not set a large value  
+PROGRESS_BAR_CHAR = {
+    "completed":f"{color_tool.Colors.BG_GREEN} {color_tool.Colors.RESET}",
+    "not_completed":" "
+}
 
 # base value -------------------------------
 

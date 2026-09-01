@@ -18,6 +18,7 @@ from compiller_tool.smart_exception import CompileError, SmartError, config_exce
 from compiller_tool.smart_info import GIT_HUB_LINK
 from compiller_tool.hex_function import build_asm_entry
 from compiller_tool.smart_try_except import control_except
+from compiller_tool.compiller_data_run import PROGRESS_BAR_LEN, PROGRESS_BAR_CHAR
 from compiller_tool import compiller_data_run
 from compiller_tool import import_tool
 from compiller_tool import smart_obj
@@ -42,12 +43,6 @@ code_line = None
 line_of_instruction = None
 
 need_input = False
-
-PROGRESS_BAR_LEN = 25   # the length of the progress bar during compilation. Do not set a large value
-PROGRESS_BAR_CHAR = {
-    "completed":f"{color_tool.Colors.BG_GREEN} {color_tool.Colors.RESET}",
-    "not_completed":" "
-}
 
 def compile_smart(
         file:str="",
