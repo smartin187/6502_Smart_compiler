@@ -61,7 +61,7 @@ def compile_smart(
         thread_mode:list[bool, str, bool, bool]=[False, "", False, False]
     ) -> str:
     """Start compiling from a file."""
-    global line_of_instruction, code_line#, warning_endline
+    global line_of_instruction, code_line
     logging.info("Starting compiller...")
 
     module_mode = module_name != "*"
@@ -95,7 +95,7 @@ def compile_smart(
             if nb_instruction + 1 <= nb:
                 return (line_counter + 1, code_line[line_counter-1])
 
-        return (line_counter +1, code_line[line_counter-1])
+        return (line_counter + 1, code_line[line_counter-1])
 
     config_exception(line_of_instruction)
 
