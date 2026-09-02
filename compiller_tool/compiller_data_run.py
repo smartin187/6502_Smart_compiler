@@ -16,13 +16,12 @@ from compiller_tool import color_tool
 SYS_ADRESS = {
     "main_thread_ptr_1": "00 00", # the pointer of main thread operation (used only in threading mode).
     "main_thread_ptr_2": "01 00", # the second byte of ptr
-    #"CallElse":"02 00 ",    # obsolete ! To remove
-    "MathOP":"03 00 ",
-    "SaveStr":"04 00 ",     # SaveStr starts at EB 00 and has a length of 21 (end at 0x19 00)
-    "SaveStrCMP":"19 00 ",  # SaveStrCMP starts at 0x19 00 and has a length of 21 (end at 0x32 00) - Used to save a str for compare (if, ==...)
-    "SaveAToIndex":"32 00 ",   # SaveAToIndex starts at 0x32 00
-    "second_thread_ptr_1": "48 00", # the pointer of second thread operation (used only in thread mode).
-    "second_thread_ptr_2": "49 00" # the second byte of ptr
+    "MathOP":"02 00 ",
+    "SaveStr":"03 00 ",     # SaveStr starts at EB 00 and has a length of 21 (end at 0x19 00)
+    "SaveStrCMP":"18 00 ",  # SaveStrCMP starts at 0x19 00 and has a length of 21 (end at 0x32 00) - Used to save a str for compare (if, ==...)
+    "SaveAToIndex":"31 00 ",   # SaveAToIndex starts at 0x32 00
+    "second_thread_ptr_1": "47 00", # the pointer of second thread operation (used only in thread mode).
+    "second_thread_ptr_2": "48 00" # the second byte of ptr
 }
 
 SMART_ERRORS = {     # the error codes for Smart

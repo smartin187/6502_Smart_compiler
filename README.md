@@ -1024,13 +1024,12 @@ Smart uses RAM.
 - `0x0000` to `0x02FF`: Smart system:
   - `0x0000`: main thread pointer (byte 1) - used only in threading mode
   - `0x0001`: main thread pointer (byte 2) - used only in threading mode
-  - `0x0002`: no used actually
-  - `0x0003`: used for math operations (`*` and `/`)
-  - `0x0004` to `0x0018`: SaveStr (string storage, 21 bytes)
-  - `0x0019` to `0x0031`: SaveStrCMP (string comparison storage, 21 bytes)
-  - `0x0032`: SaveAToIndex (index storage for advanced variables)
-  - `0x0048`: second thread pointer (byte 1) - used only in threading mode
-  - `0x0049`: second thread pointer (byte 2) - used only in threading mode
+  - `0x0002`: used for math operations (`*` and `/`)
+  - `0x0003` to `0x0017`: SaveStr (string storage, 21 bytes)
+  - `0x0018` to `0x0030`: SaveStrCMP (string comparison storage, 21 bytes)
+  - `0x0031`: SaveAToIndex (index storage for advanced variables)
+  - `0x0047`: second thread pointer (byte 1) - used only in threading mode
+  - `0x0048`: second thread pointer (byte 2) - used only in threading mode
   - _Other address to `0x02FF` are not used actually._
 
 ## Distribution of Smart
