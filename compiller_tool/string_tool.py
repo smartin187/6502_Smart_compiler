@@ -201,7 +201,7 @@ def in_code(
 
 counter_adress_value = 0        # the relative address used by set_one_A_value. Be careful with this value.
 
-SMART_KEYWORD = ("void", "if", "elif", "else", "while", "break", "continue", "error", "for", "compiletime", "import")
+SMART_KEYWORD = ("void", "if", "elif", "else", "while", "break", "continue", "error", "for", "compiletime", "import", "try", "except", "mod")
 
 def good_variable_name(name:str) -> bool:
         """Return True if the name of the variable is good, False otherwise.
