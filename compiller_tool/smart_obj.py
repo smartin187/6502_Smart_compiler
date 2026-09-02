@@ -39,10 +39,11 @@ class SmartFunction(SmartObj):
 
 class SmartVariable(SmartObj):
     """Information about a variable (name and address on RAM)."""
-    def __init__(self, name:str, ram_adress):
+    def __init__(self, name:str, ram_adress, ptr_function:bool=False):
         super().__init__(name)
 
         self.ram_adress = ram_adress
+        self.ptr_function = ptr_function
 
 
 class SmartGoto(SmartObj):
@@ -58,16 +59,17 @@ class AdvancedObj(SmartObj):
     """Information about an advanced object (str).
     Uses multiple bytes.
     """
-    def __init__(self, name:str, adress:int, size:int=SIZE_ADVANCED_OBJ):
+    def __init__(self, name:str, adress:int, size:int=SIZE_ADVANCED_OBJ, ptr_function:bool=False):
         super().__init__(name)
 
         self.ram_adress = adress
         self.size = size
+        self.ptr_function = ptr_function
 
 class SmartStr(AdvancedObj):
     """Information about a string (name and address)."""
-    def __init__(self, name:str, adress:str):
-        super().__init__(name, adress)
+    def __init__(self, name:str, adress:str, ptr_function:bool=False):
+        super().__init__(name, adress, ptr_function=ptr_function)
 
 
     def get_index(self, line:str, test_mode:bool=False) -> tuple[bool, int | str]:
