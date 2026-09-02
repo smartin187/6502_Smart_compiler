@@ -1939,6 +1939,53 @@ OK2"""
             """,
             output="OK"
         ),
+        # thread
+        Test(
+            "Compiletime killthread",
+            code="""
+                thread nostack {;
+                    while True{;
+                        print: "A";
+                    }
+                }
+
+                for .i in |0|10|1| {;
+                    print: .i + '0';
+                }
+
+                compiletime killthread;
+
+                print: "STOP THREAD";
+
+                for .i in |0|10|1| {;
+                    print: .i + '0';
+                }
+            """,
+            output="A0A1A2A3A4A5A6A7A8A9AASTOP THREAD0123456789"
+        ),
+        Test(
+            "compiletime start and stop some thread",
+            """
+                thread nostack {;
+                    while True{;
+                        print: "A";
+                    }
+                }
+
+                for .i in |0|10|1| {;
+                    print: .i + '0';
+                }
+
+                compiletime killthread;
+
+                print: "STOP THREAD";
+
+                for .i in |0|10|1| {;
+                    print: .i + '0';
+                }
+            """ * 10,
+            output="A0A1A2A3A4A5A6A7A8A9AASTOP THREAD0123456789" * 10
+        ),
         # ---- error ----
         Test(
             "Expected keyword after compiletime",
@@ -2083,6 +2130,15 @@ OK2"""
             "Compiletime log error bad value",
             code="""
                 compiletime log error;
+            """,
+            sucess=False
+        ),
+        # kill thread
+        Test(
+            "Killthread but no thread running error",
+            code="""
+                print: "ERROR";
+                compiletime killthread;
             """,
             sucess=False
         )
