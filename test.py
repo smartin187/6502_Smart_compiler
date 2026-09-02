@@ -2393,7 +2393,7 @@ OK2"""
         Test(
             "Simple thread",
             code="""
-                thread {;
+                thread nostack {;
                     print: "THREAD";
                     print: 'A';
                 }
@@ -2404,7 +2404,7 @@ OK2"""
         Test(
             "Loop on thread",
             code="""
-            thread {;
+            thread nostack {;
                 while True{;
                     print: '1';
                 }
@@ -2420,10 +2420,10 @@ OK2"""
         Test(
             "Too many thread",
             code="""
-                thread{;
+                thread nostack {;
                     print: "THREAD 1";
                 }
-                thread{;
+                thread nostack {;
                     print: "THREAD 2";
                 }
                 print: "ERROR";
@@ -2437,7 +2437,7 @@ OK2"""
                     print: "FUNCTION";
                 }
 
-                thread{;
+                thread nostack {;
                     f:;
                 }
                 print: "ERROR";
@@ -2456,6 +2456,15 @@ OK2"""
             "Syntax error on thread - 2",
             code="""
                 thread uknow_option{;
+                    print: "ERROR";
+                }
+            """,
+            sucess=False
+        ),
+        Test(
+            "Syntax error on thread - 3",
+            code="""
+                thread {;
                     print: "ERROR";
                 }
             """,

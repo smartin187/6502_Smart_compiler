@@ -1350,18 +1350,22 @@ def compile_smart(
             line = line.replace(" ", "")
             line = line[len("thread"):]
 
-            line = line.replace(" ", "")
+            #line = line.replace(" ", "")
             if not line.endswith("{"):
                 smart_error("On thread bloc, '{' expected.")
 
             line = line[:-1]
 
             shared_stack_mode = False  # if True, both threads can call functions but the synchronization between them is not active
-            if line.replace(" ", "") == "stack":
+            match line.replace(" ", ""):
+                case "stack":
+                    shared_stack_mode = True
 
-                shared_stack_mode = True
+                case "nostack":
+                    shared_stack_mode = False
 
-                 #   smart_error(f"Unknown option '{options}' on thread.")
+                case _:
+                    smart_error(f"Unknown thread mode '{line.replace(" ", "")}' on thread.")
 
             if thread_mode[0]:
                 smart_error("Thread error: you can't have more 2 threads.")
