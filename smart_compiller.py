@@ -344,6 +344,58 @@ def compile_smart(
                     print(traceback.format_exc())
                     smart_error(f"Error with math '/' : '{value}'", set_error=set_error_exception)
 
+            elif in_code("%", value):
+                control_math()
+                try:
+                    value_1, value_2 = split_code(value, "%", max_split=1)
+
+                    asm = ""
+
+                    hex_value_2 = set_on_A_value(value_2, recursiv_value=True)
+
+                    asm += hex_value_2 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}"  # save value 2 on ram
+                    counter_adress_value += 3
+
+                    # control division by 0
+
+                    error_code, _ = make_error("'/'", try_mode, add_to_adress_conter=False)
+
+                    control_code = "C9 00 D0 !smart:len_error {}".format(error_code)
+
+                    control_code = control_code.replace("!smart:len_error", get_hex_from_int(error_code.count(" ")))
+
+                    counter_adress_value += control_code.count(" ")
+
+                    asm += control_code
+
+                    if hex_value_2 == "A9 00 ":       # division by 0
+                        confirm_user(f"Division by 0 (on % (modulo) operator): {value}. It make an runtime error `E/`! Continue compilation ? ", line_counter=line_counter)
+
+                    hex_value_1 = set_on_A_value(value_1, recursiv_value=True)
+
+                    asm += hex_value_1
+
+                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']}"
+                    asm += "90 0A "
+                    counter_adress_value += 5
+
+                    asm += "A2 00 E8 "    # set X to 00, and increment X on loop.
+                    counter_adress_value += 3
+
+                    asm += f"38 ED {compiller_data_run.SYS_ADRESS['MathOP']}"      # substract to A hex_value_2
+                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']}B0 F6 "   # continue or not the loop
+
+                    counter_adress_value += 9
+
+                    return asm
+
+                except SmartError as se:
+                    smart_error(str(se), se.nbline, set_error=set_error_exception)
+
+                except:
+                    print(traceback.format_exc())
+                    smart_error(f"Error with math '%' : '{value}'", set_error=set_error_exception)
+
 
 
             elif in_code("+", value):    # addition
