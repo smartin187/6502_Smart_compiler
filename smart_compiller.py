@@ -1677,12 +1677,6 @@ def compile_smart(
             except:
                 smart_error(f"Smart syntax error: '{line}'")
 
-            """# set the ptr argument
-            for parameter in function_mode["smart_func"].parameters:
-                if parameter.ptr_function:
-                    raise Exception("not implemented")"""
-
-
             # return value
 
             code_compile += set_on_A_value(value_return)
