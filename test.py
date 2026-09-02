@@ -2658,8 +2658,85 @@ OK2"""
         )
     )
 
+    PTR_FUNCTION = (
+        Test(
+            "Simple pointer on arg",
+            code="""
+                void f: *~arg {;
+                    print: ~arg;
+                    ~arg = "STRING2";
+                }
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST + THREAD_TEST + INCREMENT_DECREMENT + MOD_TEST + SHEBANG_TEST
+                ~my_value = "STRING1";
+                f: ~my_value;
+                print: ~my_value;
+            """,
+            output="STRING1STRING2"
+        ),
+        Test(
+            "Advenced pointer on arg",
+            code="""
+                void f: *.arg1, *.arg2, *~str1 {;
+                    print: .arg1;
+                    print: .arg2;
+                    print: ~str1;
+
+                    .arg1 = 'A';
+                    .arg2 = 'B';
+                    ~str1 = "STRING2";
+                }
+
+                .a = '1';
+                .b = '2';
+                ~my_str = "HELLO";
+                f: .a, .b, ~my_str;
+
+                print: .a;
+                print: .b;
+                print: ~my_str;
+            """,
+            output="12HELLOABSTRING2"
+        ),
+        Test(
+            "Return function with ptr",
+            code="""
+                void f: *.x, *~str {;
+                    print: .x;
+                    print: ~str;
+
+                    .x = 'A';
+                    ~str = "NEW STRING";
+
+                    return '@';
+                }
+
+                .a = '1';
+                ~my_str = "HELLO";
+                .c = f: .a, ~my_str;
+
+                print: .a;
+                print: ~my_str;
+                print: .c;
+            """,
+            output="1HELLOANEW STRING@"
+        ),
+        # --- error ---
+        Test(
+            "Set on ptr a value imediate",
+            code="""
+                void f: *.x, *~str {
+                    .x = 1;
+                    ~str = "STRING";
+                    print: "ERROR";
+                }
+                f: 0, "HELLO";
+            """,
+            sucess=False
+        )
+    )
+
+
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST + THREAD_TEST + INCREMENT_DECREMENT + MOD_TEST + SHEBANG_TEST + PTR_FUNCTION
 
     try:
         for test in GLOBAL_TESTS:
