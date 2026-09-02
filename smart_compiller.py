@@ -728,6 +728,11 @@ def compile_smart(
 
                         counter_adress_value += 3
 
+                        hex_code_ptr, delta_adress_ptr = code_ptr_func(func_name_value, func_arg_value_list)
+
+                        asm_v += hex_code_ptr
+                        counter_adress_value += delta_adress_ptr
+
                         value = value.replace(part, f"..{var_adress} ")
 
 
