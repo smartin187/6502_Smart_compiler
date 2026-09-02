@@ -2446,6 +2446,7 @@ OK2"""
     )
 
     THREAD_TEST = (
+        # --- no stack mode ---
         Test(
             "Simple thread",
             code="""
@@ -2471,6 +2472,61 @@ OK2"""
             }
             """,
             output="12121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121211"
+        ),
+        # --- shared stack mode ---
+        Test(
+            "Simple thread with shared stack",
+            code="""
+                thread nostack {;
+                    print: "THREAD";
+                    print: 'A';
+                }
+                print: "MAIN";
+            """,
+            output="THREADMAINA"
+        ),
+        Test(
+            "Call function on shared stack mode",
+            code="""
+                void f{;
+                    print: 'A';
+                }
+                void g{;
+                    print: 'B';
+                }
+
+                thread stack{;
+                    for .i in |0|10|1| {;
+                        f:;
+                    }
+                }
+                for .k in |0|10|1| {;
+                        g:;
+                    }
+            """,
+            output="ABABABABABA"
+        ),
+        Test(
+            "Call a function with long time",  # this test have probleme
+            code="""
+                //void f{;
+                //    for .i in |0|10|1| {;
+                //        print: 'A';
+                //    }
+                //}
+                //void g{;
+                //    for .i in |0|10|1| {;
+                //        print: 'B';
+                //    }
+                //}
+
+                //thread stack{;
+                //    f:;
+                //}
+
+                //g:;
+            """,
+            output="error" # this test have probleme
         ),
         # --- error ---
         Test(
