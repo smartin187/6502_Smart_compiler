@@ -1916,7 +1916,19 @@ def compile_smart(
                             code_compile += f"8D {adress_for_RAM(var_return.ram_adress)} " # STA variable
                             address_counter += 3
                         else:
-                            raise Exception("not implemented")
+                            base_adress_var = var_return.ram_adress
+                            base_adress_parameter = parameter.ram_adress
+
+                            if var_return.size != parameter.size:  # actually, all advenced obj have size=21, but suceptible to change
+                                raise SmartError(f"Variable {var_return.name} have diferent size of {parameter.size}.")
+
+                            for offset in range(var_return.size):
+
+                                code_compile += f"AD {adress_for_RAM(base_adress_parameter + offset)} " # LDA parameter
+                                address_counter += 3
+
+                                code_compile += f"8D {adress_for_RAM(base_adress_var + offset)} " # STA variable
+                                address_counter += 3
 
 
             else:
