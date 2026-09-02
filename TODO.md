@@ -13,7 +13,7 @@ If the task is a bug you can also add an issue on GitHub.
 ## Tasks
 
 - _Fix: small bug on windows: the path of the library is not joined correctly: ...lib\global_lib\screen_tool/screen_tool.sma_
-- Add operator: `modulo`, `^`... Add comparator: `and` `or` `>` `<=`
+- Add operator: `^`... Add comparator: `and` `or` `>` `<=`
 - Make the libraries for Smart: `math` ?, `string`, library for write in RAM/ROM ?
 - **Add string and list with size variable ?**
 - Add class object for Smart ?
@@ -23,3 +23,4 @@ If the task is a bug you can also add an issue on GitHub.
 - Add on increment/decrement on advenced value the index on runtime value: `.x = 1;~str="";~str[.x]++;`
 - Better threading: fix some problems with no shared stack + add some tests
 - On thread, add swith when a print beetween all character + add a swith on the input (the loop of input)
+- On math, add parentheses `(1+2)*3`
