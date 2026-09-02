@@ -22,5 +22,5 @@ If the task is a bug you can also add an issue on GitHub.
 - Add for variable: `.x += ...`.
 - Add on increment/decrement on advenced value the index on runtime value: `.x = 1;~str="";~str[.x]++;`
 - Better threading: fix some problems with no shared stack + add some tests
-- Add with `compiletime` keyword a stop thread: stop the second thread and run only on main thread.
+- On thread, add swith when a print beetween all character + add a swith on the input (the loop of input)
 - Docs: update the adress of smart system on readme
