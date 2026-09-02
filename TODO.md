@@ -23,4 +23,3 @@ If the task is a bug you can also add an issue on GitHub.
 - Add on increment/decrement on advenced value the index on runtime value: `.x = 1;~str="";~str[.x]++;`
 - Better threading: fix some problems with no shared stack + add some tests
 - On thread, add swith when a print beetween all character + add a swith on the input (the loop of input)
-- Docs: update the adress of smart system on readme
