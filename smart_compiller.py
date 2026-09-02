@@ -162,6 +162,45 @@ def compile_smart(
 
         return start_loop_for
 
+    def code_ptr_func(function_name: str, function_arg: list[str]) -> tuple[str, int]:
+        """Build the code for the function argument pointer."""
+
+        code_compile = ""
+        address_counter = 0
+
+        # set the ptr argument
+        for i, parameter in enumerate(function_name_usr[function_name].parameters):
+            if parameter.ptr_function:
+                ptr_return = function_arg[i]
+
+                if not ptr_return.startswith(".") and not ptr_return.startswith("~"):
+                    raise SmartError(f"Function {function_name} need a pointer argument. Need a variable name (simple variable or advenced variable), not '{ptr_return}' for this argument.")
+
+                var_return = get_variable(ptr_return[1:])
+
+                if isinstance(var_return, smart_obj.SmartVariable):
+                    code_compile += f"AD {adress_for_RAM(parameter.ram_adress)} " # LDA parameter
+                    address_counter += 3
+
+                    code_compile += f"8D {adress_for_RAM(var_return.ram_adress)} " # STA variable
+                    address_counter += 3
+                else:
+                    base_adress_var = var_return.ram_adress
+                    base_adress_parameter = parameter.ram_adress
+
+                    if var_return.size != parameter.size:  # actually, all advenced obj have size=21, but suceptible to change
+                        raise SmartError(f"Variable {var_return.name} have diferent size of {parameter.size}.")
+
+                    for offset in range(var_return.size):
+
+                        code_compile += f"AD {adress_for_RAM(base_adress_parameter + offset)} " # LDA parameter
+                        address_counter += 3
+
+                        code_compile += f"8D {adress_for_RAM(base_adress_var + offset)} " # STA variable
+                        address_counter += 3
+
+        return code_compile, address_counter
+
     def set_on_A_value(value:str, recursiv_value:bool=False, forbiden_math:bool=False, test_value_mode:bool=False, add_adress:bool=True) -> str:
         """Return the value for set one A.
         arg: test_value_mode: if True, not print the error message on console (but raise SmartError).
@@ -1899,36 +1938,11 @@ def compile_smart(
 
                 code_compile += text_code
 
-                # set the ptr argument
-                for i, parameter in enumerate(function_name_usr[function_name].parameters):
-                    if parameter.ptr_function:
-                        ptr_return = function_arg[i]
+                hex_code_ptr, delta_adress_ptr = code_ptr_func(function_name, function_arg)
 
-                        if not ptr_return.startswith(".") and not ptr_return.startswith("~"):
-                            raise SmartError(f"Function {function_name} need a pointer argument. Need a variable name (simple variable or advenced variable), not '{ptr_return}' for this argument.")
+                code_compile += hex_code_ptr
+                address_counter += delta_adress_ptr
 
-                        var_return = get_variable(ptr_return[1:])
-
-                        if isinstance(var_return, smart_obj.SmartVariable):
-                            code_compile += f"AD {adress_for_RAM(parameter.ram_adress)} " # LDA parameter
-                            address_counter += 3
-
-                            code_compile += f"8D {adress_for_RAM(var_return.ram_adress)} " # STA variable
-                            address_counter += 3
-                        else:
-                            base_adress_var = var_return.ram_adress
-                            base_adress_parameter = parameter.ram_adress
-
-                            if var_return.size != parameter.size:  # actually, all advenced obj have size=21, but suceptible to change
-                                raise SmartError(f"Variable {var_return.name} have diferent size of {parameter.size}.")
-
-                            for offset in range(var_return.size):
-
-                                code_compile += f"AD {adress_for_RAM(base_adress_parameter + offset)} " # LDA parameter
-                                address_counter += 3
-
-                                code_compile += f"8D {adress_for_RAM(base_adress_var + offset)} " # STA variable
-                                address_counter += 3
 
 
             else:
