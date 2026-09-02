@@ -886,8 +886,21 @@ You can have multi-threading with Smart.
 
 You can have only the main thread and a second thread.
 
+They have 2 type of thread: thread with shared stack and thread without stack.
+
+**Without stack:**
+
+The mose simple is the thread without stack. On this case, only the main thread can call a function. The second thread can't call a function.
+
+**With shared stack:**
+
+This mode is more complex, and some bug are to fix. The stack is shared between the 2 thread. When a thread call a function, the other thread is frozen while the function is running. When the function is finished, the other thread restart.
+
+> Do not use a function with a long time of execution on shared stack, because the other thread is frozen...
+
 Syntax:
 
+_No stack mode_
 ```Smart
 thread nostack {;
     // code of second thread
@@ -911,8 +924,7 @@ for .i in |0|10|1|{;
 }
 ```
 
-By default, the second thread can't call a function: the second thread don't have a stack. Only main thread can call function. But you can set the shared stack mode:
-
+_Shared stack mode_
 ```Smart
 void f{;
     print: "FUNCTION F\r";
@@ -933,7 +945,7 @@ while True{;
 }
 ```
 
-With shared stack, the second thread can call a function. **But when a thread call a function, the other thread are stopped.** When the function is finished, the other thread restart.
+With shared stack, the second thread can call a function. **But when a thread call a function, the other thread are frozen.** When the function is finished, the other thread restart.
 
 So you can use the shared stack mode, but use fast time function...
 
