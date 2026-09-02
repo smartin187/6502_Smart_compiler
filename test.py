@@ -1939,6 +1939,53 @@ OK2"""
             """,
             output="OK"
         ),
+        # thread
+        Test(
+            "Compiletime killthread",
+            code="""
+                thread nostack {;
+                    while True{;
+                        print: "A";
+                    }
+                }
+
+                for .i in |0|10|1| {;
+                    print: .i + '0';
+                }
+
+                compiletime killthread;
+
+                print: "STOP THREAD";
+
+                for .i in |0|10|1| {;
+                    print: .i + '0';
+                }
+            """,
+            output="A0A1A2A3A4A5A6A7A8A9AASTOP THREAD0123456789"
+        ),
+        Test(
+            "compiletime start and stop some thread",
+            """
+                thread nostack {;
+                    while True{;
+                        print: "A";
+                    }
+                }
+
+                for .i in |0|10|1| {;
+                    print: .i + '0';
+                }
+
+                compiletime killthread;
+
+                print: "STOP THREAD";
+
+                for .i in |0|10|1| {;
+                    print: .i + '0';
+                }
+            """ * 10,
+            output="A0A1A2A3A4A5A6A7A8A9AASTOP THREAD0123456789" * 10
+        ),
         # ---- error ----
         Test(
             "Expected keyword after compiletime",
@@ -2083,6 +2130,15 @@ OK2"""
             "Compiletime log error bad value",
             code="""
                 compiletime log error;
+            """,
+            sucess=False
+        ),
+        # kill thread
+        Test(
+            "Killthread but no thread running error",
+            code="""
+                print: "ERROR";
+                compiletime killthread;
             """,
             sucess=False
         )
@@ -2390,10 +2446,11 @@ OK2"""
     )
 
     THREAD_TEST = (
+        # --- no stack mode ---
         Test(
             "Simple thread",
             code="""
-                thread {;
+                thread nostack {;
                     print: "THREAD";
                     print: 'A';
                 }
@@ -2404,7 +2461,7 @@ OK2"""
         Test(
             "Loop on thread",
             code="""
-            thread {;
+            thread nostack {;
                 while True{;
                     print: '1';
                 }
@@ -2416,14 +2473,69 @@ OK2"""
             """,
             output="12121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121211"
         ),
+        # --- shared stack mode ---
+        Test(
+            "Simple thread with shared stack",
+            code="""
+                thread nostack {;
+                    print: "THREAD";
+                    print: 'A';
+                }
+                print: "MAIN";
+            """,
+            output="THREADMAINA"
+        ),
+        Test(
+            "Call function on shared stack mode",
+            code="""
+                void f{;
+                    print: 'A';
+                }
+                void g{;
+                    print: 'B';
+                }
+
+                thread stack{;
+                    for .i in |0|10|1| {;
+                        f:;
+                    }
+                }
+                for .k in |0|10|1| {;
+                        g:;
+                    }
+            """,
+            output="ABABABABABA"
+        ),
+        Test(
+            "Call a function with long time",  # this test have probleme
+            code="""
+                //void f{;
+                //    for .i in |0|10|1| {;
+                //        print: 'A';
+                //    }
+                //}
+                //void g{;
+                //    for .i in |0|10|1| {;
+                //        print: 'B';
+                //    }
+                //}
+
+                //thread stack{;
+                //    f:;
+                //}
+
+                //g:;
+            """,
+            output="error" # this test have probleme
+        ),
         # --- error ---
         Test(
             "Too many thread",
             code="""
-                thread{;
+                thread nostack {;
                     print: "THREAD 1";
                 }
-                thread{;
+                thread nostack {;
                     print: "THREAD 2";
                 }
                 print: "ERROR";
@@ -2437,7 +2549,7 @@ OK2"""
                     print: "FUNCTION";
                 }
 
-                thread{;
+                thread nostack {;
                     f:;
                 }
                 print: "ERROR";
@@ -2456,6 +2568,15 @@ OK2"""
             "Syntax error on thread - 2",
             code="""
                 thread uknow_option{;
+                    print: "ERROR";
+                }
+            """,
+            sucess=False
+        ),
+        Test(
+            "Syntax error on thread - 3",
+            code="""
+                thread {;
                     print: "ERROR";
                 }
             """,
