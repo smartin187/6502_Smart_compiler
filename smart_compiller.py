@@ -1698,7 +1698,7 @@ def compile_smart(
             code_compile = code_compile.replace("!smart_module_goto", new_adress_module)
 
         elif line.lstrip().startswith("compiletime "):  # a compile command
-            compile_command.compiletime_command(line, smart_var)
+            compile_command.compiletime_command(line, smart_var, thread_mode)
 
         elif re.match(FUNCTION_PATTERN, line):     # function
 

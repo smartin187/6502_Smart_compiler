@@ -40,7 +40,7 @@ def get_line_debug(line:str) -> str:
 
     return ""
 
-def compiletime_command(line:str, smart_var:dict) -> None:
+def compiletime_command(line:str, smart_var:dict, thread_mode:list[bool, str, bool, bool]) -> None:
     """This function is used to process the compiletime command."""
 
     line = line[len("compiletime "):].strip()
@@ -118,6 +118,13 @@ def compiletime_command(line:str, smart_var:dict) -> None:
         log_str = line[len("log "):].strip()
 
         logging.info(f"{Colors.BOLD}[Compiletime info]{Colors.RESET}: {get_str(log_str)}")
+
+    elif line.replace(" ", "") == "killthread":  # stop second thread
+        if not thread_mode[0]:
+            raise SmartError("Erorr: 'killthread' was used but no thread are active.")
+
+        logging.warning("A thread was stopped by the 'killthread' compiletime command. Use this command with carfull.")
+        thread_mode[0] = False
 
     else:
         raise SmartError("Expected keyword after 'compiletime'.")
