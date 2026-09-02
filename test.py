@@ -2584,7 +2584,46 @@ OK2"""
         )
     )
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST + THREAD_TEST + INCREMENT_DECREMENT
+    MOD_TEST = (
+        Test(
+            "Simple module test",
+            code="""
+                .modulo = 10 % 3;
+                print: .modulo + '0';
+            """,
+            output="1"
+        ),
+        Test(
+            "Modulo with variable test",
+            code="""
+                .a = 20;
+                .b = 3;
+                .modulo = .a % .b;
+                print: .modulo + '0';
+            """,
+            output="2"
+        ),
+        # --- error ---
+        Test(
+            "Modulo by zero test",
+            code="""
+                .a = 0; // need a runtime value
+                .modulo = 10 % .a;
+                print: "ERROR";
+            """,
+            sucess=False
+        ),
+        Test(
+            "Sintaxe error on modulo",
+            code="""
+                .modulo = 10 %;
+                print: "ERROR";
+            """,
+            sucess=False
+        )
+    )
+
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST + THREAD_TEST + INCREMENT_DECREMENT + MOD_TEST
 
     try:
         for test in GLOBAL_TESTS:
