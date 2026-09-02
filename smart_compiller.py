@@ -70,6 +70,7 @@ def compile_smart(
         Warning: some functions are not in this class because they are assembly functions (print, goto...)"""
 
         input_code = "AD 11 D0 10 FB AD 10 D0 29 7F 60 "
+        @staticmethod
         def smartInput() -> tuple[str, int]:
             """Add an input function. Return a tuple with hex code and length of hex code."""
             global need_input
