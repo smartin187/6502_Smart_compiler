@@ -1677,6 +1677,13 @@ def compile_smart(
             except:
                 smart_error(f"Smart syntax error: '{line}'")
 
+            """# set the ptr argument
+            for parameter in function_mode["smart_func"].parameters:
+                if parameter.ptr_function:
+                    raise Exception("not implemented")"""
+
+
+            # return value
 
             code_compile += set_on_A_value(value_return)
 
@@ -1897,6 +1904,22 @@ def compile_smart(
                 function_replace.append(text_code)
 
                 code_compile += text_code
+
+                # set the ptr argument
+                for i, parameter in enumerate(function_name_usr[function_name].parameters):
+                    if parameter.ptr_function:
+                        ptr_return = function_arg[i]
+
+                        if not ptr_return.startswith(".") and not ptr_return.startswith("~"):
+                            raise SmartError(f"Function {function_name} need a pointer argument. Need a variable name (simple variable or advenced variable), not '{ptr_return}' for this argument.")
+
+                        var_return = get_variable(ptr_return[1:])
+
+                        code_compile += f"AD {adress_for_RAM(parameter.ram_adress)} " # LDA parameter
+                        address_counter += 3
+
+                        code_compile += f"8D {adress_for_RAM(var_return.ram_adress)} " # STA variable
+                        address_counter += 3
 
 
             else:
