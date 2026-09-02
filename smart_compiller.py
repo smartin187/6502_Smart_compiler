@@ -1625,12 +1625,18 @@ def compile_smart(
                 parameters_list = parameters.replace(" ", "").split(",")
 
                 for parameter in parameters_list:
+                    if parameter.startswith("*"): # set a ptr
+                        parameter = parameter[1:]
+                        ptr_mode = True
+                    else:
+                        ptr_mode = False
+
                     if parameter.startswith("."):
                         var_name_parameter = parameter[1:]
                         if not good_variable_name(var_name_parameter):
                             smart_error(f"Invalid syntax, expected a variable name: '{var_name_parameter}'.")
 
-                        parameter_obj = smart_obj.SmartVariable(var_name_parameter, adress_var)
+                        parameter_obj = smart_obj.SmartVariable(var_name_parameter, adress_var, ptr_function=ptr_mode)
 
                         make_variable(parameter_obj)
                         parameters_obj.append(parameter_obj)
@@ -1640,7 +1646,7 @@ def compile_smart(
                         if not good_variable_name(var_name_parameter):
                             smart_error(f"Invalid syntax, expected a variable name: '{var_name_parameter}'.")
 
-                        parameter_obj = smart_obj.SmartStr(var_name_parameter, adress_var)
+                        parameter_obj = smart_obj.SmartStr(var_name_parameter, adress_var, ptr_function=ptr_mode)
 
                         make_variable(parameter_obj, add_adress_advenced_value=True)
                         parameters_obj.append(parameter_obj)
