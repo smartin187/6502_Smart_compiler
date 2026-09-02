@@ -1909,11 +1909,14 @@ def compile_smart(
 
                         var_return = get_variable(ptr_return[1:])
 
-                        code_compile += f"AD {adress_for_RAM(parameter.ram_adress)} " # LDA parameter
-                        address_counter += 3
+                        if isinstance(var_return, smart_obj.SmartVariable):
+                            code_compile += f"AD {adress_for_RAM(parameter.ram_adress)} " # LDA parameter
+                            address_counter += 3
 
-                        code_compile += f"8D {adress_for_RAM(var_return.ram_adress)} " # STA variable
-                        address_counter += 3
+                            code_compile += f"8D {adress_for_RAM(var_return.ram_adress)} " # STA variable
+                            address_counter += 3
+                        else:
+                            raise Exception("not implemented")
 
 
             else:
