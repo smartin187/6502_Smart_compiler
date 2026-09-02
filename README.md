@@ -385,6 +385,12 @@ Division integer of 2 values. The result is round for a integer result.
 
 Set a [runtime error](#runtime-error) if division by 0.
 
+##### `%` (modulo)
+
+Return the modulo of 2 values.
+
+Set a [runtime error](#runtime-error) if modulo by 0.
+
 ##### `==` (equality)
 
 Compare 2 value, return True if value are equal False else.
