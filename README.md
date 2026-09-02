@@ -383,7 +383,7 @@ Multiply tow values
 
 Division integer of 2 values. The result is round for a integer result.
 
-**Warning:** division by zero; do an infinite loop!
+Set a [runtime error](#runtime-error) if division by 0.
 
 ##### `==` (equality)
 
@@ -846,7 +846,7 @@ The program is stopped when a runtime error is set.
 ##### Runtime error built-in
 
 They are built-in runtime error for some operation:
-- error `'/'`: division by zero
+- error `'/'`: division or `%` (modulo) by zero
 - error `'I'`: index out of range (for advanced variables)
 
 _Please do not use this error code for your runtime error: you can't know what error is it..._

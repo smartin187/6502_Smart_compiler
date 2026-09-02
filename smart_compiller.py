@@ -344,10 +344,10 @@ def compile_smart(
                     print(traceback.format_exc())
                     smart_error(f"Error with math '/' : '{value}'", set_error=set_error_exception)
 
-            elif in_code("mod", value):
+            elif in_code("%", value):
                 control_math()
                 try:
-                    value_1, value_2 = split_code(value, "mod", max_split=1)
+                    value_1, value_2 = split_code(value, "%", max_split=1)
 
                     asm = ""
 
@@ -369,7 +369,7 @@ def compile_smart(
                     asm += control_code
 
                     if hex_value_2 == "A9 00 ":       # division by 0
-                        confirm_user(f"Division by 0 (on mod operator): {value}. It make an runtime error `E/`! Continue compilation ? ", line_counter=line_counter)
+                        confirm_user(f"Division by 0 (on % (modulo) operator): {value}. It make an runtime error `E/`! Continue compilation ? ", line_counter=line_counter)
 
                     hex_value_1 = set_on_A_value(value_1, recursiv_value=True)
 
@@ -394,7 +394,7 @@ def compile_smart(
 
                 except:
                     print(traceback.format_exc())
-                    smart_error(f"Error with math 'mod' : '{value}'", set_error=set_error_exception)
+                    smart_error(f"Error with math '%' : '{value}'", set_error=set_error_exception)
 
 
 
