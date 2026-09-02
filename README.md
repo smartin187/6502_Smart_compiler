@@ -889,7 +889,7 @@ You can have only the main thread and a second thread.
 Syntax:
 
 ```Smart
-thread{;
+thread nostack {;
     // code of second thread
 }
 
@@ -901,7 +901,7 @@ When the thread is declared, it start.
 For example:
 
 ```Smart
-thread{;
+thread nostack {;
     while True{;
         print: "WAITING...\r";
     }
