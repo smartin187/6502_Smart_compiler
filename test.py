@@ -127,7 +127,7 @@ class Test:
         compilation_error = False
 
         try:
-            self.code_compile = compile_smart("test/test.sma", make_file=False, thread_mode = [False, "", False, False])
+            self.code_compile = compile_smart("test/test.sma", make_file=False, thread_mode = [False, "", False, False], first_call=True)
 
             if "  " in self.code_compile:
                 raise OutputError(f"{Colors.RED}Double space on output. Risk of error with address counting...{Colors.RESET}")
@@ -2623,7 +2623,43 @@ OK2"""
         )
     )
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST + THREAD_TEST + INCREMENT_DECREMENT + MOD_TEST
+    SHEBANG_TEST = (
+        Test(
+            "Shebang test",
+            code="""#!/usr/bin/smart_emulator
+                print: "OK";
+            """,
+            output="OK"
+        ),
+        Test(
+            "Empty shebang",
+            code="""#!
+                print: "OK";
+            """,
+            output="OK"
+        ),
+        # --- error ---
+        Test(
+            "Shebang no in first line - 1",
+            code="""
+                print: "ERROR";
+#!/usr/bin/smart_emulator
+            """,
+            sucess=False
+        ),
+        Test(
+            "Shebang no in first line - 2",
+            code="""
+
+#!/usr/bin/smart_emulator
+                print: "ERROR";
+            """,
+            sucess=False
+        )
+    )
+
+
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST + THREAD_TEST + INCREMENT_DECREMENT + MOD_TEST + SHEBANG_TEST
 
     try:
         for test in GLOBAL_TESTS:
