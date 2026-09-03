@@ -1588,7 +1588,69 @@ try:
                 )
             ],
             sucess=False
-        )
+        ),
+        ModuleTest(
+            "Function with variable on module",
+            code_modules=[
+                (
+                    "test.sma",
+                    """
+                        import "test/module_func.sma";
+
+                        ~str = "STRING";
+                        f:;
+                        print: ~str;
+
+                    """
+                ),
+                (
+                    "module_func.sma",
+                    """
+                        void f{;
+                            print: "FUNCTION MODULE";
+                            .a = 'A';
+                            print: .a;
+                        }
+                    """
+                )
+            ],
+            output="FUNCTION MODULEASTRING"
+        ),
+        #ModuleTest(
+        #    "Function with variable on module - 2", # on this test, press only A
+        #    code_modules=[
+        #        (
+        #            "test.sma",
+        #            """
+        #                import "test/readkeys.sma";
+        #                ~str = "STRING";
+#
+ #                       readkeys: ~str, False;
+#
+ #                       print: ~str;
+#
+  #                  """
+   #             ),
+    #            (
+     #               "readkeys.sma",
+      #              """
+       #                 void readkeys: *~line, .end {;
+        #                .counter = 0;
+         #               while .counter != 20 {;
+          #                  ~line[.counter] = input:;
+#
+ #                           if ~line[.counter] == .end {;
+  #                              break;
+   #                         }
+#
+ #                           .counter++;
+  #                      }
+   #                 }
+    #                """
+     #           )
+      #      ],
+       #     output="A" * 21
+        #)
 
         #ModuleTest(    # uncomment for set the test. But this test have a long output
         #    "Self import test",
