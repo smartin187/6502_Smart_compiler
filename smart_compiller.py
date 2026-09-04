@@ -525,11 +525,11 @@ def compile_smart(
                     index_mode, index_var = obj_var.get_index(value, test_mode=test_value_mode)
 
                     if index_mode:
-                        adress_var = obj_var.get_adress_from_index(index_var)
+                        index_adress_var = obj_var.get_adress_from_index(index_var)
 
                         counter_adress_value += 3
 
-                        return f"AD {adress_for_RAM(adress_var)} "
+                        return f"AD {adress_for_RAM(index_adress_var)} "
 
                     else:
 
@@ -997,7 +997,23 @@ def compile_smart(
     last_if = False     # True if the last operation is if on Smart (for else).
 
     smart_var:dict[str, smart_obj.SmartVariable] = {} if not function_mode["function_mode"] else function_mode["global_var"]
-    adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var) if not module_mode else adress_var_module
+    #adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var) if not module_mode else adress_var_module
+    if module_mode:
+        adress_var = adress_var_module
+        print("----------------")
+
+    else:
+        adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var) # esce que les notusedram sont bien mis pour l'appèle de fonction
+
+        print("--- smart_var ---", smart_var)
+        print("--- len(smart_var)", len(smart_var))
+        print("--- address pour non module ---", hex(adress_var))
+        #for var in smart_var:
+        #    if isinstance(smart_var[var], smart_obj.AdvancedObj):
+        #        adress_var += smart_var[var].size
+        #    else:
+        #        adress_var += 1
+
 
     if module_mode:
 
@@ -1208,7 +1224,8 @@ def compile_smart(
                 if index_mode:
                     smart_error(f"Used index in undefined variable: `{var_name}`")
 
-                make_variable(smart_obj.SmartStr(var_name, adress_var))
+                make_variable(smart_obj.SmartStr(var_name, adress_var), add_adress_advenced_value=True)
+                #adress_var += 1
 
                 for i in range(smart_obj.SIZE_ADVANCED_OBJ - 1):
                     make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAM{i}")
@@ -1566,7 +1583,7 @@ def compile_smart(
                 if not good_variable_name(var_name[1:]):
                     smart_error(f"Invalid name for variable: '{var_name}'")
 
-                if len(smart_var) >= 256:
+                if len(smart_var) >= 256: # to replace
                     smart_error("Memory error : maximum variable are 256.")
 
                 var_name = var_name[1:]
@@ -1700,8 +1717,13 @@ def compile_smart(
 
                         parameter_obj = smart_obj.SmartStr(var_name_parameter, adress_var, ptr_function=ptr_mode)
 
-                        make_variable(parameter_obj, add_adress_advenced_value=True)
+                        make_variable(parameter_obj, add_adress_advenced_value=False)
                         parameters_obj.append(parameter_obj)
+                        #adress_var += 1
+
+                        for i in range(smart_obj.SIZE_ADVANCED_OBJ - 1):
+                            make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAM{i}")
+                            compiller_data_run.not_used_ram += 1
 
                     else:
                         smart_error(f"Expected a variable name, not '{parameter}'")
@@ -1800,8 +1822,8 @@ def compile_smart(
             for var_name in import_info.variables:
                 smart_var[var_name] = import_info.variables[var_name]
 
-            adress_var += len(import_info.variables)
-
+            #adress_var += len(import_info.variables) # to replace by a real address counter
+            adress_var = import_info.variable_addres
 
             address_counter += 2
 
@@ -2166,10 +2188,10 @@ def compile_smart(
 
         logging.info("Build end.")
 
-        logging.info(f"Memory info: Smart memory: 256 bytes, used by programme: {len(smart_var)} bytes, using {len(smart_var) / 256 * 100}% of Smart memory. Programme size: used {address_counter} bytes from {hex(CODE_ADRESSE)}")
+        logging.info(f"Memory info: Smart memory: 256 bytes, used by programme: {len(smart_var)} bytes, using {len(smart_var) / 256 * 100}% of Smart memory. Programme size: used {address_counter} bytes from {hex(CODE_ADRESSE)}") # replace len by a real counter
 
     if module_mode:
-        return import_tool.ModuleInfo(code_compile, smart_var, function_name_usr)
+        return import_tool.ModuleInfo(code_compile, smart_var, function_name_usr, adress_var)
 
     else:
 

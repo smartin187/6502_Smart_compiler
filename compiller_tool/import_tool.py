@@ -17,10 +17,11 @@ PATH_LIB = {
 
 class ModuleInfo:
     """A class used by compile_smarty to get the variable and function names + binary code."""
-    def __init__(self, binary:str, variable:dict, function:dict):
+    def __init__(self, binary:str, variable:dict, function:dict, variable_address:int):
         self.binary = binary
         self.variables = variable
         self.function = function
+        self.variable_addres = variable_address
 
 def show_path_lib() -> None:
     """Show the path for the global and smart lib."""
