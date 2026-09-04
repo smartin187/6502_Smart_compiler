@@ -55,6 +55,7 @@ def compile_smart(
         ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[], "while_mode":False},
         bin_outpout_file:bool=False,
         module_name:str="*", # module name is '*' if main module.
+        adress_var_module:int=0, # the address of first free adress of variable for module
         regroup_bytes:int=-1, # for rendering the code. -1 for 1 line of hex, other value to regroup bytes into lines.
         first_call:bool=False,
         try_mode:bool=False,
@@ -996,7 +997,14 @@ def compile_smart(
     last_if = False     # True if the last operation is if on Smart (for else).
 
     smart_var:dict[str, smart_obj.SmartVariable] = {} if not function_mode["function_mode"] else function_mode["global_var"]
-    adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var)
+    adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var) if not module_mode else adress_var_module
+
+    if module_mode:
+
+        print("--- module info ---")
+        print("smart_var", smart_var)
+        print("adress_var", hex(adress_var))
+
 
     line_counter = 0
 
@@ -1745,7 +1753,7 @@ def compile_smart(
                     if not(line_import[0].startswith('"') and line_import[0].endswith('"')):
                         smart_error("Need a str value for path, in import.")
                     name_import = line_import[0][1:-1]
-                    import_info = import_tool.import_all(name_import, CODE_ADRESSE + address_counter)
+                    import_info = import_tool.import_all(name_import, CODE_ADRESSE + address_counter, address_var=adress_var)
 
 
                 elif len(line_import) == 3: # search in a specific directory (smart, lib or path of code)
@@ -1763,13 +1771,13 @@ def compile_smart(
 
 
                         if type_import == '"file"':
-                            import_info = import_tool.import_module(name_import, CODE_ADRESSE + address_counter)
+                            import_info = import_tool.import_module(name_import, CODE_ADRESSE + address_counter, address_var=adress_var)
 
                         elif type_import == '"lib"':
-                            import_info = import_tool.import_lib(name_import, CODE_ADRESSE + address_counter)
+                            import_info = import_tool.import_lib(name_import, CODE_ADRESSE + address_counter, address_var=adress_var)
 
                         elif type_import == '"smart"':
-                            import_info = import_tool.import_smart(name_import, CODE_ADRESSE + address_counter)
+                            import_info = import_tool.import_smart(name_import, CODE_ADRESSE + address_counter, address_var=adress_var)
 
                         else:
                             smart_error('Unknow import type. Must be "file", "lib", "smart"')
