@@ -266,6 +266,9 @@ try:
                     // --- string library ---
                     import "string/convert.sma";
 
+                    // --- input library ---
+                    import "input/readkeys.sma";
+
                     print: "OK";
                 """,
                 output="OK"
@@ -294,6 +297,27 @@ try:
                     }
                 """,
                 output="1OK"
+            ),
+            # --- input library ---
+            Test(
+                "Test readkeys",
+                code=r"""
+                    import "input/readkeys.sma";
+
+                    ~my_string = "";
+
+                    // read 21 character (len of string):
+                    readkeys: ~my_string, False;  // on ~my_string will be the input from keyword.
+
+                    print: ~my_string;
+
+
+                    // read while the caracter is not '\r' or 21 was read:
+                    readkeys: ~my_string, '\r';
+                    print: ~my_string;
+                """,
+                compile_output="0400: 4C 8B 04 A9 00 8D 16 03 AD 16 03 C9 14 F0 04 A9 01 D0 02 A9 00 C9 00 D0 03 4C 79 04 AD 16 03 AA C9 15 90 0A A9 45 20 EF FF A9 49 4C 85 04 20 7A 04 8D 17 03 AD 17 03 9D 00 03 8D 31 00 AD 16 03 AA C9 15 90 0A A9 45 20 EF FF A9 49 4C 85 04 BD 00 03 CD 15 03 D0 04 A9 01 D0 02 A9 00 C9 00 D0 08 A9 01 8D 18 03 4C 6F 04 A9 00 8D 18 03 4C 79 04 AE 16 03 E8 8E 16 03 4C 06 04 60 AD 11 D0 10 FB AD 10 D0 29 7F 60 20 EF FF 00 A9 00 8D 19 03 A9 00 8D 1A 03 A9 00 8D 1B 03 A9 00 8D 1C 03 A9 00 8D 1D 03 A9 00 8D 1E 03 A9 00 8D 1F 03 A9 00 8D 20 03 A9 00 8D 21 03 A9 00 8D 22 03 A9 00 8D 23 03 A9 00 8D 24 03 A9 00 8D 25 03 A9 00 8D 26 03 A9 00 8D 27 03 A9 00 8D 28 03 A9 00 8D 29 03 A9 00 8D 2A 03 A9 00 8D 2B 03 A9 00 8D 2C 03 A9 00 8D 2D 03 AD 19 03 8D 00 03 AD 1A 03 8D 01 03 AD 1B 03 8D 02 03 AD 1C 03 8D 03 03 AD 1D 03 8D 04 03 AD 1E 03 8D 05 03 AD 1F 03 8D 06 03 AD 20 03 8D 07 03 AD 21 03 8D 08 03 AD 22 03 8D 09 03 AD 23 03 8D 0A 03 AD 24 03 8D 0B 03 AD 25 03 8D 0C 03 AD 26 03 8D 0D 03 AD 27 03 8D 0E 03 AD 28 03 8D 0F 03 AD 29 03 8D 10 03 AD 2A 03 8D 11 03 AD 2B 03 8D 12 03 AD 2C 03 8D 13 03 AD 2D 03 8D 14 03 A9 00 8D 15 03 20 F5 08 AD 00 03 8D 19 03 AD 01 03 8D 1A 03 AD 02 03 8D 1B 03 AD 03 03 8D 1C 03 AD 04 03 8D 1D 03 AD 05 03 8D 1E 03 AD 06 03 8D 1F 03 AD 07 03 8D 20 03 AD 08 03 8D 21 03 AD 09 03 8D 22 03 AD 0A 03 8D 23 03 AD 0B 03 8D 24 03 AD 0C 03 8D 25 03 AD 0D 03 8D 26 03 AD 0E 03 8D 27 03 AD 0F 03 8D 28 03 AD 10 03 8D 29 03 AD 11 03 8D 2A 03 AD 12 03 8D 2B 03 AD 13 03 8D 2C 03 AD 14 03 8D 2D 03 AD 19 03 8D 03 00 AD 1A 03 8D 04 00 AD 1B 03 8D 05 00 AD 1C 03 8D 06 00 AD 1D 03 8D 07 00 AD 1E 03 8D 08 00 AD 1F 03 8D 09 00 AD 20 03 8D 0A 00 AD 21 03 8D 0B 00 AD 22 03 8D 0C 00 AD 23 03 8D 0D 00 AD 24 03 8D 0E 00 AD 25 03 8D 0F 00 AD 26 03 8D 10 00 AD 27 03 8D 11 00 AD 28 03 8D 12 00 AD 29 03 8D 13 00 AD 2A 03 8D 14 00 AD 2B 03 8D 15 00 AD 2C 03 8D 16 00 AD 2D 03 8D 17 00 AD 03 00 20 EF FF AD 04 00 20 EF FF AD 05 00 20 EF FF AD 06 00 20 EF FF AD 07 00 20 EF FF AD 08 00 20 EF FF AD 09 00 20 EF FF AD 0A 00 20 EF FF AD 0B 00 20 EF FF AD 0C 00 20 EF FF AD 0D 00 20 EF FF AD 0E 00 20 EF FF AD 0F 00 20 EF FF AD 10 00 20 EF FF AD 11 00 20 EF FF AD 12 00 20 EF FF AD 13 00 20 EF FF AD 14 00 20 EF FF AD 15 00 20 EF FF AD 16 00 20 EF FF AD 17 00 20 EF FF AD 19 03 8D 00 03 AD 1A 03 8D 01 03 AD 1B 03 8D 02 03 AD 1C 03 8D 03 03 AD 1D 03 8D 04 03 AD 1E 03 8D 05 03 AD 1F 03 8D 06 03 AD 20 03 8D 07 03 AD 21 03 8D 08 03 AD 22 03 8D 09 03 AD 23 03 8D 0A 03 AD 24 03 8D 0B 03 AD 25 03 8D 0C 03 AD 26 03 8D 0D 03 AD 27 03 8D 0E 03 AD 28 03 8D 0F 03 AD 29 03 8D 10 03 AD 2A 03 8D 11 03 AD 2B 03 8D 12 03 AD 2C 03 8D 13 03 AD 2D 03 8D 14 03 A9 0D 8D 15 03 20 F5 08 AD 00 03 8D 19 03 AD 01 03 8D 1A 03 AD 02 03 8D 1B 03 AD 03 03 8D 1C 03 AD 04 03 8D 1D 03 AD 05 03 8D 1E 03 AD 06 03 8D 1F 03 AD 07 03 8D 20 03 AD 08 03 8D 21 03 AD 09 03 8D 22 03 AD 0A 03 8D 23 03 AD 0B 03 8D 24 03 AD 0C 03 8D 25 03 AD 0D 03 8D 26 03 AD 0E 03 8D 27 03 AD 0F 03 8D 28 03 AD 10 03 8D 29 03 AD 11 03 8D 2A 03 AD 12 03 8D 2B 03 AD 13 03 8D 2C 03 AD 14 03 8D 2D 03 AD 19 03 8D 03 00 AD 1A 03 8D 04 00 AD 1B 03 8D 05 00 AD 1C 03 8D 06 00 AD 1D 03 8D 07 00 AD 1E 03 8D 08 00 AD 1F 03 8D 09 00 AD 20 03 8D 0A 00 AD 21 03 8D 0B 00 AD 22 03 8D 0C 00 AD 23 03 8D 0D 00 AD 24 03 8D 0E 00 AD 25 03 8D 0F 00 AD 26 03 8D 10 00 AD 27 03 8D 11 00 AD 28 03 8D 12 00 AD 29 03 8D 13 00 AD 2A 03 8D 14 00 AD 2B 03 8D 15 00 AD 2C 03 8D 16 00 AD 2D 03 8D 17 00 AD 03 00 20 EF FF AD 04 00 20 EF FF AD 05 00 20 EF FF AD 06 00 20 EF FF AD 07 00 20 EF FF AD 08 00 20 EF FF AD 09 00 20 EF FF AD 0A 00 20 EF FF AD 0B 00 20 EF FF AD 0C 00 20 EF FF AD 0D 00 20 EF FF AD 0E 00 20 EF FF AD 0F 00 20 EF FF AD 10 00 20 EF FF AD 11 00 20 EF FF AD 12 00 20 EF FF AD 13 00 20 EF FF AD 14 00 20 EF FF AD 15 00 20 EF FF AD 16 00 20 EF FF AD 17 00 20 EF FF 00 A9 00 8D 16 03 AD 16 03 C9 14 F0 04 A9 01 D0 02 A9 00 C9 00 D0 03 4C 6D 09 AD 16 03 AA C9 15 90 0A A9 45 20 EF FF A9 49 4C 79 09 20 6E 09 8D 24 03 AD 24 03 9D 00 03 8D 31 00 AD 16 03 AA C9 15 90 0A A9 45 20 EF FF A9 49 4C 79 09 BD 00 03 CD 15 03 D0 04 A9 01 D0 02 A9 00 C9 00 D0 08 A9 01 8D 25 03 4C 63 09 A9 00 8D 25 03 4C 6D 09 AE 16 03 E8 8E 16 03 4C FA 08 60 AD 11 D0 10 FB AD 10 D0 29 7F 60 20 EF FF 00 ",
+                compile_only=True
             )
         )
     else:
@@ -1588,7 +1612,69 @@ try:
                 )
             ],
             sucess=False
-        )
+        ),
+        ModuleTest(
+            "Function with variable on module",
+            code_modules=[
+                (
+                    "test.sma",
+                    """
+                        import "test/module_func.sma";
+
+                        ~str = "STRING";
+                        f:;
+                        print: ~str;
+
+                    """
+                ),
+                (
+                    "module_func.sma",
+                    """
+                        void f{;
+                            print: "FUNCTION MODULE";
+                            .a = 'A';
+                            print: .a;
+                        }
+                    """
+                )
+            ],
+            output="FUNCTION MODULEASTRING"
+        ),
+        #ModuleTest(
+        #    "Function with variable on module - 2", # on this test, press only A
+        #    code_modules=[
+        #        (
+        #            "test.sma",
+        #            """
+        #                import "test/readkeys.sma";
+        #                ~str = "STRING";
+#
+ #                       readkeys: ~str, False;
+#
+ #                       print: ~str;
+#
+  #                  """
+   #             ),
+    #            (
+     #               "readkeys.sma",
+      #              """
+       #                 void readkeys: *~line, .end {;
+        #                .counter = 0;
+         #               while .counter != 20 {;
+          #                  ~line[.counter] = input:;
+#
+ #                           if ~line[.counter] == .end {;
+  #                              break;
+   #                         }
+#
+ #                           .counter++;
+  #                      }
+   #                 }
+    #                """
+     #           )
+      #      ],
+       #     output="A" * 21
+        #)
 
         #ModuleTest(    # uncomment for set the test. But this test have a long output
         #    "Self import test",
@@ -2658,8 +2744,85 @@ OK2"""
         )
     )
 
+    PTR_FUNCTION = (
+        Test(
+            "Simple pointer on arg",
+            code="""
+                void f: *~arg {;
+                    print: ~arg;
+                    ~arg = "STRING2";
+                }
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST + THREAD_TEST + INCREMENT_DECREMENT + MOD_TEST + SHEBANG_TEST
+                ~my_value = "STRING1";
+                f: ~my_value;
+                print: ~my_value;
+            """,
+            output="STRING1STRING2"
+        ),
+        Test(
+            "Advenced pointer on arg",
+            code="""
+                void f: *.arg1, *.arg2, *~str1 {;
+                    print: .arg1;
+                    print: .arg2;
+                    print: ~str1;
+
+                    .arg1 = 'A';
+                    .arg2 = 'B';
+                    ~str1 = "STRING2";
+                }
+
+                .a = '1';
+                .b = '2';
+                ~my_str = "HELLO";
+                f: .a, .b, ~my_str;
+
+                print: .a;
+                print: .b;
+                print: ~my_str;
+            """,
+            output="12HELLOABSTRING2"
+        ),
+        Test(
+            "Return function with ptr",
+            code="""
+                void f: *.x, *~str {;
+                    print: .x;
+                    print: ~str;
+
+                    .x = 'A';
+                    ~str = "NEW STRING";
+
+                    return '@';
+                }
+
+                .a = '1';
+                ~my_str = "HELLO";
+                .c = f: .a, ~my_str;
+
+                print: .a;
+                print: ~my_str;
+                print: .c;
+            """,
+            output="1HELLOANEW STRING@"
+        ),
+        # --- error ---
+        Test(
+            "Set on ptr a value imediate",
+            code="""
+                void f: *.x, *~str {
+                    .x = 1;
+                    ~str = "STRING";
+                    print: "ERROR";
+                }
+                f: 0, "HELLO";
+            """,
+            sucess=False
+        )
+    )
+
+
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST + THREAD_TEST + INCREMENT_DECREMENT + MOD_TEST + SHEBANG_TEST + PTR_FUNCTION
 
     try:
         for test in GLOBAL_TESTS:

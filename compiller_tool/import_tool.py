@@ -17,10 +17,11 @@ PATH_LIB = {
 
 class ModuleInfo:
     """A class used by compile_smarty to get the variable and function names + binary code."""
-    def __init__(self, binary:str, variable:dict, function:dict):
+    def __init__(self, binary:str, variable:dict, function:dict, variable_address:int):
         self.binary = binary
         self.variables = variable
         self.function = function
+        self.variable_addres = variable_address
 
 def show_path_lib() -> None:
     """Show the path for the global and smart lib."""
@@ -45,14 +46,15 @@ def config_import(_compile_smarty) -> None:
     global compile_smarty
     compile_smarty = _compile_smarty
 
-def get_module(path:str, start_adress:int) -> ModuleInfo:
+def get_module(path:str, start_adress:int, var_module:dict) -> ModuleInfo:
     """Return the ModuleInfo from a path."""
     try:
         module_info:ModuleInfo = compile_smarty(
             file=path,
             CODE_ADRESSE=start_adress,
             make_file=False,
-            module_name=path
+            module_name=path,
+            smart_var_module=var_module
         )
 
         module_info.binary = module_info.binary.split(":")[1].lstrip()
@@ -62,18 +64,18 @@ def get_module(path:str, start_adress:int) -> ModuleInfo:
     except RecursionError:
         raise ModuleError("Error during compiling module. Maybe a module have import it?", recursion=True, module_name=path)
 
-def import_module(file_name:str, start_adress:int, no_error:bool=False) -> ModuleInfo:
+def import_module(file_name:str, start_adress:int, no_error:bool=False, module_var:dict={}) -> ModuleInfo:
     """Import a module from name (path can be relative or absolute)."""
     path = os.path.abspath(file_name)
 
     if not Path(path).is_file():
         raise ModuleError(f"File '{path}' not exist!", no_error=no_error)
 
-    return get_module(path, start_adress)
+    return get_module(path, start_adress, var_module=module_var)
 
 
 
-def import_lib(file_name:str, start_adress:int, no_error:bool=False) -> ModuleInfo:
+def import_lib(file_name:str, start_adress:int, no_error:bool=False, module_var:dict={}) -> ModuleInfo:
     """Import a module from the library. Path is :
     Linux: /usr/lib/Smart-SmartyKit/global_lib/...
     Windows: %LOCAL_APPDATA%/Smart-SmartyKit/lib/global_lib/"""
@@ -85,9 +87,9 @@ def import_lib(file_name:str, start_adress:int, no_error:bool=False) -> ModuleIn
     if not Path(path).is_file():
         raise ModuleError(f"File '{path}' not exist!", no_error=no_error)
 
-    return get_module(path, start_adress)
+    return get_module(path, start_adress, var_module=module_var)
 
-def import_smart(file_name:str, start_adress:int, no_error:bool=False) -> ModuleInfo:
+def import_smart(file_name:str, start_adress:int, no_error:bool=False, module_var:dict={}) -> ModuleInfo:
     """Import a module from the smart library. Path is :
     Linux: /usr/lib/Smart-SmartyKit/smart_lib/...
     Windows: %LOCAL_APPDATA%/Smart-SmartyKit/lib/smart_lib/"""
@@ -99,22 +101,22 @@ def import_smart(file_name:str, start_adress:int, no_error:bool=False) -> Module
     if not Path(path).is_file():
         raise ModuleError(f"File '{path}' not exist!", no_error=no_error)
 
-    return get_module(path, start_adress)
+    return get_module(path, start_adress, var_module=module_var)
 
-def import_all(file_name:str, start_adress:int) -> ModuleInfo:
+def import_all(file_name:str, start_adress:int, module_var:dict) -> ModuleInfo:
     """Import a module from all the paths (file, lib, smart).
     The order is file, lib, smart."""
     try:
-        return import_module(file_name, start_adress, no_error=True)
+        return import_module(file_name, start_adress, no_error=True, module_var=module_var)
     except ModuleError:
         pass
 
     try:
-        return import_lib(file_name, start_adress, no_error=True)
+        return import_lib(file_name, start_adress, no_error=True, module_var=module_var)
     except ModuleError:
         pass
 
     try:
-        return import_smart(file_name, start_adress, no_error=True)
+        return import_smart(file_name, start_adress, no_error=True, module_var=module_var)
     except ModuleError:
         raise ModuleError(f"Module '{file_name}' not found in any path.")

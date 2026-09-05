@@ -3,7 +3,7 @@
 """
 The compiller for smart.
 
-Function: compile_smarty to start compiling a smart code.
+Function: compile_smart to start compiling a smart code.
 """
 
 from pathlib import Path
@@ -55,6 +55,7 @@ def compile_smart(
         ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[], "while_mode":False},
         bin_outpout_file:bool=False,
         module_name:str="*", # module name is '*' if main module.
+        smart_var_module:dict[str, smart_obj.SmartObj]={}, # the address of first free adress of variable for module
         regroup_bytes:int=-1, # for rendering the code. -1 for 1 line of hex, other value to regroup bytes into lines.
         first_call:bool=False,
         try_mode:bool=False,
@@ -161,6 +162,45 @@ def compile_smart(
             address_counter += 6
 
         return start_loop_for
+
+    def code_ptr_func(function_name: str, function_arg: list[str]) -> tuple[str, int]:
+        """Build the code for the function argument pointer."""
+
+        code_compile = ""
+        address_counter = 0
+
+        # set the ptr argument
+        for i, parameter in enumerate(function_name_usr[function_name].parameters):
+            if parameter.ptr_function:
+                ptr_return = function_arg[i]
+
+                if not ptr_return.startswith(".") and not ptr_return.startswith("~"):
+                    raise SmartError(f"Function {function_name} need a pointer argument. Need a variable name (simple variable or advenced variable), not '{ptr_return}' for this argument.")
+
+                var_return = get_variable(ptr_return[1:])
+
+                if isinstance(var_return, smart_obj.SmartVariable):
+                    code_compile += f"AD {adress_for_RAM(parameter.ram_adress)} " # LDA parameter
+                    address_counter += 3
+
+                    code_compile += f"8D {adress_for_RAM(var_return.ram_adress)} " # STA variable
+                    address_counter += 3
+                else:
+                    base_adress_var = var_return.ram_adress
+                    base_adress_parameter = parameter.ram_adress
+
+                    if var_return.size != parameter.size:  # actually, all advenced obj have size=21, but suceptible to change
+                        raise SmartError(f"Variable {var_return.name} have diferent size of {parameter.size}.")
+
+                    for offset in range(var_return.size):
+
+                        code_compile += f"AD {adress_for_RAM(base_adress_parameter + offset)} " # LDA parameter
+                        address_counter += 3
+
+                        code_compile += f"8D {adress_for_RAM(base_adress_var + offset)} " # STA variable
+                        address_counter += 3
+
+        return code_compile, address_counter
 
     def set_on_A_value(value:str, recursiv_value:bool=False, forbiden_math:bool=False, test_value_mode:bool=False, add_adress:bool=True) -> str:
         """Return the value for set one A.
@@ -485,11 +525,11 @@ def compile_smart(
                     index_mode, index_var = obj_var.get_index(value, test_mode=test_value_mode)
 
                     if index_mode:
-                        adress_var = obj_var.get_adress_from_index(index_var)
+                        index_adress_var = obj_var.get_adress_from_index(index_var)
 
                         counter_adress_value += 3
 
-                        return f"AD {adress_for_RAM(adress_var)} "
+                        return f"AD {adress_for_RAM(index_adress_var)} "
 
                     else:
 
@@ -688,6 +728,11 @@ def compile_smart(
                         asm_v += f"8D {adress_for_RAM(var_adress)} "
 
                         counter_adress_value += 3
+
+                        hex_code_ptr, delta_adress_ptr = code_ptr_func(func_name_value, func_arg_value_list)
+
+                        asm_v += hex_code_ptr
+                        counter_adress_value += delta_adress_ptr
 
                         value = value.replace(part, f"..{var_adress} ")
 
@@ -951,8 +996,12 @@ def compile_smart(
 
     last_if = False     # True if the last operation is if on Smart (for else).
 
-    smart_var:dict[str, smart_obj.SmartVariable] = {} if not function_mode["function_mode"] else function_mode["global_var"]
-    adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var)
+    if not module_mode:
+        smart_var:dict[str, smart_obj.SmartVariable] = {} if not function_mode["function_mode"] else function_mode["global_var"]
+    else:
+        smart_var = smart_var_module
+
+    adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var) # esce que les notusedram sont bien mis pour l'appèle de fonction ?
 
     line_counter = 0
 
@@ -1156,7 +1205,8 @@ def compile_smart(
                 if index_mode:
                     smart_error(f"Used index in undefined variable: `{var_name}`")
 
-                make_variable(smart_obj.SmartStr(var_name, adress_var))
+                make_variable(smart_obj.SmartStr(var_name, adress_var), add_adress_advenced_value=False)
+                #adress_var += 1
 
                 for i in range(smart_obj.SIZE_ADVANCED_OBJ - 1):
                     make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAM{i}")
@@ -1403,7 +1453,6 @@ def compile_smart(
             line = line.replace(" ", "")
             line = line[len("thread"):]
 
-            #line = line.replace(" ", "")
             if not line.endswith("{"):
                 smart_error("On thread bloc, '{' expected.")
 
@@ -1514,7 +1563,7 @@ def compile_smart(
                 if not good_variable_name(var_name[1:]):
                     smart_error(f"Invalid name for variable: '{var_name}'")
 
-                if len(smart_var) >= 256:
+                if len(smart_var) >= 256: # to replace
                     smart_error("Memory error : maximum variable are 256.")
 
                 var_name = var_name[1:]
@@ -1625,12 +1674,18 @@ def compile_smart(
                 parameters_list = parameters.replace(" ", "").split(",")
 
                 for parameter in parameters_list:
+                    if parameter.startswith("*"): # set a ptr
+                        parameter = parameter[1:]
+                        ptr_mode = True
+                    else:
+                        ptr_mode = False
+
                     if parameter.startswith("."):
                         var_name_parameter = parameter[1:]
                         if not good_variable_name(var_name_parameter):
                             smart_error(f"Invalid syntax, expected a variable name: '{var_name_parameter}'.")
 
-                        parameter_obj = smart_obj.SmartVariable(var_name_parameter, adress_var)
+                        parameter_obj = smart_obj.SmartVariable(var_name_parameter, adress_var, ptr_function=ptr_mode)
 
                         make_variable(parameter_obj)
                         parameters_obj.append(parameter_obj)
@@ -1640,10 +1695,14 @@ def compile_smart(
                         if not good_variable_name(var_name_parameter):
                             smart_error(f"Invalid syntax, expected a variable name: '{var_name_parameter}'.")
 
-                        parameter_obj = smart_obj.SmartStr(var_name_parameter, adress_var)
+                        parameter_obj = smart_obj.SmartStr(var_name_parameter, adress_var, ptr_function=ptr_mode)
 
-                        make_variable(parameter_obj, add_adress_advenced_value=True)
+                        make_variable(parameter_obj, add_adress_advenced_value=False)
                         parameters_obj.append(parameter_obj)
+
+                        for i in range(smart_obj.SIZE_ADVANCED_OBJ - 1):
+                            make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAM{i + compiller_data_run.not_used_ram}")
+                            compiller_data_run.not_used_ram += 1
 
                     else:
                         smart_error(f"Expected a variable name, not '{parameter}'")
@@ -1671,6 +1730,7 @@ def compile_smart(
             except:
                 smart_error(f"Smart syntax error: '{line}'")
 
+            # return value
 
             code_compile += set_on_A_value(value_return)
 
@@ -1694,7 +1754,7 @@ def compile_smart(
                     if not(line_import[0].startswith('"') and line_import[0].endswith('"')):
                         smart_error("Need a str value for path, in import.")
                     name_import = line_import[0][1:-1]
-                    import_info = import_tool.import_all(name_import, CODE_ADRESSE + address_counter)
+                    import_info = import_tool.import_all(name_import, CODE_ADRESSE + address_counter, module_var=smart_var)
 
 
                 elif len(line_import) == 3: # search in a specific directory (smart, lib or path of code)
@@ -1712,13 +1772,13 @@ def compile_smart(
 
 
                         if type_import == '"file"':
-                            import_info = import_tool.import_module(name_import, CODE_ADRESSE + address_counter)
+                            import_info = import_tool.import_module(name_import, CODE_ADRESSE + address_counter, module_var=smart_var)
 
                         elif type_import == '"lib"':
-                            import_info = import_tool.import_lib(name_import, CODE_ADRESSE + address_counter)
+                            import_info = import_tool.import_lib(name_import, CODE_ADRESSE + address_counter, module_var=smart_var)
 
                         elif type_import == '"smart"':
-                            import_info = import_tool.import_smart(name_import, CODE_ADRESSE + address_counter)
+                            import_info = import_tool.import_smart(name_import, CODE_ADRESSE + address_counter, module_var=smart_var)
 
                         else:
                             smart_error('Unknow import type. Must be "file", "lib", "smart"')
@@ -1741,8 +1801,7 @@ def compile_smart(
             for var_name in import_info.variables:
                 smart_var[var_name] = import_info.variables[var_name]
 
-            adress_var += len(import_info.variables)
-
+            adress_var = len(import_info.variables) + compiller_data_run.START_ADRESS_VAR
 
             address_counter += 2
 
@@ -1891,6 +1950,12 @@ def compile_smart(
                 function_replace.append(text_code)
 
                 code_compile += text_code
+
+                hex_code_ptr, delta_adress_ptr = code_ptr_func(function_name, function_arg)
+
+                code_compile += hex_code_ptr
+                address_counter += delta_adress_ptr
+
 
 
             else:
@@ -2101,10 +2166,10 @@ def compile_smart(
 
         logging.info("Build end.")
 
-        logging.info(f"Memory info: Smart memory: 256 bytes, used by programme: {len(smart_var)} bytes, using {len(smart_var) / 256 * 100}% of Smart memory. Programme size: used {address_counter} bytes from {hex(CODE_ADRESSE)}")
+        logging.info(f"Memory info: Smart memory: 256 bytes, used by programme: {len(smart_var)} bytes, using {len(smart_var) / 256 * 100}% of Smart memory. Programme size: used {address_counter} bytes from {hex(CODE_ADRESSE)}") # replace len by a real counter
 
     if module_mode:
-        return import_tool.ModuleInfo(code_compile, smart_var, function_name_usr)
+        return import_tool.ModuleInfo(code_compile, smart_var, function_name_usr, adress_var)
 
     else:
 
