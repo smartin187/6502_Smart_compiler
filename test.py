@@ -2808,6 +2808,22 @@ OK2"""
             """,
             output="1HELLOANEW STRING@"
         ),
+        Test(
+            "Recurcive pointer",
+            code="""
+                void f1: *.arg1{;
+                    .arg1 = 'A';
+                }
+                void f2: *.arg2{;
+                    f1: .arg2;
+                }
+
+                .a = 0;
+                f2: .a;
+                print: .a;
+            """,
+            output="A"
+        ),
         # --- error ---
         Test(
             "Set on ptr a value imediate",

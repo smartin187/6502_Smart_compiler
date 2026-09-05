@@ -25,5 +25,6 @@ If the task is a bug you can also add an issue on GitHub.
 - On math, add parentheses `(1+2)*3`
 - On the library input, add new features: set a readline with print character, add a clear string (clear the string when the end is `\r` for exemple) on end mode...
 - On string library, add count, replace, in...
-- Test: add test for recurcive function with arg on ptr
+- Test: add test for recurcive function with arg on ptr for str value
 - On test, for the input test, add stdin file (maybe use subprocess.run or make new feature on smart eumlator)
+- Fix: if a ptr function call anthoer ptr function with the same argument named, error
