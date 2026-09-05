@@ -24,3 +24,7 @@ If the task is a bug you can also add an issue on GitHub.
 - Better threading: fix some problems with no shared stack + add some tests
 - On thread, add swith when a print beetween all character + add a swith on the input (the loop of input)
 - On math, add parentheses `(1+2)*3`
+- Test: add new test for the new library
+- On the library input, add new features: set a readline with print character, add a clear string (clear the string when the end is `\r` for exemple) on end mode...
+- On string library, add count, replace, in...
+- Test: add test for recurcive function with arg on ptr
