@@ -219,6 +219,8 @@ class ModuleTest(Test):
 
 LIB_PATH = {
     "screen_tool": ("smart_lib/screen_tool/screen_tool.sma",),
+    "string": ("smart_lib/string/convert.sma",),
+    "input": ("smart_lib/input/readkeys.sma",)
 }
 
 def control_lib() -> bool:
