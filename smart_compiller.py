@@ -1830,7 +1830,8 @@ def compile_smart(
                 smart_var[var_name] = import_info.variables[var_name]
 
             #adress_var += len(import_info.variables) # to replace by a real address counter
-            adress_var = import_info.variable_addres # ???
+            #adress_var = import_info.variable_addres # ???
+            adress_var = len(import_info.variables) + compiller_data_run.START_ADRESS_VAR
 
             address_counter += 2
 
