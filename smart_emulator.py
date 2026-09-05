@@ -246,6 +246,9 @@ stdin_6502 = {
     "read": 0       # the reading character
 }
 
+op_run = 0 # the number of opreation already run
+max_op_run = 0 # the maximum opreation
+
 
 if GUI_MODE:
 
@@ -826,7 +829,7 @@ def get_from_stack() -> str:
 
 def run_smart() -> None:
     """Run smart code."""
-    global code, ram, accumulator, flags, run_step, end_run
+    global code, ram, accumulator, flags, run_step, end_run, op_run
 
     code = code.split(" ")
 
@@ -843,9 +846,14 @@ def run_smart() -> None:
 
     run_fail = False
 
-    return_ardess = 0
+    #return_ardess = 0
 
     while run_step < len(code):
+
+        if max_op_run:
+            op_run += 1
+            if op_run >= max_op_run:
+                raise Exception("Maximum operation run reached.")
 
         if stop_run:
             break
@@ -1305,9 +1313,9 @@ if __name__ == "__main__":
 
 
 
-def start_test(test_code:str, stdin:str | None = None) -> str:
+def start_test(test_code:str, max_op:int, stdin:str | None = None) -> str:
     """Used by test.py to test a functionality."""
-    global code, ram, accumulator, flags, run_step, end_run, output_test, no_wozm, stack_ptr, stop_run
+    global code, ram, accumulator, flags, run_step, end_run, output_test, no_wozm, stack_ptr, stop_run, op_run, max_op_run
 
     # reset value:
     run_step = 0
@@ -1315,6 +1323,8 @@ def start_test(test_code:str, stdin:str | None = None) -> str:
     no_wozm = True
     stack_ptr = STACK_PTR
     stop_run = _STOP_RUN
+    max_op_run = max_op
+    op_run = 0
 
     ram = dict(BASE_RAM)
     accumulator = dict(BASE_ACCUMULATOR)

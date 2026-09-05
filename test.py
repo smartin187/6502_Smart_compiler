@@ -86,7 +86,7 @@ class TimeOut:
 
 class Test:
     """This class is for testing all functionalities of smart."""
-    def __init__(self, name:str, code:str, output:str="", compile_output:str="", compile_only:bool=False, sucess:bool=True, timeout:int=-1, stdin_test:str=""):
+    def __init__(self, name:str, code:str, output:str="", compile_output:str="", compile_only:bool=False, sucess:bool=True, timeout:int=-1, stdin_test:str="", max_op:int=10000):
         """
         timeout : if -1 no time out, else time out in second.
         """
@@ -98,7 +98,7 @@ class Test:
         self.sucess = sucess
         self.timeout = timeout
         self.stdin_test = stdin_test
-
+        self.max_op = max_op
     def show_test(self, start_compilation:bool=True) -> None:
         """Print the detail of test"""
         print(
@@ -151,7 +151,7 @@ class Test:
                 try:
                     if self.timeout != -1:
                         time_out = TimeOut(self.timeout)
-                    output = smart_emulator.start_test(self.code_compile, stdin=self.stdin_test)
+                    output = smart_emulator.start_test(self.code_compile, self.max_op, stdin=self.stdin_test)
 
                     if self.timeout != -1:
                         time_out.end = True
