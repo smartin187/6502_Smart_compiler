@@ -1001,33 +1001,7 @@ def compile_smart(
     else:
         smart_var = smart_var_module
 
-    #adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var) if not module_mode else adress_var_module
-    #if module_mode:
-    #    adress_var = adress_var_module
-    #    print("----------------")
-
-    #else:
     adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var) # esce que les notusedram sont bien mis pour l'appèle de fonction ?
-
-    if function_mode["function_mode"]:
-        print("----- adress_var function -----", hex(adress_var))
-
-        #print("--- smart_var ---", smart_var)
-        #print("--- len(smart_var)", len(smart_var))
-        #print("--- address pour non module ---", hex(adress_var))
-        #for var in smart_var:
-        #    if isinstance(smart_var[var], smart_obj.AdvancedObj):
-        #        adress_var += smart_var[var].size
-        #    else:
-        #        adress_var += 1
-
-
-    if module_mode:
-
-        print("--- module info ---")
-        print("smart_var", smart_var)
-        print("adress_var", hex(adress_var))
-
 
     line_counter = 0
 
@@ -1479,7 +1453,6 @@ def compile_smart(
             line = line.replace(" ", "")
             line = line[len("thread"):]
 
-            #line = line.replace(" ", "")
             if not line.endswith("{"):
                 smart_error("On thread bloc, '{' expected.")
 
@@ -1726,7 +1699,6 @@ def compile_smart(
 
                         make_variable(parameter_obj, add_adress_advenced_value=False)
                         parameters_obj.append(parameter_obj)
-                        #adress_var += 1
 
                         for i in range(smart_obj.SIZE_ADVANCED_OBJ - 1):
                             make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAM{i + compiller_data_run.not_used_ram}")
@@ -1829,8 +1801,6 @@ def compile_smart(
             for var_name in import_info.variables:
                 smart_var[var_name] = import_info.variables[var_name]
 
-            #adress_var += len(import_info.variables) # to replace by a real address counter
-            #adress_var = import_info.variable_addres # ???
             adress_var = len(import_info.variables) + compiller_data_run.START_ADRESS_VAR
 
             address_counter += 2
@@ -2072,8 +2042,6 @@ def compile_smart(
             smart_func = function_name_usr[function]
 
             function_thread_mode = thread_mode if thread_mode[3] else [False, "", False, False]
-
-            print("--- compile function ---")
 
             function_name_usr[function].code_compile_f = compile_smart(
                 make_file=False,
