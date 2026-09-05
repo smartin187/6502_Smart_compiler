@@ -27,4 +27,4 @@ If the task is a bug you can also add an issue on GitHub.
 - On string library, add count, replace, in...
 - Test: add test for recurcive function with arg on ptr for str value
 - Fix: if a ptr function call anthoer ptr function with the same argument named, error
-- Add a new time out for test: on emulator, add a operation counter, and raise TimeOut whent a operation counter is too high (maybe 1000000). And add the timeout for all test.
+- Add new test with using timeout: while True test... And add option for when the time is out, the output is given and test if the output is correct
