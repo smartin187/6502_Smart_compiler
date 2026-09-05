@@ -780,6 +780,24 @@ f: "STR1", "STR2";
 
 > Careful: with recursive function, the parameter of the function are shared with all call of the function.
 
+On function with parameters, you can set the edit variable mode: at the end of the function run, the value of the parameter is set to the variable given in the call of function. Set `*` before the name of parameter on function:
+
+```Smart
+void f: *.arg1, *.arg2{;
+    .arg1 = 'A';
+    .arg2 = 'B';
+}
+
+.a = 0;
+.b = 0;
+f: .a, .b;
+
+print: .a;
+print: .b;
+```
+
+> Note: the value given must be a variable, not a direct value.
+
 If your function is a return-function, you need the line:
 ```Smart
 void returnfonction{;
@@ -788,7 +806,7 @@ void returnfonction{;
 }
 ```
 
-> **Careful**: some bug are to fix with return function ! For example, don't set `.x = 1 + f:;` but you can set `.x = f: + 1;`.
+> **Careful**: some bug are to fix with return function!
 
 You can do a recursive function. Smart use the stack for the recursive function. You can have a max recursive of 128 (`256/2`).
 
