@@ -3,7 +3,7 @@
 """
 The compiller for smart.
 
-Function: compile_smarty to start compiling a smart code.
+Function: compile_smart to start compiling a smart code.
 """
 
 from pathlib import Path
@@ -55,7 +55,7 @@ def compile_smart(
         ]={"function_mode":False, "source_code":"", "global_function":[], "global_function_replace":[], "global_var":{}, "smart_func":None, "if_mode":False, "global_goto":{}, "goto_replace":[], "while_mode":False},
         bin_outpout_file:bool=False,
         module_name:str="*", # module name is '*' if main module.
-        adress_var_module:int=0, # the address of first free adress of variable for module
+        smart_var_module:dict[str, smart_obj.SmartObj]={}, # the address of first free adress of variable for module
         regroup_bytes:int=-1, # for rendering the code. -1 for 1 line of hex, other value to regroup bytes into lines.
         first_call:bool=False,
         try_mode:bool=False,
@@ -996,18 +996,25 @@ def compile_smart(
 
     last_if = False     # True if the last operation is if on Smart (for else).
 
-    smart_var:dict[str, smart_obj.SmartVariable] = {} if not function_mode["function_mode"] else function_mode["global_var"]
-    #adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var) if not module_mode else adress_var_module
-    if module_mode:
-        adress_var = adress_var_module
-        print("----------------")
-
+    if not module_mode:
+        smart_var:dict[str, smart_obj.SmartVariable] = {} if not function_mode["function_mode"] else function_mode["global_var"]
     else:
-        adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var) # esce que les notusedram sont bien mis pour l'appèle de fonction
+        smart_var = smart_var_module
 
-        print("--- smart_var ---", smart_var)
-        print("--- len(smart_var)", len(smart_var))
-        print("--- address pour non module ---", hex(adress_var))
+    #adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var) if not module_mode else adress_var_module
+    #if module_mode:
+    #    adress_var = adress_var_module
+    #    print("----------------")
+
+    #else:
+    adress_var = compiller_data_run.START_ADRESS_VAR + len(smart_var) # esce que les notusedram sont bien mis pour l'appèle de fonction ?
+
+    if function_mode["function_mode"]:
+        print("----- adress_var function -----", hex(adress_var))
+
+        #print("--- smart_var ---", smart_var)
+        #print("--- len(smart_var)", len(smart_var))
+        #print("--- address pour non module ---", hex(adress_var))
         #for var in smart_var:
         #    if isinstance(smart_var[var], smart_obj.AdvancedObj):
         #        adress_var += smart_var[var].size
@@ -1224,7 +1231,7 @@ def compile_smart(
                 if index_mode:
                     smart_error(f"Used index in undefined variable: `{var_name}`")
 
-                make_variable(smart_obj.SmartStr(var_name, adress_var), add_adress_advenced_value=True)
+                make_variable(smart_obj.SmartStr(var_name, adress_var), add_adress_advenced_value=False)
                 #adress_var += 1
 
                 for i in range(smart_obj.SIZE_ADVANCED_OBJ - 1):
@@ -1775,7 +1782,7 @@ def compile_smart(
                     if not(line_import[0].startswith('"') and line_import[0].endswith('"')):
                         smart_error("Need a str value for path, in import.")
                     name_import = line_import[0][1:-1]
-                    import_info = import_tool.import_all(name_import, CODE_ADRESSE + address_counter, address_var=adress_var)
+                    import_info = import_tool.import_all(name_import, CODE_ADRESSE + address_counter, module_var=smart_var)
 
 
                 elif len(line_import) == 3: # search in a specific directory (smart, lib or path of code)
@@ -1793,13 +1800,13 @@ def compile_smart(
 
 
                         if type_import == '"file"':
-                            import_info = import_tool.import_module(name_import, CODE_ADRESSE + address_counter, address_var=adress_var)
+                            import_info = import_tool.import_module(name_import, CODE_ADRESSE + address_counter, module_var=smart_var)
 
                         elif type_import == '"lib"':
-                            import_info = import_tool.import_lib(name_import, CODE_ADRESSE + address_counter, address_var=adress_var)
+                            import_info = import_tool.import_lib(name_import, CODE_ADRESSE + address_counter, module_var=smart_var)
 
                         elif type_import == '"smart"':
-                            import_info = import_tool.import_smart(name_import, CODE_ADRESSE + address_counter, address_var=adress_var)
+                            import_info = import_tool.import_smart(name_import, CODE_ADRESSE + address_counter, module_var=smart_var)
 
                         else:
                             smart_error('Unknow import type. Must be "file", "lib", "smart"')
@@ -1823,7 +1830,7 @@ def compile_smart(
                 smart_var[var_name] = import_info.variables[var_name]
 
             #adress_var += len(import_info.variables) # to replace by a real address counter
-            adress_var = import_info.variable_addres
+            adress_var = import_info.variable_addres # ???
 
             address_counter += 2
 
@@ -2064,6 +2071,8 @@ def compile_smart(
             smart_func = function_name_usr[function]
 
             function_thread_mode = thread_mode if thread_mode[3] else [False, "", False, False]
+
+            print("--- compile function ---")
 
             function_name_usr[function].code_compile_f = compile_smart(
                 make_file=False,

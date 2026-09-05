@@ -46,7 +46,7 @@ def config_import(_compile_smarty) -> None:
     global compile_smarty
     compile_smarty = _compile_smarty
 
-def get_module(path:str, start_adress:int, address_var_module:int) -> ModuleInfo:
+def get_module(path:str, start_adress:int, var_module:dict) -> ModuleInfo:
     """Return the ModuleInfo from a path."""
     try:
         module_info:ModuleInfo = compile_smarty(
@@ -54,7 +54,7 @@ def get_module(path:str, start_adress:int, address_var_module:int) -> ModuleInfo
             CODE_ADRESSE=start_adress,
             make_file=False,
             module_name=path,
-            adress_var_module=address_var_module
+            smart_var_module=var_module
         )
 
         module_info.binary = module_info.binary.split(":")[1].lstrip()
@@ -64,18 +64,18 @@ def get_module(path:str, start_adress:int, address_var_module:int) -> ModuleInfo
     except RecursionError:
         raise ModuleError("Error during compiling module. Maybe a module have import it?", recursion=True, module_name=path)
 
-def import_module(file_name:str, start_adress:int, no_error:bool=False, address_var:int=0) -> ModuleInfo:
+def import_module(file_name:str, start_adress:int, no_error:bool=False, module_var:dict={}) -> ModuleInfo:
     """Import a module from name (path can be relative or absolute)."""
     path = os.path.abspath(file_name)
 
     if not Path(path).is_file():
         raise ModuleError(f"File '{path}' not exist!", no_error=no_error)
 
-    return get_module(path, start_adress, address_var_module=address_var)
+    return get_module(path, start_adress, var_module=module_var)
 
 
 
-def import_lib(file_name:str, start_adress:int, no_error:bool=False, address_var:int=0) -> ModuleInfo:
+def import_lib(file_name:str, start_adress:int, no_error:bool=False, module_var:dict={}) -> ModuleInfo:
     """Import a module from the library. Path is :
     Linux: /usr/lib/Smart-SmartyKit/global_lib/...
     Windows: %LOCAL_APPDATA%/Smart-SmartyKit/lib/global_lib/"""
@@ -87,9 +87,9 @@ def import_lib(file_name:str, start_adress:int, no_error:bool=False, address_var
     if not Path(path).is_file():
         raise ModuleError(f"File '{path}' not exist!", no_error=no_error)
 
-    return get_module(path, start_adress, address_var_module=address_var)
+    return get_module(path, start_adress, var_module=module_var)
 
-def import_smart(file_name:str, start_adress:int, no_error:bool=False, address_var:int=0) -> ModuleInfo:
+def import_smart(file_name:str, start_adress:int, no_error:bool=False, module_var:dict={}) -> ModuleInfo:
     """Import a module from the smart library. Path is :
     Linux: /usr/lib/Smart-SmartyKit/smart_lib/...
     Windows: %LOCAL_APPDATA%/Smart-SmartyKit/lib/smart_lib/"""
@@ -101,22 +101,22 @@ def import_smart(file_name:str, start_adress:int, no_error:bool=False, address_v
     if not Path(path).is_file():
         raise ModuleError(f"File '{path}' not exist!", no_error=no_error)
 
-    return get_module(path, start_adress, address_var_module=address_var)
+    return get_module(path, start_adress, var_module=module_var)
 
-def import_all(file_name:str, start_adress:int, address_var:int) -> ModuleInfo:
+def import_all(file_name:str, start_adress:int, module_var:dict) -> ModuleInfo:
     """Import a module from all the paths (file, lib, smart).
     The order is file, lib, smart."""
     try:
-        return import_module(file_name, start_adress, no_error=True, address_var=address_var)
+        return import_module(file_name, start_adress, no_error=True, module_var=module_var)
     except ModuleError:
         pass
 
     try:
-        return import_lib(file_name, start_adress, no_error=True, address_var=address_var)
+        return import_lib(file_name, start_adress, no_error=True, module_var=module_var)
     except ModuleError:
         pass
 
     try:
-        return import_smart(file_name, start_adress, no_error=True, address_var=address_var)
+        return import_smart(file_name, start_adress, no_error=True, module_var=module_var)
     except ModuleError:
         raise ModuleError(f"Module '{file_name}' not found in any path.")
