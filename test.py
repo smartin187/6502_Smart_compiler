@@ -56,39 +56,11 @@ class OutputError(TestError):
     """If the output of programme are not good."""
     pass
 
-class TimeOut:
-    """For the time out on test. Helpful on while or goto."""
-    def __init__(self, timeout:int):
-        """Start the timeout, with a `timeout` in second.
-        raise a TimeoutError if time is out."""
-        self.timeout = timeout
-
-        self.actual_time = 0
-        self.end = False
-
-        self.timer = threading.Thread(target=self.control_time, daemon=True)
-        self.timer.start()
-
-    def control_time(self):
-        """Check if the time is out."""
-        while not self.end:
-            if self.actual_time >= self.timeout:
-                time_out_error = f"{Colors.RED}Time out on test. Test take too long : have {self.timeout}s max but use {self.actual_time}s.{Colors.RESET}"
-
-                input(f"{time_out_error}\n{Colors.BG_YELLOW}Need to stop test... Press enter or Ctrl+C for quit...")
-
-                sys.exit(1)
-
-                #raise TimeoutError(time_out_error)
-            self.actual_time += 1
-
-            time.sleep(1)
-
 class Test:
     """This class is for testing all functionalities of smart."""
-    def __init__(self, name:str, code:str, output:str="", compile_output:str="", compile_only:bool=False, sucess:bool=True, timeout:int=-1, stdin_test:str="", max_op:int=10000):
+    def __init__(self, name:str, code:str, output:str="", compile_output:str="", compile_only:bool=False, sucess:bool=True, stdin_test:str="", max_op:int=10000):
         """
-        timeout : if -1 no time out, else time out in second.
+        Set information about test.
         """
         self.name = name
         self.code = code
@@ -96,7 +68,6 @@ class Test:
         self.output = output + "\n\nEnd of run"
         self.compile_output = compile_output
         self.sucess = sucess
-        self.timeout = timeout
         self.stdin_test = stdin_test
         self.max_op = max_op
     def show_test(self, start_compilation:bool=True) -> None:
@@ -149,12 +120,7 @@ class Test:
         else:
             if not self.compile_only:
                 try:
-                    if self.timeout != -1:
-                        time_out = TimeOut(self.timeout)
                     output = smart_emulator.start_test(self.code_compile, self.max_op, stdin=self.stdin_test)
-
-                    if self.timeout != -1:
-                        time_out.end = True
 
                     if output != self.output:
                         raise OutputError(f"The output of programme is not good:\n{output}")
@@ -1353,7 +1319,6 @@ try:
         #            print: 'A';
         #        }
         #    """,
-        #    timeout=2
         #),
         Test(
             "Simple while test",
@@ -1369,7 +1334,6 @@ try:
                 }
             """,
             output="12345",
-            #timeout=5
         ),
         Test(
             "Break in while",
@@ -1380,7 +1344,6 @@ try:
                 }
             """,
             output="TEST",
-            #timeout=5
         ),
         Test(
             "Continue in while",
@@ -1395,7 +1358,6 @@ try:
                 }
             """,
             output="TEST1",
-            #timeout=5
         )
     )
 
