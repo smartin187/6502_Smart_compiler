@@ -86,7 +86,7 @@ class TimeOut:
 
 class Test:
     """This class is for testing all functionalities of smart."""
-    def __init__(self, name:str, code:str, output:str="", compile_output:str="", compile_only:bool=False, sucess:bool=True, timeout:int=-1):
+    def __init__(self, name:str, code:str, output:str="", compile_output:str="", compile_only:bool=False, sucess:bool=True, timeout:int=-1, stdin_test:str=""):
         """
         timeout : if -1 no time out, else time out in second.
         """
@@ -97,6 +97,7 @@ class Test:
         self.compile_output = compile_output
         self.sucess = sucess
         self.timeout = timeout
+        self.stdin_test = stdin_test
 
     def show_test(self, start_compilation:bool=True) -> None:
         """Print the detail of test"""
@@ -150,7 +151,7 @@ class Test:
                 try:
                     if self.timeout != -1:
                         time_out = TimeOut(self.timeout)
-                    output = smart_emulator.start_test(self.code_compile)
+                    output = smart_emulator.start_test(self.code_compile, stdin=self.stdin_test)
 
                     if self.timeout != -1:
                         time_out.end = True
@@ -950,8 +951,10 @@ try:
         Test(
             "Input test",
             code=".i = input:;print: .i;",
-            compile_output="0400: 20 13 04 8D 01 03 AD 01 03 8D 00 03 AD 00 03 20 EF FF 00 AD 11 D0 10 FB AD 10 D0 29 7F 60 ",
-            compile_only=True,
+            stdin_test="A",
+            output="A"
+            #compile_output="0400: 20 13 04 8D 01 03 AD 01 03 8D 00 03 AD 00 03 20 EF FF 00 AD 11 D0 10 FB AD 10 D0 29 7F 60 ",
+            #compile_only=True,
         ),
         Test(
             "If test",
@@ -2309,7 +2312,7 @@ OK2"""
             "Bad arg on input",
             code=".a = input: 'A';",
             sucess=False,
-            compile_only=True
+            stdin_test="E", # security if the compilation don't fail
         ),
         Test(
             "Bad arg on restart",

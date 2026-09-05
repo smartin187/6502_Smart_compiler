@@ -240,6 +240,13 @@ if __name__ == "__main__":
 
 START_RAM = 0
 
+stdin_6502 = {
+    "stdin": False, # if a stdin is used
+    "text": "",     # the text of stdin
+    "read": 0       # the reading character
+}
+
+
 if GUI_MODE:
 
     window_emulator = tk.Tk()
@@ -855,29 +862,37 @@ def run_smart() -> None:
             continue
 
         if " ".join(code[run_step:run_step + 7]) == "10 FB AD 10 D0 29 7F":     # special code:
-            if GUI_MODE:
-                var_info_run.set("The programme is waiting for a key...")
-                while ram["D011"] == "00":
-                    sleep(0.1)        # wait for a key
+            if not stdin_6502["stdin"]:
+                if GUI_MODE:
+                    var_info_run.set("The programme is waiting for a key...")
+                    while ram["D011"] == "00":
+                        sleep(0.1)        # wait for a key
 
-                var_info_run.set("")
+                    var_info_run.set("")
 
-                ram["D011"] = "00"
-                accumulator["A"] = ram["D010"]
+                    ram["D011"] = "00"
+                    accumulator["A"] = ram["D010"]
+
+                else:
+                    sys.stdout.write(Colors.BG_GREEN)
+                    key = input()
+
+                    sys.stdout.write(Colors.RESET + "\x1b[K")
+                    sys.stdout.flush()
+
+
+                    if len(key) != 1:
+                        MessageUser.show_error("Error", "You must enter a single character.")
+
+                    accumulator["A"] = hex(ord(key))[2:].upper().zfill(2)
 
             else:
-                sys.stdout.write(Colors.BG_GREEN)
-                key = input()
+                try:
+                    accumulator["A"] = hex(ord(stdin_6502["text"][stdin_6502["read"]]))[2:].upper().zfill(2)
+                    stdin_6502["read"] += 1
 
-                sys.stdout.write(Colors.RESET + "\x1b[K")
-                sys.stdout.flush()
-
-
-                if len(key) != 1:
-                    MessageUser.show_error("Error", "You must enter a single character.")
-
-                accumulator["A"] = hex(ord(key))[2:].upper().zfill(2)
-
+                except IndexError:
+                    raise Exception("stdin end.")
 
             run_step += 7
 
@@ -1290,7 +1305,7 @@ if __name__ == "__main__":
 
 
 
-def start_test(test_code:str) -> str:
+def start_test(test_code:str, stdin:str | None = None) -> str:
     """Used by test.py to test a functionality."""
     global code, ram, accumulator, flags, run_step, end_run, output_test, no_wozm, stack_ptr, stop_run
 
@@ -1309,7 +1324,14 @@ def start_test(test_code:str) -> str:
 
     output_test = ""
 
+    stdin_6502["read"] = 0
+    if stdin is None:
+        stdin_6502["stdin"] = False
+        stdin_6502["text"] = ""
 
+    else:
+        stdin_6502["stdin"] = True
+        stdin_6502["text"] = stdin
 
     run_smart()
 
