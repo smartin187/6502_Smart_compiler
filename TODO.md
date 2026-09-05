@@ -28,3 +28,4 @@ If the task is a bug you can also add an issue on GitHub.
 - Test: add test for recurcive function with arg on ptr for str value
 - On test, for the input test, add stdin file (maybe use subprocess.run or make new feature on smart eumlator)
 - Fix: if a ptr function call anthoer ptr function with the same argument named, error
+- Add a new time out for test: on emulator, add a operation counter, and raise TimeOut whent a operation counter is too high (maybe 1000000). And add the timeout for all test.
