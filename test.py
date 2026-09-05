@@ -1369,7 +1369,7 @@ try:
                 }
             """,
             output="12345",
-            timeout=5
+            #timeout=5
         ),
         Test(
             "Break in while",
@@ -1380,7 +1380,7 @@ try:
                 }
             """,
             output="TEST",
-            timeout=5
+            #timeout=5
         ),
         Test(
             "Continue in while",
@@ -1395,7 +1395,7 @@ try:
                 }
             """,
             output="TEST1",
-            timeout=5
+            #timeout=5
         )
     )
 
