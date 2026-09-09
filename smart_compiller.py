@@ -1707,10 +1707,6 @@ def compile_smart(
                         make_variable(parameter_obj, add_adress_advenced_value=False)
                         parameters_obj.append(parameter_obj)
 
-                        #compiller_data_run.not_used_ram += 1
-
-
-
                         for i in range(smart_obj.SIZE_ADVANCED_OBJ - 1):
                             compiller_data_run.not_used_ram += 1
                             make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAM{compiller_data_run.not_used_ram}")
