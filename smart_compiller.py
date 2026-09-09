@@ -653,6 +653,9 @@ def compile_smart(
                             counter_adress_value += delta_adress
                             asm_v += hex_code_input
 
+                            if len(func_arg_value_list) != 0:
+                                raise SmartError(f"'input' built-in function no take argument, but '{func_arg_value}' was given.", line_counter)
+
 
                             # save on RAM value return:
                             compiller_data_run.not_used_ram += 1
