@@ -36,6 +36,11 @@ print: .count_b + '0';
 
 This module is for conversion between the ASCII code of a character and its integer value.
 
+For import:
+```Smart
+import "string/convert.sma";
+```
+
 #### `int_to_char: .int`
 
 This function returns the ASCII character of the integer passed as argument.
