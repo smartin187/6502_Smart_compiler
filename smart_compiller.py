@@ -908,7 +908,11 @@ def compile_smart(
             adress_var += 1
 
         if var_name in smart_var:
+            #print("---- smart_var ----", smart_var)
             raise SmartError(f"Variable '{var_name}' already exist. You can't name a new object with this name.")
+
+        #if var_name == "i_":
+        #    print("--- add i_ ---")
 
         smart_var[var_name] = var_obj
 
@@ -1808,6 +1812,8 @@ def compile_smart(
             function_name_usr |= import_info.function
 
             for var_name in import_info.variables:
+            #    if var_name == "i_":
+            #        print("--- copy i_ ---")
                 smart_var[var_name] = import_info.variables[var_name]
 
             adress_var = len(import_info.variables) + compiller_data_run.START_ADRESS_VAR
