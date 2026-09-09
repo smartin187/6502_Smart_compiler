@@ -34,4 +34,5 @@ If the task is a bug you can also add an issue on GitHub.
 ```Smart
 ~str = "";
 .a = ~str[20 - 0]; // need to remove the space before -0. Add a .replace(" ", "") on set_on_A_value function
+// The probleme if for all operator + - * / %
 ```
