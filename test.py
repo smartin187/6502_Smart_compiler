@@ -238,7 +238,7 @@ class ModuleTest(Test):
 
 LIB_PATH = {
     "screen_tool": ("smart_lib/screen_tool/screen_tool.sma",),
-    "string": ("smart_lib/string/convert.sma",),
+    "string": ("smart_lib/string/convert.sma", "smart_lib/string/string.sma"),
     "input": ("smart_lib/input/readkeys.sma",)
 }
 
@@ -286,6 +286,7 @@ try:
 
                     // --- string library ---
                     import "string/convert.sma";
+                    import "string/string.sma";
 
                     // --- input library ---
                     import "input/readkeys.sma";
@@ -318,6 +319,39 @@ try:
                     }
                 """,
                 output="1OK"
+            ),
+            Test(
+                "count test - string lib",
+                code="""
+                    import "string/string.sma";
+
+                    ~my_string = "AAABBBB";
+
+                    // ---
+                    .count_a = count: ~my_string, 'A';
+                    .count_b = count: ~my_string, 'B';
+
+                    print: .count_a + '0';
+                    print: .count_b + '0';
+
+                    // ---
+
+                    .count_null = count: ~my_string, 0;
+                    print: .count_null + '0';
+
+                    // ---
+
+                    .imediate_count = count: "AABBCC", 'C';
+                    print: .imediate_count + '0';
+
+                    // ---
+
+                    .count_0 = count: "AAA", 'B';
+                    print: .count_0 + '0';
+
+                    print: "OK";
+                """,
+                output="34>20OK"
             ),
             # --- input library ---
             Test(
