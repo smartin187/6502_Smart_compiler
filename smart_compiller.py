@@ -1769,6 +1769,9 @@ def compile_smart(
             line_import = split_code(line, " ")[1:]
 
             try:
+                #print("--- address_counter before module ---", address_counter)
+
+
 
                 if len(line_import) == 1:   # search in all directories
                     if not(line_import[0].startswith('"') and line_import[0].endswith('"')):
@@ -2012,6 +2015,9 @@ def compile_smart(
 
         if not(compiller_data_run.double_space_error) and not verryfing_adress_conter_no_print(address_counter, code_compile):
 
+            #print("--- error, modulemode=", module_mode)
+            #print("--- code_compile", code_compile)
+
             compiller_data_run.double_space_error = True
 
             if verryfing_adress_conter_no_print(address_counter, code_compile) is None:
@@ -2133,7 +2139,7 @@ def compile_smart(
 
             code_compile = code_compile.replace(goto, f"{adress[2:]} {adress[:2]} ")
 
-    if compiller_data_run.need_error and not(function_mode["function_mode"]) and not(function_mode["if_mode"]):
+    if compiller_data_run.need_error and not(function_mode["function_mode"]) and not(function_mode["if_mode"]) and not module_mode:
 
         code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(code_compile.count(" ") + CODE_ADRESSE - 1) + " ") # use count instead of address_counter to avoid errors
         code_compile += "20 EF FF 00 "
