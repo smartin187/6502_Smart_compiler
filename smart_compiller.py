@@ -42,7 +42,7 @@ code_line = None
 
 line_of_instruction = None
 
-need_input = False
+#need_input = False
 
 def compile_smart(
         file:str="",
@@ -74,8 +74,8 @@ def compile_smart(
         @staticmethod
         def smartInput() -> tuple[str, int]:
             """Add an input function. Return a tuple with hex code and length of hex code."""
-            global need_input
-            need_input = True
+            #global need_input
+            compiller_data_run.need_input = True
             return "20 !  smart_input", 3
 
         BUILT_IN_NAME_RETURN = ["input"]
@@ -2108,7 +2108,7 @@ def compile_smart(
             if not f.called_function:
                 logging.warning(f"Function '{name}' was never called.")
 
-    if need_input and not function_mode["function_mode"]:
+    if compiller_data_run.need_input and not function_mode["function_mode"]:
         input_adress = address_counter + CODE_ADRESSE + 1
 
         hex_input_adress = hex(input_adress)[2:].upper()

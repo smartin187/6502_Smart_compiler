@@ -2446,7 +2446,7 @@ OK2"""
                 restart:;
             """,
             compile_only=True,
-            compile_output="0400: A9 4F 20 EF FF A9 4B 20 EF FF 4C 00 04 00 AD 11 D0 10 FB AD 10 D0 29 7F 60 "
+            compile_output="0400: A9 4F 20 EF FF A9 4B 20 EF FF 4C 00 04 00 "
         ),
         Test(
             "Input without return",
