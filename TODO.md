@@ -30,9 +30,3 @@ If the task is a bug you can also add an issue on GitHub.
 - Set a refactor for build-in function: add all build-in at class SmartBuiltin, and maybe add a better control of argument. Maybe set a new module. And finally, refactore the class SmartBuiltin: this class is for a function, and on a module, set the instances of this class?
 - Fix the probleme with the progress bar: the progress bar is set to 0 the time of compile a bloc (`if`, `else`...). Set only the main call of compile_smart can edite the value of progresse bar + remove the log "Build completed" and "Memory info" for the block of code, only for main call of compile_smart.
 - Fix: on function with parameter, it is impossible to give a list (because parameter is split with `,`)
-- Probeme with this code:
-```Smart
-~str = "";
-.a = ~str[20 - 0]; // need to remove the space before -0. Add a .replace(" ", "") on set_on_A_value function
-// The probleme is for all operator + - * / %
-```
