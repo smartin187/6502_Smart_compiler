@@ -31,3 +31,4 @@ If the task is a bug you can also add an issue on GitHub.
 - Fix the probleme with the progress bar: the progress bar is set to 0 the time of compile a bloc (`if`, `else`...). Set only the main call of compile_smart can edite the value of progresse bar + remove the log "Build completed" and "Memory info" for the block of code, only for main call of compile_smart.
 - Fix: on function with parameter, it is impossible to give a list (because parameter is split with `,`)
 - Fix: on the test "Test library import", error with adresse counter.
+- Refactor: at the end of compile loop of module, the input function is add (if need), and the error output (for runtime error) is also add if need it. Add only this op code on main module (for evite duplication of code). After, remove the placeholder `smart_module_goto`
