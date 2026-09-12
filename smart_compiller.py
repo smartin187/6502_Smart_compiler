@@ -2056,8 +2056,12 @@ def compile_smart(
 
     # compile function:
 
-    if not function_mode["function_mode"]:
+    if not function_mode["function_mode"] or module_name != "*":
         for function in function_name_usr:
+            #print("--- compile function ---", function)
+            #print("--- code_compile_f ---", function_name_usr[function].code_compile_f, "---")
+            #if function_name_usr[function].code_compile_f: # if the code of function is already compile (on module)
+            #    continue
 
             code = function_name_usr[function].source_code_function
 
