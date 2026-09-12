@@ -2111,7 +2111,7 @@ def compile_smart(
     if compiller_data_run.need_input and not function_mode["function_mode"] and not module_mode:
         input_adress = address_counter + CODE_ADRESSE + 1
 
-        hex_input_adress = hex(input_adress)[2:].upper()
+        hex_input_adress = hex(input_adress)[2:].upper() # --- to refactor: use address_for_ram ?
         hex_input_adress = "0" * (4 - len(hex_input_adress)) + hex_input_adress
 
         code_compile += SmartBuiltIn.input_code
