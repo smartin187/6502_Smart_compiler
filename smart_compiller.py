@@ -1811,7 +1811,7 @@ def compile_smart(
                 else:
                     smart_error("Error during importing module:\n" + str(me))
 
-            adress_delta = import_info.binary.count(" ")
+            adress_delta = import_info.binary.count(" ") + 3 * code_compile.count("!smart_call_func|")
 
             code_compile += import_info.binary
             address_counter += adress_delta
