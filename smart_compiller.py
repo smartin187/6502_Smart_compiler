@@ -1239,11 +1239,6 @@ def compile_smart(
                 index_mode_const, index_var = get_variable(var_name).get_index(line)
                 # ^ if the index is a number literal, otherwise it is a variable or expression
 
-
-
-
-                #print("--- index_var ---", index_var)
-
                 if increment_mode:
                     increment_decrement_var(var_name + operator_increment, {"offset":True, "offset_value":index_var[:-2]})
                 else:
