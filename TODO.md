@@ -26,7 +26,8 @@ If the task is a bug you can also add an issue on GitHub.
 - On the library input, add new features: set a readline with print character, add a clear string (clear the string when the end is `\r` for exemple) on end mode...
 - On string library, add count, replace, in...
 - Add new test with using timeout: while True test... And add option for when the time is out, the output is given and test if the output is correct
-- Fix a problem: if a `for` loop on function on module, error: the variable of for (`.i`) have a error "variable already exist".
+- Fix a problem: if a `for` loop on function on module, error: the variable of for (`.i`) have a error "variable already exist". Maybe the function is compilled 2 time: because the function of module are add the dict of main module, so when main module compile function, maybe it cause probleme.
 - Set a refactor for build-in function: add all build-in at class SmartBuiltin, and maybe add a better control of argument. Maybe set a new module. And finally, refactore the class SmartBuiltin: this class is for a function, and on a module, set the instances of this class?
 - Fix the probleme with the progress bar: the progress bar is set to 0 the time of compile a bloc (`if`, `else`...). Set only the main call of compile_smart can edite the value of progresse bar + remove the log "Build completed" and "Memory info" for the block of code, only for main call of compile_smart.
 - Fix: on function with parameter, it is impossible to give a list (because parameter is split with `,`)
+- Fix: on the test "Test library import", error with adresse counter.
