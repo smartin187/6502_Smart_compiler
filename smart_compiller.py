@@ -524,6 +524,8 @@ def compile_smart(
 
                     index_mode, index_var = obj_var.get_index(value, test_mode=test_value_mode)
 
+
+
                     if index_mode:
                         index_adress_var = obj_var.get_adress_from_index(index_var)
 
@@ -1192,6 +1194,7 @@ def compile_smart(
 
                 try:
                     var_name, value = line.split("=", 1)
+                    #value = replace_code(value, " ", "")
                 except ValueError:
                     smart_error(f"Error with variable `{line}`: expected '='")
 
@@ -1235,6 +1238,11 @@ def compile_smart(
             else:   # set a value at index:
                 index_mode_const, index_var = get_variable(var_name).get_index(line)
                 # ^ if the index is a number literal, otherwise it is a variable or expression
+                
+
+               
+
+                #print("--- index_var ---", index_var)
 
                 if increment_mode:
                     increment_decrement_var(var_name + operator_increment, {"offset":True, "offset_value":index_var[:-2]})
@@ -1244,6 +1252,7 @@ def compile_smart(
                         code_compile += f"{set_on_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
                         address_counter += 3
                     else:
+                        index_var = replace_code(index_var, " ", "")
                         code_compile += f"{set_on_A_value(index_var)}AA "     # save on X index delta
                         address_counter += 1
 
