@@ -465,6 +465,48 @@ try:
         )
     )
 
+    TEST_OPERATION_ON_INDEX = (
+        Test(
+            "Operation on index on str - 1",
+            code="""
+                ~str = "";
+
+                .a = 5;
+                ~str[.a] = '2';
+
+                ~str[.a - 1] = '1';
+
+                ~str[.a + 1] = '3';
+
+                ~str[.a / 2] = '0';
+
+                ~str[.a * 2] = '4';
+
+                print: ~str;
+            """,
+            output="01234" # if null byte on str, it is not print
+        ),
+        Test(
+            "Operation on index on str - 2",
+            code="""
+                ~str = "ABCDEFGHIJKLMNOPQRST";
+
+                .a = 5;
+                print: ~str[.a];
+
+                .b = ~str[.a - 1]; // 1 test for set on variable
+                print: .b;
+
+                print: ~str[.a + 1];
+
+                print: ~str[.a / 2];
+
+                print: ~str[.a * 2];
+            """,
+            output="FEGCK" # if null byte on str, it is not print
+        )
+    )
+
     TEST_COMPARATOR = (
         Test(
             "== test",
@@ -2997,7 +3039,7 @@ OK2"""
     )
 
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST + THREAD_TEST + INCREMENT_DECREMENT + MOD_TEST + SHEBANG_TEST + PTR_FUNCTION
+    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST + THREAD_TEST + INCREMENT_DECREMENT + MOD_TEST + SHEBANG_TEST + PTR_FUNCTION + TEST_OPERATION_ON_INDEX
 
     try:
         for test in GLOBAL_TESTS:

@@ -524,6 +524,8 @@ def compile_smart(
 
                     index_mode, index_var = obj_var.get_index(value, test_mode=test_value_mode)
 
+
+
                     if index_mode:
                         index_adress_var = obj_var.get_adress_from_index(index_var)
 
@@ -532,7 +534,7 @@ def compile_smart(
                         return f"AD {adress_for_RAM(index_adress_var)} "
 
                     else:
-
+                        index_var = replace_code(index_var, " ", "")
                         # save A at smart sys
                         asm = f"8D {compiller_data_run.SYS_ADRESS['SaveAToIndex']}"
                         counter_adress_value += 3
@@ -1192,6 +1194,7 @@ def compile_smart(
 
                 try:
                     var_name, value = line.split("=", 1)
+                    #value = replace_code(value, " ", "")
                 except ValueError:
                     smart_error(f"Error with variable `{line}`: expected '='")
 
@@ -1244,6 +1247,7 @@ def compile_smart(
                         code_compile += f"{set_on_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
                         address_counter += 3
                     else:
+                        index_var = replace_code(index_var, " ", "")
                         code_compile += f"{set_on_A_value(index_var)}AA "     # save on X index delta
                         address_counter += 1
 
