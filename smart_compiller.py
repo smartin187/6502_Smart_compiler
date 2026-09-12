@@ -534,7 +534,7 @@ def compile_smart(
                         return f"AD {adress_for_RAM(index_adress_var)} "
 
                     else:
-
+                        index_var = replace_code(index_var, " ", "")
                         # save A at smart sys
                         asm = f"8D {compiller_data_run.SYS_ADRESS['SaveAToIndex']}"
                         counter_adress_value += 3
@@ -1238,9 +1238,9 @@ def compile_smart(
             else:   # set a value at index:
                 index_mode_const, index_var = get_variable(var_name).get_index(line)
                 # ^ if the index is a number literal, otherwise it is a variable or expression
-                
 
-               
+
+
 
                 #print("--- index_var ---", index_var)
 
