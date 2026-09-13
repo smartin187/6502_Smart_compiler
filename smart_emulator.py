@@ -919,6 +919,9 @@ def run_smart() -> None:
         else:
             match run:# normal instruction:
 
+                case "EA": # NOP
+                    run_step += 1
+
                 case "A9":     # A
                     accumulator["A"] = code[run_step + 1]
                     run_step += 2
