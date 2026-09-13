@@ -2207,7 +2207,7 @@ def compile_smart(
 
         print("--- Legend ---")
 
-        #print(f"{Colors.BG_BLUE} {Colors.RESET} : used by programme")
+        print(f"{Colors.BG_BLUE} {Colors.RESET} : used by programme")
         print(f"{Colors.BG_YELLOW} {Colors.RESET} : used by variable")
         print(f"{Colors.BG_MAGENTA} {Colors.RESET} : used by Smart system")
         print(f"{Colors.BG_RED} {Colors.RESET} : used by stack")
@@ -2219,12 +2219,22 @@ def compile_smart(
 
         LEN_PAGE_VAR = ceil(len(smart_var) / ZOOM_GRAPHIC)
 
+        PAGE_NUMBER_CODE = ceil(address_counter / 256)
+        graphic_code = ""
+        for page in range(PAGE_NUMBER_CODE):
+            len_page = 0x400 + address_counter - (0x400 + page * 0x100)
+            if len_page > 256:
+                len_page = 256
+
+            graphic_code += memory_page.format(hex(0x400 + page * 0x100), Colors.BG_BLUE, " " * (len_page // ZOOM_GRAPHIC), Colors.BG_GREEN, " " * ((256 - len_page) // ZOOM_GRAPHIC), Colors.RESET) + "\n"
+
         print(
             "", # set a empty line
             memory_page.format("0x000", Colors.BG_MAGENTA, " " * (compiller_data_run.MAX_SYS_ADRESS // ZOOM_GRAPHIC), Colors.BG_GREEN, " " * ((256 - compiller_data_run.MAX_SYS_ADRESS) // ZOOM_GRAPHIC), Colors.RESET),
             memory_page.format("0x100", Colors.BG_RED, " " * (256 // ZOOM_GRAPHIC), "", "", Colors.RESET),
             memory_page.format("0x200", Colors.BG_GREEN, " " * (256 // ZOOM_GRAPHIC), "", "", Colors.RESET), # this page is not used
             memory_page.format("0x300", Colors.BG_YELLOW, " " * (LEN_PAGE_VAR), Colors.BG_GREEN, " " * ((256//10) - LEN_PAGE_VAR), Colors.RESET),
+            graphic_code,
             sep="\n"
         )
 
