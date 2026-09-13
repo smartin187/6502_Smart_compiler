@@ -2031,7 +2031,9 @@ def compile_smart(
 
 
         # progress bar
-        compiller_data_run.progresse_bar_advencement = int(line_counter / len(code) * PROGRESS_BAR_LEN)
+        if first_call:
+            compiller_data_run.progresse_bar_advencement = int(line_counter / len(code) * PROGRESS_BAR_LEN)
+
         print(f"[{PROGRESS_BAR_CHAR['completed'] * compiller_data_run.progresse_bar_advencement}{PROGRESS_BAR_CHAR['not_completed'] * (PROGRESS_BAR_LEN - compiller_data_run.progresse_bar_advencement)}]", end="\r")
 
     # ------------------------------- End compile loop ----------------------------------------------
