@@ -2207,11 +2207,11 @@ def compile_smart(
 
             print("--- Legend ---")
 
-            print(f"{Colors.BG_BLUE} {Colors.RESET} : used by programme")
-            print(f"{Colors.BG_YELLOW} {Colors.RESET} : used by variable")
-            print(f"{Colors.BG_MAGENTA} {Colors.RESET} : used by Smart system")
-            print(f"{Colors.BG_RED} {Colors.RESET} : used by stack")
-            print(f"{Colors.BG_GREEN} {Colors.RESET} : free")
+            print(f"{Colors.BG_BLUE}  {Colors.RESET} : used by programme")
+            print(f"{Colors.BG_YELLOW}  {Colors.RESET} : used by variable")
+            print(f"{Colors.BG_MAGENTA}  {Colors.RESET} : used by Smart system")
+            print(f"{Colors.BG_RED}  {Colors.RESET} : used by stack")
+            print(f"{Colors.BG_GREEN}  {Colors.RESET} : free")
 
             memory_page = f"|{Colors.BOLD}{{}}{Colors.RESET}: {{}}{{}}{{}}{{}}{{}}|"
 
