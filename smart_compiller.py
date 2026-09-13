@@ -1816,26 +1816,15 @@ def compile_smart(
 
             adress_delta = import_info.binary.count(" ") + 3 * code_compile.count("!smart_call_func|")
 
-            code_compile += import_info.binary #+ " "
+            code_compile += import_info.binary
             address_counter += adress_delta
 
             function_name_usr |= import_info.function
 
             for var_name in import_info.variables:
-            #    if var_name == "i_":
-            #        print("--- copy i_ ---")
                 smart_var[var_name] = import_info.variables[var_name]
 
             adress_var = len(import_info.variables) + compiller_data_run.START_ADRESS_VAR
-
-
-            #print("--- code_compie after module", code_compile)
-
-            #address_counter += 2
-
-            #new_adress_module = adress_for_RAM(CODE_ADRESSE + address_counter) + " "
-
-            #code_compile = code_compile.replace("!smart_module_goto", new_adress_module)
 
         elif line.lstrip().startswith("compiletime "):  # a compile command
             compile_command.compiletime_command(line, smart_var, thread_mode)
@@ -2053,9 +2042,6 @@ def compile_smart(
         pass
 
     elif module_mode:
-        #code_compile += "4C !smart_module_goto"
-        #code_compile += ""
-        #code_compile += "EA EA EA "
         pass
 
     elif function_mode["function_mode"]:
@@ -2064,16 +2050,10 @@ def compile_smart(
     else:
         code_compile += "00 "
 
-
-
     # compile function:
 
     if (not function_mode["function_mode"]) and module_name == "*":
         for function in function_name_usr:
-            #print("--- compile function ---", function)
-            #print("--- code_compile_f ---", function_name_usr[function].code_compile_f, "---")
-            #if function_name_usr[function].code_compile_f: # if the code of function is already compile (on module)
-            #    continue
 
             code = function_name_usr[function].source_code_function
 
