@@ -1146,7 +1146,7 @@ def compile_smart(
 
             code_compile += value_accumulator if r == "A" else "A2" + value_accumulator[2:] if r == "X" else "A0" + value_accumulator[2:]
 
-            logging.info("Build asm command: set on accumulator value")
+            #logging.info("Build asm command: set on accumulator value")
 
         elif line[0] == "#":
             name = line[1:]
@@ -1162,7 +1162,7 @@ def compile_smart(
 
             go_to[name] = smart_obj.SmartGoto(name, hex_adress)
 
-            logging.info("Build asm command: goto")
+            logging.info(f"Add new label: {name}.")
 
 
         elif line.startswith("."):      # variable
@@ -1193,7 +1193,7 @@ def compile_smart(
 
                 address_counter += 3
 
-                logging.info(f"Build asm command: using RAM for variable '{var_name}'")
+                #logging.info(f"Build asm command: using RAM for variable '{var_name}'")
 
         elif line.startswith("~"):      # advanced variable
             line = replace_code(line, " ", "")[1:]
@@ -1896,7 +1896,7 @@ def compile_smart(
 
                     address_counter += 6 * smart_obj.SIZE_ADVANCED_OBJ
 
-                logging.info("Build smart function as asm command: print")
+                #logging.info("Build smart function as asm command: print")
 
 
             elif function_name == "quit":
@@ -1906,7 +1906,7 @@ def compile_smart(
                 code_compile += "00 "
                 address_counter += 1
 
-                logging.info("Build smart function as asm command: quit")
+                #logging.info("Build smart function as asm command: quit")
 
             elif function_name == "restart":
                 if len(function_arg) != 0:
@@ -1915,7 +1915,7 @@ def compile_smart(
                 code_compile += f"4C {adress_for_RAM(CODE_ADRESSE)} "
                 address_counter += 3
 
-                logging.info("Build smart function as asm command: restart")
+                #logging.info("Build smart function as asm command: restart")
 
             elif function_name == "goto":
                 if len(function_arg) != 1:
@@ -1931,7 +1931,7 @@ def compile_smart(
 
                 address_counter += 3
 
-                logging.info("Build smart function as asm command: goto")
+                logging.warning("A 'goto' function was used.")
 
             elif function_name == "asm_entry":
 
