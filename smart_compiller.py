@@ -1100,7 +1100,7 @@ def compile_smart(
     jump_line = 0
 
     if code_start.replace(" ", "").replace("\n", "").replace("\t", "") == "":
-        logging.warning("Smart file is empty!")
+        logging.warning(f"Smart file is empty: {module_name if module_mode else '* (main module)'}" if not function_mode["function_mode"] else "A bloc of code empty!")
 
     on_try_bloc = False
     after_try_bloc = False
