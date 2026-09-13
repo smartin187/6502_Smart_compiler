@@ -24,6 +24,8 @@ SYS_ADRESS = {
     "second_thread_ptr_2": "48 00" # the second byte of ptr
 }
 
+MAX_SYS_ADRESS = 0x48 + 21 # the last adress of Smart system
+
 SMART_ERRORS = {     # the error codes for Smart
     "Index out of range": "I",
     "Division by zero": "/"
