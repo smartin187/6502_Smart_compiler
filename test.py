@@ -1692,6 +1692,29 @@ try:
             ],
             output="ABMODULE2"
         ),
+        ModuleTest(
+            "For loop on module",
+            code_modules=[
+                (
+                    "test.sma",
+                    """
+                        import "test/test2.sma";
+                        f:;
+                    """
+                ),
+                (
+                    "test2.sma",
+                    """
+                        void f{;
+                            for .i in |'A'|'Z'+1|1| {;
+                                print: .i;
+                            }
+                        }
+                    """
+                )
+            ],
+            output="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        ),
         # test error with modules:
         ModuleTest(
             "Module not found test",
