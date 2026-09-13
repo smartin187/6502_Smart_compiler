@@ -63,7 +63,8 @@ def compile_smart(
     ) -> str:
     """Start compiling from a file."""
     global line_of_instruction, code_line
-    logging.info("Starting compiller...")
+    if first_call:
+        logging.info("Starting compiller...")
 
     module_mode = module_name != "*"
     class SmartBuiltIn:
@@ -1082,7 +1083,19 @@ def compile_smart(
 
     code = split_code(code.replace("\n", ""), ";")
 
-    logging.info("Building asm")
+    text_log_start = ""
+    if first_call:
+        text_log_start = "main module."
+    elif function_mode["function_mode"] and function_mode["smart_func"] is not None:
+        text_log_start = f"function '{function_mode['smart_func'].name}'."
+
+    elif module_mode:
+        text_log_start = f"new module, on {module_name} file."
+
+    else:
+        text_log_start = f"new bloc code, on {module_name} module."
+
+    logging.info(f"Start build loop for {text_log_start}")
 
     jump_line = 0
 
