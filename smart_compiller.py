@@ -11,9 +11,10 @@ import os
 import logging
 import re
 import traceback
+from math import ceil
 
 from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, adress_for_RAM, get_str, get_char, control_hex
-from compiller_tool.color_tool import ColoredFormatter
+from compiller_tool.color_tool import ColoredFormatter, Colors
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool.smart_info import GIT_HUB_LINK
 from compiller_tool.hex_function import build_asm_entry, config_hex_function, make_error, imediate_value
@@ -59,11 +60,13 @@ def compile_smart(
         regroup_bytes:int=-1, # for rendering the code. -1 for 1 line of hex, other value to regroup bytes into lines.
         first_call:bool=False,
         try_mode:bool=False,
-        thread_mode:list[bool, str, bool, bool]=[False, "", False, False]
+        thread_mode:list[bool, str, bool, bool]=[False, "", False, False],
+        call_test_mode:bool=False  # if true, do not print the graphic at the end of compillation
     ) -> str:
     """Start compiling from a file."""
     global line_of_instruction, code_line
-    logging.info("Starting compiller...")
+    if first_call:
+        logging.info("Starting compiller...")
 
     module_mode = module_name != "*"
     class SmartBuiltIn:
@@ -913,11 +916,8 @@ def compile_smart(
             adress_var += 1
 
         if var_name in smart_var:
-            #print("---- smart_var ----", smart_var)
             raise SmartError(f"Variable '{var_name}' already exist. You can't name a new object with this name.")
 
-        #if var_name == "i_":
-        #    print("--- add i_ ---")
 
         smart_var[var_name] = var_obj
 
@@ -1071,7 +1071,7 @@ def compile_smart(
             i += 1
             compiller_data_run.warning_endline = (True, i, module_name)
 
-            logging.warning(f"Syntax warn: at line {i}, can't identify end. Maybe you have forget ';'?")
+            logging.warning(f"Syntax warning: at line {i}, can't identify end. Maybe you have forget ';'?")
             break
 
     code = ""
@@ -1082,12 +1082,24 @@ def compile_smart(
 
     code = split_code(code.replace("\n", ""), ";")
 
-    logging.info("Building asm")
+    text_log_start = ""
+    if first_call:
+        text_log_start = "main module."
+    elif function_mode["function_mode"] and function_mode["smart_func"] is not None:
+        text_log_start = f"function '{function_mode['smart_func'].name}'."
+
+    elif module_mode:
+        text_log_start = f"new module, on {module_name} file."
+
+    else:
+        text_log_start = f"new bloc code, on {module_name} module."
+
+    logging.info(f"Start build loop for {text_log_start}")
 
     jump_line = 0
 
     if code_start.replace(" ", "").replace("\n", "").replace("\t", "") == "":
-        logging.warning("Smart file is empty!")
+        logging.warning(f"Smart file is empty: {module_name if module_mode else '* (main module)'}" if not function_mode["function_mode"] else "A bloc of code empty!")
 
     on_try_bloc = False
     after_try_bloc = False
@@ -1100,7 +1112,7 @@ def compile_smart(
 
         if line == "" or line.replace(" ", "") == "":
             line_counter += 1
-            logging.warning("Empty line detected.")
+            logging.warning("Empty line detected. It can be caused by a bad ';'...")
             continue
 
         if function_mode["function_mode"]:
@@ -1133,8 +1145,6 @@ def compile_smart(
 
             code_compile += value_accumulator if r == "A" else "A2" + value_accumulator[2:] if r == "X" else "A0" + value_accumulator[2:]
 
-            logging.info("Build asm command: set on accumulator value")
-
         elif line[0] == "#":
             name = line[1:]
 
@@ -1149,7 +1159,7 @@ def compile_smart(
 
             go_to[name] = smart_obj.SmartGoto(name, hex_adress)
 
-            logging.info("Build asm command: goto")
+            logging.info(f"Add new label: {name}.")
 
 
         elif line.startswith("."):      # variable
@@ -1179,8 +1189,6 @@ def compile_smart(
                 code_compile += f"{value_RAM}8D {adress_for_RAM(get_variable(var_name).ram_adress)} "
 
                 address_counter += 3
-
-                logging.info(f"Build asm command: using RAM for variable '{var_name}'")
 
         elif line.startswith("~"):      # advanced variable
             line = replace_code(line, " ", "")[1:]
@@ -1769,10 +1777,6 @@ def compile_smart(
             line_import = split_code(line, " ")[1:]
 
             try:
-                #print("--- address_counter before module ---", address_counter)
-
-
-
                 if len(line_import) == 1:   # search in all directories
                     if not(line_import[0].startswith('"') and line_import[0].endswith('"')):
                         smart_error("Need a str value for path, in import.")
@@ -1883,9 +1887,6 @@ def compile_smart(
 
                     address_counter += 6 * smart_obj.SIZE_ADVANCED_OBJ
 
-                logging.info("Build smart function as asm command: print")
-
-
             elif function_name == "quit":
                 if len(function_arg) != 0:
                     smart_error("Function 'quit' not take arg.")
@@ -1893,16 +1894,12 @@ def compile_smart(
                 code_compile += "00 "
                 address_counter += 1
 
-                logging.info("Build smart function as asm command: quit")
-
             elif function_name == "restart":
                 if len(function_arg) != 0:
                     smart_error("Function 'restart' not take arg.")
 
                 code_compile += f"4C {adress_for_RAM(CODE_ADRESSE)} "
                 address_counter += 3
-
-                logging.info("Build smart function as asm command: restart")
 
             elif function_name == "goto":
                 if len(function_arg) != 1:
@@ -1918,7 +1915,7 @@ def compile_smart(
 
                 address_counter += 3
 
-                logging.info("Build smart function as asm command: goto")
+                logging.warning("A 'goto' function was used. Please do not use goto.")
 
             elif function_name == "asm_entry":
 
@@ -1945,8 +1942,6 @@ def compile_smart(
 
                 code_compile += "4C 1F FF " # the address of woz monitor get line
                 address_counter += 3
-
-                logging.info("Build smart function with use Woz monitor: wozm")
 
             elif function_name in function_name_usr:
 
@@ -2007,9 +2002,6 @@ def compile_smart(
 
         if not(compiller_data_run.double_space_error) and not verryfing_adress_conter_no_print(address_counter, code_compile):
 
-            #print("--- error, modulemode=", module_mode)
-            #print("--- code_compile", code_compile)
-
             compiller_data_run.double_space_error = True
 
             if verryfing_adress_conter_no_print(address_counter, code_compile) is None:
@@ -2031,8 +2023,10 @@ def compile_smart(
 
 
         # progress bar
-        advencement = int(line_counter / len(code) * PROGRESS_BAR_LEN)
-        print(f"[{PROGRESS_BAR_CHAR['completed'] * advencement}{PROGRESS_BAR_CHAR['not_completed'] * (PROGRESS_BAR_LEN - advencement)}]", end="\r")
+        if first_call:
+            compiller_data_run.progresse_bar_advencement = int(line_counter / len(code) * PROGRESS_BAR_LEN)
+
+        print(f"[{PROGRESS_BAR_CHAR['completed'] * compiller_data_run.progresse_bar_advencement}{PROGRESS_BAR_CHAR['not_completed'] * (PROGRESS_BAR_LEN - compiller_data_run.progresse_bar_advencement)}]", end="\r")
 
     # ------------------------------- End compile loop ----------------------------------------------
 
@@ -2182,9 +2176,45 @@ def compile_smart(
 
                 logging.info(f"hex file saved as {os.path.splitext(argv[1])[0]}.hex")
 
-        logging.info("Build end.")
+        if first_call and not call_test_mode:
 
-        logging.info(f"Memory info: Smart memory: 256 bytes, used by programme: {len(smart_var)} bytes, using {len(smart_var) / 256 * 100}% of Smart memory. Programme size: used {address_counter} bytes from {hex(CODE_ADRESSE)}") # replace len by a real counter
+            logging.info(f"Memory info: Smart memory for variable: max 256 bytes, used by programme: {len(smart_var)} bytes, using {len(smart_var) / 256 * 100}% of Smart variable memory. Programme size: used {address_counter} bytes from {hex(CODE_ADRESSE)}")
+
+            # memory graphic:
+            print(f"{Colors.BOLD}[ Memory graphic ]{Colors.RESET}")
+
+            print("   --- Legend ---")
+
+            print(f"{Colors.BG_BLUE}  {Colors.RESET} : used by programme")
+            print(f"{Colors.BG_YELLOW}  {Colors.RESET} : used by variable")
+            print(f"{Colors.BG_MAGENTA}  {Colors.RESET} : used by Smart system")
+            print(f"{Colors.BG_RED}  {Colors.RESET} : used by stack")
+            print(f"{Colors.BG_GREEN}  {Colors.RESET} : free")
+
+            memory_page = f"|{Colors.BOLD}{{}}{Colors.RESET}: {{}}{{}}{{}}{{}}{{}}|"
+
+            ZOOM_GRAPHIC = 10
+
+            LEN_PAGE_VAR = ceil(len(smart_var) / ZOOM_GRAPHIC)
+
+            PAGE_NUMBER_CODE = ceil(address_counter / 256)
+            graphic_code = ""
+            for page in range(PAGE_NUMBER_CODE):
+                len_page = 0x400 + address_counter - (0x400 + page * 0x100)
+                if len_page > 256:
+                    len_page = 256
+
+                graphic_code += memory_page.format(hex(0x400 + page * 0x100), Colors.BG_BLUE, " " * (len_page // ZOOM_GRAPHIC), Colors.BG_GREEN, " " * ((256 - len_page) // ZOOM_GRAPHIC), Colors.RESET) + "\n"
+
+            print(
+                "", # set a empty line
+                memory_page.format("0x000", Colors.BG_MAGENTA, " " * (compiller_data_run.MAX_SYS_ADRESS // ZOOM_GRAPHIC), Colors.BG_GREEN, " " * ((256 - compiller_data_run.MAX_SYS_ADRESS) // ZOOM_GRAPHIC), Colors.RESET),
+                memory_page.format("0x100", Colors.BG_RED, " " * (256 // ZOOM_GRAPHIC), "", "", Colors.RESET),
+                memory_page.format("0x200", Colors.BG_GREEN, " " * (256 // ZOOM_GRAPHIC), "", "", Colors.RESET), # this page is not used
+                memory_page.format("0x300", Colors.BG_YELLOW, " " * (LEN_PAGE_VAR), Colors.BG_GREEN, " " * ((256//10) - LEN_PAGE_VAR), Colors.RESET),
+                graphic_code,
+                sep="\n"
+            )
 
     if module_mode:
         return import_tool.ModuleInfo(code_compile, smart_var, function_name_usr, adress_var)
