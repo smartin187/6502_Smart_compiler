@@ -2200,7 +2200,7 @@ def compile_smart(
 
         if first_call:
 
-            logging.info(f"Memory info: Smart memory: 256 bytes, used by programme: {len(smart_var)} bytes, using {len(smart_var) / 256 * 100}% of Smart memory. Programme size: used {address_counter} bytes from {hex(CODE_ADRESSE)}") # replace len by a real counter
+            logging.info(f"Memory info: Smart memory for variable: max 256 bytes, used by programme: {len(smart_var)} bytes, using {len(smart_var) / 256 * 100}% of Smart variable memory. Programme size: used {address_counter} bytes from {hex(CODE_ADRESSE)}")
 
             # memory graphic:
             print(f"{Colors.BOLD}[ Memory graphic ]{Colors.RESET}")
