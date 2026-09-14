@@ -130,7 +130,7 @@ class Test:
                 self.sauv_stdin = sys.stdin
                 sys.stdin = open("auto_confirm.txt", "r")
 
-            self.code_compile = compile_smart("test/test.sma", make_file=False, thread_mode = [False, "", False, False], first_call=True)
+            self.code_compile = compile_smart("test/test.sma", make_file=False, thread_mode = [False, "", False, False], first_call=True, call_test_mode=True)
 
             self.switch_stdin()
 

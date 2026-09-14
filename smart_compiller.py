@@ -60,7 +60,8 @@ def compile_smart(
         regroup_bytes:int=-1, # for rendering the code. -1 for 1 line of hex, other value to regroup bytes into lines.
         first_call:bool=False,
         try_mode:bool=False,
-        thread_mode:list[bool, str, bool, bool]=[False, "", False, False]
+        thread_mode:list[bool, str, bool, bool]=[False, "", False, False],
+        call_test_mode:bool=False  # if true, do not print the graphic at the end of compillation
     ) -> str:
     """Start compiling from a file."""
     global line_of_instruction, code_line
@@ -2198,7 +2199,7 @@ def compile_smart(
 
                 logging.info(f"hex file saved as {os.path.splitext(argv[1])[0]}.hex")
 
-        if first_call:
+        if first_call and not call_test_mode:
 
             logging.info(f"Memory info: Smart memory for variable: max 256 bytes, used by programme: {len(smart_var)} bytes, using {len(smart_var) / 256 * 100}% of Smart variable memory. Programme size: used {address_counter} bytes from {hex(CODE_ADRESSE)}")
 
