@@ -11,7 +11,7 @@ import os
 import logging
 import re
 import traceback
-from math import ceil, floor
+from math import ceil
 
 from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, adress_for_RAM, get_str, get_char, control_hex
 from compiller_tool.color_tool import ColoredFormatter, Colors
