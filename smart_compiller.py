@@ -2205,7 +2205,7 @@ def compile_smart(
             # memory graphic:
             print(f"{Colors.BOLD}[ Memory graphic ]{Colors.RESET}")
 
-            print("--- Legend ---")
+            print("   --- Legend ---")
 
             print(f"{Colors.BG_BLUE}  {Colors.RESET} : used by programme")
             print(f"{Colors.BG_YELLOW}  {Colors.RESET} : used by variable")
