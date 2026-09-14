@@ -47,6 +47,8 @@ SYMBOL_OK = False
 TEST_OK = "✔️   " if SYMBOL_OK else f"{Colors.GREEN}OK{Colors.RESET}  "
 TEST_ERROR = "❌   " if SYMBOL_OK else f"{Colors.RED}ERR{Colors.RESET}  "
 
+exit_error = lambda: sys.exit(1)
+
 class TestError(Exception):
     """Main Exception for test."""
     pass
@@ -3083,8 +3085,13 @@ OK2"""
 
     print(f"\n{Colors.RED}{round(error_counter / len(GLOBAL_TESTS) * 100, 2)}%{Colors.RESET} | {Colors.GREEN}{round((len(GLOBAL_TESTS) - error_counter) / len(GLOBAL_TESTS) * 100, 2)}%{Colors.RESET}")
 
+    if not all_ok:
+        exit_error()
+
 except KeyboardInterrupt:
     print(f"\n{Colors.BG_YELLOW}Test stopped by user\nKeyboard interrupt.{Colors.RESET}")
+
+    exit_error()
 
 except Exception as e:
     print(
@@ -3092,3 +3099,5 @@ except Exception as e:
         traceback.format_exc(),
         sep="\n"
     )
+
+    exit_error()
