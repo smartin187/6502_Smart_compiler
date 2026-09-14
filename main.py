@@ -2,6 +2,8 @@
 
 """
 Main module of Smart compiller.
+
+Copyright (c) 2026 smartin187 Apache License, Version 2.0. See LICENCE file.
 """
 
 import sys

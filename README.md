@@ -1084,7 +1084,7 @@ Smart have some standard library. If you like, you can make a new library and do
 
 ## Licence
 
-Copyright (c) 2026 smartin178
+Copyright (c) 2026 smartin187
 
 **Apache License, Version 2.0**
 

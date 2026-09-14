@@ -19,7 +19,7 @@ EXECUTABLE = {
 
 LICENCE = {
     "licence":"Apache License 2.0",
-    "text":"""Copyright (c) 2026 smartin178
+    "text":"""Copyright (c) 2026 smartin187
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
