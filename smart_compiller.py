@@ -916,11 +916,8 @@ def compile_smart(
             adress_var += 1
 
         if var_name in smart_var:
-            #print("---- smart_var ----", smart_var)
             raise SmartError(f"Variable '{var_name}' already exist. You can't name a new object with this name.")
 
-        #if var_name == "i_":
-        #    print("--- add i_ ---")
 
         smart_var[var_name] = var_obj
 
@@ -1148,8 +1145,6 @@ def compile_smart(
 
             code_compile += value_accumulator if r == "A" else "A2" + value_accumulator[2:] if r == "X" else "A0" + value_accumulator[2:]
 
-            #logging.info("Build asm command: set on accumulator value")
-
         elif line[0] == "#":
             name = line[1:]
 
@@ -1194,8 +1189,6 @@ def compile_smart(
                 code_compile += f"{value_RAM}8D {adress_for_RAM(get_variable(var_name).ram_adress)} "
 
                 address_counter += 3
-
-                #logging.info(f"Build asm command: using RAM for variable '{var_name}'")
 
         elif line.startswith("~"):      # advanced variable
             line = replace_code(line, " ", "")[1:]
@@ -1784,10 +1777,6 @@ def compile_smart(
             line_import = split_code(line, " ")[1:]
 
             try:
-                #print("--- address_counter before module ---", address_counter)
-
-
-
                 if len(line_import) == 1:   # search in all directories
                     if not(line_import[0].startswith('"') and line_import[0].endswith('"')):
                         smart_error("Need a str value for path, in import.")
@@ -1898,9 +1887,6 @@ def compile_smart(
 
                     address_counter += 6 * smart_obj.SIZE_ADVANCED_OBJ
 
-                #logging.info("Build smart function as asm command: print")
-
-
             elif function_name == "quit":
                 if len(function_arg) != 0:
                     smart_error("Function 'quit' not take arg.")
@@ -1908,16 +1894,12 @@ def compile_smart(
                 code_compile += "00 "
                 address_counter += 1
 
-                #logging.info("Build smart function as asm command: quit")
-
             elif function_name == "restart":
                 if len(function_arg) != 0:
                     smart_error("Function 'restart' not take arg.")
 
                 code_compile += f"4C {adress_for_RAM(CODE_ADRESSE)} "
                 address_counter += 3
-
-                #logging.info("Build smart function as asm command: restart")
 
             elif function_name == "goto":
                 if len(function_arg) != 1:
@@ -1960,8 +1942,6 @@ def compile_smart(
 
                 code_compile += "4C 1F FF " # the address of woz monitor get line
                 address_counter += 3
-
-                #logging.info("Build smart function with use Woz monitor: wozm")
 
             elif function_name in function_name_usr:
 
@@ -2021,9 +2001,6 @@ def compile_smart(
                 thread_mode[2] = True
 
         if not(compiller_data_run.double_space_error) and not verryfing_adress_conter_no_print(address_counter, code_compile):
-
-            #print("--- error, modulemode=", module_mode)
-            #print("--- code_compile", code_compile)
 
             compiller_data_run.double_space_error = True
 
