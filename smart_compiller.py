@@ -1073,7 +1073,7 @@ def compile_smart(
             i += 1
             compiller_data_run.warning_endline = (True, i, module_name)
 
-            logging.warning(f"Syntax warn: at line {i}, can't identify end. Maybe you have forget ';'?")
+            logging.warning(f"Syntax warning: at line {i}, can't identify end. Maybe you have forget ';'?")
             break
 
     code = ""
@@ -1114,7 +1114,7 @@ def compile_smart(
 
         if line == "" or line.replace(" ", "") == "":
             line_counter += 1
-            logging.warning("Empty line detected.")
+            logging.warning("Empty line detected. It can be caused by a bad ';'...")
             continue
 
         if function_mode["function_mode"]:
@@ -1932,7 +1932,7 @@ def compile_smart(
 
                 address_counter += 3
 
-                logging.warning("A 'goto' function was used.")
+                logging.warning("A 'goto' function was used. Please do not use goto.")
 
             elif function_name == "asm_entry":
 
@@ -1960,7 +1960,7 @@ def compile_smart(
                 code_compile += "4C 1F FF " # the address of woz monitor get line
                 address_counter += 3
 
-                logging.info("Build smart function with use Woz monitor: wozm")
+                #logging.info("Build smart function with use Woz monitor: wozm")
 
             elif function_name in function_name_usr:
 
