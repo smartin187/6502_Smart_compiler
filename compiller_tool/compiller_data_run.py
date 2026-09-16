@@ -82,19 +82,21 @@ _NEED_INPUT = False
 
 _PROGRESS_BAR_ADVENCEMENT = 0 # for the log of compiller, the progress bar
 
+_DEFINE = {}
+
 # -------------------------------
 
-_define_dict = None
+#_define_dict = None
 
-def reset_define(define_dict:dict) -> None:
-    """Add the define_dict to reset_data"""
-    global _define_dict
-    _define_dict = define_dict
+# def reset_define(define_dict:dict) -> None:
+#     """Add the define_dict to reset_data"""
+#     global _define_dict
+#     _define_dict = define_dict
 
 def reset_data() -> None:
     """Reset the data.
     Used for test.py (because tests are run one after the other)."""
-    global warning_endline, not_used_ram, need_error, double_space_error, not_used_call_else, debug_max, not_used_for, need_input, progresse_bar_advencement
+    global warning_endline, not_used_ram, need_error, double_space_error, not_used_call_else, debug_max, not_used_for, need_input, progresse_bar_advencement, define
     warning_endline = _WARNING_ENDLINE
     not_used_ram = _NOT_USED_RAM
     need_error = _NEED_ERROR
@@ -104,9 +106,10 @@ def reset_data() -> None:
     not_used_for = _NOT_USED_FOR
     need_input = _NEED_INPUT
     progresse_bar_advencement = _PROGRESS_BAR_ADVENCEMENT
+    define = _DEFINE
 
     # reset value of compiletime keyword
-    _define_dict.clear()
+    #_define_dict.clear()
 
 # variable -------------------------------
 
@@ -127,3 +130,5 @@ debug_max = _DEBUG_MAX
 need_input = _NEED_INPUT
 
 progresse_bar_advencement = _PROGRESS_BAR_ADVENCEMENT
+
+define = _DEFINE
