@@ -7,8 +7,8 @@ import "dynamic_run/dynamic_run.sma";
 
 void read_simple: .read_address_1, .read_address_2{;
 
-    ~read_op_codes[1] = .read_address_1;
-    ~read_op_codes[2] = .read_address_2;
+    ~read_op_codes[1] = .read_address_2;
+    ~read_op_codes[2] = .read_address_1;
 
     dynamic_run: ~read_op_codes;
 
