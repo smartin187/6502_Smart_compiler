@@ -22,8 +22,8 @@ void write_simple: .write_address_1, .write_address_2, .value{;
 
     ~write_op_codes[1] = .value;
 
-    ~write_op_codes[3] = .write_address_1;
-    ~write_op_codes[4] = .write_address_2;
+    ~write_op_codes[3] = .write_address_2;
+    ~write_op_codes[4] = .write_address_1;
 
     dynamic_run: ~write_op_codes;
 }
