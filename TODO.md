@@ -34,3 +34,9 @@ If the task is a bug you can also add an issue on GitHub.
     - Add test for assembly lib
     - Add test for dynamic_run **need a refactor on emulator for run this lib**
     - Add test for memory lib **need to have dynamic_run ok on emulator**
+- Fix bug: if ths programme is:
+```Smart
+.a = ;
+```
+IndexError: string index out of range
+- Fix bug: if is impossible to make a empty list: `~a = [];`.
