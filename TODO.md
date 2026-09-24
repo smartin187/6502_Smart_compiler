@@ -30,3 +30,7 @@ If the task is a bug you can also add an issue on GitHub.
 - Fix: on function with parameter, it is impossible to give a list (because parameter is split with `,`)
 - Fix: on the test "Test library import", error with adresse counter.
 - Add new auto test: set some test with thread on modules
+- Add test for lib:
+    - Add test for assembly lib
+    - Add test for dynamic_run **need a refactor on emulator for run this lib**
+    - Add test for memory lib **need to have dynamic_run ok on emulator**
