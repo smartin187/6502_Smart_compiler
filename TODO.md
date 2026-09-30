@@ -41,3 +41,4 @@ If the task is a bug you can also add an issue on GitHub.
 IndexError: string index out of range
 - Fix bug: if is impossible to make a empty list: `~a = [];`.
 - For memory lib, add read_advenced and write_advenced for read/write a advenced value (str) on memory.
+- Add new runtime error: for recursion error max. Use `Treansfert stack ptr to X` and `Compare X` for check if the stack will be overflowed. Set the runtime error `ER`.
