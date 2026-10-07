@@ -48,3 +48,4 @@ IndexError: string index out of range
 - Add a flag for change the lenght of advenced value (actually 21): `--advenced-len=...`
     - Add a constent at compile time for know the lenght of advenced value: `ADVENCED_LEN`. Helpfull for iteration on advenced value.
 - On except bloc, add a variable for get the error code: `except to .error_code{;}`
+- Replace `void` by `def` (because now, if a function return a value or not, it is with the `return` keyword)
