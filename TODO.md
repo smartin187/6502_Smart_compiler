@@ -44,8 +44,14 @@ IndexError: string index out of range
 - For memory lib, add read_advenced and write_advenced for read/write a advenced value (str) on memory.
 - Add new runtime error: for recursion error max. Use `Treansfert stack ptr to X` and `Compare X` for check if the stack will be overflowed. Set the runtime error `ER`.
 - Add the documentation for flag on emulator and compiller. Use `--help`
-- Add a flag for change entry point (actually `0x400`) of programme: `--entry-point=0x...`
-- Add a flag for change the lenght of advenced value (actually 21): `--advenced-len=...`
-    - Add a constent at compile time for know the lenght of advenced value: `ADVENCED_LEN`. Helpfull for iteration on advenced value.
+- Add new flag:
+    - Add a flag for change entry point (actually `0x400`) of programme: `--entry-point=0x...`
+    - Add a flag for change the lenght of advenced value (actually 21): `--advenced-len=...`
+        - Add a constent at compile time for know the lenght of advenced value: `ADVENCED_LEN`. Helpfull for iteration on advenced value.
+    - Add flag for set optimization mode `--optimize`:
+        - If `while True`, set infinit loop.
+        - On expression, if constante expression, compiute at compile time: `1+2` become `3` at compile time.
+        - If `if True`, not compile `else` and `elif` bloc + remove the condition `True`.
+        - If `if False`, not compile `if` bloc.
 - On except bloc, add a variable for get the error code: `except to .error_code{;}`
 - Replace `void` by `def` (because now, if a function return a value or not, it is with the `return` keyword)
