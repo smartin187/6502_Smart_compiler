@@ -55,5 +55,4 @@ IndexError: string index out of range
         - If `if True`, not compile `else` and `elif` bloc + remove the condition `True`.
         - If `if False`, not compile `if` bloc.
 - On except bloc, add a variable for get the error code: `except to .error_code{;}`
-- Replace `void` by `def` (because now, if a function return a value or not, it is with the `return` keyword)
 - Add test for all library.

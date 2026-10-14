@@ -260,7 +260,7 @@ For example it is helpful if you make a library and you want to give information
 
 ```Smart
 // your library
-void function{;
+def function{;
     // code of function
 }
 
@@ -762,7 +762,7 @@ You can build your own function.
 
 The syntax is:
 ```Smart
-void name_of_function{;
+def name_of_function{;
     // function code
 }
 ```
@@ -774,7 +774,7 @@ name_of_function:;
 
 If your function have parameters:
 ```Smart
-void f: .arg1, .arg2{;
+def f: .arg1, .arg2{;
     // code of function
 }
 
@@ -785,7 +785,7 @@ f: 1, 2;
 A parameter of a function can also be a advanced value (`str` or `list`):
 
 ```
-void f: ~arg1, ~arg2{;
+def f: ~arg1, ~arg2{;
     // code of function
 }
 // call of function:
@@ -797,7 +797,7 @@ f: "STR1", "STR2";
 On function with parameters, you can set the edit variable mode: at the end of the function run, the value of the parameter is set to the variable given in the call of function. Set `*` before the name of parameter on function:
 
 ```Smart
-void f: *.arg1, *.arg2{;
+def f: *.arg1, *.arg2{;
     .arg1 = 'A';
     .arg2 = 'B';
 }
@@ -814,7 +814,7 @@ print: .b;
 
 If your function is a return-function, you need the line:
 ```Smart
-void returnfonction{;
+def returnfonction{;
     // code of function
     return 1;
 }
@@ -964,11 +964,11 @@ for .i in |0|10|1|{;
 
 _Shared stack mode_
 ```Smart
-void f{;
+def f{;
     print: "FUNCTION F\r";
 }
 
-void g{;
+def g{;
     print: "FUNCTION G\r";
 }
 

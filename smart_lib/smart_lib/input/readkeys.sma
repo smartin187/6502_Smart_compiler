@@ -1,4 +1,4 @@
-void readkeys: *~line, .end {;
+def readkeys: *~line, .end {;
     .counter = 0;
     while .counter != 20 {;
         ~line[.counter] = input:;
