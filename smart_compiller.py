@@ -1122,7 +1122,7 @@ def compile_smart(
                 smart_error("On function {}, value was return before the end of function.".format(function_mode["smart_func"].name))
 
         if not line.startswith("compiletime"):
-            for define, value in compile_command.define.items():
+            for define, value in compiller_data_run.define.items():
                 line = line.replace(define, value)
 
         line_debug = compile_command.get_line_debug(line)   # if the debug mode is enabled, print the line before running.

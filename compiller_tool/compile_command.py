@@ -6,15 +6,15 @@ This module is for the compiletime keyword
 import logging
 from compiller_tool.smart_exception import SmartError
 
-from compiller_tool.compiller_data_run import reset_define
+from compiller_tool import compiller_data_run
 from compiller_tool import compiller_data_run
 from compiller_tool.string_tool import good_variable_name, get_str
 from compiller_tool.color_tool import Colors
 from compiller_tool.smart_info import SMART_VERSION
 
-define = {}     # the define are stored in this dict
+#define = {}     # the define are stored in this dict
 
-reset_define(define)
+#reset_define(define)
 
 def get_line_debug(line:str) -> str:
     """Return the line for the debug if debug mode is enabled. Return '' if debug mode is disabled."""
@@ -57,10 +57,10 @@ def compiletime_command(line:str, smart_var:dict, thread_mode:list[bool, str, bo
         name = name.strip()
         value = value.strip()
 
-        if name in define:
-            logging.warning(f"Redefining compiletime define '{name}' from '{define[name]}' to '{value}'.")
+        if name in compiller_data_run.define:
+            logging.warning(f"Redefining compiletime define '{name}' from '{compiller_data_run.define[name]}' to '{value}'.")
 
-        define[name] = value
+        compiller_data_run.define[name] = value
 
     elif line.startswith("debug "):  # set the debug mode
         debug_value = line[len("debug "):].strip()

@@ -14,7 +14,7 @@ If the task is a bug you can also add an issue on GitHub.
 
 - _Fix: small bug on windows: the path of the library is not joined correctly: ...lib\global_lib\screen_tool/screen_tool.sma_
 - Add operator: `^`... Add comparator: `and` `or` `>` `<=`
-- Make the libraries for Smart: `math` ?, `string`, library for write in RAM/ROM ?
+- Make the libraries for Smart: `math` ?, `string` (add new functions):
 - **Add string and list with size variable ?**
 - Add class object for Smart ?
 - For Smart system variable, use 0 page mode
@@ -23,10 +23,36 @@ If the task is a bug you can also add an issue on GitHub.
 - Better threading: fix some problems with no shared stack + add some tests
 - On thread, add swith when a print beetween all character + add a swith on the input (the loop of input)
 - On math, add parentheses `(1+2)*3`
-- On the library input, add new features: set a readline with print character, add a clear string (clear the string when the end is `\r` for exemple) on end mode...
+- On the library input, add new features:
+    - set a readline with print character
+    - add a clear string (clear the string when the end is `\r` for exemple) on end mode...
 - On string library, add count, replace, in...
 - Add new test with using timeout: while True test... And add option for when the time is out, the output is given and test if the output is correct.
 - Set a refactor for build-in function: add all build-in at class SmartBuiltin, and maybe add a better control of argument. Maybe set a new module. And finally, refactore the class SmartBuiltin: this class is for a function, and on a module, set the instances of this class?
 - Fix: on function with parameter, it is impossible to give a list (because parameter is split with `,`)
 - Fix: on the test "Test library import", error with adresse counter.
 - Add new auto test: set some test with thread on modules
+- Add test for lib:
+    - Add test for assembly lib
+    - Add test for dynamic_run **need a refactor on emulator for run this lib**
+    - Add test for memory lib **need to have dynamic_run ok on emulator**
+- Fix bug: if ths programme is:
+```Smart
+.a = ;
+```
+IndexError: string index out of range
+- Fix bug: if is impossible to make a empty list: `~a = [];`.
+- For memory lib, add read_advenced and write_advenced for read/write a advenced value (str) on memory.
+- Add new runtime error: for recursion error max. Use `Treansfert stack ptr to X` and `Compare X` for check if the stack will be overflowed. Set the runtime error `ER`.
+- Add the documentation for flag on emulator and compiller. Use `--help`
+- Add new flag:
+    - Add a flag for change entry point (actually `0x400`) of programme: `--entry-point=0x...`
+    - Add a flag for change the lenght of advenced value (actually 21): `--advenced-len=...`
+        - Add a constent at compile time for know the lenght of advenced value: `ADVENCED_LEN`. Helpfull for iteration on advenced value.
+    - Add flag for set optimization mode `--optimize`:
+        - If `while True`, set infinit loop.
+        - On expression, if constante expression, compiute at compile time: `1+2` become `3` at compile time.
+        - If `if True`, not compile `else` and `elif` bloc + remove the condition `True`.
+        - If `if False`, not compile `if` bloc.
+- On except bloc, add a variable for get the error code: `except to .error_code{;}`
+- Replace `void` by `def` (because now, if a function return a value or not, it is with the `return` keyword)

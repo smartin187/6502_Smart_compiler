@@ -1,0 +1,31 @@
+// This file have the hex opcode with a lenght of 1 byte:
+
+compiletime define NOP to asm_entry: "EA";
+compiletime define ASL to asm_entry: "0A";
+compiletime define BRK to asm_entry: "00";
+compiletime define CLC to asm_entry: "18";
+compiletime define CLD to asm_entry: "D8";
+compiletime define CLI to asm_entry: "58";
+compiletime define CLV to asm_entry: "B8";
+compiletime define DEX to asm_entry: "CA";
+compiletime define DEY to asm_entry: "88";
+compiletime define INX to asm_entry: "E8";
+compiletime define INY to asm_entry: "C8";
+compiletime define LSR to asm_entry: "4A";
+compiletime define PHA to asm_entry: "48";
+compiletime define PHP to asm_entry: "08";
+compiletime define PLA to asm_entry: "68";
+compiletime define PLP to asm_entry: "28";
+compiletime define ROL to asm_entry: "2A";
+compiletime define ROR to asm_entry: "6A";
+compiletime define RTI to asm_entry: "40";
+compiletime define RTS to asm_entry: "60";
+compiletime define SEC to asm_entry: "38";
+compiletime define SED to asm_entry: "F8";
+compiletime define SEI to asm_entry: "78";
+compiletime define TAX to asm_entry: "AA";
+compiletime define TAY to asm_entry: "A8";
+compiletime define TSX to asm_entry: "BA";
+compiletime define TXA to asm_entry: "8A";
+compiletime define TXS to asm_entry: "9A";
+compiletime define TYA to asm_entry: "98";
