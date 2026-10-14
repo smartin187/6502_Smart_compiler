@@ -29,3 +29,30 @@ write_simple: 0x80, 0x00, 'A'; // write the value 'A' at the address 0x8000
 ```
 
 > The address are in big-endian format.
+
+### Module `advenced_memory.sma`
+
+This module is equivalent of `memory.sma` for advenced value (`str`).
+
+Import the module:
+
+```Smart
+import "memory/advenced_memory.sma";
+```
+
+Next you can use the functions:
+
+```Smart
+import "memory/advenced_memory.sma";
+
+~value = "";
+
+read_advenced: 0x00, 0x00, ~value; // read 21 bytes from 0x0000
+
+print: ~value;
+```
+
+```Smart
+import "memory/advenced_memory.sma";
+write_advenced: 0x80, 0x00, "HELLO WORLD!";
+```
