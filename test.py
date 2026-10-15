@@ -1649,7 +1649,7 @@ try:
                 (
                     "module2.sma",
                     """
-                    void function{;
+                    def function{;
                         print: "FUNCTION TEST";
                     }
 
@@ -1686,7 +1686,7 @@ try:
                     """
                     .var2 = 'B';
 
-                    void func{;
+                    def func{;
                         print: "MODULE2";
                     }
                     """
@@ -1707,7 +1707,7 @@ try:
                 (
                     "test2.sma",
                     """
-                        void f{;
+                        def f{;
                             for .i in |'A'|'Z'+1|1| {;
                                 print: .i;
                             }
@@ -1759,7 +1759,7 @@ try:
                 (
                     "module_func.sma",
                     """
-                        void f{;
+                        def f{;
                             print: "FUNCTION MODULE";
                             .a = 'A';
                             print: .a;
@@ -1787,7 +1787,7 @@ try:
                (
                     "readkeys.sma",
                     """
-                        void readkeys: *~line, .end {;
+                        def readkeys: *~line, .end {;
                             .counter = 0;
                             while .counter != 21 {;
                                 ~line[.counter] = input:;
@@ -1823,7 +1823,7 @@ try:
         Test(
             "Simple function test",
             code="""
-                void f{;
+                def f{;
                     print: "OK";
                 }
 
@@ -1837,7 +1837,7 @@ try:
                 .a = 0;
                 ~b = "";
 
-                void f{;
+                def f{;
                     .a = 'A';
                     ~b = "STRING";
                 }
@@ -1851,17 +1851,17 @@ try:
         Test(
             "Call function in function",    # this test don't do recursive function...
             code="""
-                void f1{;
+                def f1{;
                     print: "F1";
                     f2:;
                 }
 
-                void f2{;
+                def f2{;
                     print: "F2";
                     f3:;
                 }
 
-                void f3{;
+                def f3{;
                     print: "F3";
                 }
 
@@ -1873,7 +1873,7 @@ try:
         Test(
             "Return-function simple",
             code="""
-                void f{;
+                def f{;
                     print: "F";
                     return 'A';
                 }
@@ -1890,7 +1890,7 @@ try:
                 .n = 3;
                 .r = 1;
 
-                void factoriel{;
+                def factoriel{;
                     if .n == 1 {;
                         print: "OK";
                         }
@@ -1911,7 +1911,7 @@ try:
         Test(
             "Return function with advanced value parameters",
             code="""
-                void f: ~arg1{;
+                def f: ~arg1{;
                 print: ~arg1;
                 return 1;
             }
@@ -1922,12 +1922,12 @@ try:
         Test(
             "Advanced return function",
             code="""
-                void f1{;
+                def f1{;
                     print: "F1";
                     return 'A';
                 }
 
-                void f2{;
+                def f2{;
                     print: "F2";
                     return f1:;
                 }
@@ -1941,7 +1941,7 @@ try:
         Test(
             "Function with parameters",
             code="""
-                void f: .x {;
+                def f: .x {;
                     print: .x;
                 }
 
@@ -1955,7 +1955,7 @@ try:
         Test(
             "Function with some parameters",
             code="""
-                void f: .x, ~string, .a {;
+                def f: .x, ~string, .a {;
                     print: .x;
                     print: ~string;
                     print: .x + .a;
@@ -1971,7 +1971,7 @@ try:
         Test(
             "Function with parameter and return",
             code="""
-                void sum: .a, .b {;
+                def sum: .a, .b {;
                     return .a + .b;
                 }
 
@@ -1987,7 +1987,7 @@ try:
         Test(
             "Function with bad parameters 1",
             code="""
-                void f {;
+                def f {;
                     print: "ERROR";
                 }
 
@@ -1998,7 +1998,7 @@ try:
         Test(
             "Function with bad parameters 2",
             code="""
-                void f: .x {;
+                def f: .x {;
                     print: "ERROR";
                 }
 
@@ -2009,7 +2009,7 @@ try:
         Test(
             "Invalid syntax with parameters 1",
             code="""
-                void f .a {;
+                def f .a {;
                     print: "ERROR";
                 }
             """,
@@ -2018,7 +2018,7 @@ try:
         Test(
             "Invalid syntax with parameters 2",
             code="""
-                void f: .a, {;
+                def f: .a, {;
                     print: "ERROR";
                 }
             """,
@@ -2027,7 +2027,7 @@ try:
         Test(
             "Invalid syntax with parameters 3",
             code="""
-                void f: error {;
+                def f: error {;
                     print: "ERROR";
                 }
             """,
@@ -2038,7 +2038,7 @@ try:
             code="""
                 .a = 0;
 
-                void f: .a {;
+                def f: .a {;
                     print: "ERROR";
                 }
 
@@ -2769,10 +2769,10 @@ OK2"""
         Test(
             "Call function on shared stack mode",
             code="""
-                void f{;
+                def f{;
                     print: 'A';
                 }
-                void g{;
+                def g{;
                     print: 'B';
                 }
 
@@ -2790,12 +2790,12 @@ OK2"""
         Test(
             "Call a function with long time",  # this test have probleme
             code="""
-                void f{;
+                def f{;
                     for .i in |0|10|1| {;
                         print: 'A';
                     }
                 }
-                void g{;
+                def g{;
                     for .j in |0|10|1| {;
                         print: 'B';
                    }
@@ -2826,7 +2826,7 @@ OK2"""
         Test(
             "Call a function in a no shared stack",
             code="""
-                void f{;
+                def f{;
                     print: "FUNCTION";
                 }
 
@@ -2943,7 +2943,7 @@ OK2"""
         Test(
             "Simple pointer on arg",
             code="""
-                void f: *~arg {;
+                def f: *~arg {;
                     print: ~arg;
                     ~arg = "STRING2";
                 }
@@ -2957,7 +2957,7 @@ OK2"""
         Test(
             "Advenced pointer on arg",
             code="""
-                void f: *.arg1, *.arg2, *~str1 {;
+                def f: *.arg1, *.arg2, *~str1 {;
                     print: .arg1;
                     print: .arg2;
                     print: ~str1;
@@ -2981,7 +2981,7 @@ OK2"""
         Test(
             "Return function with ptr",
             code="""
-                void f: *.x, *~str {;
+                def f: *.x, *~str {;
                     print: .x;
                     print: ~str;
 
@@ -3004,10 +3004,10 @@ OK2"""
         Test(
             "Recurcive pointer - 1",
             code="""
-                void f1: *.arg1{;
+                def f1: *.arg1{;
                     .arg1 = 'A';
                 }
-                void f2: *.arg2{;
+                def f2: *.arg2{;
                     f1: .arg2;
                 }
 
@@ -3020,10 +3020,10 @@ OK2"""
         Test(
             "Recurcive pointer - 2",
             code="""
-                void f1: *~arg1{;
+                def f1: *~arg1{;
                     ~arg1 = "FUNCTION1";
                 }
-                void f2: *~arg2{;
+                def f2: *~arg2{;
                     f1: ~arg2;
                 }
 
@@ -3037,7 +3037,7 @@ OK2"""
         Test(
             "Set on ptr a value imediate",
             code="""
-                void f: *.x, *~str {
+                def f: *.x, *~str {
                     .x = 1;
                     ~str = "STRING";
                     print: "ERROR";
@@ -3049,11 +3049,11 @@ OK2"""
         Test(
             "2 ptr argument with same name error",
             code="""
-                void f: *.x {;
+                def f: *.x {;
                     .x = 'A';
                 }
 
-                void g: *.x {;
+                def g: *.x {;
                     f: .x;
                     print: "ERROR";
                 }

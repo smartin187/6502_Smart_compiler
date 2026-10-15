@@ -1683,7 +1683,7 @@ def compile_smart(
             code_compile += hex_code_error
             address_counter += len_code_error
 
-        elif line.lstrip().startswith("void"):      # make function
+        elif line.lstrip().startswith("def"):      # make function
             if function_mode["function_mode"]:
                 smart_error(f"Error with function: impossible to create new function on function.")
 

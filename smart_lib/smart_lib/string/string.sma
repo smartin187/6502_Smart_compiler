@@ -2,7 +2,7 @@
 
 .i_string = 0;
 
-void count: ~str_count, .char_count {;
+def count: ~str_count, .char_count {;
     .i_string = 0;
     .string_count = 0;
     while .i_string != 21 {;
@@ -14,7 +14,7 @@ void count: ~str_count, .char_count {;
     return .string_count;
 }
 
-// void in: ~str_in, .char_in {;
+// def in: ~str_in, .char_in {;
 //     .i_string = 0;
 //     .string_count = 0; // 0 if not found, 1 if found
 
@@ -30,7 +30,7 @@ void count: ~str_count, .char_count {;
 
 //.str_lenght = 0;
 
-//void str_len: ~str_len {;
+//def str_len: ~str_len {;
     // return the lenght of the string or list.
     // The length is the index+1 if last character not null.
     // Exemples:

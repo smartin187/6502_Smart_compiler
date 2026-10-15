@@ -6,7 +6,7 @@ import "dynamic_run/dynamic_run.sma";
 .read_get_address = 0;
 
 
-void read_simple: .read_address_1, .read_address_2{;
+def read_simple: .read_address_1, .read_address_2{;
 
     ~read_op_codes[1] = .read_address_2;
     ~read_op_codes[2] = .read_address_1;
@@ -18,7 +18,7 @@ void read_simple: .read_address_1, .read_address_2{;
     return .read_get_address;
 }
 
-void write_simple: .write_address_1, .write_address_2, .value{;
+def write_simple: .write_address_1, .write_address_2, .value{;
 
     ~write_op_codes[1] = .value;
 

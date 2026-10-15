@@ -5,7 +5,7 @@ import "memory/memory.sma";
 .byte_read = 0;
 .byte = 0;
 
-void read_advenced: .address_advenced_1, .address_advenced_2, *~string_read_advenced{;
+def read_advenced: .address_advenced_1, .address_advenced_2, *~string_read_advenced{;
 
     .byte = 0;
 
@@ -61,7 +61,7 @@ void read_advenced: .address_advenced_1, .address_advenced_2, *~string_read_adve
     ~string_read_advenced[20] = read_simple: .address_advenced_1, .address_advenced_2 ;
 }
 
-void write_advenced: .address_advenced_1_write, .address_advenced_2_write, ~string_write_advenced{;
+def write_advenced: .address_advenced_1_write, .address_advenced_2_write, ~string_write_advenced{;
 
     .byte = 0;
 
