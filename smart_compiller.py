@@ -1204,7 +1204,6 @@ def compile_smart(
 
                 try:
                     var_name, value = line.split("=", 1)
-                    #value = replace_code(value, " ", "")
                 except ValueError:
                     smart_error(f"Error with variable `{line}`: expected '='")
 
@@ -1229,8 +1228,6 @@ def compile_smart(
                     smart_error(f"Used index in undefined variable: `{var_name}`")
 
                 make_variable(smart_obj.SmartStr(var_name, adress_var), add_adress_advenced_value=False)
-
-                #compiller_data_run.not_used_ram += 1
 
                 for i in range(smart_obj.SIZE_ADVANCED_OBJ - 1):
                     compiller_data_run.not_used_ram += 1
