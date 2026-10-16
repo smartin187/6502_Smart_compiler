@@ -2202,11 +2202,11 @@ def compile_smart(
             PAGE_NUMBER_CODE = ceil(address_counter / 256)
             graphic_code = ""
             for page in range(PAGE_NUMBER_CODE):
-                len_page = 0x400 + address_counter - (0x400 + page * 0x100)
+                len_page = CODE_ADRESSE + address_counter - (CODE_ADRESSE + page * 0x100)
                 if len_page > 256:
                     len_page = 256
 
-                graphic_code += memory_page.format(hex(0x400 + page * 0x100), Colors.BG_BLUE, " " * (len_page // ZOOM_GRAPHIC), Colors.BG_GREEN, " " * ((256 - len_page) // ZOOM_GRAPHIC), Colors.RESET) + "\n"
+                graphic_code += memory_page.format(hex(CODE_ADRESSE + page * 0x100), Colors.BG_BLUE, " " * (len_page // ZOOM_GRAPHIC), Colors.BG_GREEN, " " * ((256 - len_page) // ZOOM_GRAPHIC), Colors.RESET) + "\n"
 
             print(
                 "", # set a empty line

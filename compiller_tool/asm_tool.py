@@ -14,7 +14,7 @@ def get_adress(code_compile:str) -> int:
     """Return the address offset from the start of the programme, from a hex code."""
     offset_adress = code_compile.count(" ") + 3 * code_compile.count("!smart_call_func|") + code_compile.count("!smart_tmp:goto|") * 3 - code_compile.count("!smart_tmp:goto|")
 
-    if code_compile.startswith("0400: "):
+    if ": " in code_compile:
         offset_adress -= 1
 
     return offset_adress
