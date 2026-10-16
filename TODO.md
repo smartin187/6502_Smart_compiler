@@ -14,7 +14,7 @@ If the task is a bug you can also add an issue on GitHub.
 
 - _Fix: small bug on windows: the path of the library is not joined correctly: ...lib\global_lib\screen_tool/screen_tool.sma_
 - Add operator: `^`... Add comparator: `and` `or` `>` `<=`
-- Make the libraries for Smart: `math` ?, `string` (add new functions):
+- Make the libraries for Smart: `math` ?, `string`.
 - **Add string and list with size variable ?**
 - Add class object for Smart ?
 - For Smart system variable, use 0 page mode
@@ -42,11 +42,9 @@ If the task is a bug you can also add an issue on GitHub.
 ```
 IndexError: string index out of range
 - Fix bug: if is impossible to make a empty list: `~a = [];`.
-- For memory lib, add read_advenced and write_advenced for read/write a advenced value (str) on memory.
 - Add new runtime error: for recursion error max. Use `Treansfert stack ptr to X` and `Compare X` for check if the stack will be overflowed. Set the runtime error `ER`.
 - Add the documentation for flag on emulator and compiller. Use `--help`
 - Add new flag:
-    - Add a flag for change entry point (actually `0x400`) of programme: `--entry-point=0x...`
     - Add a flag for change the lenght of advenced value (actually 21): `--advenced-len=...`
         - Add a constent at compile time for know the lenght of advenced value: `ADVENCED_LEN`. Helpfull for iteration on advenced value.
     - Add flag for set optimization mode `--optimize`:
