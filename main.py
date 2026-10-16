@@ -45,8 +45,30 @@ for arg in sys.argv:
         sys.argv.remove(arg)
         break
 
+entry_point = 0x400
 
-CODE_ADRESSE = 1024
+for arg in sys.argv:
+    if arg.startswith("--entry-point="):
+        try:
+            address = arg.split("=")[1]
+            if not address.startswith("0x"):
+                logging.critical("Error: entry point must be an hexadecimal integer, as 0x....")
+                sys.exit(1)
+
+            address = address[2:]
+
+            entry_point = int(address, 16)
+
+            if entry_point < 0 or entry_point > 0xFFFF:
+                logging.critical("Error: entry point must be an hexadecimal integer between 0x0000 and 0xFFFF")
+                sys.exit(1)
+
+        except:
+            logging.critical("Error: entry point must be an hexadecimal integer")
+            sys.exit(1)
+
+        sys.argv.remove(arg)
+        break
 
 if "--bin" in sys.argv: # make a binary file
     sys.argv.remove("--bin")
@@ -61,7 +83,7 @@ if len(sys.argv) == 1:
     sys.exit(1)
 
 try:
-    compile_smart(sys.argv[1], sys.argv, CODE_ADRESSE, bin_outpout_file=bin_file, regroup_bytes=regroup_number, first_call=True)
+    compile_smart(sys.argv[1], sys.argv, entry_point, bin_outpout_file=bin_file, regroup_bytes=regroup_number, first_call=True)
 except SmartError:
     sys.exit(1)
 
