@@ -630,6 +630,9 @@ def compile_smart(
             else:
                 smart_error(f"Smart value error: {value}", set_error=set_error_exception)
 
+        if value.replace(" ", "") == "":
+            smart_error("Value error: missing value", set_error=set_error_exception)
+
         asm_v = ""
 
         if not recursiv_value:
