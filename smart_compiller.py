@@ -871,6 +871,7 @@ def compile_smart(
 
             if len_list == 1 and list_value[0] == "":
                 del list_value[0]
+                len_list = 0
 
             for i in range(smart_obj.SIZE_ADVANCED_OBJ - len_list):
                 list_value.append("0")
