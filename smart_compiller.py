@@ -869,6 +869,9 @@ def compile_smart(
             if len_list > smart_obj.SIZE_ADVANCED_OBJ:
                 smart_error(f"List too long: '{string_or_variable}', max length is {smart_obj.SIZE_ADVANCED_OBJ}.")
 
+            if len_list == 1 and list_value[0] == "":
+                del list_value[0]
+
             for i in range(smart_obj.SIZE_ADVANCED_OBJ - len_list):
                 list_value.append("0")
 
