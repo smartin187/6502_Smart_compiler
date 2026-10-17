@@ -794,6 +794,18 @@ try:
             output="ABC123"
         ),
         Test(
+            "Empty list",
+            code="""
+                ~l = [];
+
+                print: "OK";
+
+                ~l[0] = 'A';
+                print: ~l;
+            """,
+            output="OKA"
+        ),
+        Test(
             "F-string test",
             code="""
                 ~str1 = F"AA{65}AA{'@'}";

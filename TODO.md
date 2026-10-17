@@ -36,12 +36,6 @@ If the task is a bug you can also add an issue on GitHub.
     - Add test for assembly lib
     - Add test for dynamic_run **need a refactor on emulator for run this lib**
     - Add test for memory lib **need to have dynamic_run ok on emulator**
-- Fix bug: if ths programme is:
-```Smart
-.a = ;
-```
-IndexError: string index out of range
-- Fix bug: if is impossible to make a empty list: `~a = [];`.
 - Add new runtime error: for recursion error max. Use `Treansfert stack ptr to X` and `Compare X` for check if the stack will be overflowed. Set the runtime error `ER`.
 - Add the documentation for flag on emulator and compiller. Use `--help`
 - Add new flag:
@@ -53,4 +47,9 @@ IndexError: string index out of range
         - If `if True`, not compile `else` and `elif` bloc + remove the condition `True`.
         - If `if False`, not compile `if` bloc.
 - On except bloc, add a variable for get the error code: `except to .error_code{;}`
-- Add test for all library.
+- Add a ramdom lib:
+    - Some function for ramdom:
+        - A function with the ramdom value is the sum of A, X, Y, stack ptr, and maybe some address on RAM, and maybe flags.
+        - The same function as first, but the substraction of all value.
+        - A function with a pre defined value, set 256 ramdom value between 0 and 255 (all value need to be different).
+        - A function say to user to press a key. While the user not press the key, increment X or Y, and when the user press the key, return the value of X or Y.
