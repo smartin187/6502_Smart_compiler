@@ -28,5 +28,25 @@ def random_sum{;
     return .random_value_a;
 }
 
+def random_sub{;
+    // This function subtracts X, Y, and the stack pointer from A.
+
+    // Save X at .random_keep_value and subtract it from A
+    asm_entry: "STX_ABS @var_adress:.random_keep_value| ";
+    asm_entry: "SBC_ABS @var_adress:.random_keep_value| ";
+
+    // Save Y at .random_keep_value and subtract it from A
+    asm_entry: "STY_ABS @var_adress:.random_keep_value| ";
+    asm_entry: "SBC_ABS @var_adress:.random_keep_value| ";
+
+    // Transfer the stack pointer to X, then subtract it from A
+    TSX;
+    asm_entry: "STX_ABS @var_adress:.random_keep_value| ";
+    asm_entry: "SBC_ABS @var_adress:.random_keep_value| ";
+
+    asm_entry: "STA_ABS @var_adress:.random_value_a| "; // Save the value of A at .random_value_a
+    return .random_value_a;
+}
+
 //def random_256{;
 //}

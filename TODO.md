@@ -50,7 +50,5 @@ If the task is a bug you can also add an issue on GitHub.
 - On except bloc, add a variable for get the error code: `except to .error_code{;}`
 - Add a ramdom lib:
     - Some function for ramdom:
-        - A function with the ramdom value is the sum of A, X, Y, stack ptr, and maybe some address on RAM, and maybe flags. `ramdom_sum`
-        - The same function as first, but the substraction of all value. `ramdom_sub`
         - A function with a pre defined value, set 256 ramdom value between 0 and 255 (all value need to be different). `ramdom_256`
         - A function say to user to press a key. While the user not press the key, increment X or Y, and when the user press the key, return the value of X or Y `random_press`.
