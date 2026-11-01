@@ -50,5 +50,6 @@ If the task is a bug you can also add an issue on GitHub.
 - On except bloc, add a variable for get the error code: `except to .error_code{;}`
 - Add a ramdom lib:
     - Some function for ramdom:
-        - A function with a pre defined value, set 256 ramdom value between 0 and 255 (all value need to be different). `ramdom_256`
+        - A function with a pre defined value, set 256 ramdom value between 0 and 255 (all value need to be different). `ramdom_256` (need to fix the problème with function `address_counter`)
         - A function say to user to press a key. While the user not press the key, increment X or Y, and when the user press the key, return the value of X or Y `random_press`.
+- Probleme with function : when the function are compilled, `address_counter` is not incremented with the size of the function. `address_counter` is incremented when the code of function is add to `code_compile`, si if they are some function, risk of error.
