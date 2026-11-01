@@ -64,3 +64,17 @@ def random_sub{;
 //     .random_256_pointer++;
 //     return .random_value_a;
 // }
+
+def random_press{;
+    // This function return a random value 0 to 255.
+    // The user need to presse a key.
+    // During the function run, a counter (X) is incremented, and when the user press a key, it stop, and the value is return.
+    asm_entry: "
+        E8
+        LDA_ABS 11 D0
+        BPL_REL FA
+    ";
+
+    asm_entry: "STX_ABS @var_adress:.random_keep_value| "; // Save the value of X at .random_keep_value
+    return .random_keep_value;
+}
