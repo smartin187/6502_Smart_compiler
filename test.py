@@ -293,6 +293,9 @@ try:
                     // --- input library ---
                     import "input/readkeys.sma";
 
+                    // --- random library ---
+                    import "random/random.sma";
+
                     print: "OK";
                 """,
                 output="OK"
