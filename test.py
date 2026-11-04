@@ -379,6 +379,17 @@ try:
                 """,
                 stdin_test="FIRST LINE INPUT     LINE2\r",
                 output="FIRST LINE INPUT     LINE2\n" # the \r on emulator is replace by \n
+            ),
+            # --- random library ---
+            Test(
+                "random - random_press",
+                code="""
+                    import "random/random.sma";
+                    .random_value = random_press:;
+                    print: .random_value;
+                """,
+                compile_only=True,
+                compile_output="0400: A9 00 8D 00 03 A9 00 8D 01 03 20 51 04 8D 03 03 AD 03 03 8D 02 03 AD 02 03 20 EF FF 00 8E 00 03 6D 00 03 8C 00 03 6D 00 03 BA 8E 00 03 6D 00 03 8D 01 03 AD 01 03 60 8E 00 03 ED 00 03 8C 00 03 ED 00 03 BA 8E 00 03 ED 00 03 8D 01 03 AD 01 03 60 E8 AD 11 D0 10 FA 8E 00 03 AD 00 03 60 "
             )
         )
     else:
