@@ -63,14 +63,14 @@ class OutputError(TestError):
 
 class Test:
     """This class is for testing all functionalities of smart."""
-    def __init__(self, name:str, code:str, output:str="", compile_output:str="", compile_only:bool=False, sucess:bool=True, stdin_test:str="", max_op:int=10000, no_log:bool=False, auto_confirm:bool=False):
+    def __init__(self, name:str, code:str, output:str | None="", compile_output:str="", compile_only:bool=False, sucess:bool=True, stdin_test:str="", max_op:int=10000, no_log:bool=False, auto_confirm:bool=False):
         """
         Set information about test.
         """
         self.name = name
         self.code = code
         self.compile_only = compile_only
-        self.output = output + "\n\nEnd of run"
+        self.output = output + "\n\nEnd of run" if output is not None else output
         self.compile_output = compile_output
         self.sucess = sucess
         self.stdin_test = stdin_test
@@ -161,7 +161,7 @@ class Test:
                 try:
                     output = smart_emulator.start_test(self.code_compile, self.max_op, stdin=self.stdin_test)
 
-                    if output != self.output:
+                    if self.output is not None and output != self.output:
                         raise OutputError(f"The output of programme is not good:\n{output}")
 
                 except smart_emulator.EmulatorStdinError as e:
@@ -381,6 +381,15 @@ try:
                 output="FIRST LINE INPUT     LINE2\n" # the \r on emulator is replace by \n
             ),
             # --- random library ---
+            Test(
+                "random - random_sum",
+                code="""
+                    import "random/random.sma";
+                    .random_value = random_sum:;
+                    print: .random_value;
+                """,
+                output=None # impossible to know the output.
+            ),
             Test(
                 "random - random_press",
                 code="""
