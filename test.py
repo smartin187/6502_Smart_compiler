@@ -391,6 +391,15 @@ try:
                 output=None # impossible to know the output.
             ),
             Test(
+                "random - random_sub",
+                code="""
+                    import "random/random.sma";
+                    .random_value = random_sub:;
+                    print: .random_value;
+                """,
+                output=None # impossible to know the output.
+            ),
+            Test(
                 "random - random_press",
                 code="""
                     import "random/random.sma";
