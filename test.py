@@ -63,14 +63,14 @@ class OutputError(TestError):
 
 class Test:
     """This class is for testing all functionalities of smart."""
-    def __init__(self, name:str, code:str, output:str="", compile_output:str="", compile_only:bool=False, sucess:bool=True, stdin_test:str="", max_op:int=10000, no_log:bool=False, auto_confirm:bool=False):
+    def __init__(self, name:str, code:str, output:str | None="", compile_output:str="", compile_only:bool=False, sucess:bool=True, stdin_test:str="", max_op:int=10000, no_log:bool=False, auto_confirm:bool=False):
         """
         Set information about test.
         """
         self.name = name
         self.code = code
         self.compile_only = compile_only
-        self.output = output + "\n\nEnd of run"
+        self.output = output + "\n\nEnd of run" if output is not None else output
         self.compile_output = compile_output
         self.sucess = sucess
         self.stdin_test = stdin_test
@@ -161,7 +161,10 @@ class Test:
                 try:
                     output = smart_emulator.start_test(self.code_compile, self.max_op, stdin=self.stdin_test)
 
-                    if output != self.output:
+                    if "[emulator error: " in output:
+                        raise OutputError(f"The emulator have an error (given on the output):\n{output}")
+
+                    if self.output is not None and output != self.output:
                         raise OutputError(f"The output of programme is not good:\n{output}")
 
                 except smart_emulator.EmulatorStdinError as e:
@@ -293,6 +296,9 @@ try:
                     // --- input library ---
                     import "input/readkeys.sma";
 
+                    // --- random library ---
+                    import "random/random.sma";
+
                     print: "OK";
                 """,
                 output="OK"
@@ -376,6 +382,35 @@ try:
                 """,
                 stdin_test="FIRST LINE INPUT     LINE2\r",
                 output="FIRST LINE INPUT     LINE2\n" # the \r on emulator is replace by \n
+            ),
+            # --- random library ---
+            Test(
+                "random - random_sum",
+                code="""
+                    import "random/random.sma";
+                    .random_value = random_sum:;
+                    print: .random_value;
+                """,
+                output=None # impossible to know the output.
+            ),
+            Test(
+                "random - random_sub",
+                code="""
+                    import "random/random.sma";
+                    .random_value = random_sub:;
+                    print: .random_value;
+                """,
+                output=None # impossible to know the output.
+            ),
+            Test(
+                "random - random_press",
+                code="""
+                    import "random/random.sma";
+                    .random_value = random_press:;
+                    print: .random_value;
+                """,
+                compile_only=True,
+                compile_output="0400: A9 00 8D 00 03 A9 00 8D 01 03 20 51 04 8D 03 03 AD 03 03 8D 02 03 AD 02 03 20 EF FF 00 8E 00 03 6D 00 03 8C 00 03 6D 00 03 BA 8E 00 03 6D 00 03 8D 01 03 AD 01 03 60 8E 00 03 ED 00 03 8C 00 03 ED 00 03 BA 8E 00 03 ED 00 03 8D 01 03 AD 01 03 60 E8 AD 11 D0 10 FA 8E 00 03 AD 00 03 60 "
             )
         )
     else:
