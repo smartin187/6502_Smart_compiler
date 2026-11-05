@@ -78,7 +78,10 @@ class MessageUser:
             input(f"{head}: {Colors.BOLD}{message}{Colors.RESET}\n{detail}\n{Colors.GREEN}Press enter to continue...{Colors.RESET}")
 
     def show_error(title:str, message:str, detail:str="") -> None:
-        """Show an error message for the user. If GUI_MODE is True, use messagebox, else, print on console."""
+        """Show an error message for the user. If GUI_MODE is True, use messagebox, else, print on console.
+        Add to the output if test the text [emulator error]"""
+        global output_test
+        output_test += f"[emulator error: {title} ; {message}]"
         MessageUser.show_message_user("error", title, message, detail)
 
     def show_warning(title:str, message:str, detail:str="") -> None:

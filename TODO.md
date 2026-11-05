@@ -13,7 +13,7 @@ If the task is a bug you can also add an issue on GitHub.
 ## Tasks
 
 - _Fix: small bug on windows: the path of the library is not joined correctly: ...lib\global_lib\screen_tool/screen_tool.sma_
-- Add operator: `^`... Add comparator: `and` `or` `>` `<=`
+- Add operator: `^`... Add comparator: `AND` `OR` `>` `<=`
 - Make the libraries for Smart: `math` ?, `string`.
 - **Add string and list with size variable ?**
 - Add class object for Smart ?
@@ -37,6 +37,7 @@ If the task is a bug you can also add an issue on GitHub.
     - Add test for dynamic_run **need a refactor on emulator for run this lib**
     - Add test for memory lib **need to have dynamic_run ok on emulator**
     - For the module `advenced_operation.sma` of assembly.
+- For assemnbly lib (simple operation), set a module for get only the OP code on define and not the asm_entry function.
 - Add new runtime error: for recursion error max. Use `Treansfert stack ptr to X` and `Compare X` for check if the stack will be overflowed. Set the runtime error `ER`.
 - Add the documentation for flag on emulator and compiller. Use `--help`
 - Add new flag:
@@ -53,4 +54,3 @@ If the task is a bug you can also add an issue on GitHub.
         - A function with a pre defined value, set 256 ramdom value between 0 and 255 (all value need to be different). `ramdom_256` (need to fix the problème with function `address_counter`)
     - On emulator, add all assembly instruction for all function of random lib (for the auto test)
 - Probleme with function : when the function are compilled, `address_counter` is not incremented with the size of the function. `address_counter` is incremented when the code of function is add to `code_compile`, si if they are some function, risk of error.
-- Error with `test.py` -> if the emulator have a error (unknow instruction, programme run on the variable address...), if the programme don't have output, the test is OK (need to set the test fail if the emulator have a error)

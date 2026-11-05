@@ -161,6 +161,9 @@ class Test:
                 try:
                     output = smart_emulator.start_test(self.code_compile, self.max_op, stdin=self.stdin_test)
 
+                    if "[emulator error: " in output:
+                        raise OutputError(f"The emulator have an error (given on the output):\n{output}")
+
                     if self.output is not None and output != self.output:
                         raise OutputError(f"The output of programme is not good:\n{output}")
 
