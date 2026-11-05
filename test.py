@@ -381,6 +381,25 @@ try:
                 """,
                 output="1011"
             ),
+            Test(
+                "str_len test - string lib",
+                code="""
+                    import "string/string.sma";
+
+                    .result = str_len: "AAA";
+                    print: .result + '0';
+
+                    ~my_list = ['A', 'B', 0, 1, 2, 3];
+                    .result = str_len: ~my_list;
+                    print: .result + '0';
+
+                    ~my_string = "A";
+                    ~my_string[-1] = 'A';
+                    .result = str_len: ~my_string; // it return 21
+                    print: .result + '0';
+                """,
+                output=f"36{chr(ord('0')+21)}"
+            ),
             # --- input library ---
             Test(
                 "Test readkeys",

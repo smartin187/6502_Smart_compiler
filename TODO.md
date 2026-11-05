@@ -54,3 +54,4 @@ If the task is a bug you can also add an issue on GitHub.
         - A function with a pre defined value, set 256 ramdom value between 0 and 255 (all value need to be different). `ramdom_256` (need to fix the problème with function `address_counter`)
     - On emulator, add all assembly instruction for all function of random lib (for the auto test)
 - Probleme with function : when the function are compilled, `address_counter` is not incremented with the size of the function. `address_counter` is incremented when the code of function is add to `code_compile`, si if they are some function, risk of error.
+- Add the script for build to a pipeline on GitHub Actions
