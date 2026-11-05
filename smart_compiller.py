@@ -2046,9 +2046,11 @@ def compile_smart(
 
     elif function_mode["function_mode"]:
         code_compile += "60 "
+        address_counter += 1
 
     else:
         code_compile += "00 "
+        address_counter += 1
 
     # compile function:
 
@@ -2064,7 +2066,7 @@ def compile_smart(
             function_name_usr[function].code_compile_f = compile_smart(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":smart_func, "if_mode":False},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter + 1,
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
                 thread_mode=function_thread_mode
             )
 
@@ -2084,7 +2086,7 @@ def compile_smart(
 
                 function_name_tmp = function.split("|")[1]
 
-                adress_func = CODE_ADRESSE + function_name_usr[function_name_tmp].function_adress + 1
+                adress_func = CODE_ADRESSE + function_name_usr[function_name_tmp].function_adress
 
                 hex_adress_function = adress_for_RAM(adress_func)
 
@@ -2099,7 +2101,7 @@ def compile_smart(
                 logging.warning(f"Function '{name}' was never called.")
 
     if compiller_data_run.need_input and not function_mode["function_mode"] and not module_mode:
-        input_adress = address_counter + CODE_ADRESSE + 1
+        input_adress = address_counter + CODE_ADRESSE
 
         hex_input_adress = hex(input_adress)[2:].upper() # --- to refactor: use address_for_ram ?
         hex_input_adress = "0" * (4 - len(hex_input_adress)) + hex_input_adress
