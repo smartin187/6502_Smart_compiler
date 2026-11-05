@@ -14,19 +14,19 @@ def count: ~str_count, .char_count {;
     return .string_count;
 }
 
-// def in: ~str_in, .char_in {;
-//     .i_string = 0;
-//     .string_count = 0; // 0 if not found, 1 if found
+def in: ~str_in, .char_in {;
+    .i_string = 0;
+    .string_count = 0; // 0 if not found, 1 if found
 
-//     while .i_string != 21 {;
-//         if ~str_in[.i_string] == .char_in {;
-//             .string_count = 1;
-//             break;
-//         }
-//         .i_string++;
-//     }
-//     return .string_count;
-// }
+    while .i_string != 21 {;
+        if ~str_in[.i_string] == .char_in {;
+            .string_count = 1;
+            break;
+        }
+        .i_string++;
+    }
+    return .string_count;
+}
 
 //.str_lenght = 0;
 

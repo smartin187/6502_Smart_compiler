@@ -361,6 +361,26 @@ try:
                 """,
                 output="34>20OK"
             ),
+            Test(
+                "in test - string lib",
+                code="""
+                    import "string/string.sma";
+
+                    .result = in: "ABCD", 'A';
+                    print: .result + '0';
+
+                    .result = in: "ABCD", '1';
+                    print: .result + '0';
+
+                    ~my_string = "1234";
+                    .result = in: ~my_string, '1';
+                    print: .result + '0';
+
+                    .result = in: ~my_string, 0;    // the null byte after "1234"
+                    print: .result + '0';
+                """,
+                output="1011"
+            ),
             # --- input library ---
             Test(
                 "Test readkeys",
