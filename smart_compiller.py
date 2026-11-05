@@ -2070,7 +2070,9 @@ def compile_smart(
 
         # set the function:
 
-        for f in function_name_usr:
+        #for f in function_name_usr:
+
+            f = function
 
             function_name_usr[f].function_adress = address_counter
 
