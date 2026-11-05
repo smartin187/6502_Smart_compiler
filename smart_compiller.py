@@ -2068,15 +2068,11 @@ def compile_smart(
                 thread_mode=function_thread_mode
             )
 
-        # set the function:
+            # set the function on code_compile:
 
-        #for f in function_name_usr:
+            function_name_usr[function].function_adress = address_counter
 
-            f = function
-
-            function_name_usr[f].function_adress = address_counter
-
-            code_func = function_name_usr[f].code_compile_f
+            code_func = function_name_usr[function].code_compile_f
 
             code_compile += code_func
 
