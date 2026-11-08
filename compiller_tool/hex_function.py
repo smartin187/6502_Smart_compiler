@@ -96,7 +96,6 @@ def make_error(error_value:str, try_mode:bool, set_need_error:bool=True, add_to_
     Return hex code.
     Add to address counter if the argument is True
     """
-    #nonlocal address_counter
     address_counter = 0 # the lenght of hex code
 
     if try_mode:
