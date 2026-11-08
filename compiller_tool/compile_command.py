@@ -12,10 +12,6 @@ from compiller_tool.string_tool import good_variable_name, get_str
 from compiller_tool.color_tool import Colors
 from compiller_tool.smart_info import SMART_VERSION
 
-#define = {}     # the define are stored in this dict
-
-#reset_define(define)
-
 def get_line_debug(line:str) -> str:
     """Return the line for the debug if debug mode is enabled. Return '' if debug mode is disabled."""
     if compiller_data_run.debug_max:

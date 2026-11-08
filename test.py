@@ -361,6 +361,45 @@ try:
                 """,
                 output="34>20OK"
             ),
+            Test(
+                "in test - string lib",
+                code="""
+                    import "string/string.sma";
+
+                    .result = in: "ABCD", 'A';
+                    print: .result + '0';
+
+                    .result = in: "ABCD", '1';
+                    print: .result + '0';
+
+                    ~my_string = "1234";
+                    .result = in: ~my_string, '1';
+                    print: .result + '0';
+
+                    .result = in: ~my_string, 0;    // the null byte after "1234"
+                    print: .result + '0';
+                """,
+                output="1011"
+            ),
+            Test(
+                "str_len test - string lib",
+                code="""
+                    import "string/string.sma";
+
+                    .result = str_len: "AAA";
+                    print: .result + '0';
+
+                    ~my_list = ['A', 'B', 0, 1, 2, 3];
+                    .result = str_len: ~my_list;
+                    print: .result + '0';
+
+                    ~my_string = "A";
+                    ~my_string[-1] = 'A';
+                    .result = str_len: ~my_string; // it return 21
+                    print: .result + '0';
+                """,
+                output=f"36{chr(ord('0')+21)}"
+            ),
             # --- input library ---
             Test(
                 "Test readkeys",

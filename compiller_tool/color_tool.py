@@ -47,7 +47,6 @@ class ColoredFormatter(logging.Formatter):
         record.levelname = f"{log_color}{record.levelname}{self.RESET}"
         log_message = super().format(record)
 
-        # Ajoute un newline sauf si no_newline est True
         if not record.__dict__.get('no_newline', False):
             log_message += '\n'
 

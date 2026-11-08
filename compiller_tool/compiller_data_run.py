@@ -106,10 +106,10 @@ def reset_data() -> None:
     not_used_for = _NOT_USED_FOR
     need_input = _NEED_INPUT
     progresse_bar_advencement = _PROGRESS_BAR_ADVENCEMENT
-    define = dict(_DEFINE)
 
     # reset value of compiletime keyword
-    #_define_dict.clear()
+    define = dict(_DEFINE)
+
 
 # variable -------------------------------
 

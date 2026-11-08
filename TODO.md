@@ -53,4 +53,15 @@ If the task is a bug you can also add an issue on GitHub.
     - Some function for ramdom:
         - A function with a pre defined value, set 256 ramdom value between 0 and 255 (all value need to be different). `ramdom_256` (need to fix the problème with function `address_counter`)
     - On emulator, add all assembly instruction for all function of random lib (for the auto test)
-- Probleme with function : when the function are compilled, `address_counter` is not incremented with the size of the function. `address_counter` is incremented when the code of function is add to `code_compile`, si if they are some function, risk of error.
+- Add the script for build to a pipeline on GitHub Actions
+- Probleme with this code :
+```Smart
+import "string/string.sma";
+~my_string = "ABCD";
+.len = str_len: ~my_string;
+print: .len + '0'; // 4
+~my_string = "";
+.len = str_len: ~my_string;
+print: .len + '0'; // 0
+```
+-> It print `44` and not `40`

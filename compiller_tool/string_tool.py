@@ -51,7 +51,7 @@ def split_code(
 
     wait_char = 0
 
-    last_char = ""
+    #last_char = ""
 
     for i, char in enumerate(code):
         if wait_char:
@@ -101,7 +101,7 @@ def split_code(
 
             new_element.append(char)
 
-            last_char = char
+            #last_char = char
 
     if new_element != []:
         split.append("".join(new_element))
@@ -304,7 +304,7 @@ def get_hex_from_int(value:int) -> str:
     return hex_value
 
 
-def adress_for_RAM(adress:int) -> str:
+def address_for_RAM(adress:int) -> str:
     """Return the RAM address in hex.
     Example:
     768 -> 00 03"""

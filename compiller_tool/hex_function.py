@@ -5,7 +5,7 @@ This module has the function build_asm_entry used by the Smart built-in function
 """
 import logging
 from compiller_tool.smart_exception import SmartError
-from compiller_tool.string_tool import adress_for_RAM
+from compiller_tool.string_tool import address_for_RAM
 from compiller_tool import compiller_data_run
 
 set_on_A_value = None
@@ -56,7 +56,7 @@ def build_asm_entry(function_arg:list, line_conter:int, get_str_function, adress
 
                 var_adress = smart_var[var_name].ram_adress
 
-                to_replace.append((f"@var_adress:{var_prefix}{var_name}|", adress_for_RAM(var_adress)))
+                to_replace.append((f"@var_adress:{var_prefix}{var_name}|", address_for_RAM(var_adress)))
 
             elif escape_sequence.startswith("@adress+") or escape_sequence.startswith("@adress-"):
 
@@ -74,13 +74,13 @@ def build_asm_entry(function_arg:list, line_conter:int, get_str_function, adress
                 else:
                     replace_adress = adress_conter + START_ADRESS - number_int
 
-                to_replace.append((f"@adress{operator}{number}|", adress_for_RAM(replace_adress)))
+                to_replace.append((f"@adress{operator}{number}|", address_for_RAM(replace_adress)))
 
 
     for old, new in to_replace:
         asm_str = asm_str.replace(old, new)
 
-    asm_str = asm_str.replace("@adress", adress_for_RAM(adress_conter + START_ADRESS))
+    asm_str = asm_str.replace("@adress", address_for_RAM(adress_conter + START_ADRESS))
 
     asm_str = asm_str.replace(" ", "")
 
@@ -96,7 +96,6 @@ def make_error(error_value:str, try_mode:bool, set_need_error:bool=True, add_to_
     Return hex code.
     Add to address counter if the argument is True
     """
-    #nonlocal address_counter
     address_counter = 0 # the lenght of hex code
 
     if try_mode:

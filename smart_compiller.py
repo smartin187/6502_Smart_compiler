@@ -15,7 +15,7 @@ import re
 import traceback
 from math import ceil
 
-from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, adress_for_RAM, get_str, get_char, control_hex
+from compiller_tool.string_tool import split_code, replace_code, in_code, good_variable_name, get_char_from_str, get_bloc, get_int_adress_from_str, get_hex_from_int, address_for_RAM, get_str, get_char, control_hex
 from compiller_tool.color_tool import ColoredFormatter, Colors
 from compiller_tool.smart_exception import CompileError, SmartError, config_exception, confirm_user
 from compiller_tool.smart_info import GIT_HUB_LINK
@@ -120,9 +120,9 @@ def compile_smart(
             compiller_data_run.not_used_for += 1
             make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAMFor{compiller_data_run.not_used_for}")
 
-        adress_start_number = adress_for_RAM(adress_var - 1)
-        adress_end = adress_for_RAM(adress_var - 2)
-        adress_step = adress_for_RAM(adress_var)
+        adress_start_number = address_for_RAM(adress_var - 1)
+        adress_end = address_for_RAM(adress_var - 2)
+        adress_step = address_for_RAM(adress_var)
 
         code_compile += set_on_A_value(step)   # load the step
         code_compile += f"8D {adress_step} "     # save at the first RAM for step
@@ -138,7 +138,7 @@ def compile_smart(
 
         # start loop
 
-        start_loop_for = adress_for_RAM(CODE_ADRESSE + address_counter)
+        start_loop_for = address_for_RAM(CODE_ADRESSE + address_counter)
 
         code_compile += f"AD {adress_start_number} "   # load the start on A
         address_counter += 3
@@ -185,10 +185,10 @@ def compile_smart(
                 var_return = get_variable(ptr_return[1:])
 
                 if isinstance(var_return, smart_obj.SmartVariable):
-                    code_compile += f"AD {adress_for_RAM(parameter.ram_adress)} " # LDA parameter
+                    code_compile += f"AD {address_for_RAM(parameter.ram_adress)} " # LDA parameter
                     address_counter += 3
 
-                    code_compile += f"8D {adress_for_RAM(var_return.ram_adress)} " # STA variable
+                    code_compile += f"8D {address_for_RAM(var_return.ram_adress)} " # STA variable
                     address_counter += 3
                 else:
                     base_adress_var = var_return.ram_adress
@@ -199,10 +199,10 @@ def compile_smart(
 
                     for offset in range(var_return.size):
 
-                        code_compile += f"AD {adress_for_RAM(base_adress_parameter + offset)} " # LDA parameter
+                        code_compile += f"AD {address_for_RAM(base_adress_parameter + offset)} " # LDA parameter
                         address_counter += 3
 
-                        code_compile += f"8D {adress_for_RAM(base_adress_var + offset)} " # STA variable
+                        code_compile += f"8D {address_for_RAM(base_adress_var + offset)} " # STA variable
                         address_counter += 3
 
         return code_compile, address_counter
@@ -271,16 +271,16 @@ def compile_smart(
 
                     # compare with value 2
                     for i in range(smart_obj.SIZE_ADVANCED_OBJ):
-                        asm += f"AD {adress_for_RAM(adress_v_1 + i)} CD {adress_for_RAM(adress_v_2 + i)} F0 03 4C !smart:adress_false "
+                        asm += f"AD {address_for_RAM(adress_v_1 + i)} CD {address_for_RAM(adress_v_2 + i)} F0 03 4C !smart:adress_false "
 
                     counter_adress_value += 11 * smart_obj.SIZE_ADVANCED_OBJ
 
                     # set A to 1 and goto after A9 00 if not branch
-                    asm += f"A9 01 4C {adress_for_RAM(CODE_ADRESSE + address_counter + counter_adress_value + 7)} "
+                    asm += f"A9 01 4C {address_for_RAM(CODE_ADRESSE + address_counter + counter_adress_value + 7)} "
 
                     counter_adress_value += 5
 
-                    asm = asm.replace("!smart:adress_false", adress_for_RAM(CODE_ADRESSE + counter_adress_value + address_counter))
+                    asm = asm.replace("!smart:adress_false", address_for_RAM(CODE_ADRESSE + counter_adress_value + address_counter))
 
                     asm += "A9 00 "       # BNE set to this code
                     counter_adress_value += 2
@@ -506,7 +506,7 @@ def compile_smart(
                 return set_branch(value, "<", "10")
 
             elif value.startswith(".."):   # a value from return function
-                adress_return = adress_for_RAM(int(value[2:-1]))
+                adress_return = address_for_RAM(int(value[2:-1]))
 
                 counter_adress_value += 3
 
@@ -519,7 +519,7 @@ def compile_smart(
                 counter_adress_value += 3
 
 
-                return f"AD {adress_for_RAM(get_variable(variable).ram_adress)} "
+                return f"AD {address_for_RAM(get_variable(variable).ram_adress)} "
 
             elif value.startswith("~"):       # advanced variable, need index
                 try:
@@ -536,7 +536,7 @@ def compile_smart(
 
                         counter_adress_value += 3
 
-                        return f"AD {adress_for_RAM(index_adress_var)} "
+                        return f"AD {address_for_RAM(index_adress_var)} "
 
                     else:
                         index_var = replace_code(index_var, " ", "")
@@ -549,7 +549,7 @@ def compile_smart(
 
                         start_adress_var = obj_var.get_adress_from_index(0)
 
-                        hex_start_adress_var = adress_for_RAM(start_adress_var)
+                        hex_start_adress_var = address_for_RAM(start_adress_var)
 
                         # test index out of range on runtime error
                         test_index = "C9 15 "    # CMP #0x15
@@ -674,7 +674,7 @@ def compile_smart(
 
                             make_variable(var_obj)
 
-                            asm_v += f"8D {adress_for_RAM(var_adress)} "
+                            asm_v += f"8D {address_for_RAM(var_adress)} "
 
                             counter_adress_value += 3
 
@@ -708,7 +708,7 @@ def compile_smart(
 
                                 hex_code += set_on_A_value(func_arg_value_list[i], recursiv_value=True, test_value_mode=test_value_mode)
 
-                                hex_code += f"8D {adress_for_RAM(adress_parameter)} "
+                                hex_code += f"8D {address_for_RAM(adress_parameter)} "
                                 counter_adress_value += 3
 
                             elif isinstance(parameter, smart_obj.SmartStr):
@@ -738,7 +738,7 @@ def compile_smart(
 
                         make_variable(var_obj)
 
-                        asm_v += f"8D {adress_for_RAM(var_adress)} "
+                        asm_v += f"8D {address_for_RAM(var_adress)} "
 
                         counter_adress_value += 3
 
@@ -778,7 +778,7 @@ def compile_smart(
             code_hex_copy = ""
 
             for i in range(smart_obj.SIZE_ADVANCED_OBJ):
-                code_hex_copy += f"AD {adress_for_RAM(get_variable(var_name).ram_adress + i)} 8D {adress_for_RAM(start_adress + i)} "
+                code_hex_copy += f"AD {address_for_RAM(get_variable(var_name).ram_adress + i)} 8D {address_for_RAM(start_adress + i)} "
 
             if add_adress:
                 address_counter += 6 * smart_obj.SIZE_ADVANCED_OBJ
@@ -804,7 +804,7 @@ def compile_smart(
                 char_code = hex(ord(char))[2:].upper()
                 char_code = ("0" if len(char_code) == 1 else "") + char_code
 
-                code_str += f"A9 {char_code} 8D {adress_for_RAM(start_adress)} "
+                code_str += f"A9 {char_code} 8D {address_for_RAM(start_adress)} "
 
                 start_adress += 1
 
@@ -833,7 +833,7 @@ def compile_smart(
                 if char == "{":
                     f_bloc = str_value[char_counter + 1:].split("}", 1)[0]
 
-                    code_str += set_on_A_value(f_bloc, add_adress=False) + f"8D {adress_for_RAM(start_adress)} "
+                    code_str += set_on_A_value(f_bloc, add_adress=False) + f"8D {address_for_RAM(start_adress)} "
 
                     f_bloc_len = len(f_bloc)
                     char_counter += f_bloc_len + 2
@@ -845,7 +845,7 @@ def compile_smart(
                     char_code = hex(ord(char))[2:].upper()
                     char_code = ("0" if len(char_code) == 1 else "") + char_code
 
-                    code_str += f"A9 {char_code} 8D {adress_for_RAM(start_adress)} "
+                    code_str += f"A9 {char_code} 8D {address_for_RAM(start_adress)} "
 
                     char_counter += 1
 
@@ -883,7 +883,7 @@ def compile_smart(
 
             for element in list_value:
                 element = element.strip()
-                code_list += f"{set_on_A_value(element)}8D {adress_for_RAM(start_adress)} "
+                code_list += f"{set_on_A_value(element)}8D {address_for_RAM(start_adress)} "
 
                 start_adress += 1
 
@@ -955,7 +955,7 @@ def compile_smart(
                 hex_code += set_on_A_value(function_arg[i])
 
 
-                hex_code += f"8D {adress_for_RAM(adress_parameter)} "
+                hex_code += f"8D {address_for_RAM(adress_parameter)} "
                 address_counter += 3
 
             elif isinstance(parameter, smart_obj.SmartStr):
@@ -990,7 +990,7 @@ def compile_smart(
                 print(offset_mode["offset_value"])
                 smart_error(f"Not implemented yet: index need to be constent for increment.")
 
-        increment_adress = adress_for_RAM(adress_var_increment)
+        increment_adress = address_for_RAM(adress_var_increment)
 
         code_compile += f"AE {increment_adress} " # LDX adress
         address_counter += 3
@@ -1195,7 +1195,7 @@ def compile_smart(
 
                 value_RAM = set_on_A_value(value)
 
-                code_compile += f"{value_RAM}8D {adress_for_RAM(get_variable(var_name).ram_adress)} "
+                code_compile += f"{value_RAM}8D {address_for_RAM(get_variable(var_name).ram_adress)} "
 
                 address_counter += 3
 
@@ -1258,7 +1258,7 @@ def compile_smart(
                 else:
 
                     if index_mode_const:
-                        code_compile += f"{set_on_A_value(value)}8D {adress_for_RAM(get_variable(var_name).ram_adress + index_var)} "
+                        code_compile += f"{set_on_A_value(value)}8D {address_for_RAM(get_variable(var_name).ram_adress + index_var)} "
                         address_counter += 3
                     else:
                         index_var = replace_code(index_var, " ", "")
@@ -1284,7 +1284,7 @@ def compile_smart(
 
                         code_compile += set_on_A_value(value)
 
-                        code_compile += f"9D {adress_for_RAM(get_variable(var_name).ram_adress)} "
+                        code_compile += f"9D {address_for_RAM(get_variable(var_name).ram_adress)} "
                         address_counter += 3
 
 
@@ -1306,7 +1306,7 @@ def compile_smart(
             make_variable(smart_obj.ReservedAdress(adress_var), name=f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else}")
 
 
-            call_else_adress = adress_for_RAM(get_variable(f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else}", special_name=True).adress) + " "
+            call_else_adress = address_for_RAM(get_variable(f"NotUsedRAMCallElse{compiller_data_run.not_used_call_else}", special_name=True).adress) + " "
 
             adress_var += 1
 
@@ -1322,7 +1322,7 @@ def compile_smart(
 
             new_adress = code_if.count(" ") + code_if.count("!smart_call_func|") * 3 + code_if.count("!smart_tmp:goto|") * 3 - code_if.count("!smart_tmp:goto|")
 
-            hex_adress_if = adress_for_RAM(CODE_ADRESSE + address_counter + new_adress)
+            hex_adress_if = address_for_RAM(CODE_ADRESSE + address_counter + new_adress)
 
             code_compile = code_compile.format(hex_adress_if)
 
@@ -1375,7 +1375,7 @@ def compile_smart(
 
             new_adress = code_elif.count(" ") + code_elif.count("!smart_call_func|") * 3 + code_elif.count("!smart_tmp:goto|") * 3 - code_elif.count("!smart_tmp:goto|")
 
-            hex_adress_elif = adress_for_RAM(CODE_ADRESSE + address_counter + new_adress)
+            hex_adress_elif = address_for_RAM(CODE_ADRESSE + address_counter + new_adress)
 
             code_compile = code_compile.format(hex_adress_elif)
 
@@ -1412,7 +1412,7 @@ def compile_smart(
 
             new_adress = code_else.count(" ") + code_else.count("!smart_call_func|") * 3 + code_else.count("!smart_tmp:goto|") * 3 - code_else.count("!smart_tmp:goto|")
 
-            hex_adress_else = adress_for_RAM(CODE_ADRESSE + address_counter + new_adress)
+            hex_adress_else = address_for_RAM(CODE_ADRESSE + address_counter + new_adress)
 
             code_compile = code_compile.format(hex_adress_else)
 
@@ -1440,7 +1440,7 @@ def compile_smart(
 
             address_counter += new_adress
 
-            adress_except = adress_for_RAM(CODE_ADRESSE + address_counter + 3)  # + 3 because after try bloc JMP
+            adress_except = address_for_RAM(CODE_ADRESSE + address_counter + 3)  # + 3 because after try bloc JMP
 
             code_try = code_try.replace("!  smart_error_try ", f"4C {adress_except} ")
 
@@ -1477,7 +1477,7 @@ def compile_smart(
 
             address_counter += new_adress
             code_compile += code_except
-            code_compile = code_compile.replace("! smart_end_try ", adress_for_RAM(CODE_ADRESSE + address_counter) + " ")
+            code_compile = code_compile.replace("! smart_end_try ", address_for_RAM(CODE_ADRESSE + address_counter) + " ")
 
         elif line.lstrip().startswith("thread"):
 
@@ -1529,7 +1529,7 @@ def compile_smart(
             thread_mode[1] = "main"
             thread_mode[2] = False
 
-            main_adress_1, main_adress_2 = adress_for_RAM(CODE_ADRESSE + address_counter).split(" ")
+            main_adress_1, main_adress_2 = address_for_RAM(CODE_ADRESSE + address_counter).split(" ")
             code_compile = code_compile.replace("!smart_adress_main_thread_1", main_adress_1)
             code_compile = code_compile.replace("!smart_adress_main_thread_2", main_adress_2)
 
@@ -1543,7 +1543,7 @@ def compile_smart(
             else:
                 line_2 = line_2[:-1]
 
-            while_adress = adress_for_RAM(CODE_ADRESSE + address_counter) + " "
+            while_adress = address_for_RAM(CODE_ADRESSE + address_counter) + " "
 
             code_compile += set_on_A_value(line_2)
 
@@ -1569,7 +1569,7 @@ def compile_smart(
             code_compile += "4C " + while_adress
             address_counter += 3
 
-            end_adress = adress_for_RAM(CODE_ADRESSE + address_counter)
+            end_adress = address_for_RAM(CODE_ADRESSE + address_counter)
 
             code_compile = code_compile.format(end_adress).replace("! smart:break", end_adress)
             code_compile = code_compile.replace("! smart:continue ", while_adress)
@@ -1600,7 +1600,7 @@ def compile_smart(
 
                 var_name = var_name[1:]
 
-                adress_iterrator = adress_for_RAM(adress_var)
+                adress_iterrator = address_for_RAM(adress_var)
                 make_variable(smart_obj.SmartVariable(var_name, adress_var))
 
             count = count.strip()
@@ -1631,7 +1631,7 @@ def compile_smart(
 
 
                 # set the simple value on the variable
-                code_compile += f"BD {adress_for_RAM(adress_advenced_value)} "      # set on A the value with offset
+                code_compile += f"BD {address_for_RAM(adress_advenced_value)} "      # set on A the value with offset
                 address_counter += 3
 
                 code_compile += f"8D {adress_iterrator} "  # set on the iterator the simple value
@@ -1658,7 +1658,7 @@ def compile_smart(
             code_compile += f"4C {start_loop_for} "
             address_counter += 3
 
-            code_compile = code_compile.replace("! smart:break", adress_for_RAM(CODE_ADRESSE + address_counter))
+            code_compile = code_compile.replace("! smart:break", address_for_RAM(CODE_ADRESSE + address_counter))
             code_compile = code_compile.replace("! smart:continue ", start_loop_for + " ")
 
         elif line.lstrip().startswith("break"):
@@ -1888,7 +1888,7 @@ def compile_smart(
                     code_compile += set_ram_str
 
                     for deltal in range(string_adress, string_adress + smart_obj.SIZE_ADVANCED_OBJ):
-                        code_compile += f"AD {adress_for_RAM(deltal)} 20 EF FF "
+                        code_compile += f"AD {address_for_RAM(deltal)} 20 EF FF "
 
 
                     address_counter += 6 * smart_obj.SIZE_ADVANCED_OBJ
@@ -1904,7 +1904,7 @@ def compile_smart(
                 if len(function_arg) != 0:
                     smart_error("Function 'restart' not take arg.")
 
-                code_compile += f"4C {adress_for_RAM(CODE_ADRESSE)} "
+                code_compile += f"4C {address_for_RAM(CODE_ADRESSE)} "
                 address_counter += 3
 
             elif function_name == "goto":
@@ -1993,7 +1993,7 @@ def compile_smart(
         if thread_mode[0]:
             if thread_mode[2]:
                 # save the address of next operation
-                next_operation_adress_1, next_operation_adress_2 = adress_for_RAM(CODE_ADRESSE + address_counter + 13).split(" ")
+                next_operation_adress_1, next_operation_adress_2 = address_for_RAM(CODE_ADRESSE + address_counter + 13).split(" ")
                 code_compile += f"A9 {next_operation_adress_1} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if thread_mode[1] == 'main' else 'second_thread_ptr_1']} " # first byte of address
                 code_compile += f"A9 {next_operation_adress_2} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_2' if thread_mode[1] == 'main' else 'second_thread_ptr_2']} " # second byte of address
 
@@ -2046,9 +2046,11 @@ def compile_smart(
 
     elif function_mode["function_mode"]:
         code_compile += "60 "
+        address_counter += 1
 
     else:
         code_compile += "00 "
+        address_counter += 1
 
     # compile function:
 
@@ -2064,31 +2066,29 @@ def compile_smart(
             function_name_usr[function].code_compile_f = compile_smart(
                 make_file=False,
                 function_mode={"function_mode":True, "source_code":code, "global_function":function_name_usr, "global_function_replace":function_replace, "global_var":smart_var, "smart_func":smart_func, "if_mode":False},
-                CODE_ADRESSE=CODE_ADRESSE + address_counter + 1,
+                CODE_ADRESSE=CODE_ADRESSE + address_counter,
                 thread_mode=function_thread_mode
             )
 
-        # set the function:
+            # set the function on code_compile:
 
-        for f in function_name_usr:
+            function_name_usr[function].function_adress = address_counter
 
-            function_name_usr[f].function_adress = address_counter
-
-            code_func = function_name_usr[f].code_compile_f
+            code_func = function_name_usr[function].code_compile_f
 
             code_compile += code_func
 
             address_counter += code_func.count(" ") + 3 * code_func.count("!smart_call_func|")
 
         # call function
-        for i in range(2):
+        for i in range(2): # remove range(2) ???
             for function in function_replace:
 
                 function_name_tmp = function.split("|")[1]
 
-                adress_func = CODE_ADRESSE + function_name_usr[function_name_tmp].function_adress + 1
+                adress_func = CODE_ADRESSE + function_name_usr[function_name_tmp].function_adress
 
-                hex_adress_function = adress_for_RAM(adress_func)
+                hex_adress_function = address_for_RAM(adress_func)
 
                 code_compile = code_compile.replace(function, f"20 {hex_adress_function} ")
 
@@ -2101,15 +2101,12 @@ def compile_smart(
                 logging.warning(f"Function '{name}' was never called.")
 
     if compiller_data_run.need_input and not function_mode["function_mode"] and not module_mode:
-        input_adress = address_counter + CODE_ADRESSE + 1
-
-        hex_input_adress = hex(input_adress)[2:].upper() # --- to refactor: use address_for_ram ?
-        hex_input_adress = "0" * (4 - len(hex_input_adress)) + hex_input_adress
+        input_adress = address_counter + CODE_ADRESSE
 
         code_compile += SmartBuiltIn.input_code
         address_counter += SmartBuiltIn.input_code.count(" ")
 
-        code_compile = code_compile.replace("!  smart_input", f"{hex_input_adress[2:]} {hex_input_adress[:2]} ")
+        code_compile = code_compile.replace("!  smart_input", f"{address_for_RAM(input_adress)} ")
 
     # set the goto:
 
@@ -2127,7 +2124,7 @@ def compile_smart(
 
     if compiller_data_run.need_error and not(function_mode["function_mode"]) and not(function_mode["if_mode"]) and not module_mode:
 
-        code_compile = code_compile.replace("!  smart_runtime_error", adress_for_RAM(code_compile.count(" ") + CODE_ADRESSE - 1) + " ") # use count instead of address_counter to avoid errors
+        code_compile = code_compile.replace("!  smart_runtime_error", address_for_RAM(code_compile.count(" ") + CODE_ADRESSE - 1) + " ") # use count instead of address_counter to avoid errors
         code_compile += "20 EF FF 00 "
 
         address_counter += 4
