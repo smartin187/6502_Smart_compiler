@@ -2081,7 +2081,7 @@ def compile_smart(
             address_counter += code_func.count(" ") + 3 * code_func.count("!smart_call_func|")
 
         # call function
-        for i in range(2):
+        for i in range(2): # remove range(2) ???
             for function in function_replace:
 
                 function_name_tmp = function.split("|")[1]
@@ -2103,13 +2103,10 @@ def compile_smart(
     if compiller_data_run.need_input and not function_mode["function_mode"] and not module_mode:
         input_adress = address_counter + CODE_ADRESSE
 
-        hex_input_adress = hex(input_adress)[2:].upper() # --- to refactor: use address_for_ram ?
-        hex_input_adress = "0" * (4 - len(hex_input_adress)) + hex_input_adress
-
         code_compile += SmartBuiltIn.input_code
         address_counter += SmartBuiltIn.input_code.count(" ")
 
-        code_compile = code_compile.replace("!  smart_input", f"{hex_input_adress[2:]} {hex_input_adress[:2]} ")
+        code_compile = code_compile.replace("!  smart_input", f"{adress_for_RAM(input_adress)} ")
 
     # set the goto:
 
