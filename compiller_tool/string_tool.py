@@ -304,7 +304,7 @@ def get_hex_from_int(value:int) -> str:
     return hex_value
 
 
-def adress_for_RAM(adress:int) -> str:
+def address_for_RAM(adress:int) -> str:
     """Return the RAM address in hex.
     Example:
     768 -> 00 03"""
