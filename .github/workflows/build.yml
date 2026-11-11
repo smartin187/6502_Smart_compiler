@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build_linux_amd64:
     runs-on: ubuntu-latest
     steps:
       - name: Build Linux amd64 (x64)
@@ -21,5 +21,19 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: build_publish/linux/amd64/*
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+
+  build_linux_arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Build Linux arm64
+        run: |
+          ./build_releases/build_linux/build_linux.bash
+
+      - name: Publish GitHub Release - Linux arm64
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build_publish/linux/arm64/*
           fail_on_unmatched_files: true
           generate_release_notes: true
