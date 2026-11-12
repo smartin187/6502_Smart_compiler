@@ -32,7 +32,9 @@ jobs:
       - name: Publish GitHub Release - Linux x64
         uses: softprops/action-gh-release@v2
         with:
-          files: build_publish/linux/amd64/*
+          files: |
+            build_publish/linux/amd64/*.deb
+            build_publish/linux/amd64/*.zip
           fail_on_unmatched_files: true
           generate_release_notes: true
 
@@ -58,6 +60,8 @@ jobs:
       - name: Publish GitHub Release - Linux arm64
         uses: softprops/action-gh-release@v2
         with:
-          files: build_publish/linux/arm64/*
+          files: |
+            build_publish/linux/arm64/*.deb
+            build_publish/linux/arm64/*.zip
           fail_on_unmatched_files: true
           generate_release_notes: false
