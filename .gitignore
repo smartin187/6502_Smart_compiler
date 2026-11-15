@@ -24,3 +24,5 @@ build_publish/
 !smart_lib/**/*.sma
 
 *.zip
+
+local_todo.md

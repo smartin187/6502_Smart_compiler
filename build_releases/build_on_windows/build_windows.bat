@@ -13,7 +13,7 @@ echo Building main.py
 
 pyinstaller --onefile main.py
 
-copy dist\main.exe build_publish\windows\smart-compiler-windows.exe
+copy dist\main.exe build_publish\windows\smart-compiler-windows_%PROCESSOR_ARCHITECTURE%.exe
 
 :: Compile smart_emulator.py
 
@@ -21,6 +21,6 @@ echo Building smart_emulator.py
 
 pyinstaller --onefile --add-data "img/logo_smart_small.png;." smart_emulator.py
 
-copy dist\smart_emulator.exe build_publish\windows\smart-emulator-windows.exe
+copy dist\smart_emulator.exe build_publish\windows\smart-emulator-windows_%PROCESSOR_ARCHITECTURE%.exe
 
 echo Compilation terminated. Result in build_publish\windows
