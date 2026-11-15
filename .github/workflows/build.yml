@@ -65,3 +65,30 @@ jobs:
             build_publish/linux/arm64/*.zip
           fail_on_unmatched_files: true
           generate_release_notes: false
+
+  build_windows_x64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyinstaller
+
+      - name: Build Windows x64
+        run: |
+          build_releases/build_on_windows/build_windows.bat
+
+      - name: Publish GitHub Release - Windows x64
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build_publish/windows/*.exe
+          fail_on_unmatched_files: true
+          generate_release_notes: false
