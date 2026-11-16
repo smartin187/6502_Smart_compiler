@@ -83,12 +83,12 @@ jobs:
 
       - name: Build Windows x64
         run: |
-          build_releases/build_on_windows/build_windows.bat
+          build_releases/build_on_windows/build_all_windows.bat
 
       - name: Publish GitHub Release - Windows x64
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            build_publish/windows/*.exe
+            build_publish/windows/*.zip
           fail_on_unmatched_files: true
           generate_release_notes: false
