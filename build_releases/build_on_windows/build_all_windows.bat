@@ -3,5 +3,10 @@
 call build_releases/build_on_windows/build_windows.bat
 
 :: Make zip:
+(
+    echo Smart Compiler and Emulator for Windows
+    echo Apache License 2.0
+    echo See https://github.com/smartin187/smartykit_compiler for more information.
+) > "README.TXT"
 
-powershell -NoProfile -Command "Compress-Archive -Path 'build_publish\windows\*.exe' -DestinationPath 'build_publish\windows\smartykit-windows-%PROCESSOR_ARCHITECTURE%.zip' -Force"
+powershell -NoProfile -Command "Compress-Archive -Path 'build_publish\windows\*.exe','README.TXT' -DestinationPath 'build_publish\windows\smart-windows-%PROCESSOR_ARCHITECTURE%.zip' -Force"
