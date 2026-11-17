@@ -1,6 +1,6 @@
 :: Compile the emulator and compiler:
 
-build_releases/build_on_windows/build_windows.bat
+call build_releases/build_on_windows/build_windows.bat
 
 :: Make zip:
 
