@@ -37,6 +37,7 @@ jobs:
             build_publish/linux/amd64/*.zip
           fail_on_unmatched_files: true
           generate_release_notes: true
+          body_path: .github/release-template.md
 
   build_linux_arm64:
     runs-on: ubuntu-24.04-arm
