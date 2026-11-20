@@ -5,10 +5,11 @@ This module has the class Colors for ANSI codes.
 """
 
 import logging
-from os import system, name
+from os import name
+import subprocess
 
 if name == "nt":
-    system("color")     # replace by subprocess.run ?
+    subprocess.run(["color"], shell=True)
 
 class Colors:
     """Class to store the color codes for terminal output."""
