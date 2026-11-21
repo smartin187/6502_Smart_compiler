@@ -45,7 +45,7 @@ You get smart_compiler.exe and smart_emulator.exe.
 You have also the Smart library. Please copy the directory to C:\\users\\you\\AppData\\Local\\Smart-SmartyKit\\lib\\
 
 Apache License 2.0
-See https://github.com/smartin187/smartykit_compiler for more information.
+See https://github.com/smartin187/6502_Smart_compiler for more information.
 " > build_publish/windows/archive_zip/readme.txt
 
 # build zip

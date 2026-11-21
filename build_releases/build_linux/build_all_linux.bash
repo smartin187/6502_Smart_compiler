@@ -10,4 +10,6 @@ MAIN_TAG="Linux-${MAIN_ARCH_DIR_DIST}"
 ./build_releases/build_linux/build_zip.bash ${MAIN_TAG} ${MAIN_ARCH_DIR_DIST}     # make the zip file
 ./build_releases/build_linux/build_deb.bash     # make the deb package
 
-./build_releases/build_linux/build_other_architecture.bash   # make the executable binary for the other architecture
+if [ "${1:-}" != "no_other_arch" ]; then
+    ./build_releases/build_linux/build_other_architecture.bash   # make the executable binary for the other architecture
+fi

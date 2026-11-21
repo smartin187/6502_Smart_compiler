@@ -1,5 +1,7 @@
 # Build releases
 
+> **Note**: now, the build can be do with GitHub Actions, when a tag is created.
+
 For distributing Smart, this script uses `pyinstaller` to make executable files from Python scripts.
 
 To compile all scripts, use the [`build_all.bash`](./build_all.bash) script.

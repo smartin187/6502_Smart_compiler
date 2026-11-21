@@ -1,9 +1,6 @@
 :: Use this script for build to Windows from Windows
 :: A confirmation can be ask you for delete the build_publish folder if it exists
 
-cd ..
-cd ..
-
 if exist "build_publish\" (
     echo Deleting build_publish folder
     rmdir /s "build_publish"
@@ -16,7 +13,7 @@ echo Building main.py
 
 pyinstaller --onefile main.py
 
-copy dist\main.exe build_publish\windows\
+copy dist\main.exe build_publish\windows\smart-compiler-windows_%PROCESSOR_ARCHITECTURE%.exe
 
 :: Compile smart_emulator.py
 
@@ -24,6 +21,6 @@ echo Building smart_emulator.py
 
 pyinstaller --onefile --add-data "img/logo_smart_small.png;." smart_emulator.py
 
-copy dist\smart_emulator.exe build_publish\windows\
+copy dist\smart_emulator.exe build_publish\windows\smart-emulator-windows_%PROCESSOR_ARCHITECTURE%.exe
 
 echo Compilation terminated. Result in build_publish\windows

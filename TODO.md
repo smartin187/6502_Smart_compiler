@@ -65,3 +65,5 @@ print: .len + '0'; // 4
 print: .len + '0'; // 0
 ```
 -> It print `44` and not `40`
+
+- refactor with try except: add to if a function is call on a try except bloc, if they are a runtime error on the function, use the except bloc (actuelly not work)
