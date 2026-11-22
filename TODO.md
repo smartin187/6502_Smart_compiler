@@ -53,7 +53,6 @@ If the task is a bug you can also add an issue on GitHub.
     - Some function for ramdom:
         - A function with a pre defined value, set 256 ramdom value between 0 and 255 (all value need to be different). `ramdom_256` (need to fix the problème with function `address_counter`)
     - On emulator, add all assembly instruction for all function of random lib (for the auto test)
-- Add the script for build to a pipeline on GitHub Actions
 - Probleme with this code :
 ```Smart
 import "string/string.sma";
