@@ -154,7 +154,7 @@ def compile_smart(
 
         code_compile += f"{Hex.BNE()} 03 "  # branch if A != end
         address_counter += 2
-        code_compile += "4C ! smart:break "  # if not branch, exit loop.
+        code_compile += f"{Hex.JMP()} ! smart:break "  # if not branch, exit loop.
         address_counter += 3
 
         # increment start:
@@ -270,12 +270,12 @@ def compile_smart(
 
                     # compare with value 2
                     for i in range(smart_obj.SIZE_ADVANCED_OBJ):
-                        asm += f"AD {address_for_RAM(adress_v_1 + i)} CD {address_for_RAM(adress_v_2 + i)} F0 03 4C !smart:adress_false "
+                        asm += f"AD {address_for_RAM(adress_v_1 + i)} CD {address_for_RAM(adress_v_2 + i)} F0 03 {Hex.JMP()} !smart:adress_false "
 
                     counter_adress_value += 11 * smart_obj.SIZE_ADVANCED_OBJ
 
                     # set A to 1 and goto after LDA #00 if not branch
-                    asm += f"{Hex.LDA()} 01 4C {address_for_RAM(CODE_ADRESSE + address_counter + counter_adress_value + 7)} "
+                    asm += f"{Hex.LDA()} 01 {Hex.JMP()} {address_for_RAM(CODE_ADRESSE + address_counter + counter_adress_value + 7)} "
 
                     counter_adress_value += 5
 
@@ -1311,7 +1311,7 @@ def compile_smart(
 
             adress_var += 1
 
-            code_compile += f"C9 00 {Hex.BNE()} 08 {Hex.LDA()} 01 8D {call_else_adress}4C {{}} {Hex.LDA()} 00 8D {call_else_adress}"
+            code_compile += f"C9 00 {Hex.BNE()} 08 {Hex.LDA()} 01 8D {call_else_adress}{Hex.JMP()} {{}} {Hex.LDA()} 00 8D {call_else_adress}"
             address_counter += 17
 
             code_if = compile_smart(
@@ -1363,7 +1363,7 @@ def compile_smart(
 
             code_compile = code_compile.replace("!smart_tmp:elif", delta_branch)
 
-            code_compile += f"C9 00 {Hex.BNE()} 08 {Hex.LDA()} 01 8D {call_else_adress}4C {{}} {Hex.LDA()} 00 8D {call_else_adress}"
+            code_compile += f"C9 00 {Hex.BNE()} 08 {Hex.LDA()} 01 8D {call_else_adress}{Hex.JMP()} {{}} {Hex.LDA()} 00 8D {call_else_adress}"
 
             address_counter += 17
 
@@ -1401,7 +1401,7 @@ def compile_smart(
 
             jump_line = bloc_line - line_counter - 1
 
-            code_compile += f"AD {call_else_adress}C9 00 {Hex.BNE()} 03 4C {{}} "
+            code_compile += f"AD {call_else_adress}C9 00 {Hex.BNE()} 03 {Hex.JMP()} {{}} "
             address_counter += 10
 
             code_else = compile_smart(
@@ -1443,9 +1443,9 @@ def compile_smart(
 
             adress_except = address_for_RAM(CODE_ADRESSE + address_counter + 3)  # + 3 because after try bloc JMP
 
-            code_try = code_try.replace("!  smart_error_try ", f"4C {adress_except} ")
+            code_try = code_try.replace("!  smart_error_try ", f"{Hex.JMP()} {adress_except} ")
 
-            code_try += f"4C ! smart_end_try "
+            code_try += f"{Hex.JMP()} ! smart_end_try "
             address_counter += 3
 
             code_compile += code_try
@@ -1552,7 +1552,7 @@ def compile_smart(
 
             jump_line = bloc_line - line_counter - 1
 
-            code_compile += f"C9 00 {Hex.BNE()} 03 4C {{}} "
+            code_compile += f"C9 00 {Hex.BNE()} 03 {Hex.JMP()} {{}} "
             address_counter += 7
 
             code_while = compile_smart(
@@ -1567,7 +1567,7 @@ def compile_smart(
             address_counter += new_adress
             code_compile += code_while
 
-            code_compile += "4C " + while_adress
+            code_compile += f"{Hex.JMP()} {while_adress}"
             address_counter += 3
 
             end_adress = address_for_RAM(CODE_ADRESSE + address_counter)
@@ -1656,7 +1656,7 @@ def compile_smart(
             address_counter += new_adress
             code_compile += code_for
 
-            code_compile += f"4C {start_loop_for} "
+            code_compile += f"{Hex.JMP()} {start_loop_for} "
             address_counter += 3
 
             code_compile = code_compile.replace("! smart:break", address_for_RAM(CODE_ADRESSE + address_counter))
@@ -1666,14 +1666,14 @@ def compile_smart(
             if not on_loop:
                 smart_error("Error: 'break' keyword can only be used inside a loop.")
 
-            code_compile += "4C ! smart:break "     # set space on placeholder for counting address
+            code_compile += f"{Hex.JMP()} ! smart:break "     # set space on placeholder for counting address
             address_counter += 3
 
         elif line.lstrip().startswith("continue"):
             if not on_loop:
                 smart_error("Error: 'continue' keyword can only be used inside a loop.")
 
-            code_compile += "4C ! smart:continue "     # set space on placeholder for counting address
+            code_compile += f"{Hex.JMP()} ! smart:continue "     # set space on placeholder for counting address
             address_counter += 3
 
         elif line.lstrip().startswith("error "):        # runtime error
@@ -1905,7 +1905,7 @@ def compile_smart(
                 if len(function_arg) != 0:
                     smart_error("Function 'restart' not take arg.")
 
-                code_compile += f"4C {address_for_RAM(CODE_ADRESSE)} "
+                code_compile += f"{Hex.JMP()} {address_for_RAM(CODE_ADRESSE)} "
                 address_counter += 3
 
             elif function_name == "goto":
@@ -1918,7 +1918,7 @@ def compile_smart(
 
                 go_to_replace.append(goto_tmp)
 
-                code_compile += "4C " + goto_tmp
+                code_compile += f"{Hex.JMP()} {goto_tmp}"
 
                 address_counter += 3
 
@@ -1947,7 +1947,7 @@ def compile_smart(
                 if len(function_arg) != 0:
                     smart_error("Function 'wozm' not take arg.")
 
-                code_compile += "4C 1F FF " # the address of woz monitor get line
+                code_compile += f"{Hex.JMP()} 1F FF " # the address of woz monitor get line
                 address_counter += 3
 
             elif function_name in function_name_usr:
@@ -2001,7 +2001,7 @@ def compile_smart(
                 address_counter += 10
 
                 # go to the other thread
-                code_compile += f"6C {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if not thread_mode[1] == 'main' else 'second_thread_ptr_1']} "
+                code_compile += f"{Hex.JMP(Mode.IND)} {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if not thread_mode[1] == 'main' else 'second_thread_ptr_1']} "
                 address_counter += 3
 
             else:

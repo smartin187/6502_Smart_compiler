@@ -7,6 +7,7 @@ import logging
 from compiller_tool.smart_exception import SmartError
 from compiller_tool.string_tool import address_for_RAM
 from compiller_tool import compiller_data_run
+from compiller_tool.assembly_opcodes import Hex
 
 set_on_A_value = None
 
@@ -117,7 +118,7 @@ def make_error(error_value:str, try_mode:bool, set_need_error:bool=True, add_to_
 
         code_compile += set_on_A_value(error_value, add_adress=add_to_adress_conter)
 
-        code_compile += "4C !  smart_runtime_error"    # set 2 spaces on placeholder for counting address
+        code_compile += f"{Hex.JMP()} !  smart_runtime_error"    # set 2 spaces on placeholder for counting address
         if add_to_adress_conter:
             address_counter += 3
 
