@@ -1007,6 +1007,8 @@ def compile_smart(
 
     # -----------
 
+    DEMO = "A9 4C 20 EF FF 00" # print L
+
     on_loop = False
 
     if "while_mode" in function_mode:
