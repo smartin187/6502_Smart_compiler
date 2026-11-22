@@ -22,6 +22,7 @@ from compiller_tool.smart_info import GIT_HUB_LINK
 from compiller_tool.hex_function import build_asm_entry, config_hex_function, make_error, imediate_value
 from compiller_tool.smart_try_except import control_except
 from compiller_tool.compiller_data_run import PROGRESS_BAR_LEN, PROGRESS_BAR_CHAR
+from compiller_tool.assembly_opcodes import Mode, OpCodes
 from compiller_tool import compiller_data_run
 from compiller_tool import import_tool
 from compiller_tool import smart_obj
@@ -241,7 +242,7 @@ def compile_smart(
                         asm = f"{hex_value_1}C9 {hex_value_2[3:]}"      # immediate value
                         counter_adress_value -= 1
 
-                    asm += f"{branche} 04 A9 01 D0 02 A9 00 "
+                    asm += f"{branche} 04 {OpCodes.LDA()} 01 D0 02 {OpCodes.LDA()} 00 "
 
                     counter_adress_value += 9
 
