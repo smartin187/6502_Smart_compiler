@@ -10,7 +10,7 @@ class Mode:
     ABS = "absolute"
     IMM = "immediate"
 
-class OpCodes:
+class Hex:
     """
     The OP codes for the compiler. For some methods, use the parameter `mode` for select the mode (default is immediate).
     """

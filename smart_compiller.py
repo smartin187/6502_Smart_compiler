@@ -22,7 +22,7 @@ from compiller_tool.smart_info import GIT_HUB_LINK
 from compiller_tool.hex_function import build_asm_entry, config_hex_function, make_error, imediate_value
 from compiller_tool.smart_try_except import control_except
 from compiller_tool.compiller_data_run import PROGRESS_BAR_LEN, PROGRESS_BAR_CHAR
-from compiller_tool.assembly_opcodes import Mode, OpCodes
+from compiller_tool.assembly_opcodes import Mode, Hex
 from compiller_tool import compiller_data_run
 from compiller_tool import import_tool
 from compiller_tool import smart_obj
@@ -242,7 +242,7 @@ def compile_smart(
                         asm = f"{hex_value_1}C9 {hex_value_2[3:]}"      # immediate value
                         counter_adress_value -= 1
 
-                    asm += f"{branche} 04 {OpCodes.LDA()} 01 D0 02 {OpCodes.LDA()} 00 "
+                    asm += f"{branche} 04 {Hex.LDA()} 01 D0 02 {Hex.LDA()} 00 "
 
                     counter_adress_value += 9
 
@@ -277,13 +277,13 @@ def compile_smart(
                     counter_adress_value += 11 * smart_obj.SIZE_ADVANCED_OBJ
 
                     # set A to 1 and goto after LDA #00 if not branch
-                    asm += f"{OpCodes.LDA()} 01 4C {address_for_RAM(CODE_ADRESSE + address_counter + counter_adress_value + 7)} "
+                    asm += f"{Hex.LDA()} 01 4C {address_for_RAM(CODE_ADRESSE + address_counter + counter_adress_value + 7)} "
 
                     counter_adress_value += 5
 
                     asm = asm.replace("!smart:adress_false", address_for_RAM(CODE_ADRESSE + counter_adress_value + address_counter))
 
-                    asm += f"{OpCodes.LDA()} 00 "       # BNE set to this code
+                    asm += f"{Hex.LDA()} 00 "       # BNE set to this code
                     counter_adress_value += 2
 
                     return asm
@@ -310,12 +310,12 @@ def compile_smart(
 
                     hex_value_1 = set_on_A_value(value_1, recursiv_value=True)
 
-                    asm += hex_value_1 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}{OpCodes.LDA()} 00 "  # save value 1 on ram and set A to 00.
+                    asm += hex_value_1 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}{Hex.LDA()} 00 "  # save value 1 on ram and set A to 00.
                     counter_adress_value += 5
 
                     value_2_tmp = set_on_A_value(value_2, recursiv_value=True)
 
-                    hex_value_2 = "A2" + value_2_tmp[2:] if value_2_tmp.startswith(OpCodes.LDA()) else "AE" + value_2_tmp[2:]
+                    hex_value_2 = "A2" + value_2_tmp[2:] if value_2_tmp.startswith(Hex.LDA()) else "AE" + value_2_tmp[2:]
 
                     asm += hex_value_2
 
@@ -359,7 +359,7 @@ def compile_smart(
 
                     asm += control_code
 
-                    if hex_value_2 == f"{OpCodes.LDA()} 00 ":       # division by 0
+                    if hex_value_2 == f"{Hex.LDA()} 00 ":       # division by 0
                         confirm_user(f"Division by 0: {value}. It make an runtime error `E/`! Continue compilation ? ", line_counter=line_counter)
 
                     hex_value_1 = set_on_A_value(value_1, recursiv_value=True)
@@ -414,7 +414,7 @@ def compile_smart(
 
                     asm += control_code
 
-                    if hex_value_2 == f"{OpCodes.LDA()} 00 ":       # division by 0
+                    if hex_value_2 == f"{Hex.LDA()} 00 ":       # division by 0
                         confirm_user(f"Division by 0 (on % (modulo) operator): {value}. It make an runtime error `E/`! Continue compilation ? ", line_counter=line_counter)
 
                     hex_value_1 = set_on_A_value(value_1, recursiv_value=True)
@@ -580,11 +580,11 @@ def compile_smart(
 
             elif value.startswith("True"):
                 counter_adress_value += 2
-                return f"{OpCodes.LDA()} 01 "
+                return f"{Hex.LDA()} 01 "
 
             elif value.startswith("False"):
                 counter_adress_value += 2
-                return f"{OpCodes.LDA()} 00 "
+                return f"{Hex.LDA()} 00 "
 
             elif value.startswith("0x"):
                 hex_value = value[2:]
@@ -594,7 +594,7 @@ def compile_smart(
                 counter_adress_value += 2
 
 
-                return OpCodes.LDA() + " " + hex_value + " "
+                return Hex.LDA() + " " + hex_value + " "
 
 
             elif value[0] in "0123456789":
@@ -615,14 +615,14 @@ def compile_smart(
 
                 counter_adress_value += 2
 
-                return OpCodes.LDA() + " " + value_hex + " "
+                return Hex.LDA() + " " + value_hex + " "
 
             elif value.startswith("'"):
                 counter_adress_value += 2
 
                 ascii_code = get_char(value)
 
-                return OpCodes.LDA() + " " + ("0" * (2-len(ascii_code))) + ascii_code + " "
+                return Hex.LDA() + " " + ("0" * (2-len(ascii_code))) + ascii_code + " "
 
             elif value.startswith("\""):
                 smart_error(f"Smart forbidden value: '{value}'", set_error=set_error_exception)
@@ -805,7 +805,7 @@ def compile_smart(
                 char_code = hex(ord(char))[2:].upper()
                 char_code = ("0" if len(char_code) == 1 else "") + char_code
 
-                code_str += f"{OpCodes.LDA()} {char_code} 8D {address_for_RAM(start_adress)} "
+                code_str += f"{Hex.LDA()} {char_code} 8D {address_for_RAM(start_adress)} "
 
                 start_adress += 1
 
@@ -846,7 +846,7 @@ def compile_smart(
                     char_code = hex(ord(char))[2:].upper()
                     char_code = ("0" if len(char_code) == 1 else "") + char_code
 
-                    code_str += f"{OpCodes.LDA()} {char_code} 8D {address_for_RAM(start_adress)} "
+                    code_str += f"{Hex.LDA()} {char_code} 8D {address_for_RAM(start_adress)} "
 
                     char_counter += 1
 
@@ -1311,7 +1311,7 @@ def compile_smart(
 
             adress_var += 1
 
-            code_compile += f"C9 00 D0 08 {OpCodes.LDA()} 01 8D {call_else_adress}4C {{}} {OpCodes.LDA()} 00 8D {call_else_adress}"
+            code_compile += f"C9 00 D0 08 {Hex.LDA()} 01 8D {call_else_adress}4C {{}} {Hex.LDA()} 00 8D {call_else_adress}"
             address_counter += 17
 
             code_if = compile_smart(
@@ -1363,7 +1363,7 @@ def compile_smart(
 
             code_compile = code_compile.replace("!smart_tmp:elif", delta_branch)
 
-            code_compile += f"C9 00 D0 08 {OpCodes.LDA()} 01 8D {call_else_adress}4C {{}} {OpCodes.LDA()} 00 8D {call_else_adress}"
+            code_compile += f"C9 00 D0 08 {Hex.LDA()} 01 8D {call_else_adress}4C {{}} {Hex.LDA()} 00 8D {call_else_adress}"
 
             address_counter += 17
 
@@ -1517,8 +1517,8 @@ def compile_smart(
             )
 
             # on the main ptr, set a first address
-            code_compile += f"{OpCodes.LDA()} !smart_adress_main_thread_1 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_1']} "  # first byte
-            code_compile += f"{OpCodes.LDA()} !smart_adress_main_thread_2 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_2']} "  # second byte
+            code_compile += f"{Hex.LDA()} !smart_adress_main_thread_1 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_1']} "  # first byte
+            code_compile += f"{Hex.LDA()} !smart_adress_main_thread_2 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_2']} "  # second byte
             address_counter += 10
 
             new_adress = code_thread.count(" ") + code_thread.count("!smart_call_func|") * 3 + code_thread.count("!smart_tmp:goto|") * 3 - code_thread.count("!smart_tmp:goto|")
@@ -1995,8 +1995,8 @@ def compile_smart(
             if thread_mode[2]:
                 # save the address of next operation
                 next_operation_adress_1, next_operation_adress_2 = address_for_RAM(CODE_ADRESSE + address_counter + 13).split(" ")
-                code_compile += f"{OpCodes.LDA()} {next_operation_adress_1} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if thread_mode[1] == 'main' else 'second_thread_ptr_1']} " # first byte of address
-                code_compile += f"{OpCodes.LDA()} {next_operation_adress_2} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_2' if thread_mode[1] == 'main' else 'second_thread_ptr_2']} " # second byte of address
+                code_compile += f"{Hex.LDA()} {next_operation_adress_1} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if thread_mode[1] == 'main' else 'second_thread_ptr_1']} " # first byte of address
+                code_compile += f"{Hex.LDA()} {next_operation_adress_2} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_2' if thread_mode[1] == 'main' else 'second_thread_ptr_2']} " # second byte of address
 
                 address_counter += 10
 
