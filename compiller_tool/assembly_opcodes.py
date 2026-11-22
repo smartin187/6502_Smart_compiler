@@ -10,6 +10,9 @@ class Mode:
     ABS = "absolute"
     IMM = "immediate"
 
+class Platforms:
+    _6502 = "6502"
+
 class Hex:
     """
     The OP codes for the compiler. For some methods, use the parameter `mode` for select the mode (default is immediate).
@@ -17,6 +20,11 @@ class Hex:
 
     def LDA(mode=Mode.IMM):
         match PLATFORM:
-            case "6502":
+            case Platforms._6502:
                 return "A9" if mode == Mode.IMM else "AD"
+    
+    def BNE():
+        match PLATFORM:
+            case Platforms._6502:
+                return "D0"
 

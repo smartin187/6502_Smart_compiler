@@ -46,8 +46,6 @@ code_line = None
 
 line_of_instruction = None
 
-#need_input = False
-
 def compile_smart(
         file:str="",
         argv:list[str] | tuple[str]=[],
