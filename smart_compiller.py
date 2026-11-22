@@ -74,7 +74,7 @@ def compile_smart(
         """Set the built-in functions of Smart.
         Warning: some functions are not in this class because they are assembly functions (print, goto...)"""
 
-        input_code = "AD 11 D0 10 FB AD 10 D0 29 7F 60 "
+        input_code = f"AD 11 {Hex.BNE()} 10 FB AD 10 {Hex.BNE()} 29 7F 60 "
         @staticmethod
         def smartInput() -> tuple[str, int]:
             """Add an input function. Return a tuple with hex code and length of hex code."""
@@ -152,7 +152,7 @@ def compile_smart(
         code_compile += f"CD {adress_end} "     # compare with the end
         address_counter += 3
 
-        code_compile += "D0 03 "  # branch if A != end
+        code_compile += f"{Hex.BNE()} 03 "  # branch if A != end
         address_counter += 2
         code_compile += "4C ! smart:break "  # if not branch, exit loop.
         address_counter += 3
@@ -240,7 +240,7 @@ def compile_smart(
                         asm = f"{hex_value_1}C9 {hex_value_2[3:]}"      # immediate value
                         counter_adress_value -= 1
 
-                    asm += f"{branche} 04 {Hex.LDA()} 01 D0 02 {Hex.LDA()} 00 "
+                    asm += f"{branche} 04 {Hex.LDA()} 01 {Hex.BNE()} 02 {Hex.LDA()} 00 "
 
                     counter_adress_value += 9
 
@@ -321,7 +321,7 @@ def compile_smart(
                     counter_adress_value += 1
 
                     asm += f"18 6D {compiller_data_run.SYS_ADRESS['MathOP']}"   # add to A hex_value_2
-                    asm += "E0 00 D0 F7 "   # continue or not the loop
+                    asm += f"E0 00 {Hex.BNE()} F7 "   # continue or not the loop
 
                     counter_adress_value += 8
 
@@ -349,7 +349,7 @@ def compile_smart(
 
                     error_code, _ = make_error("'/'", try_mode, add_to_adress_conter=False)
 
-                    control_code = "C9 00 D0 !smart:len_error {}".format(error_code)
+                    control_code = f"C9 00 {Hex.BNE()} !smart:len_error {error_code}"
 
                     control_code = control_code.replace("!smart:len_error", get_hex_from_int(error_code.count(" ")))
 
@@ -404,7 +404,7 @@ def compile_smart(
 
                     error_code, _ = make_error("'/'", try_mode, add_to_adress_conter=False)
 
-                    control_code = "C9 00 D0 !smart:len_error {}".format(error_code)
+                    control_code = f"C9 00 {Hex.BNE()} !smart:len_error {error_code}"
 
                     control_code = control_code.replace("!smart:len_error", get_hex_from_int(error_code.count(" ")))
 
@@ -493,7 +493,7 @@ def compile_smart(
                     smart_error(f"Error with math '-' : '{value}'", set_error=set_error_exception)
 
             elif in_code("==", value):
-                return set_branch(value, "==", "D0")
+                return set_branch(value, "==", Hex.BNE())
 
             elif in_code("!=", value):
                 return set_branch(value, "!=", "F0")
@@ -1309,7 +1309,7 @@ def compile_smart(
 
             adress_var += 1
 
-            code_compile += f"C9 00 D0 08 {Hex.LDA()} 01 8D {call_else_adress}4C {{}} {Hex.LDA()} 00 8D {call_else_adress}"
+            code_compile += f"C9 00 {Hex.BNE()} 08 {Hex.LDA()} 01 8D {call_else_adress}4C {{}} {Hex.LDA()} 00 8D {call_else_adress}"
             address_counter += 17
 
             code_if = compile_smart(
@@ -1350,7 +1350,7 @@ def compile_smart(
 
             jump_line = bloc_line - line_counter - 1
 
-            code_compile += f"AD {call_else_adress}C9 01 D0 !smart_tmp:elif "
+            code_compile += f"AD {call_else_adress}C9 01 {Hex.BNE()} !smart_tmp:elif "
             address_counter += 7
 
             value_tmp = set_on_A_value(line_2)
@@ -1361,7 +1361,7 @@ def compile_smart(
 
             code_compile = code_compile.replace("!smart_tmp:elif", delta_branch)
 
-            code_compile += f"C9 00 D0 08 {Hex.LDA()} 01 8D {call_else_adress}4C {{}} {Hex.LDA()} 00 8D {call_else_adress}"
+            code_compile += f"C9 00 {Hex.BNE()} 08 {Hex.LDA()} 01 8D {call_else_adress}4C {{}} {Hex.LDA()} 00 8D {call_else_adress}"
 
             address_counter += 17
 
@@ -1399,7 +1399,7 @@ def compile_smart(
 
             jump_line = bloc_line - line_counter - 1
 
-            code_compile += f"AD {call_else_adress}C9 00 D0 03 4C {{}} "
+            code_compile += f"AD {call_else_adress}C9 00 {Hex.BNE()} 03 4C {{}} "
             address_counter += 10
 
             code_else = compile_smart(
@@ -1550,7 +1550,7 @@ def compile_smart(
 
             jump_line = bloc_line - line_counter - 1
 
-            code_compile += "C9 00 D0 03 4C {} "
+            code_compile += f"C9 00 {Hex.BNE()} 03 4C {{}} "
             address_counter += 7
 
             code_while = compile_smart(
