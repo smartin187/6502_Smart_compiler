@@ -11,6 +11,7 @@ from compiller_tool import compiller_data_run
 from compiller_tool.string_tool import good_variable_name, get_str
 from compiller_tool.color_tool import Colors
 from compiller_tool.smart_info import SMART_VERSION
+from compiller_tool.assembly_opcodes import Hex
 
 def get_line_debug(line:str) -> str:
     """Return the line for the debug if debug mode is enabled. Return '' if debug mode is disabled."""
@@ -29,9 +30,9 @@ def get_line_debug(line:str) -> str:
         # make hex program:
         hex_programm = []
         for char in line_debug:
-            hex_programm.append(f"A9 {hex(ord(char))[2:].upper()} 20 EF FF ")
+            hex_programm.append(f"{Hex.LDA()} {hex(ord(char))[2:].upper()} {Hex.JSR()} EF FF ")
 
-        hex_programm.append(f"A9 0D 20 EF FF ") # set a \r at the end
+        hex_programm.append(f"{Hex.LDA()} 0D {Hex.JSR()} EF FF ") # set a \r at the end
 
         return "".join(hex_programm)
 
