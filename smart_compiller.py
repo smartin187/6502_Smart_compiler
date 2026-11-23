@@ -74,13 +74,13 @@ def compile_smart(
         """Set the built-in functions of Smart.
         Warning: some functions are not in this class because they are assembly functions (print, goto...)"""
 
-        input_code = f"AD 11 {Hex.BNE()} 10 FB AD 10 {Hex.BNE()} 29 7F 60 "
+        input_code = f"{Hex.LDA(Mode.ABS)} 11 {Hex.BNE()} 10 FB {Hex.LDA(Mode.ABS)} 10 {Hex.BNE()} {Hex.AND()} 7F {Hex.RTS()} "
         @staticmethod
         def smartInput() -> tuple[str, int]:
             """Add an input function. Return a tuple with hex code and length of hex code."""
             #global need_input
             compiller_data_run.need_input = True
-            return "20 !  smart_input", 3
+            return f"{Hex.JSR()} !  smart_input", 3
 
         BUILT_IN_NAME_RETURN = ["input"]
         BUILT_IN_NAME_NORETURN = ["print", "quit", "goto", "asm_entry"]
@@ -124,32 +124,32 @@ def compile_smart(
         adress_step = address_for_RAM(adress_var)
 
         code_compile += set_on_A_value(step)   # load the step
-        code_compile += f"8D {adress_step} "     # save at the first RAM for step
+        code_compile += f"{Hex.STA(Mode.ABS)} {adress_step} "     # save at the first RAM for step
         address_counter += 3
 
         code_compile += set_on_A_value(start_number)   # load the start number
-        code_compile += f"8D {adress_start_number} "     # save at the second RAM for start number
+        code_compile += f"{Hex.STA(Mode.ABS)} {adress_start_number} "     # save at the second RAM for start number
         address_counter += 3
 
         code_compile += set_on_A_value(end)   # load the end number
-        code_compile += f"8D {adress_end} "     # save at the third RAM for end number
+        code_compile += f"{Hex.STA(Mode.ABS)} {adress_end} "     # save at the third RAM for end number
         address_counter += 3
 
         # start loop
 
         start_loop_for = address_for_RAM(CODE_ADRESSE + address_counter)
 
-        code_compile += f"AD {adress_start_number} "   # load the start on A
+        code_compile += f"{Hex.LDA(Mode.ABS)} {adress_start_number} "   # load the start on A
         address_counter += 3
 
         if not no_var_for:
-            code_compile += f"8D {adress_iterrator} "     # save the start on the iterator RAM
+            code_compile += f"{Hex.STA(Mode.ABS)} {adress_iterrator} "     # save the start on the iterator RAM
             address_counter += 3
         elif advenced_value_mode:
-            code_compile += f"AA "  # transfer the offset for iteration to X
+            code_compile += f"{Hex.TAX()} "  # transfer the offset for iteration to X
             address_counter += 1
 
-        code_compile += f"CD {adress_end} "     # compare with the end
+        code_compile += f"{Hex.CMP(Mode.ABS)} {adress_end} "     # compare with the end
         address_counter += 3
 
         code_compile += f"{Hex.BNE()} 03 "  # branch if A != end
@@ -159,10 +159,10 @@ def compile_smart(
 
         # increment start:
         if not advenced_value_mode:
-            code_compile += f"18 6D {adress_step} 8D {adress_start_number} "     # increment the start number by step
+            code_compile += f"{Hex.CLC()} {Hex.ADC(Mode.ABS)} {adress_step} {Hex.STA(Mode.ABS)} {adress_start_number} "     # increment the start number by step
             address_counter += 7
         else:
-            code_compile += f"18 69 01 8D {adress_start_number} "     # increment the start number by 1 (because advanced value)
+            code_compile += f"{Hex.CLC()} {Hex.ADC()} 01 {Hex.STA(Mode.ABS)} {adress_start_number} "     # increment the start number by 1 (because advanced value)
             address_counter += 6
 
         return start_loop_for
@@ -184,10 +184,10 @@ def compile_smart(
                 var_return = get_variable(ptr_return[1:])
 
                 if isinstance(var_return, smart_obj.SmartVariable):
-                    code_compile += f"AD {address_for_RAM(parameter.ram_adress)} " # LDA parameter
+                    code_compile += f"{Hex.LDA(Mode.ABS)} {address_for_RAM(parameter.ram_adress)} " # LDA parameter
                     address_counter += 3
 
-                    code_compile += f"8D {address_for_RAM(var_return.ram_adress)} " # STA variable
+                    code_compile += f"{Hex.STA(Mode.ABS)} {address_for_RAM(var_return.ram_adress)} " # STA variable
                     address_counter += 3
                 else:
                     base_adress_var = var_return.ram_adress
@@ -198,10 +198,10 @@ def compile_smart(
 
                     for offset in range(var_return.size):
 
-                        code_compile += f"AD {address_for_RAM(base_adress_parameter + offset)} " # LDA parameter
+                        code_compile += f"{Hex.LDA(Mode.ABS)} {address_for_RAM(base_adress_parameter + offset)} " # LDA parameter
                         address_counter += 3
 
-                        code_compile += f"8D {address_for_RAM(base_adress_var + offset)} " # STA variable
+                        code_compile += f"{Hex.STA(Mode.ABS)} {address_for_RAM(base_adress_var + offset)} " # STA variable
                         address_counter += 3
 
         return code_compile, address_counter
@@ -234,10 +234,10 @@ def compile_smart(
 
                     if not imediate_value(hex_value_2):
 
-                        asm = f"{hex_value_1}CD {hex_value_2[3:]}"      # address value
+                        asm = f"{hex_value_1}{Hex.CMP(Mode.ABS)} {hex_value_2[3:]}"      # address value
 
                     else:
-                        asm = f"{hex_value_1}C9 {hex_value_2[3:]}"      # immediate value
+                        asm = f"{hex_value_1}{Hex.CMP()} {hex_value_2[3:]}"      # immediate value
                         counter_adress_value -= 1
 
                     asm += f"{branche} 04 {Hex.LDA()} 01 {Hex.BNE()} 02 {Hex.LDA()} 00 "
@@ -270,7 +270,7 @@ def compile_smart(
 
                     # compare with value 2
                     for i in range(smart_obj.SIZE_ADVANCED_OBJ):
-                        asm += f"AD {address_for_RAM(adress_v_1 + i)} CD {address_for_RAM(adress_v_2 + i)} F0 03 {Hex.JMP()} !smart:adress_false "
+                        asm += f"{Hex.LDA(Mode.ABS)} {address_for_RAM(adress_v_1 + i)} {Hex.CMP(Mode.ABS)} {address_for_RAM(adress_v_2 + i)} {Hex.BEQ()} 03 {Hex.JMP()} !smart:adress_false "
 
                     counter_adress_value += 11 * smart_obj.SIZE_ADVANCED_OBJ
 
@@ -308,20 +308,20 @@ def compile_smart(
 
                     hex_value_1 = set_on_A_value(value_1, recursiv_value=True)
 
-                    asm += hex_value_1 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}{Hex.LDA()} 00 "  # save value 1 on ram and set A to 00.
+                    asm += hex_value_1 + f"{Hex.STA(Mode.ABS)} {compiller_data_run.SYS_ADRESS['MathOP']}{Hex.LDA()} 00 "  # save value 1 on ram and set A to 00.
                     counter_adress_value += 5
 
                     value_2_tmp = set_on_A_value(value_2, recursiv_value=True)
 
-                    hex_value_2 = "A2" + value_2_tmp[2:] if value_2_tmp.startswith(Hex.LDA()) else "AE" + value_2_tmp[2:]
+                    hex_value_2 = Hex.LDX() + value_2_tmp[2:] if value_2_tmp.startswith(Hex.LDA()) else Hex.LDX(Mode.ABS) + value_2_tmp[2:]
 
                     asm += hex_value_2
 
-                    asm += "CA "    # decrement X
+                    asm += f"{Hex.DEX()} "    # decrement X
                     counter_adress_value += 1
 
-                    asm += f"18 6D {compiller_data_run.SYS_ADRESS['MathOP']}"   # add to A hex_value_2
-                    asm += f"E0 00 {Hex.BNE()} F7 "   # continue or not the loop
+                    asm += f"{Hex.CLC()} {Hex.ADC(Mode.ABS)} {compiller_data_run.SYS_ADRESS['MathOP']}"   # add to A hex_value_2
+                    asm += f"{Hex.CPX()} 00 {Hex.BNE()} F7 "   # continue or not the loop
 
                     counter_adress_value += 8
 
@@ -342,14 +342,14 @@ def compile_smart(
 
                     hex_value_2 = set_on_A_value(value_2, recursiv_value=True)
 
-                    asm += hex_value_2 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}"  # save value 2 on ram
+                    asm += hex_value_2 + f"{Hex.STA(Mode.ABS)} {compiller_data_run.SYS_ADRESS['MathOP']}"  # save value 2 on ram
                     counter_adress_value += 3
 
                     # control division by 0
 
                     error_code, _ = make_error("'/'", try_mode, add_to_adress_conter=False)
 
-                    control_code = f"C9 00 {Hex.BNE()} !smart:len_error {error_code}"
+                    control_code = f"{Hex.CMP()} 00 {Hex.BNE()} !smart:len_error {error_code}"
 
                     control_code = control_code.replace("!smart:len_error", get_hex_from_int(error_code.count(" ")))
 
@@ -364,19 +364,19 @@ def compile_smart(
 
                     asm += hex_value_1
 
-                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']}"
-                    asm += "90 0A "
+                    asm += f"{Hex.CMP(Mode.ABS)} {compiller_data_run.SYS_ADRESS['MathOP']}"
+                    asm += f"{Hex.BCC()} 0A "
                     counter_adress_value += 5
 
-                    asm += "A2 00 E8 "    # set X to 00, and increment X on loop.
+                    asm += f"{Hex.LDX()} 00 {Hex.INX()} "    # set X to 00, and increment X on loop.
                     counter_adress_value += 3
 
-                    asm += f"38 ED {compiller_data_run.SYS_ADRESS['MathOP']}"      # substract to A hex_value_2
-                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']}B0 F6 "   # continue or not the loop
+                    asm += f"{Hex.SEC()} {Hex.SBC(Mode.ABS)} {compiller_data_run.SYS_ADRESS['MathOP']}"      # substract to A hex_value_2
+                    asm += f"{Hex.CMP(Mode.ABS)} {compiller_data_run.SYS_ADRESS['MathOP']}{Hex.BCS()} F6 "   # continue or not the loop
 
                     counter_adress_value += 9
 
-                    asm += "8A "
+                    asm += f"{Hex.TXA()} "
                     counter_adress_value += 1
 
                     return asm
@@ -397,14 +397,14 @@ def compile_smart(
 
                     hex_value_2 = set_on_A_value(value_2, recursiv_value=True)
 
-                    asm += hex_value_2 + f"8D {compiller_data_run.SYS_ADRESS['MathOP']}"  # save value 2 on ram
+                    asm += hex_value_2 + f"{Hex.STA(Mode.ABS)} {compiller_data_run.SYS_ADRESS['MathOP']}"  # save value 2 on ram
                     counter_adress_value += 3
 
                     # control division by 0
 
                     error_code, _ = make_error("'/'", try_mode, add_to_adress_conter=False)
 
-                    control_code = f"C9 00 {Hex.BNE()} !smart:len_error {error_code}"
+                    control_code = f"{Hex.CMP()} 00 {Hex.BNE()} !smart:len_error {error_code}"
 
                     control_code = control_code.replace("!smart:len_error", get_hex_from_int(error_code.count(" ")))
 
@@ -419,15 +419,15 @@ def compile_smart(
 
                     asm += hex_value_1
 
-                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']}"
-                    asm += "90 0A "
+                    asm += f"{Hex.CMP(Mode.ABS)} {compiller_data_run.SYS_ADRESS['MathOP']}"
+                    asm += f"{Hex.BCC()} 0A "
                     counter_adress_value += 5
 
-                    asm += "A2 00 E8 "    # set X to 00, and increment X on loop.
+                    asm += f"{Hex.LDX()} 00 {Hex.INX()} "    # set X to 00, and increment X on loop.
                     counter_adress_value += 3
 
-                    asm += f"38 ED {compiller_data_run.SYS_ADRESS['MathOP']}"      # substract to A hex_value_2
-                    asm += f"CD {compiller_data_run.SYS_ADRESS['MathOP']}B0 F6 "   # continue or not the loop
+                    asm += f"{Hex.SEC()} {Hex.SBC(Mode.ABS)} {compiller_data_run.SYS_ADRESS['MathOP']}"      # substract to A hex_value_2
+                    asm += f"{Hex.CMP(Mode.ABS)} {compiller_data_run.SYS_ADRESS['MathOP']}{Hex.BCS()} F6 "   # continue or not the loop
 
                     counter_adress_value += 9
 
@@ -454,10 +454,10 @@ def compile_smart(
                     hex_value_2 = set_on_A_value(value_2, recursiv_value=True)
 
                     if not imediate_value(hex_value_2):     # address value
-                        asm = f"{hex_value_1}18 6D {hex_value_2[3:]}"
+                        asm = f"{hex_value_1}{Hex.CLC()} {Hex.ADC(Mode.ABS)} {hex_value_2[3:]}"
 
                     else:
-                        asm = f"{hex_value_1}18 69 {hex_value_2[3:]}"       # immediate value
+                        asm = f"{hex_value_1}{Hex.CLC()} {Hex.ADC()} {hex_value_2[3:]}"       # immediate value
 
                     return asm
 
@@ -479,10 +479,10 @@ def compile_smart(
                     hex_value_2 = set_on_A_value(value_2, recursiv_value=True)
 
                     if not imediate_value(hex_value_2):
-                        asm = f"{hex_value_1}38 ED {hex_value_2[3:]}"       # address value
+                        asm = f"{hex_value_1}{Hex.SEC()} {Hex.SBC(Mode.ABS)} {hex_value_2[3:]}"       # address value
 
                     else:
-                        asm = f"{hex_value_1}38 E9 {hex_value_2[3:]}"      # immediate value
+                        asm = f"{hex_value_1}{Hex.SEC()} {Hex.SBC()} {hex_value_2[3:]}"      # immediate value
 
                     return asm
 
@@ -496,20 +496,20 @@ def compile_smart(
                 return set_branch(value, "==", Hex.BNE())
 
             elif in_code("!=", value):
-                return set_branch(value, "!=", "F0")
+                return set_branch(value, "!=", Hex.BEQ())
 
             elif in_code(">=", value):
-                return set_branch(value, ">=", "90")
+                return set_branch(value, ">=", Hex.BCC())
 
             elif in_code("<", value):
-                return set_branch(value, "<", "10")
+                return set_branch(value, "<", Hex.BPL())
 
             elif value.startswith(".."):   # a value from return function
                 adress_return = address_for_RAM(int(value[2:-1]))
 
                 counter_adress_value += 3
 
-                return f"AD {adress_return} "
+                return f"{Hex.LDA(Mode.ABS)} {adress_return} "
 
             elif value.startswith("."):
                 variable = value[1:]
@@ -518,7 +518,7 @@ def compile_smart(
                 counter_adress_value += 3
 
 
-                return f"AD {address_for_RAM(get_variable(variable).ram_adress)} "
+                return f"{Hex.LDA(Mode.ABS)} {address_for_RAM(get_variable(variable).ram_adress)} "
 
             elif value.startswith("~"):       # advanced variable, need index
                 try:
@@ -535,15 +535,15 @@ def compile_smart(
 
                         counter_adress_value += 3
 
-                        return f"AD {address_for_RAM(index_adress_var)} "
+                        return f"{Hex.LDA(Mode.ABS)} {address_for_RAM(index_adress_var)} "
 
                     else:
                         index_var = replace_code(index_var, " ", "")
                         # save A at smart sys
-                        asm = f"8D {compiller_data_run.SYS_ADRESS['SaveAToIndex']}"
+                        asm = f"{Hex.STA(Mode.ABS)} {compiller_data_run.SYS_ADRESS['SaveAToIndex']}"
                         counter_adress_value += 3
 
-                        asm += set_on_A_value(index_var, recursiv_value=True, test_value_mode=test_value_mode) + "AA "
+                        asm += set_on_A_value(index_var, recursiv_value=True, test_value_mode=test_value_mode) + f"{Hex.TAX()} "
                         counter_adress_value += 1
 
                         start_adress_var = obj_var.get_adress_from_index(0)
@@ -551,10 +551,10 @@ def compile_smart(
                         hex_start_adress_var = address_for_RAM(start_adress_var)
 
                         # test index out of range on runtime error
-                        test_index = "C9 15 "    # CMP #0x15
+                        test_index = f"{Hex.CMP()} 15 "    # CMP #0x15
                         counter_adress_value += 2
 
-                        test_index += "90 !smart:len_error_index "     # branch if index > 21
+                        test_index += f"{Hex.BCC()} !smart:len_error_index "     # branch if index > 21
                         counter_adress_value += 2
 
                         error_code, _ = make_error("'I'", try_mode, add_to_adress_conter=False)
@@ -565,7 +565,7 @@ def compile_smart(
 
                         asm += test_index
 
-                        asm += f"BD {hex_start_adress_var} "    # LDA $start_adress_var,X
+                        asm += f"{Hex.LDA(Mode.ABSX)} {hex_start_adress_var} "    # LDA $start_adress_var,X
 
                         counter_adress_value += 3
 
@@ -673,7 +673,7 @@ def compile_smart(
 
                             make_variable(var_obj)
 
-                            asm_v += f"8D {address_for_RAM(var_adress)} "
+                            asm_v += f"{Hex.STA(Mode.ABS)} {address_for_RAM(var_adress)} "
 
                             counter_adress_value += 3
 
@@ -707,7 +707,7 @@ def compile_smart(
 
                                 hex_code += set_on_A_value(func_arg_value_list[i], recursiv_value=True, test_value_mode=test_value_mode)
 
-                                hex_code += f"8D {address_for_RAM(adress_parameter)} "
+                                hex_code += f"{Hex.STA(Mode.ABS)} {address_for_RAM(adress_parameter)} "
                                 counter_adress_value += 3
 
                             elif isinstance(parameter, smart_obj.SmartStr):
@@ -737,7 +737,7 @@ def compile_smart(
 
                         make_variable(var_obj)
 
-                        asm_v += f"8D {address_for_RAM(var_adress)} "
+                        asm_v += f"{Hex.STA(Mode.ABS)} {address_for_RAM(var_adress)} "
 
                         counter_adress_value += 3
 
@@ -777,7 +777,7 @@ def compile_smart(
             code_hex_copy = ""
 
             for i in range(smart_obj.SIZE_ADVANCED_OBJ):
-                code_hex_copy += f"AD {address_for_RAM(get_variable(var_name).ram_adress + i)} 8D {address_for_RAM(start_adress + i)} "
+                code_hex_copy += f"{Hex.LDA(Mode.ABS)} {address_for_RAM(get_variable(var_name).ram_adress + i)} {Hex.STA(Mode.ABS)} {address_for_RAM(start_adress + i)} "
 
             if add_adress:
                 address_counter += 6 * smart_obj.SIZE_ADVANCED_OBJ
@@ -803,7 +803,7 @@ def compile_smart(
                 char_code = hex(ord(char))[2:].upper()
                 char_code = ("0" if len(char_code) == 1 else "") + char_code
 
-                code_str += f"{Hex.LDA()} {char_code} 8D {address_for_RAM(start_adress)} "
+                code_str += f"{Hex.LDA()} {char_code} {Hex.STA(Mode.ABS)} {address_for_RAM(start_adress)} "
 
                 start_adress += 1
 
@@ -832,7 +832,7 @@ def compile_smart(
                 if char == "{":
                     f_bloc = str_value[char_counter + 1:].split("}", 1)[0]
 
-                    code_str += set_on_A_value(f_bloc, add_adress=False) + f"8D {address_for_RAM(start_adress)} "
+                    code_str += set_on_A_value(f_bloc, add_adress=False) + f"{Hex.STA(Mode.ABS)} {address_for_RAM(start_adress)} "
 
                     f_bloc_len = len(f_bloc)
                     char_counter += f_bloc_len + 2
@@ -844,7 +844,7 @@ def compile_smart(
                     char_code = hex(ord(char))[2:].upper()
                     char_code = ("0" if len(char_code) == 1 else "") + char_code
 
-                    code_str += f"{Hex.LDA()} {char_code} 8D {address_for_RAM(start_adress)} "
+                    code_str += f"{Hex.LDA()} {char_code} {Hex.STA(Mode.ABS)} {address_for_RAM(start_adress)} "
 
                     char_counter += 1
 
@@ -882,7 +882,7 @@ def compile_smart(
 
             for element in list_value:
                 element = element.strip()
-                code_list += f"{set_on_A_value(element)}8D {address_for_RAM(start_adress)} "
+                code_list += f"{set_on_A_value(element)}{Hex.STA(Mode.ABS)} {address_for_RAM(start_adress)} "
 
                 start_adress += 1
 
@@ -954,7 +954,7 @@ def compile_smart(
                 hex_code += set_on_A_value(function_arg[i])
 
 
-                hex_code += f"8D {address_for_RAM(adress_parameter)} "
+                hex_code += f"{Hex.STA(Mode.ABS)} {address_for_RAM(adress_parameter)} "
                 address_counter += 3
 
             elif isinstance(parameter, smart_obj.SmartStr):
@@ -994,7 +994,7 @@ def compile_smart(
         code_compile += f"AE {increment_adress} " # LDX adress
         address_counter += 3
 
-        code_compile += "E8 " if operator == "+" else "CA " # increment or decrement X
+        code_compile += f"{Hex.INX()} " if operator == "+" else f"{Hex.DEX()} " # increment or decrement X
         address_counter += 1
 
         code_compile += f"8E {increment_adress} "  # store X (save at variable adress)
@@ -1153,7 +1153,7 @@ def compile_smart(
             else:
                 value_accumulator = set_on_A_value(read_line[1], forbiden_math=True)
 
-            code_compile += value_accumulator if r == "A" else "A2" + value_accumulator[2:] if r == "X" else "A0" + value_accumulator[2:]
+            code_compile += value_accumulator if r == "A" else f"{Hex.LDX()}" + value_accumulator[2:] if r == "X" else f"{Hex.LDY()}" + value_accumulator[2:]
 
         elif line[0] == "#":
             name = line[1:]
@@ -1196,7 +1196,7 @@ def compile_smart(
 
                 value_RAM = set_on_A_value(value)
 
-                code_compile += f"{value_RAM}8D {address_for_RAM(get_variable(var_name).ram_adress)} "
+                code_compile += f"{value_RAM}{Hex.STA(Mode.ABS)} {address_for_RAM(get_variable(var_name).ram_adress)} "
 
                 address_counter += 3
 
@@ -1259,18 +1259,18 @@ def compile_smart(
                 else:
 
                     if index_mode_const:
-                        code_compile += f"{set_on_A_value(value)}8D {address_for_RAM(get_variable(var_name).ram_adress + index_var)} "
+                        code_compile += f"{set_on_A_value(value)}{Hex.STA(Mode.ABS)} {address_for_RAM(get_variable(var_name).ram_adress + index_var)} "
                         address_counter += 3
                     else:
                         index_var = replace_code(index_var, " ", "")
-                        code_compile += f"{set_on_A_value(index_var)}AA "     # save on X index delta
+                        code_compile += f"{set_on_A_value(index_var)}{Hex.TAX()} "     # save on X index delta
                         address_counter += 1
 
                         # -------- control index for runtime error
-                        test_index = "C9 15 "    # CMP #0x15
+                        test_index = f"{Hex.CMP()} 15 "    # CMP #0x15
                         address_counter += 2
 
-                        test_index += "90 !smart:len_error_index "     # branch if index > 21
+                        test_index += f"{Hex.BCC()} !smart:len_error_index "     # branch if index > 21
                         address_counter += 2
 
                         error_code, _ = make_error("'I'", try_mode, add_to_adress_conter=False)
@@ -1285,7 +1285,7 @@ def compile_smart(
 
                         code_compile += set_on_A_value(value)
 
-                        code_compile += f"9D {address_for_RAM(get_variable(var_name).ram_adress)} "
+                        code_compile += f"{Hex.STA(Mode.ABSX)} {address_for_RAM(get_variable(var_name).ram_adress)} "
                         address_counter += 3
 
 
@@ -1311,7 +1311,7 @@ def compile_smart(
 
             adress_var += 1
 
-            code_compile += f"C9 00 {Hex.BNE()} 08 {Hex.LDA()} 01 8D {call_else_adress}{Hex.JMP()} {{}} {Hex.LDA()} 00 8D {call_else_adress}"
+            code_compile += f"{Hex.CMP()} 00 {Hex.BNE()} 08 {Hex.LDA()} 01 {Hex.STA(Mode.ABS)} {call_else_adress}{Hex.JMP()} {{}} {Hex.LDA()} 00 {Hex.STA(Mode.ABS)} {call_else_adress}"
             address_counter += 17
 
             code_if = compile_smart(
@@ -1352,7 +1352,7 @@ def compile_smart(
 
             jump_line = bloc_line - line_counter - 1
 
-            code_compile += f"AD {call_else_adress}C9 01 {Hex.BNE()} !smart_tmp:elif "
+            code_compile += f"{Hex.LDA(Mode.ABS)} {call_else_adress}{Hex.CMP()} 01 {Hex.BNE()} !smart_tmp:elif "
             address_counter += 7
 
             value_tmp = set_on_A_value(line_2)
@@ -1363,7 +1363,7 @@ def compile_smart(
 
             code_compile = code_compile.replace("!smart_tmp:elif", delta_branch)
 
-            code_compile += f"C9 00 {Hex.BNE()} 08 {Hex.LDA()} 01 8D {call_else_adress}{Hex.JMP()} {{}} {Hex.LDA()} 00 8D {call_else_adress}"
+            code_compile += f"{Hex.CMP()} 00 {Hex.BNE()} 08 {Hex.LDA()} 01 {Hex.STA(Mode.ABS)} {call_else_adress}{Hex.JMP()} {{}} {Hex.LDA()} 00 {Hex.STA(Mode.ABS)} {call_else_adress}"
 
             address_counter += 17
 
@@ -1401,7 +1401,7 @@ def compile_smart(
 
             jump_line = bloc_line - line_counter - 1
 
-            code_compile += f"AD {call_else_adress}C9 00 {Hex.BNE()} 03 {Hex.JMP()} {{}} "
+            code_compile += f"{Hex.LDA(Mode.ABS)} {call_else_adress}{Hex.CMP()} 00 {Hex.BNE()} 03 {Hex.JMP()} {{}} "
             address_counter += 10
 
             code_else = compile_smart(
@@ -1517,8 +1517,8 @@ def compile_smart(
             )
 
             # on the main ptr, set a first address
-            code_compile += f"{Hex.LDA()} !smart_adress_main_thread_1 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_1']} "  # first byte
-            code_compile += f"{Hex.LDA()} !smart_adress_main_thread_2 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_2']} "  # second byte
+            code_compile += f"{Hex.LDA()} !smart_adress_main_thread_1 {Hex.STA(Mode.ABS)} {compiller_data_run.SYS_ADRESS['main_thread_ptr_1']} "  # first byte
+            code_compile += f"{Hex.LDA()} !smart_adress_main_thread_2 {Hex.STA(Mode.ABS)} {compiller_data_run.SYS_ADRESS['main_thread_ptr_2']} "  # second byte
             address_counter += 10
 
             new_adress = code_thread.count(" ") + code_thread.count("!smart_call_func|") * 3 + code_thread.count("!smart_tmp:goto|") * 3 - code_thread.count("!smart_tmp:goto|")
@@ -1552,7 +1552,7 @@ def compile_smart(
 
             jump_line = bloc_line - line_counter - 1
 
-            code_compile += f"C9 00 {Hex.BNE()} 03 {Hex.JMP()} {{}} "
+            code_compile += f"{Hex.CMP()} 00 {Hex.BNE()} 03 {Hex.JMP()} {{}} "
             address_counter += 7
 
             code_while = compile_smart(
@@ -1635,7 +1635,7 @@ def compile_smart(
                 code_compile += f"BD {address_for_RAM(adress_advenced_value)} "      # set on A the value with offset
                 address_counter += 3
 
-                code_compile += f"8D {adress_iterrator} "  # set on the iterator the simple value
+                code_compile += f"{Hex.STA(Mode.ABS)} {adress_iterrator} "  # set on the iterator the simple value
                 address_counter += 3
 
             # code on loop
@@ -1859,7 +1859,7 @@ def compile_smart(
                     if function_arg[0] != "A":
                         smart_error(f"print need 'A' register, not '{function_arg[0]}'")
 
-                    code_compile += "20 EF FF "
+                    code_compile += f"{Hex.JSR()} EF FF "
 
                     address_counter += 3
 
@@ -1871,13 +1871,13 @@ def compile_smart(
                     value_str = get_str(smart_str, line_counter)
 
                     for char in get_char_from_str(value_str):
-                        code_compile += set_on_A_value(f"'{char}'") + "20 EF FF "
+                        code_compile += set_on_A_value(f"'{char}'") + f"{Hex.JSR()} EF FF "
 
                         address_counter += 3
 
                 elif is_a_simple_value(function_arg[0]):
                     code_compile += set_on_A_value(function_arg[0])
-                    code_compile += "20 EF FF "
+                    code_compile += f"{Hex.JSR()} EF FF "
                     address_counter += 3
 
                 elif not is_a_simple_value(function_arg[0]):    # the value is str
@@ -1889,7 +1889,7 @@ def compile_smart(
                     code_compile += set_ram_str
 
                     for deltal in range(string_adress, string_adress + smart_obj.SIZE_ADVANCED_OBJ):
-                        code_compile += f"AD {address_for_RAM(deltal)} 20 EF FF "
+                        code_compile += f"{Hex.LDA(Mode.ABS)} {address_for_RAM(deltal)} {Hex.JSR()} EF FF "
 
 
                     address_counter += 6 * smart_obj.SIZE_ADVANCED_OBJ
@@ -1898,7 +1898,7 @@ def compile_smart(
                 if len(function_arg) != 0:
                     smart_error("Function 'quit' not take arg.")
 
-                code_compile += "00 "
+                code_compile += f"{Hex.BRK()} "
                 address_counter += 1
 
             elif function_name == "restart":
@@ -1995,8 +1995,8 @@ def compile_smart(
             if thread_mode[2]:
                 # save the address of next operation
                 next_operation_adress_1, next_operation_adress_2 = address_for_RAM(CODE_ADRESSE + address_counter + 13).split(" ")
-                code_compile += f"{Hex.LDA()} {next_operation_adress_1} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if thread_mode[1] == 'main' else 'second_thread_ptr_1']} " # first byte of address
-                code_compile += f"{Hex.LDA()} {next_operation_adress_2} 8D {compiller_data_run.SYS_ADRESS['main_thread_ptr_2' if thread_mode[1] == 'main' else 'second_thread_ptr_2']} " # second byte of address
+                code_compile += f"{Hex.LDA()} {next_operation_adress_1} {Hex.STA(Mode.ABS)} {compiller_data_run.SYS_ADRESS['main_thread_ptr_1' if thread_mode[1] == 'main' else 'second_thread_ptr_1']} " # first byte of address
+                code_compile += f"{Hex.LDA()} {next_operation_adress_2} {Hex.STA(Mode.ABS)} {compiller_data_run.SYS_ADRESS['main_thread_ptr_2' if thread_mode[1] == 'main' else 'second_thread_ptr_2']} " # second byte of address
 
                 address_counter += 10
 
@@ -2046,11 +2046,11 @@ def compile_smart(
         pass
 
     elif function_mode["function_mode"]:
-        code_compile += "60 "
+        code_compile += f"{Hex.RTS()} "
         address_counter += 1
 
     else:
-        code_compile += "00 "
+        code_compile += f"{Hex.BRK()} "
         address_counter += 1
 
     # compile function:
@@ -2091,7 +2091,7 @@ def compile_smart(
 
                 hex_adress_function = address_for_RAM(adress_func)
 
-                code_compile = code_compile.replace(function, f"20 {hex_adress_function} ")
+                code_compile = code_compile.replace(function, f"{Hex.JSR()} {hex_adress_function} ")
 
                 function_name_usr[function_name_tmp].called_function = True
 
@@ -2126,7 +2126,7 @@ def compile_smart(
     if compiller_data_run.need_error and not(function_mode["function_mode"]) and not(function_mode["if_mode"]) and not module_mode:
 
         code_compile = code_compile.replace("!  smart_runtime_error", address_for_RAM(code_compile.count(" ") + CODE_ADRESSE - 1) + " ") # use count instead of address_counter to avoid errors
-        code_compile += "20 EF FF 00 "
+        code_compile += f"{Hex.JSR()} EF FF {Hex.BRK()} "
 
         address_counter += 4
 

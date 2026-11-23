@@ -112,7 +112,7 @@ def make_error(error_value:str, try_mode:bool, set_need_error:bool=True, add_to_
 
         compiller_data_run.need_error = set_need_error
 
-        code_compile += "A9 45 20 EF FF "     # print E
+        code_compile += f"{Hex.LDA()} 45 {Hex.JSR()} EF FF "     # print E
         if add_to_adress_conter:
             address_counter += 5
 
@@ -134,6 +134,6 @@ def imediate_value(value:str) -> bool:
     except IndexError:
         return False
 
-    if start == "A9":
+    if start == Hex.LDA():
         return True
     return False
