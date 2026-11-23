@@ -84,6 +84,8 @@ _PROGRESS_BAR_ADVENCEMENT = 0 # for the log of compiller, the progress bar
 
 _DEFINE = {}
 
+_OPTIMIZE_MODE = False
+
 # -------------------------------
 
 #_define_dict = None
@@ -132,3 +134,5 @@ need_input = _NEED_INPUT
 progresse_bar_advencement = _PROGRESS_BAR_ADVENCEMENT
 
 define = dict(_DEFINE)
+
+optimize_mode = _OPTIMIZE_MODE

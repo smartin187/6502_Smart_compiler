@@ -28,6 +28,7 @@ from compiller_tool import import_tool
 from compiller_tool import smart_obj
 from compiller_tool import color_tool
 from compiller_tool import compile_command
+from compiller_tool import optimize_tool
 
 from compiller_tool.asm_tool import verryfing_adress_conter_no_print, get_adress # use only for debug, not needed for compilation
 
@@ -214,6 +215,13 @@ def compile_smart(
         nonlocal address_counter
 
         set_error_exception = not test_value_mode
+
+        # test the optimize mode:
+        if compiller_data_run.optimize_mode:
+
+            optimize_value = optimize_tool.optimize_expression(value)
+            if optimize_value is not None:
+                value = optimize_value
 
         def control_math() -> None:
             """If forbiden_math is True, raise SmartError if there is math in the value."""
