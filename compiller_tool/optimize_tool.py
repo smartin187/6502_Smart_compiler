@@ -23,5 +23,8 @@ def optimize_expression(expression:str) -> str | None:
     except:
         return
 
+    if optimized == expression:   # if the expression is already optimized
+        return
+
     return optimized
     

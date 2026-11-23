@@ -221,6 +221,9 @@ def compile_smart(
 
             optimize_value = optimize_tool.optimize_expression(value)
             if optimize_value is not None:
+                
+                logging.info(f"Optimize an expression: {Colors.RED}'{value}'{Colors.RESET} {Colors.BOLD}->{Colors.RESET} {Colors.GREEN}'{optimize_value}'{Colors.RESET}.")
+
                 value = optimize_value
 
         def control_math() -> None:
