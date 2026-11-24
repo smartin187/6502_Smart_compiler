@@ -17,6 +17,8 @@ def optimize_expression(expression:str) -> str | None:
         optimized_value = eval(expression)
         if not isinstance(optimized_value, int):
             return
+        
+        optimized_value %= 256
 
         optimized = str(optimized_value)
         
