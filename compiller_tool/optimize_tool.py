@@ -15,7 +15,10 @@ def optimize_expression(expression:str) -> str | None:
     # Carful: it can be a vulnerability.
     try:
         optimized_value = eval(expression)
-        if not isinstance(optimized_value, int):
+        if isinstance(optimized_value, float) and "/" in expression:
+            optimized_value = int(optimized_value)
+
+        elif not isinstance(optimized_value, int):
             return
         
         optimized_value %= 256
