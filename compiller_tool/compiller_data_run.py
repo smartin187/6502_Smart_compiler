@@ -88,17 +88,10 @@ _OPTIMIZE_MODE = False
 
 # -------------------------------
 
-#_define_dict = None
-
-# def reset_define(define_dict:dict) -> None:
-#     """Add the define_dict to reset_data"""
-#     global _define_dict
-#     _define_dict = define_dict
-
 def reset_data() -> None:
     """Reset the data.
     Used for test.py (because tests are run one after the other)."""
-    global warning_endline, not_used_ram, need_error, double_space_error, not_used_call_else, debug_max, not_used_for, need_input, progresse_bar_advencement, define
+    global warning_endline, not_used_ram, need_error, double_space_error, not_used_call_else, debug_max, not_used_for, need_input, progresse_bar_advencement, define, optimize_mode
     warning_endline = _WARNING_ENDLINE
     not_used_ram = _NOT_USED_RAM
     need_error = _NEED_ERROR
@@ -108,6 +101,7 @@ def reset_data() -> None:
     not_used_for = _NOT_USED_FOR
     need_input = _NEED_INPUT
     progresse_bar_advencement = _PROGRESS_BAR_ADVENCEMENT
+    optimize_mode = _OPTIMIZE_MODE
 
     # reset value of compiletime keyword
     define = dict(_DEFINE)
