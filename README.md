@@ -1012,6 +1012,22 @@ _Approximate processor time:_
 - ~ 15% (0,15MHz) for main thread
 - ~ 15% (0,15MHz) for second thread
 
+#### Optimize code
+
+They are a optimize mode for the compiler. You can activate it with the flag `--optimize`:
+```bash
+python3 main.py your_file.sma --optimize
+```
+
+The optimize mode can reduce the size of binary and the execution time. The optimize mode compute expression at compile time if it is possible.
+
+For exemple:
+```Smart
+.x = 1 + 1; // on optimize mode, the binary will have 2 instead of 1 + 1.
+.y = 1 + .x; // this expression will be not optimized by the optimize mode.
+```
+
+
 ## Compile Smart code
 
 Once you have your code, the first option is to compile it so it can run on a Smarty Kit (code is theoretically compatible with an Apple 1).
