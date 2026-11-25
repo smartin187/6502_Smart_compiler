@@ -1022,6 +1022,10 @@ _Approximate processor time:_
 
 They are a optimize mode for the compiler. You can activate it with the flag `--optimize`:
 ```bash
+# If you download the packaged version:
+smart_compiler your_file.sma --optimize
+
+# If you use the source code:
 python3 main.py your_file.sma --optimize
 ```
 
@@ -1041,6 +1045,10 @@ Once you have your code, the first option is to compile it so it can run on a Sm
 To do so, download this repository and run:
 
 ```bash
+# If you download the packaged version:
+smart_compiler your_file.sma
+
+# If you use the source code:
 python3 main.py your_file.sma
 ```
 
@@ -1065,6 +1073,10 @@ The Smart interpreter lets you execute Smart code directly on your computer.
 Download the code, then run in a terminal:
 
 ```bash
+# If you download the packaged version:
+smart_emulator your_program.sma
+
+# If you use the source code:
 python3 smart_emulator.py your_program.sma
 ```
 
