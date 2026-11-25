@@ -6,7 +6,13 @@ Smart Compiler is a project that aims to make programming on a Smarty Kit (an Ap
 
 This repository contains a compiler for Smart code (a language created for the Smarty Kit) and an interpreter for that language (if you want to test a program without a Smarty Kit).
 
->Smart is in development. Some bugs are to fix. Report issues if you have problems. New features will be added soon...
+> Smart is in development. Some bugs are to fix. Report issues on GitHub if you have problems. New features will be added soon...
+
+## Download
+
+Report to the [GitHub releases](https://github.com/smartin187/6502_Smart_compiler/releases) for get Smart, or clone the repository and use python 3.13 for run it.
+
+> For install, read the description of the releases.
 
 ## The Smart programming language
 
@@ -14,7 +20,7 @@ Smart is a very simple programming language. If you need more features, you shou
 
 _New features will be added soon..._
 
-The advantage of Smart is that it is optimized for the Smarty Kit CPU.
+The advantage of Smart is that it is optimized for the Smarty Kit (for the 6502).
 
 Once your program is ready, you can either [compile it](#compile-smart-code) or [run it in the interpreter](#interpret-smart-code-emulator).
 
@@ -1091,6 +1097,8 @@ Smart uses RAM.
   - _Other address to `0x02FF` are not used actually._
 
 ## Distribution of Smart
+
+If you want to download Smart, see [download](#download).
 
 For publish Smart, the Python script are compiled with Pyinstaller.
 
