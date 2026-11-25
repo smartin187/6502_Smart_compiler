@@ -4,6 +4,7 @@
 This module is used for the optimize mode.
 """
 import logging
+from compiller_tool.compiller_data_run import BASE_ALLOW_CHAR
 
 MESSAGE_OPTIMIZE = "Try to optimize expression. Do Ctrl+c for cancel."
 
@@ -11,6 +12,12 @@ def optimize_expression(expression:str) -> str | None:
     """Optimize the expression if the result can be know at compile time. Return None if can't optimize."""
     # control if the value can be eval:
     expression = expression.replace(" ", "")
+
+    # for the char value:       # it work, but for exemple: 'A''B' -> sintaxe error, but the programme optimize it.
+    #for char in BASE_ALLOW_CHAR:
+    #    expression = expression.replace(f"'{char}'", str(ord(char)))
+
+
     for char in expression:
         if char not in "0123456789+-*/%":
             return
