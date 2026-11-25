@@ -2174,7 +2174,7 @@ def compile_smart(
                 lines_str = [f"{hex(start + i * regroup_bytes)[2:].upper().zfill(4)}: {' '.join(line)}" for i, line in enumerate(lines)]
 
 
-                code_bin = " \n".join(lines_str)
+                code_bin = " \n".join(lines_str) + " "
 
 
         logging.info("Build completed!")
