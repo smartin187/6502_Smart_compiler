@@ -8,7 +8,7 @@ from compiller_tool.color_tool import Colors
 
 FROZEN = getattr(sys, 'frozen', False)  # if the programme is compiled by PyInstaller
 
-SMART_VERSION = "v0.2.0"
+SMART_VERSION = "v0.3.0"
 
 ONE_LINUX = sys.platform == "linux"
 
@@ -47,7 +47,7 @@ SMART_HELP = {
 
 {Colors.BG_CYAN}FLAGS:{Colors.RESET}
 \tGet a binary file (default is hex file): {Colors.MAGENTA}{COMPILE_EXE} your_programme.sma --bin{Colors.RESET}
-\tRegroup bytes in the output file (for hex file): {Colors.MAGENTA}{COMPILE_EXE} your_programme.sma --regroup=number{Colors.RESET}\t\t{Colors.YELLOW}Set -1 (by default) for no regroup.{Colors.RESET}
+\tRegroup bytes in the output file (for hex file): {Colors.MAGENTA}{COMPILE_EXE} your_programme.sma --regroup=number{Colors.RESET}\t{Colors.YELLOW}Set -1 for no regroup.{Colors.RESET}
 \tShow the library path: {Colors.MAGENTA}{COMPILE_EXE} --show-lib-path{Colors.RESET}
 \tGet version of Smart: {Colors.MAGENTA}{COMPILE_EXE} --version{Colors.RESET}
 \tGet help of Smart Compiller: {Colors.MAGENTA}{COMPILE_EXE} --help{Colors.RESET}

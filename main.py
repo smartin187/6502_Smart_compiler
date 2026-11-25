@@ -34,7 +34,7 @@ if "--show-licence" in sys.argv:
     print(smart_info.LICENCE["licence"], smart_info.LICENCE["text"], sep="\n")
     sys.exit(0)
 
-regroup_number = -1
+regroup_number = 8
 
 for arg in sys.argv:
     if arg.startswith("--regroup="):
@@ -44,7 +44,7 @@ for arg in sys.argv:
             logging.critical("Error: regroup number must be an integer")
             sys.exit(1)
 
-        if regroup_number < 1:
+        if regroup_number < 1 and regroup_number != -1:
             logging.critical("Error: regroup number must be greater than 0, or -1 for no regroup.")
             sys.exit(1)
 
