@@ -1034,7 +1034,9 @@ Once you have your code, the first option is to compile it so it can run on a Sm
 
 To do so, download this repository and run:
 
-`python3 main.py your_file.sma`
+```bash
+python3 main.py your_file.sma
+```
 
 _Smart code typically uses the `*.sma` extension._
 
@@ -1056,7 +1058,9 @@ The Smart interpreter lets you execute Smart code directly on your computer.
 
 Download the code, then run in a terminal:
 
-`python3 smart_emulator.py your_program.sma`
+```bash
+python3 smart_emulator.py your_program.sma
+```
 
 A window opens with the interpreter. Your code will run as if it were on a Smarty Kit.
 
