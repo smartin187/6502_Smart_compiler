@@ -2175,6 +2175,51 @@ try:
             output="218903",
             optimize_mode = True
         ),
+        Test(
+            "Modulo by 256 on optimize",
+            code="""
+                compiletime define PRINT_INT to print: '0' +;
+
+                .a = 255+1; // 0
+                .b = 255+2; // 1
+                .c = 0 - 1; // 255
+                .d = 0 - 190; // 66 'B'
+                .e = 200 * 2; // 144
+
+                PRINT_INT .a;
+                PRINT_INT .b;
+                print: .c;
+                print: .d;
+                print: .e;
+            """,
+            output="01B",
+            optimize_mode=True
+        ),
+        Test(
+            "Value over 256 with optimize",
+            code="""
+                .x = 256; // work only on optimize mode.
+                .y = 300; // 300%256 = 44
+
+                print: .x + '0';
+                print: .y; // ASCII 44 = ','
+            """,
+            output="0,",
+            optimize_mode=True
+        ),
+        Test(
+            "Value over 256 without optimize",
+            code="""
+                .x = 256; // work only on optimize mode.
+                .y = 300; // 300%256 = 44
+
+                print: .x + '0';
+                print: .y; // ASCII 44 = ','
+            """,
+            output="0,",
+            sucess=False
+        ),
+
     )
 
     COMPILETIME_TEST = (  #test for the compiletime keyword
