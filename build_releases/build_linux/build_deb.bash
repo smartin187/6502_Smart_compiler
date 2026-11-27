@@ -8,7 +8,10 @@ echo -e "\033[1m---- Building Debian package (deb file)... ----\033[0m"
 
 set -e
 
-VERSION="1.0"
+VERSION=$(python main.py --version)
+VERSION=${VERSION#v}
+echo "Version of Smart for Debian package: $VERSION"
+
 ARCH="${1:-$(dpkg --print-architecture)}"
 TAG="Linux-${ARCH}"
 
