@@ -22,12 +22,12 @@ cp build_publish/linux/$ARCH_DIR_DIST/smart_emulator_$TAG build_publish/linux/$A
 cp -r smart_lib/ build_publish/linux/$ARCH_DIR_DIST/archive_zip/
 
 # set a readme:
-echo "Smart Compiler and Emulator for Windows
+echo "Smart Compiler and Emulator for Linux
 You get smart_compiler and smart_emulator for Linux.
 You have also the Smart library. Please copy the directory to /usr/lib/Smart-SmartyKit/
 
 Apache License 2.0
-See https://github.com/smartin187/smartykit_compiler for more information.
+See https://github.com/smartin187/6502_Smart_compiler for more information.
 " > build_publish/linux/$ARCH_DIR_DIST/archive_zip/readme.txt
 
 # build zip

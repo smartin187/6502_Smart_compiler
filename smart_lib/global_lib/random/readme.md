@@ -58,6 +58,6 @@ print: .random_value;
 On the loop, they are 3 instruction:
 - INX (2)
 - LDA absolute (4)
-- BPL (3 if not branch)
+- BPL (4 if branch)
 
-So a loop take 9 cycles. The processor speed is 1MHz, so a loop take 9 microseconds. This value is very random, because the user can't predict the time of a loop. The user can press a key at any time, so the value is very random.
+So a loop take 10 cycles. The processor speed is 1MHz, so a loop take 10 microseconds. This value is very random, because the user can't predict the time of a loop. The user can press a key at any time, so the value is very random.

@@ -7,6 +7,7 @@ import logging
 from compiller_tool.smart_exception import SmartError
 from compiller_tool.string_tool import address_for_RAM
 from compiller_tool import compiller_data_run
+from compiller_tool.assembly_opcodes import Hex
 
 set_on_A_value = None
 
@@ -111,13 +112,13 @@ def make_error(error_value:str, try_mode:bool, set_need_error:bool=True, add_to_
 
         compiller_data_run.need_error = set_need_error
 
-        code_compile += "A9 45 20 EF FF "     # print E
+        code_compile += f"{Hex.LDA()} 45 {Hex.JSR()} EF FF "     # print E
         if add_to_adress_conter:
             address_counter += 5
 
         code_compile += set_on_A_value(error_value, add_adress=add_to_adress_conter)
 
-        code_compile += "4C !  smart_runtime_error"    # set 2 spaces on placeholder for counting address
+        code_compile += f"{Hex.JMP()} !  smart_runtime_error"    # set 2 spaces on placeholder for counting address
         if add_to_adress_conter:
             address_counter += 3
 
@@ -133,6 +134,6 @@ def imediate_value(value:str) -> bool:
     except IndexError:
         return False
 
-    if start == "A9":
+    if start == Hex.LDA():
         return True
     return False

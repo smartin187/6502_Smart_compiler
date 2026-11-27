@@ -1,0 +1,192 @@
+name: Build all
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  build_linux_amd64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyinstaller
+
+      - name: Build Linux amd64 (x64)
+        run: |
+          ./build_releases/build_linux/build_all_linux.bash no_other_arch
+
+      - name: Test Linux amd64 binaries and packages
+        shell: bash
+        run: |
+          set -e
+
+          binaries=(
+            build_publish/linux/amd64/smart_compiler_Linux-amd64
+            build_publish/linux/amd64/smart_emulator_Linux-amd64
+          )
+          for binary in "${binaries[@]}"; do
+            test -f "$binary"
+            test -x "$binary"
+            "$binary" --help
+          done
+
+          shopt -s nullglob
+          deb_packages=(build_publish/linux/amd64/*.deb)
+          if [ ${#deb_packages[@]} -eq 0 ]; then
+            echo "No Debian package found" >&2
+            exit 1
+          fi
+          for package in "${deb_packages[@]}"; do
+            dpkg --info "$package" >/dev/null
+          done
+
+          zip_packages=(build_publish/linux/amd64/*.zip)
+          if [ ${#zip_packages[@]} -eq 0 ]; then
+            echo "No ZIP package found" >&2
+            exit 1
+          fi
+          for package in "${zip_packages[@]}"; do
+            unzip -t "$package" >/dev/null
+          done
+
+      - name: Publish GitHub Release - Linux x64
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build_publish/linux/amd64/*.deb
+            build_publish/linux/amd64/*.zip
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+          body_path: .github/release-template.md
+
+  build_linux_arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyinstaller
+
+      - name: Build Linux arm64
+        run: |
+          ./build_releases/build_linux/build_all_linux.bash no_other_arch
+
+      - name: Test Linux arm64 binaries and packages
+        shell: bash
+        run: |
+          set -e
+
+          binaries=(
+            build_publish/linux/arm64/smart_compiler_Linux-arm64
+            build_publish/linux/arm64/smart_emulator_Linux-arm64
+          )
+          for binary in "${binaries[@]}"; do
+            test -f "$binary"
+            test -x "$binary"
+            "$binary" --help
+          done
+
+          shopt -s nullglob
+          deb_packages=(build_publish/linux/arm64/*.deb)
+          if [ ${#deb_packages[@]} -eq 0 ]; then
+            echo "No Debian package found" >&2
+            exit 1
+          fi
+          for package in "${deb_packages[@]}"; do
+            dpkg --info "$package" >/dev/null
+          done
+
+          zip_packages=(build_publish/linux/arm64/*.zip)
+          if [ ${#zip_packages[@]} -eq 0 ]; then
+            echo "No ZIP package found" >&2
+            exit 1
+          fi
+          for package in "${zip_packages[@]}"; do
+            unzip -t "$package" >/dev/null
+          done
+
+      - name: Publish GitHub Release - Linux arm64
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build_publish/linux/arm64/*.deb
+            build_publish/linux/arm64/*.zip
+          fail_on_unmatched_files: true
+          generate_release_notes: false
+
+  build_windows_x64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyinstaller
+
+      - name: Build Windows x64
+        run: |
+          build_releases/build_on_windows/build_all_windows.bat
+
+      - name: Test Windows binaries and package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $binaries = @(
+            "build_publish/windows/smart-compiler-windows_$($env:PROCESSOR_ARCHITECTURE).exe",
+            "build_publish/windows/smart-emulator-windows_$($env:PROCESSOR_ARCHITECTURE).exe"
+          )
+          foreach ($binary in $binaries) {
+            if (-not (Test-Path -LiteralPath $binary -PathType Leaf)) {
+              throw "Missing binary: $binary"
+            }
+            & $binary --help
+            if ($LASTEXITCODE -ne 0) {
+              throw "Binary test failed: $binary"
+            }
+          }
+
+          $packages = Get-ChildItem -LiteralPath "build_publish/windows" -Filter "*.zip" -File
+          if ($packages.Count -eq 0) {
+            throw "No Windows ZIP package found"
+          }
+          foreach ($package in $packages) {
+            $extractDir = Join-Path $env:TEMP ("smart-package-test-" + [guid]::NewGuid())
+            Expand-Archive -LiteralPath $package.FullName -DestinationPath $extractDir -Force
+            Remove-Item -LiteralPath $extractDir -Recurse -Force
+          }
+
+      - name: Publish GitHub Release - Windows x64
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build_publish/windows/*.zip
+          fail_on_unmatched_files: true
+          generate_release_notes: false

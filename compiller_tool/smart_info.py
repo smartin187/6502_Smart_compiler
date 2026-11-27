@@ -34,7 +34,7 @@ See the License for the specific language governing permissions and
 limitations under the License."""
 }
 
-GIT_HUB_LINK = "https://github.com/smartin187/smartykit_compiler"
+GIT_HUB_LINK = "https://github.com/smartin187/6502_Smart_compiler"
 
 COMPILE_EXE = EXECUTABLE["compiller"] if FROZEN else "python3 main.py"
 EMULATOR_EXE = EXECUTABLE["emulator"] if FROZEN else "python3 smart_emulator.py"
