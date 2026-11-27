@@ -37,6 +37,7 @@ If the task is a bug you can also add an issue on GitHub.
     - Add test for dynamic_run **need a refactor on emulator for run this lib**
     - Add test for memory lib **need to have dynamic_run ok on emulator**
     - For the module `advenced_operation.sma` of assembly.
+- For some library using `asm_entry`, use the assembly lib.
 - For assemnbly lib (simple operation), set a module for get only the OP code on define and not the asm_entry function.
 - Add new runtime error: for recursion error max. Use `Treansfert stack ptr to X` and `Compare X` for check if the stack will be overflowed. Set the runtime error `ER`.
 - Add the documentation for flag on emulator and compiller. Use `--help`
@@ -52,7 +53,7 @@ If the task is a bug you can also add an issue on GitHub.
 - Add a ramdom lib:
     - Some function for ramdom:
         - A function with a pre defined value, set 256 ramdom value between 0 and 255 (all value need to be different). `ramdom_256` (need to fix the problème with function `address_counter`)
-    - On emulator, add all assembly instruction for all function of random lib (for the auto test)
+- Add the script for build to a pipeline on GitHub Actions
 - Probleme with this code :
 ```Smart
 import "string/string.sma";

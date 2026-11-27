@@ -122,7 +122,7 @@ class Test:
         if self.optimize_mode:
             compiller_data_run.optimize_mode = True
 
-        with open("test/test.sma", "w") as f:
+        with open("test/test.sma", "w", encoding="utf-8") as f:
             f.write(self.code)
 
         self.show_test()
@@ -143,11 +143,11 @@ class Test:
             if self.auto_confirm:
                 print(f"{Colors.YELLOW}Switch stdin file... Can cause errors...{Colors.RESET}")
 
-                with open("auto_confirm.txt", "w") as f:
+                with open("auto_confirm.txt", "w", encoding="utf-8") as f:
                     f.write("n\n" * 100)
 
                 self.sauv_stdin = sys.stdin
-                sys.stdin = open("auto_confirm.txt", "r")
+                sys.stdin = open("auto_confirm.txt", "r", encoding="utf-8")
 
             self.code_compile = compile_smart("test/test.sma", make_file=False, thread_mode = [False, "", False, False], first_call=True, call_test_mode=True)
 
@@ -250,7 +250,7 @@ class ModuleTest(Test):
         Next delete the modules."""
 
         for module in self.code_modules:
-            with open(f"test/{module[0]}", "w") as f:
+            with open(f"test/{module[0]}", "w", encoding="utf-8") as f:
                 f.write(module[1])
 
         self.run()
