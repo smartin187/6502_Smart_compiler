@@ -15,6 +15,7 @@ import json
 import os
 from threading import Thread
 import webbrowser
+import traceback
 
 from compiller_tool import smart_info
 from compiller_tool.color_tool import Colors
@@ -965,6 +966,26 @@ def run_smart() -> None:
                         ram[adress] = accumulator["A"]
 
                     run_step += 3
+                
+                case "8C":     # store Y
+                    adress = code[run_step + 2] + code[run_step + 1]
+
+                    if 0x300 <= int(adress, base=16) >= 0x400:    # write on the program
+                        try:
+                            code[int(adress, base=16) - START + 1] = accumulator["Y"]
+                        except:
+                            MessageUser.show_error("Error", "Write on unknown address.", detail="Detail: {}".format(hex(0x400 + int(adress, base=16) - START + 1)).upper())
+                            run_fail = True
+                            break
+                    else:
+                        ram[adress] = accumulator["Y"]
+
+                    run_step += 3
+
+                case "BA": # transfert stack ptr to X
+                    accumulator["X"] = hex(stack_ptr)[2:].upper()
+
+                    run_step += 1
 
                 case "B0":  # BCS
                     offset = int(code[run_step + 1], base=16)
@@ -982,7 +1003,6 @@ def run_smart() -> None:
                         value = code[run_step + 1]
                     else:
                         value = ram[code[run_step + 2] + code[run_step + 1]]
-
 
                     new_A = int(accumulator["A"], base=16) - int(value, base=16) - (1 - flags["C"])
 
@@ -1316,7 +1336,8 @@ if __name__ == "__main__":
                 error_during_run()
 
             except Exception as e:
-                MessageUser.show_error("Error", "Error during run.", detail=f"Detail: {str(e)}")
+                MessageUser.show_error("Error", "Error during run.", detail=f"Detail: {str(e)}\n\n{traceback.format_exc()}")
+                print(traceback.format_exc())
                 error_during_run()
 
             if stop_run:
