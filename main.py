@@ -9,6 +9,7 @@ Copyright (c) 2026 smartin187 Apache License, Version 2.0. See LICENCE file.
 import sys
 import traceback
 from smart_compiller import SmartError, CompileError, compile_smart
+from compiller_tool import compiller_data_run
 import logging
 
 from compiller_tool import smart_info
@@ -24,11 +25,16 @@ elif "--show-lib-path" in sys.argv:
     show_path_lib()
     sys.exit(0)
 
+if "--optimize" in sys.argv:    # the optimize mode find expression who can be computed at compiletime
+    sys.argv.remove("--optimize")
+    compiller_data_run.optimize_mode = True
+    logging.info("Run compiller with the optimize mode.")
+
 if "--show-licence" in sys.argv:
     print(smart_info.LICENCE["licence"], smart_info.LICENCE["text"], sep="\n")
     sys.exit(0)
 
-regroup_number = -1
+regroup_number = 8
 
 for arg in sys.argv:
     if arg.startswith("--regroup="):
@@ -38,7 +44,7 @@ for arg in sys.argv:
             logging.critical("Error: regroup number must be an integer")
             sys.exit(1)
 
-        if regroup_number < 1:
+        if regroup_number < 1 and regroup_number != -1:
             logging.critical("Error: regroup number must be greater than 0, or -1 for no regroup.")
             sys.exit(1)
 

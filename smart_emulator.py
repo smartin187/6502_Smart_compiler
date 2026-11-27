@@ -112,7 +112,7 @@ if __name__ == "__main__":
             """Use filedialog to open a file."""
             global file_name, code, open_from_asm
 
-            path = filedialog.askopenfilename(defaultextension="sma", filetypes=[("Smart source code", "*.sma"), ("Assembly", "*.asm")])
+            path = filedialog.askopenfilename(defaultextension="sma", filetypes=[("Smart source code", "*.sma"), ("Assembly", "*.hex")])
 
 
             if path:
@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
                 if file_type == ".sma":
                     file_name = path
-                elif file_type == ".asm":
+                elif file_type == ".hex":
                     asm_f = open(path, mode="r", encoding="UTF-8")
 
                     code = asm_f.read()
@@ -138,10 +138,10 @@ if __name__ == "__main__":
         window_start = tk.Tk()
         window_start.title("Smart emulator")
 
-        text_info = tk.Label(window_start, text="Open a Smart code source (*.sma) or open an Assembly (*.asm).\nCareful: with assembly, the emulator can have errors...")
+        text_info = tk.Label(window_start, text="Open a Smart code source (*.sma) or open an Assembly (*.hex).\nCareful: with assembly, the emulator can have errors...")
         text_info.pack()
 
-        button_open = tk.Button(window_start, text="Open *.sma or *.asm", command=open_smart)
+        button_open = tk.Button(window_start, text="Open *.sma or *.hex", command=open_smart)
         button_open.pack()
 
         try:
@@ -1315,13 +1315,13 @@ if __name__ == "__main__":
         menu_save.add_command(label="Save memory (as *.json)", command=export_memory)
 
         def save_asm() -> None:
-            """Save the assembly code in a *.asm file."""
-            file_path = filedialog.asksaveasfilename(defaultextension=".asm", filetypes=[("Assembly files", "*.asm")])
+            """Save the assembly code in a *.hex file."""
+            file_path = filedialog.asksaveasfilename(defaultextension=".hex", filetypes=[("Assembly files", "*.hex")])
 
             if file_path:
                 Path(file_path).write_text(asm_code, encoding="utf-8")
 
-        menu_save.add_command(label="Save assembly (as *.asm)", command=save_asm)
+        menu_save.add_command(label="Save assembly (as *.hex)", command=save_asm)
 
         def start_run() -> None:
             """Call run_smart."""

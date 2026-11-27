@@ -63,7 +63,20 @@ class OutputError(TestError):
 
 class Test:
     """This class is for testing all functionalities of smart."""
-    def __init__(self, name:str, code:str, output:str | None="", compile_output:str="", compile_only:bool=False, sucess:bool=True, stdin_test:str="", max_op:int=10000, no_log:bool=False, auto_confirm:bool=False):
+    def __init__(
+            self,
+            name:str,
+            code:str,
+            output:str | None="",
+            compile_output:str="",
+            compile_only:bool=False,
+            sucess:bool=True,
+            stdin_test:str="",
+            max_op:int=10000,
+            no_log:bool=False,
+            auto_confirm:bool=False,
+            optimize_mode:bool=False
+        ):
         """
         Set information about test.
         """
@@ -77,6 +90,7 @@ class Test:
         self.max_op = max_op
         self.no_log = no_log
         self.auto_confirm = auto_confirm
+        self.optimize_mode = optimize_mode
 
     def show_test(self, start_compilation:bool=True) -> None:
         """Print the detail of test"""
@@ -104,6 +118,9 @@ class Test:
         global all_ok, error_counter
 
         compiller_data_run.reset_data()
+
+        if self.optimize_mode:
+            compiller_data_run.optimize_mode = True
 
         with open("test/test.sma", "w", encoding="utf-8") as f:
             f.write(self.code)
@@ -2134,7 +2151,78 @@ try:
         )
     )
 
-    COMPILETIME_TEST = (  #test for thte compiletime keyword
+    OPTIMIZE_TEST = (
+        Test(
+            "Simple optimize test",
+            code="""
+                compiletime define PRINT_INT to print: '0' +;
+                .a = 1 + 1;
+                .b = 2 - 1;
+                .c = 4 * 2;
+                .d = 18 / 2;
+                .e = 10 % 2;
+
+                .x = .a + .b; // this expression can't be optimized.
+
+                PRINT_INT .a;
+                PRINT_INT .b;
+                PRINT_INT .c;
+                PRINT_INT .d;
+                PRINT_INT .e;
+
+                PRINT_INT .x;
+            """,
+            output="218903",
+            optimize_mode = True
+        ),
+        Test(
+            "Modulo by 256 on optimize",
+            code="""
+                compiletime define PRINT_INT to print: '0' +;
+
+                .a = 255+1; // 0
+                .b = 255+2; // 1
+                .c = 0 - 1; // 255
+                .d = 0 - 190; // 66 'B'
+                .e = 200 * 2; // 144
+
+                PRINT_INT .a;
+                PRINT_INT .b;
+                print: .c;
+                print: .d;
+                print: .e;
+            """,
+            output="01B",
+            optimize_mode=True
+        ),
+        Test(
+            "Value over 256 with optimize",
+            code="""
+                .x = 256; // work only on optimize mode.
+                .y = 300; // 300%256 = 44
+
+                print: .x + '0';
+                print: .y; // ASCII 44 = ','
+            """,
+            output="0,",
+            optimize_mode=True
+        ),
+        Test(
+            "Value over 256 without optimize",
+            code="""
+                .x = 256; // work only on optimize mode.
+                .y = 300; // 300%256 = 44
+
+                print: .x + '0';
+                print: .y; // ASCII 44 = ','
+            """,
+            output="0,",
+            sucess=False
+        ),
+
+    )
+
+    COMPILETIME_TEST = (  #test for the compiletime keyword
         # define
         Test(
             "Define test",
@@ -3150,7 +3238,38 @@ OK2"""
     )
 
 
-    GLOBAL_TESTS = SYNTAXE_ERROR_TEST + TESTS + MATH_TEST + RUNTIME_ERROR_TEST + MODULES_TEST + BOOLEAN_TEST + TEST_INT_HEX + TEST_CHAR + ADVENCED_VALUE_TEST + REGISTER_TESTS + GOTO_TEST + IF_TEST + WHILE_TEST + ESCAPE_CHARACTER + BUILT_IN + FUNCTION_TEST + TEST_LIB + FOR_TEST + COMPILETIME_TEST + VARIABLE_TEST + ERROR_VARIABLE_KEYWORD + TEST_COMPARATOR + TRY_TEST + THREAD_TEST + INCREMENT_DECREMENT + MOD_TEST + SHEBANG_TEST + PTR_FUNCTION + TEST_OPERATION_ON_INDEX
+    GLOBAL_TESTS = (
+        *SYNTAXE_ERROR_TEST,
+        *TESTS,
+        *MATH_TEST,
+        *RUNTIME_ERROR_TEST,
+        *MODULES_TEST,
+        *BOOLEAN_TEST,
+        *TEST_INT_HEX,
+        *TEST_CHAR,
+        *ADVENCED_VALUE_TEST,
+        *REGISTER_TESTS,
+        *GOTO_TEST,
+        *IF_TEST,
+        *WHILE_TEST,
+        *ESCAPE_CHARACTER,
+        *BUILT_IN,
+        *FUNCTION_TEST,
+        *TEST_LIB,
+        *FOR_TEST,
+        *COMPILETIME_TEST,
+        *VARIABLE_TEST,
+        *ERROR_VARIABLE_KEYWORD,
+        *TEST_COMPARATOR,
+        *TRY_TEST,
+        *THREAD_TEST,
+        *INCREMENT_DECREMENT,
+        *MOD_TEST,
+        *SHEBANG_TEST,
+        *PTR_FUNCTION,
+        *TEST_OPERATION_ON_INDEX,
+        *OPTIMIZE_TEST,
+    )
 
     try:
         for test in GLOBAL_TESTS:

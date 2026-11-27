@@ -6,7 +6,13 @@ Smart Compiler is a project that aims to make programming on a Smarty Kit (an Ap
 
 This repository contains a compiler for Smart code (a language created for the Smarty Kit) and an interpreter for that language (if you want to test a program without a Smarty Kit).
 
->Smart is in development. Some bugs are to fix. Report issues if you have problems. New features will be added soon...
+> Smart is in development. Some bugs are to fix. Report issues on GitHub if you have problems. New features will be added soon...
+
+## Download
+
+Report to the [GitHub releases](https://github.com/smartin187/6502_Smart_compiler/releases) for get Smart, or clone the repository and use python 3.13 for run it.
+
+> For install, read the description of the releases.
 
 ## The Smart programming language
 
@@ -14,7 +20,7 @@ Smart is a very simple programming language. If you need more features, you shou
 
 _New features will be added soon..._
 
-The advantage of Smart is that it is optimized for the Smarty Kit CPU.
+The advantage of Smart is that it is optimized for the Smarty Kit (for the 6502).
 
 Once your program is ready, you can either [compile it](#compile-smart-code) or [run it in the interpreter](#interpret-smart-code-emulator).
 
@@ -1012,13 +1018,39 @@ _Approximate processor time:_
 - ~ 15% (0,15MHz) for main thread
 - ~ 15% (0,15MHz) for second thread
 
+#### Optimize code
+
+They are a optimize mode for the compiler. You can activate it with the flag `--optimize`:
+```bash
+# If you download the packaged version:
+smart_compiler your_file.sma --optimize
+
+# If you use the source code:
+python3 main.py your_file.sma --optimize
+```
+
+The optimize mode can reduce the size of binary and the execution time. The optimize mode compute expression at compile time if it is possible.
+
+For exemple:
+```Smart
+.x = 1 + 1; // on optimize mode, the binary will have 2 instead of 1 + 1.
+.y = 1 + .x; // this expression will be not optimized by the optimize mode.
+```
+
+
 ## Compile Smart code
 
 Once you have your code, the first option is to compile it so it can run on a Smarty Kit (code is theoretically compatible with an Apple 1).
 
 To do so, download this repository and run:
 
-`python3 main.py your_file.sma`
+```bash
+# If you download the packaged version:
+smart_compiler your_file.sma
+
+# If you use the source code:
+python3 main.py your_file.sma
+```
 
 _Smart code typically uses the `*.sma` extension._
 
@@ -1040,7 +1072,13 @@ The Smart interpreter lets you execute Smart code directly on your computer.
 
 Download the code, then run in a terminal:
 
-`python3 smart_emulator.py your_program.sma`
+```bash
+# If you download the packaged version:
+smart_emulator your_program.sma
+
+# If you use the source code:
+python3 smart_emulator.py your_program.sma
+```
 
 A window opens with the interpreter. Your code will run as if it were on a Smarty Kit.
 
@@ -1071,6 +1109,8 @@ Smart uses RAM.
   - _Other address to `0x02FF` are not used actually._
 
 ## Distribution of Smart
+
+If you want to download Smart, see [download](#download).
 
 For publish Smart, the Python script are compiled with Pyinstaller.
 
